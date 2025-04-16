@@ -1,0 +1,352 @@
+:root {
+    --primary-bg: #fdfdfd;
+    --secondary-bg: #f1f1f1;
+    --text-color: #333;
+    --input-border-color: #555;
+    --button-bg: #006622;
+    --button-hover-bg: #004d1a;
+    --border-color: #ccc;
+    --header-bg: #e9e9e9;
+}
+
+body {
+    font-family: 'Noto Nastaliq Urdu', 'Arial', sans-serif;
+    direction: rtl;
+    margin: 0;
+    padding: 0;
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: var(--primary-bg);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+}
+
+nav ul li {
+    padding: 12px 18px;
+    cursor: pointer;
+    border-left: 1px solid var(--border-color);
+    transition: background-color 0.3s;
+    text-align: center;
+    flex-grow: 1;
+}
+
+nav ul li:first-child { border-right: none; }
+nav ul li:last-child { border-left: none; }
+
+nav ul li:hover, nav ul li.active {
+    background-color: #d8d8d8;
+    font-weight: bold;
+}
+
+.module {
+    display: none;
+    padding: 20px;
+    border: 1px solid #eee;
+    margin-top: 15px;
+    border-radius: 0 0 6px 6px;
+    background-color: #fff;
+}
+
+.module.active { display: block; }
+
+h1, h2 {
+    text-align: center;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 12px;
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 8px;
+    color: #444;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px 25px;
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: normal;
+    color: #555;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="tel"],
+input[type="email"],
+textarea,
+select {
+    width: 100%;
+    padding: 8px 2px;
+    border: none;
+    border-bottom: 1px solid var(--input-border-color);
+    background-color: transparent;
+    font-family: 'Noto Nastaliq Urdu', 'Arial', sans-serif;
+    font-size: 1em;
+    color: #000;
+    box-sizing: border-box;
+    border-radius: 0;
+    transition: border-bottom-color 0.3s;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-bottom-color: #000;
+    border-bottom-width: 1.5px;
+}
+
+textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.8;
+}
+
+select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: left 0.7em top 50%, 0 0;
+    background-size: 0.65em auto, 100%;
+    padding-left: 2em;
+}
+
+button {
+    padding: 10px 25px;
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.05em;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+button:hover {
+    background-color: var(--button-hover-bg);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+button.delete-btn {
+    background-color: #dc3545;
+    margin-right: 10px;
+}
+
+button.delete-btn:hover {
+    background-color: #c82333;
+}
+
+button.edit-btn {
+    background-color: #ffc107;
+    color: #333;
+    margin-right: 10px;
+}
+
+button.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-top: 25px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    text-align: right;
+    vertical-align: middle;
+}
+
+th {
+    background-color: var(--secondary-bg);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.text-center { text-align: center; }
+.mt-20 { margin-top: 20px; }
+.mb-20 { margin-bottom: 20px; }
+.d-flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+.no-print { display: block; }
+
+input[type="file"] {
+    border: 1px dashed var(--input-border-color);
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #fafafa;
+    cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+    margin-left: 10px;
+    padding: 8px 15px;
+    border: none;
+    background-color: var(--button-bg);
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    text-align: center;
+    display: none;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@media print {
+    body {
+        font-family: 'Noto Nastaliq Urdu', 'Arial', sans-serif;
+        font-size: 11pt;
+        color: #000;
+        background-color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-print, nav, button, input[type="file"]::file-selector-button {
+        display: none !important;
+    }
+
+    .container, .module {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 5mm;
+        max-width: 100%;
+        border-radius: 0;
+        background-color: #fff !important;
+    }
+
+    h2 {
+        text-align: center;
+        border-bottom: 1px solid #000;
+        font-size: 16pt;
+        margin-bottom: 15px;
+    }
+
+    h3 {
+        font-size: 13pt;
+        border-bottom: 1px dashed #333;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="tel"],
+    input[type="email"],
+    textarea,
+    select {
+        border: none;
+        background-color: transparent;
+    }
+
+    .printable-area {
+        border: 1px solid #000 !important;
+        padding: 15px !important;
+        width: 300px !important;
+        margin: 10px auto !important;
+        position: relative;
+    }
+
+    .module:not(#reports-module) {
+        display: none !important;
+    }
+
+    #reports-module .table-container {
+        display: none;
+    }
+
+    #reports-module.print-students-report #students-report-table,
+    #reports-module.print-fees-report #fees-report-table,
+    #reports-module.print-salaries-report #salaries-report-table,
+    #reports-module.print-attendance-report #attendance-report-table {
+        display: block !important;
+    }
+
+    #reports-module.print-students-report #students-report-table .table-container,
+    #reports-module.print-fees-report #fees-report-table .table-container,
+    #reports-module.print-salaries-report #salaries-report-table .table-container,
+    #reports-module.print-attendance-report #attendance-report-table .table-container {
+        display: block !important;
+    }
+
+    table {
+        page-break-inside: auto;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+}

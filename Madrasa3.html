@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدرسہ انتظامی نظام</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>مدرسہ انتظامی نظام</h1>
+        <nav>
+            <ul>
+                <li data-module="dashboard">ڈیش بورڈ</li>
+                <li data-module="students">طلباء</li>
+                <li data-module="teachers">اساتذہ</li>
+                <li data-module="classes">کلاسیں</li>
+                <li data-module="subjects">مضامین</li>
+                <li data-module="attendance">حاضری</li>
+                <li data-module="exams">امتحانات</li>
+                <li data-module="fees">فیس</li>
+                <li data-module="salaries">تنخواہیں</li>
+                <li data-module="ledger">لیجر</li>
+                <li data-module="reports">رپورٹس</li>
+                <li data-module="settings">ترتیبات</li>
+            </ul>
+        </nav>
+
+        <div id="message" class="message"></div>
+
+        <div id="dashboard-module" class="module"></div>
+
+        <div id="students-module" class="module">
+            <h2>طلباء کا انتظام</h2>
+            <form id="student-form">
+                <input type="hidden" id="student-id">
+                <div>
+                    <label for="student-name">نام *</label>
+                    <input type="text" id="student-name" required>
+                </div>
+                <div>
+                    <label for="father-name">والد کا نام *</label>
+                    <input type="text" id="father-name" required>
+                </div>
+                <div>
+                    <label for="student-phone">فون نمبر</label>
+                    <input type="tel" id="student-phone">
+                </div>
+                <div>
+                    <label for="student-address">پتہ</label>
+                    <input type="text" id="student-address">
+                </div>
+                <div>
+                    <label for="admission-no">داخلہ نمبر *</label>
+                    <input type="text" id="admission-no" required>
+                </div>
+                <div>
+                    <label for="student-class">کلاس *</label>
+                    <select id="student-class" required></select>
+                </div>
+                <div>
+                    <label for="student-status">حالت *</label>
+                    <select id="student-status" required>
+                        <option value="active">فعال</option>
+                        <option value="inactive">غیر فعال</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="save-student-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-student-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div>
+                <label for="filter-student-class">کلاس کے مطابق فلٹر کریں</label>
+                <select id="filter-student-class"></select>
+            </div>
+            <div class="table-container">
+                <table id="students-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>نام</th>
+                            <th>والد کا نام</th>
+                            <th>فون نمبر</th>
+                            <th>داخلہ نمبر</th>
+                            <th>کلاس</th>
+                            <th>حالت</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="teachers-module" class="module">
+            <h2>اساتذہ کا انتظام</h2>
+            <form id="teacher-form">
+                <input type="hidden" id="teacher-id">
+                <div>
+                    <label for="teacher-name">نام *</label>
+                    <input type="text" id="teacher-name" required>
+                </div>
+                <div>
+                    <label for="teacher-phone">فون نمبر *</label>
+                    <input type="tel" id="teacher-phone" required>
+                </div>
+                <div>
+                    <label for="teacher-address">پتہ</label>
+                    <input type="text" id="teacher-address">
+                </div>
+                <div>
+                    <label for="teacher-qualification">قابلیت *</label>
+                    <input type="text" id="teacher-qualification" required>
+                </div>
+                <div>
+                    <label for="teacher-salary">تنخواہ *</label>
+                    <input type="number" id="teacher-salary" required>
+                </div>
+                <div>
+                    <label for="teacher-subjects">مضامین (کوما سے الگ کریں)</label>
+                    <input type="text" id="teacher-subjects">
+                </div>
+                <div>
+                    <label for="teacher-status">حالت *</label>
+                    <select id="teacher-status" required>
+                        <option value="active">فعال</option>
+                        <option value="inactive">غیر فعال</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="save-teacher-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-teacher-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="teachers-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>نام</th>
+                            <th>فون نمبر</th>
+                            <th>قابلیت</th>
+                            <th>تنخواہ</th>
+                            <th>مضامین</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="classes-module" class="module">
+            <h2>کلاسوں کا انتظام</h2>
+            <form id="class-form">
+                <input type="hidden" id="class-id">
+                <div>
+                    <label for="class-name">کلاس کا نام *</label>
+                    <input type="text" id="class-name" required>
+                </div>
+                <div>
+                    <label for="class-description">تفصیل</label>
+                    <textarea id="class-description"></textarea>
+                </div>
+                <div>
+                    <button type="button" id="save-class-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-class-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="classes-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>کلاس کا نام</th>
+                            <th>تفصیل</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="subjects-module" class="module">
+            <h2>مضامین کا انتظام</h2>
+            <form id="subject-form">
+                <input type="hidden" id="subject-id">
+                <div>
+                    <label for="subject-name">مضمون کا نام *</label>
+                    <input type="text" id="subject-name" required>
+                </div>
+                <div>
+                    <label for="subject-class">کلاس *</label>
+                    <select id="subject-class" required></select>
+                </div>
+                <div>
+                    <label for="subject-teacher">استاد *</label>
+                    <select id="subject-teacher" required></select>
+                </div>
+                <div>
+                    <button type="button" id="save-subject-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-subject-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="subjects-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>مضمون</th>
+                            <th>کلاس</th>
+                            <th>استاد</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="attendance-module" class="module">
+            <h2>حاضری کا انتظام</h2>
+            <form id="attendance-form">
+                <div>
+                    <label for="attendance-date">تاریخ *</label>
+                    <input type="date" id="attendance-date" required>
+                </div>
+                <div>
+                    <label for="attendance-class">کلاس *</label>
+                    <select id="attendance-class" required></select>
+                </div>
+                <div>
+                    <label for="attendance-student">طالب علم *</label>
+                    <select id="attendance-student" required></select>
+                </div>
+                <div>
+                    <label for="attendance-status">حالت *</label>
+                    <select id="attendance-status" required>
+                        <option value="present">موجود</option>
+                        <option value="absent">غیر موجود</option>
+                        <option value="leave">رخصت</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="save-attendance-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-attendance-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>تاریخ</th>
+                            <th>طالب علم</th>
+                            <th>کلاس</th>
+                            <th>حالت</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="exams-module" class="module">
+            <h2>امتحانات کا انتظام</h2>
+            <h3>امتحان شامل کریں</h3>
+            <form id="exam-form">
+                <input type="hidden" id="exam-id">
+                <div>
+                    <label for="exam-name">امتحان کا نام *</label>
+                    <input type="text" id="exam-name" required>
+                </div>
+                <div>
+                    <label for="exam-date">تاریخ *</label>
+                    <input type="date" id="exam-date" required>
+                </div>
+                <div>
+                    <label for="exam-class">کلاس *</label>
+                    <select id="exam-class" required></select>
+                </div>
+                <div>
+                    <button type="button" id="save-exam-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-exam-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="exams-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>امتحان</th>
+                            <th>تاریخ</th>
+                            <th>کلاس</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <h3>نمبر شامل کریں</h3>
+            <form id="marks-form">
+                <input type="hidden" id="mark-id">
+                <div>
+                    <label for="mark-exam">امتحان *</label>
+                    <select id="mark-exam" required></select>
+                </div>
+                <div>
+                    <label for="mark-student">طالب علم *</label>
+                    <select id="mark-student" required></select>
+                </div>
+                <div>
+                    <label for="mark-subject">مضمون *</label>
+                    <select id="mark-subject" required></select>
+                </div>
+                <div>
+                    <label for="mark-obtained">حاصل کردہ نمبر *</label>
+                    <input type="number" id="mark-obtained" required>
+                </div>
+                <div>
+                    <label for="mark-total">کل نمبر *</label>
+                    <input type="number" id="mark-total" required>
+                </div>
+                <div>
+                    <button type="button" id="save-marks-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-marks-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="marks-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>امتحان</th>
+                            <th>طالب علم</th>
+                            <th>مضمون</th>
+                            <th>حاصل کردہ</th>
+                            <th>کل نمبر</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="fees-module" class="module">
+            <h2>فیس کا انتظام</h2>
+            <form id="fee-form">
+                <input type="hidden" id="fee-id">
+                <div>
+                    <label for="fee-student">طالب علم *</label>
+                    <select id="fee-student" required></select>
+                </div>
+                <div>
+                    <label for="fee-month-year">ماہ/سال *</label>
+                    <input type="month" id="fee-month-year" required>
+                </div>
+                <div>
+                    <label for="fee-amount-due">واجب الادا رقم *</label>
+                    <input type="number" id="fee-amount-due" required>
+                </div>
+                <div>
+                    <label for="fee-amount-paid">ادا کردہ رقم</label>
+                    <input type="number" id="fee-amount-paid">
+                </div>
+                <div>
+                    <label for="fee-payment-date">ادا کی تاریخ</label>
+                    <input type="date" id="fee-payment-date">
+                </div>
+                <div>
+                    <label for="fee-status">حالت *</label>
+                    <select id="fee-status" required>
+                        <option value="pending">زیر التوا</option>
+                        <option value="paid">ادا شدہ</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="save-fee-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-fee-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="fees-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>طالب علم</th>
+                            <th>ماہ/سال</th>
+                            <th>واجب الادا</th>
+                            <th>ادا شدہ</th>
+                            <th>تاریخ ادائیگی</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="salaries-module" class="module">
+            <h2>تنخواہوں کا انتظام</h2>
+            <form id="salary-form">
+                <input type="hidden" id="salary-id">
+                <div>
+                    <label for="salary-teacher">استاد *</label>
+                    <select id="salary-teacher" required></select>
+                </div>
+                <div>
+                    <label for="salary-month-year">ماہ/سال *</label>
+                    <input type="month" id="salary-month-year" required>
+                </div>
+                <div>
+                    <label for="salary-amount">رقم *</label>
+                    <input type="number" id="salary-amount" required>
+                </div>
+                <div>
+                    <label for="salary-payment-date">ادا کی تاریخ</label>
+                    <input type="date" id="salary-payment-date">
+                </div>
+                <div>
+                    <label for="salary-status">حالت *</label>
+                    <select id="salary-status" required>
+                        <option value="pending">زیر التوا</option>
+                        <option value="paid">ادا شدہ</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" id="save-salary-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-salary-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="salaries-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>استاد</th>
+                            <th>ماہ/سال</th>
+                            <th>رقم</th>
+                            <th>تاریخ ادائیگی</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="ledger-module" class="module">
+            <h2>لیجر کا انتظام</h2>
+            <form id="ledger-form">
+                <input type="hidden" id="ledger-id">
+                <div>
+                    <label for="ledger-type">قسم *</label>
+                    <select id="ledger-type" required>
+                        <option value="fee">فیس</option>
+                        <option value="salary">تنخواہ</option>
+                        <option value="other">دیگر</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ledger-related-id">متعلقہ ID</label>
+                    <input type="text" id="ledger-related-id">
+                </div>
+                <div>
+                    <label for="ledger-amount">رقم *</label>
+                    <input type="number" id="ledger-amount" required>
+                </div>
+                <div>
+                    <label for="ledger-date">تاریخ *</label>
+                    <input type="date" id="ledger-date" required>
+                </div>
+                <div>
+                    <label for="ledger-description">تفصیل</label>
+                    <textarea id="ledger-description"></textarea>
+                </div>
+                <div>
+                    <button type="button" id="save-ledger-btn">محفوظ کریں</button>
+                    <button type="button" id="clear-ledger-form-btn">صاف کریں</button>
+                </div>
+            </form>
+            <div class="table-container">
+                <table id="ledger-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>قسم</th>
+                            <th>متعلقہ</th>
+                            <th>رقم</th>
+                            <th>تاریخ</th>
+                            <th class="no-print">عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="reports-module" class="module">
+            <h2>رپورٹس</h2>
+            <div class="d-flex justify-between mb-20">
+                <button id="generate-students-report-btn">طلباء کی رپورٹ</button>
+                <button id="generate-fees-report-btn">فیس کی رپورٹ</button>
+                <button id="generate-salaries-report-btn">تنخواہوں کی رپورٹ</button>
+                <button id="generate-attendance-report-btn">حاضری کی رپورٹ</button>
+            </div>
+            <h3>طلباء کی رپورٹ</h3>
+            <div class="table-container">
+                <table id="students-report-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>نام</th>
+                            <th>والد کا نام</th>
+                            <th>کلاس</th>
+                            <th>حالت</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <h3>فیس کی رپورٹ</h3>
+            <div class="table-container">
+                <table id="fees-report-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>طالب علم</th>
+                            <th>ماہ/سال</th>
+                            <th>واجب الادا</th>
+                            <th>ادا شدہ</th>
+                            <th>تاریخ ادائیگی</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <h3>تنخواہوں کی رپورٹ</h3>
+            <div class="table-container">
+                <table id="salaries-report-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>استاد</th>
+                            <th>ماہ/سال</th>
+                            <th>رقم</th>
+                            <th>تاریخ ادائیگی</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <h3>حاضری کی رپورٹ</h3>
+            <div class="table-container">
+                <table id="attendance-report-table">
+                    <thead>
+                        <tr>
+                            <th>سیریل</th>
+                            <th>طالب علم</th>
+                            <th>کلاس</th>
+                            <th>تاریخ</th>
+                            <th>حالت</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="settings-module" class="module">
+            <h2>ترتیبات</h2>
+            <form id="settings-form">
+                <div>
+                    <label for="madrasa-name">مدرسہ کا نام *</label>
+                    <input type="text" id="madrasa-name" required>
+                </div>
+                <div>
+                    <label for="madrasa-address">پتہ</label>
+                    <textarea id="madrasa-address"></textarea>
+                </div>
+                <div>
+                    <label for="madrasa-phone">فون نمبر</label>
+                    <input type="tel" id="madrasa-phone">
+                </div>
+                <div>
+                    <label for="madrasa-logo">لوگو</label>
+                    <input type="file" id="madrasa-logo" accept="image/*">
+                </div>
+                <div>
+                    <label for="madrasa-stamp">مہر</label>
+                    <input type="file" id="madrasa-stamp" accept="image/*">
+                </div>
+                <div>
+                    <button type="button" id="save-settings-btn">محفوظ کریں</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script src="db.js"></script>
+<script src="app.js"></script>
+<script src="Madrasa3_complete.js"></script>
+</body>
+</html>
