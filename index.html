@@ -1518,12 +1518,16 @@
 
 
 
-document.addEventListener('DOMContentLoaded', async function () {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Load required libraries
     try {
+        // Load jsPDF, autoTable and html2canvas libraries
         const scripts = [
             'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js'
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
         ];
+
         for (const src of scripts) {
             const script = document.createElement('script');
             script.src = src;
@@ -1534,36 +1538,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 script.onerror = () => reject(new Error(`Failed to load ${src}`));
             });
         }
+
+        console.log('All libraries loaded successfully');
     } catch (error) {
         console.error('Error loading libraries:', error);
         return;
     }
 
-    async function loadUrduFont() {
-        try {
-            const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri/files/amiri-latin-400-normal.ttf';
-            const response = await fetch(fontUrl);
-            if (!response.ok) throw new Error('Failed to fetch Amiri font');
-            const fontData = await response.arrayBuffer();
-            const base64String = btoa(
-                new Uint8Array(fontData).reduce(
-                    (data, byte) => data + String.fromCharCode(byte),
-                    ''
-                )
-            );
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.addFileToVFS('Amiri.ttf', base64String);
-            doc.addFont('Amiri.ttf', 'Amiri', 'normal');
-            return true;
-        } catch (error) {
-            console.error('Error loading Urdu font:', error);
-            return false;
-        }
-    }
-
-    const fontLoaded = await loadUrduFont();
-
+    // Function to check if table or its parent (e.g., popup) is visible
     function isTableVisible(table) {
         const rect = table.getBoundingClientRect();
         let parent = table;
@@ -1583,6 +1565,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         );
     }
 
+    // Function to get parent z-index for popups
     function getParentZIndex(table) {
         let parent = table;
         while (parent && parent !== document.body) {
@@ -1595,15 +1578,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         return 10;
     }
 
+    // Function to add export icon to tables
     function addExportIconToTables() {
         const tables = document.querySelectorAll('table');
         tables.forEach(table => {
             if (!table.dataset.pdfIconAdded) {
+                // Create icon container
                 const iconContainer = document.createElement('div');
                 iconContainer.className = 'pdf-export-container';
                 iconContainer.style.position = 'absolute';
                 iconContainer.style.pointerEvents = 'none';
 
+                // Create icon
                 const icon = document.createElement('span');
                 icon.className = 'pdf-export-icon';
                 icon.style.display = 'inline-block';
@@ -1619,6 +1605,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 icon.innerHTML = '📄';
                 icon.title = 'Export to PDF';
 
+                // Hover effect
                 icon.addEventListener('mouseenter', () => {
                     icon.style.transform = 'scale(1.2)';
                 });
@@ -1626,6 +1613,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     icon.style.transform = 'scale(1)';
                 });
 
+                // Position icon and set z-index
                 const updateIconPosition = () => {
                     if (isTableVisible(table)) {
                         const tablePos = table.getBoundingClientRect();
@@ -1638,78 +1626,170 @@ document.addEventListener('DOMContentLoaded', async function () {
                     }
                 };
 
-                icon.addEventListener('click', () => {
+                // Add click event for PDF export
+                icon.addEventListener('click', async () => {
                     try {
-                        if (!window.jspdf || !window.jspdf.jsPDF) {
-                            alert('PDF library not loaded. Please try again.');
+                        if (!window.jspdf || !window.jspdf.jsPDF || !window.html2canvas) {
+                            alert('Required libraries not loaded. Please try again.');
                             return;
                         }
-                        const { jsPDF } = window.jspdf;
-                        const doc = new jsPDF();
-                        if (fontLoaded) doc.setFont('Amiri', 'normal');
 
-                        const head = [];
-                        const body = [];
-                        const ths = table.querySelectorAll('thead th');
-                        ths.forEach(th => head.push(th.textContent.trim()));
-                        table.querySelectorAll('tbody tr').forEach(tr => {
-                            const row = [];
-                            tr.querySelectorAll('td').forEach(td => {
-                                row.push(td.textContent.trim());
-                            });
-                            if (row.length) body.push(row);
+                        const { jsPDF } = window.jspdf;
+                        
+                        // Create loading indicator
+                        const loadingEl = document.createElement('div');
+                        loadingEl.style.position = 'fixed';
+                        loadingEl.style.top = '50%';
+                        loadingEl.style.left = '50%';
+                        loadingEl.style.transform = 'translate(-50%, -50%)';
+                        loadingEl.style.padding = '15px 20px';
+                        loadingEl.style.background = 'rgba(0,0,0,0.7)';
+                        loadingEl.style.color = 'white';
+                        loadingEl.style.borderRadius = '5px';
+                        loadingEl.style.zIndex = '9999';
+                        loadingEl.textContent = 'Generating PDF...';
+                        document.body.appendChild(loadingEl);
+
+                        // Create a clone of the table to avoid modifying the original
+                        const tableClone = table.cloneNode(true);
+                        
+                        // Apply styles for better rendering
+                        tableClone.style.width = table.offsetWidth + 'px';
+                        tableClone.style.fontFamily = 'Arial, sans-serif';
+                        tableClone.style.borderCollapse = 'collapse';
+                        tableClone.style.direction = 'rtl'; // For RTL support
+                        
+                        // Style all cells
+                        tableClone.querySelectorAll('th, td').forEach(cell => {
+                            cell.style.border = '1px solid #ddd';
+                            cell.style.padding = '8px';
+                            cell.style.textAlign = 'right'; // For RTL languages
+                        });
+                        
+                        // Style header cells
+                        tableClone.querySelectorAll('th').forEach(th => {
+                            th.style.backgroundColor = '#f2f2f2';
+                            th.style.fontWeight = 'bold';
                         });
 
-                        doc.autoTable({
-                            head: [head],
-                            body: body,
-                            theme: 'grid',
-                            styles: {
-                                font: fontLoaded ? 'Amiri' : 'Helvetica',
-                                fontSize: 10,
-                                halign: 'right'
-                            },
-                            headStyles: {
-                                halign: 'right'
-                            },
-                            margin: { top: 15 },
-                            didParseCell: (data) => {
-                                if (fontLoaded && data.cell.text) {
-                                    data.cell.styles.halign = 'right';
+                        // Create container for the cloned table
+                        const container = document.createElement('div');
+                        container.style.position = 'absolute';
+                        container.style.left = '-9999px';
+                        container.style.top = '-9999px';
+                        container.style.direction = 'rtl'; // Set RTL direction
+                        container.appendChild(tableClone);
+                        document.body.appendChild(container);
+
+                        // Get title from caption or create default
+                        let title = '';
+                        const caption = table.querySelector('caption');
+                        if (caption) {
+                            title = caption.textContent.trim();
+                        } else {
+                            title = 'Table Export';
+                        }
+
+                        // Add title to container
+                        const titleEl = document.createElement('h2');
+                        titleEl.textContent = title;
+                        titleEl.style.textAlign = 'center';
+                        titleEl.style.margin = '10px 0';
+                        titleEl.style.fontFamily = 'Arial, sans-serif';
+                        container.insertBefore(titleEl, tableClone);
+                        
+                        // Wait for a small timeout to ensure rendering
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        // Use html2canvas to capture the table as an image
+                        const canvas = await html2canvas(container, {
+                            scale: 2, // Higher scale for better quality
+                            useCORS: true,
+                            logging: false,
+                            allowTaint: true,
+                            backgroundColor: '#ffffff'
+                        });
+                        
+                        // Create PDF with appropriate dimensions
+                        const imgData = canvas.toDataURL('image/png');
+                        const imgWidth = 210; // A4 width in mm
+                        const pageHeight = 297; // A4 height in mm
+                        const imgHeight = canvas.height * imgWidth / canvas.width;
+                        const doc = new jsPDF('p', 'mm', 'a4');
+                        
+                        let position = 0;
+                        
+                        // Add image to PDF, handling pagination if needed
+                        if (imgHeight < pageHeight) {
+                            // If image fits on one page
+                            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        } else {
+                            // If image needs multiple pages
+                            let heightLeft = imgHeight;
+                            let page = 1;
+                            
+                            while (heightLeft > 0) {
+                                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
+                                heightLeft -= pageHeight;
+                                position -= pageHeight;
+                                
+                                if (heightLeft > 0) {
+                                    doc.addPage();
+                                    page++;
                                 }
                             }
-                        });
-
-                        doc.save(`table_export_${Date.now()}.pdf`);
+                        }
+                        
+                        // Clean up
+                        document.body.removeChild(container);
+                        document.body.removeChild(loadingEl);
+                        
+                        // Save PDF
+                        const filename = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.pdf`;
+                        doc.save(filename);
+                        
                     } catch (error) {
                         console.error('Error generating PDF:', error);
+                        // Remove loading indicator if exists
+                        const loadingEl = document.querySelector('div[style*="Generating PDF"]');
+                        if (loadingEl) document.body.removeChild(loadingEl);
                         alert('Failed to export PDF. Check console for details.');
                     }
                 });
 
+                // Append icon to container and container to body
                 iconContainer.appendChild(icon);
                 document.body.appendChild(iconContainer);
+
+                // Mark table as processed
                 table.dataset.pdfIconAdded = 'true';
+
+                // Update position initially
                 updateIconPosition();
 
+                // Observe table visibility and position changes
                 const mutationObserver = new MutationObserver(updateIconPosition);
                 mutationObserver.observe(table, { attributes: true, attributeFilter: ['style', 'class'] });
 
+                // Observe table size/position changes
                 const resizeObserver = new ResizeObserver(updateIconPosition);
                 resizeObserver.observe(table);
 
+                // Update on scroll and resize
                 window.addEventListener('scroll', updateIconPosition);
                 window.addEventListener('resize', updateIconPosition);
             }
         });
     }
 
+    // Initial run
     try {
         addExportIconToTables();
     } catch (error) {
         console.error('Error in initial table processing:', error);
     }
 
+    // Watch for dynamically added tables (including popups) with debouncing
     let timeout;
     const observer = new MutationObserver(() => {
         clearTimeout(timeout);
@@ -1727,7 +1807,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         subtree: true
     });
 });
-
 </script>
 
 </body>
