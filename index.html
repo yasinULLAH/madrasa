@@ -1513,7 +1513,222 @@
              });
          });
 
-    </script>
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', async function () {
+    try {
+        const scripts = [
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js'
+        ];
+        for (const src of scripts) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            document.head.appendChild(script);
+            await new Promise((resolve, reject) => {
+                script.onload = resolve;
+                script.onerror = () => reject(new Error(`Failed to load ${src}`));
+            });
+        }
+    } catch (error) {
+        console.error('Error loading libraries:', error);
+        return;
+    }
+
+    async function loadUrduFont() {
+        try {
+            const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/amiri/files/amiri-latin-400-normal.ttf';
+            const response = await fetch(fontUrl);
+            if (!response.ok) throw new Error('Failed to fetch Amiri font');
+            const fontData = await response.arrayBuffer();
+            const base64String = btoa(
+                new Uint8Array(fontData).reduce(
+                    (data, byte) => data + String.fromCharCode(byte),
+                    ''
+                )
+            );
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.addFileToVFS('Amiri.ttf', base64String);
+            doc.addFont('Amiri.ttf', 'Amiri', 'normal');
+            return true;
+        } catch (error) {
+            console.error('Error loading Urdu font:', error);
+            return false;
+        }
+    }
+
+    const fontLoaded = await loadUrduFont();
+
+    function isTableVisible(table) {
+        const rect = table.getBoundingClientRect();
+        let parent = table;
+        while (parent && parent !== document.body) {
+            const style = window.getComputedStyle(parent);
+            if (style.display === 'none' || style.visibility === 'hidden') {
+                return false;
+            }
+            parent = parent.parentElement;
+        }
+        return (
+            table.offsetParent !== null &&
+            rect.top < window.innerHeight &&
+            rect.bottom > 0 &&
+            rect.left < window.innerWidth &&
+            rect.right > 0
+        );
+    }
+
+    function getParentZIndex(table) {
+        let parent = table;
+        while (parent && parent !== document.body) {
+            const zIndex = window.getComputedStyle(parent).zIndex;
+            if (zIndex && zIndex !== 'auto') {
+                return parseInt(zIndex) + 1;
+            }
+            parent = parent.parentElement;
+        }
+        return 10;
+    }
+
+    function addExportIconToTables() {
+        const tables = document.querySelectorAll('table');
+        tables.forEach(table => {
+            if (!table.dataset.pdfIconAdded) {
+                const iconContainer = document.createElement('div');
+                iconContainer.className = 'pdf-export-container';
+                iconContainer.style.position = 'absolute';
+                iconContainer.style.pointerEvents = 'none';
+
+                const icon = document.createElement('span');
+                icon.className = 'pdf-export-icon';
+                icon.style.display = 'inline-block';
+                icon.style.cursor = 'pointer';
+                icon.style.pointerEvents = 'auto';
+                icon.style.fontSize = '14px';
+                icon.style.background = '#ffffff';
+                icon.style.border = '1px solid #ccc';
+                icon.style.borderRadius = '50%';
+                icon.style.padding = '4px';
+                icon.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                icon.style.transition = 'transform 0.2s';
+                icon.innerHTML = '📄';
+                icon.title = 'Export to PDF';
+
+                icon.addEventListener('mouseenter', () => {
+                    icon.style.transform = 'scale(1.2)';
+                });
+                icon.addEventListener('mouseleave', () => {
+                    icon.style.transform = 'scale(1)';
+                });
+
+                const updateIconPosition = () => {
+                    if (isTableVisible(table)) {
+                        const tablePos = table.getBoundingClientRect();
+                        iconContainer.style.left = `${tablePos.left + window.scrollX - 20}px`;
+                        iconContainer.style.top = `${tablePos.top + window.scrollY - 20}px`;
+                        iconContainer.style.zIndex = getParentZIndex(table);
+                        iconContainer.style.display = 'block';
+                    } else {
+                        iconContainer.style.display = 'none';
+                    }
+                };
+
+                icon.addEventListener('click', () => {
+                    try {
+                        if (!window.jspdf || !window.jspdf.jsPDF) {
+                            alert('PDF library not loaded. Please try again.');
+                            return;
+                        }
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF();
+                        if (fontLoaded) doc.setFont('Amiri', 'normal');
+
+                        const head = [];
+                        const body = [];
+                        const ths = table.querySelectorAll('thead th');
+                        ths.forEach(th => head.push(th.textContent.trim()));
+                        table.querySelectorAll('tbody tr').forEach(tr => {
+                            const row = [];
+                            tr.querySelectorAll('td').forEach(td => {
+                                row.push(td.textContent.trim());
+                            });
+                            if (row.length) body.push(row);
+                        });
+
+                        doc.autoTable({
+                            head: [head],
+                            body: body,
+                            theme: 'grid',
+                            styles: {
+                                font: fontLoaded ? 'Amiri' : 'Helvetica',
+                                fontSize: 10,
+                                halign: 'right'
+                            },
+                            headStyles: {
+                                halign: 'right'
+                            },
+                            margin: { top: 15 },
+                            didParseCell: (data) => {
+                                if (fontLoaded && data.cell.text) {
+                                    data.cell.styles.halign = 'right';
+                                }
+                            }
+                        });
+
+                        doc.save(`table_export_${Date.now()}.pdf`);
+                    } catch (error) {
+                        console.error('Error generating PDF:', error);
+                        alert('Failed to export PDF. Check console for details.');
+                    }
+                });
+
+                iconContainer.appendChild(icon);
+                document.body.appendChild(iconContainer);
+                table.dataset.pdfIconAdded = 'true';
+                updateIconPosition();
+
+                const mutationObserver = new MutationObserver(updateIconPosition);
+                mutationObserver.observe(table, { attributes: true, attributeFilter: ['style', 'class'] });
+
+                const resizeObserver = new ResizeObserver(updateIconPosition);
+                resizeObserver.observe(table);
+
+                window.addEventListener('scroll', updateIconPosition);
+                window.addEventListener('resize', updateIconPosition);
+            }
+        });
+    }
+
+    try {
+        addExportIconToTables();
+    } catch (error) {
+        console.error('Error in initial table processing:', error);
+    }
+
+    let timeout;
+    const observer = new MutationObserver(() => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            try {
+                addExportIconToTables();
+            } catch (error) {
+                console.error('Error in dynamic table processing:', error);
+            }
+        }, 1000);
+    });
+
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+});
+
+</script>
 
 </body>
 </html>
