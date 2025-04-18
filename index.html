@@ -168,9 +168,12 @@
             }
             button { display: none; }
         }
-
+* {
+    font-family: 'Jameel Noori Nastaleeq', Arial, sans-serif;
+}
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -924,52 +927,52 @@
             });
         }
 
-        function showModule(moduleId) {
-            const modules = document.querySelectorAll('.module');
-            modules.forEach(module => {
-                module.classList.remove('active');
-                 module.classList.remove('printable'); // Ensure printable class is removed on switch
-            });
-            document.getElementById(moduleId).classList.add('active');
+       function showModule(moduleId) {
+    document.querySelectorAll('.module').forEach(module => module.classList.remove('active', 'printable'));
+    document.getElementById(moduleId).classList.add('active');
 
-             const navButtons = document.querySelectorAll('nav button');
-            navButtons.forEach(button => {
-                button.classList.remove('active');
-                if (button.textContent === document.querySelector(`#${moduleId} h2`).textContent ||
-                   (moduleId === 'dashboard' && button.textContent === 'ڈیش بورڈ') ||
-                   (moduleId === 'students' && button.textContent === 'طلباء') ||
-                   (moduleId === 'teachers' && button.textContent === 'اساتذہ') ||
-                   (moduleId === 'classes' && button.textContent === 'کلاسیں') ||
-                    (moduleId === 'feeStructures' && button.textContent === 'فیس اسٹرکچر') ||
-                   (moduleId === 'fees' && button.textContent === 'فیس') ||
-                   (moduleId === 'attendance' && button.textContent === 'حاضری') ||
-                   (moduleId === 'results' && button.textContent === 'نتائج') ||
-                   (moduleId === 'timetable' && button.textContent === 'ٹائم ٹیبل / ڈیوٹی روسٹر') ||
-                   (moduleId === 'expenses' && button.textContent === 'اخراجات') ||
-                   (moduleId === 'reports' && button.textContent === 'رپورٹس') ||
-                   (moduleId === 'settings' && button.textContent === 'سیٹنگز')
-                   ) {
-                    button.classList.add('active');
-                }
-            });
-
-            if (moduleId === 'students') loadStudents();
-            if (moduleId === 'teachers') loadTeachers();
-            if (moduleId === 'classes') loadClasses();
-            if (moduleId === 'fees') { loadStudentsForFeeSelect(); loadStudentFeeDetails(); } // Reload student dropdown
-            if (moduleId === 'attendance') { loadClassesForAttendance(); loadStudentsForAttendance(); }
-             if (moduleId === 'results') { loadClassesForResults(); loadStudentsAndSubjectsForResult(); loadStudentsForResultCard(); loadExamsForResultCard(); }
-            if (moduleId === 'expenses') loadExpenses();
-            if (moduleId === 'feeStructures') { loadClassesForFeeStructureFilter(); loadFeeStructures(); }
-             if (moduleId === 'timetable') { loadClassesForTimetable(); loadTeachersForRoaster(); loadTimetable(); }
-             if (moduleId === 'dashboard') loadDashboardStats();
-             if (moduleId === 'reports') loadClassesForReportFilter();
-              if (moduleId === 'settings') loadPrintSettings();
-
-             // Populate common dropdowns needed across modules
-             loadClassesForStudentForm();
-             loadTeachersForClassForm();
+    document.querySelectorAll('nav button').forEach(button => {
+        button.classList.remove('active');
+        const moduleName = document.querySelector(`#${moduleId} h2`)?.textContent || '';
+        if (button.textContent === moduleName ||
+            (moduleId === 'dashboard' && button.textContent === 'ڈیش بورڈ') ||
+            (moduleId === 'students' && button.textContent === 'طلباء') ||
+            (moduleId === 'teachers' && button.textContent === 'اساتذہ') ||
+            (moduleId === 'classes' && button.textContent === 'کلاسیں') ||
+            (moduleId === 'feeStructures' && button.textContent === 'فیس اسٹرکچر') ||
+            (moduleId === 'fees' && button.textContent === 'فیس') ||
+            (moduleId === 'attendance' && button.textContent === 'حاضری') ||
+            (moduleId === 'results' && button.textContent === 'نتائج') ||
+            (moduleId === 'timetable' && button.textContent === 'ٹائم ٹیبل / ڈیوٹی روسٹر') ||
+            (moduleId === 'expenses' && button.textContent === 'اخراجات') ||
+            (moduleId === 'reports' && button.textContent === 'رپورٹس') ||
+            (moduleId === 'settings' && button.textContent === 'سیٹنگز')) {
+            button.classList.add('active');
         }
+    });
+
+    if (moduleId === 'students') loadStudents();
+    if (moduleId === 'teachers') loadTeachers();
+    if (moduleId === 'classes') loadClasses();
+    if (moduleId === 'fees') { loadStudentsForFeeSelect(); loadStudentFeeDetails(); }
+    if (moduleId === 'attendance') { loadClassesForAttendance(); loadStudentsForAttendance(); }
+    if (moduleId === 'results') { 
+        createResultsModule(); 
+        loadClassesForResults(); 
+        loadStudentsForResultCard(); 
+        loadExamsForResultCard(); 
+        loadPastResults(); 
+    }
+    if (moduleId === 'expenses') loadExpenses();
+    if (moduleId === 'feeStructures') { loadClassesForFeeStructureFilter(); loadFeeStructures(); }
+    if (moduleId === 'timetable') { loadClassesForTimetable(); loadTeachersForRoaster(); loadTimetable(); }
+    if (moduleId === 'dashboard') loadDashboardStats();
+    if (moduleId === 'reports') loadClassesForReportFilter();
+    if (moduleId === 'settings') loadPrintSettings();
+
+    loadClassesForStudentForm();
+    loadTeachersForClassForm();
+}
 
         async function getObjectStore(storeName, mode) {
             if (!db) await openDatabase();
@@ -2223,7 +2226,7 @@
          }
 
          resultClassSelect.addEventListener('change', loadStudentsAndSubjectsForResult);
-         resultSubjectSelect.addEventListener('change', loadStudentsAndSubjectsForResult); // Reload marks when subject changes
+         //resultSubjectSelect.addEventListener('change', loadStudentsAndSubjectsForResult); // Reload marks when subject changes
          resultExamNameInput.addEventListener('change', loadStudentsAndSubjectsForResult); // Reload marks when exam changes
 
 
@@ -3829,204 +3832,1070 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 });
 
-    </script>
-	
-	
-	<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tablesToEnhance = document.querySelectorAll('table');
-    const rowsPerPage = 5; // Adjust how many rows to show per page
 
-    tablesToEnhance.forEach((table, tableIndex) => {
-        const thead = table.querySelector('thead');
-        const tbody = table.querySelector('tbody');
 
-        // Ensure table has thead and tbody to be considered a data table
-        if (!thead || !tbody) {
-            console.warn('Table skipped: Missing thead or tbody.', table);
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Configuration for tables
+    const tableConfigs = [
+        { id: 'studentsTable', searchable: true, sortable: true, paginated: true },
+        { id: 'teachersTable', searchable: true, sortable: true, paginated: true },
+        { id: 'classesTable', searchable: true, sortable: true, paginated: true },
+        { id: 'feeStructuresTable', searchable: true, sortable: true, paginated: true },
+        { id: 'feeHistoryTable', searchable: true, sortable: true, paginated: true },
+        { id: 'attendanceTable', searchable: true, sortable: true, paginated: true },
+        { id: 'resultsEntryTable', searchable: true, sortable: true, paginated: true },
+        { id: 'classTimetableTable', searchable: true, sortable: true, paginated: true },
+        { id: 'teacherRoasterTable', searchable: true, sortable: true, paginated: true },
+        { id: 'expensesTable', searchable: true, sortable: true, paginated: true }
+    ];
+
+    // Utility function for debouncing
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    }
+
+    // Throttle function to limit MutationObserver triggers
+    function throttle(func, limit) {
+        let inThrottle;
+        return function (...args) {
+            if (!inThrottle) {
+                func(...args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    }
+
+    // Function to check if table is visible
+    function isTableVisible(table) {
+        return table && table.offsetParent !== null;
+    }
+
+    // Store initialized table IDs to prevent duplicates
+    const initializedTables = new Set();
+
+    // Function to initialize enhanced features for a table
+    function enhanceTable(config) {
+        const table = document.getElementById(config.id);
+        if (!table) {
+            console.warn(`Table with ID ${config.id} not found.`);
             return;
         }
 
-        const originalRows = Array.from(tbody.querySelectorAll('tr'));
-        let currentFilteredRows = [...originalRows];
-        let currentPage = 1;
-        let currentSortColumn = -1;
-        let isAscending = true;
-
-        // --- 1. Add Search Input ---
-        const searchInput = document.createElement('input');
-        searchInput.type = 'text';
-        searchInput.placeholder = 'Search this table...';
-        searchInput.style.marginBottom = '10px';
-        searchInput.style.padding = '5px';
-        searchInput.style.border = '1px solid #ccc';
-        searchInput.style.borderRadius = '4px';
-        // Assign a unique ID for potential future use (optional)
-        searchInput.id = `table-search-${tableIndex}`;
-        table.parentNode.insertBefore(searchInput, table);
-
-        // --- 2. Add Pagination Controls ---
-        const paginationControls = document.createElement('div');
-        paginationControls.style.marginTop = '10px';
-        paginationControls.style.display = 'flex';
-        paginationControls.style.justifyContent = 'space-between';
-        paginationControls.style.alignItems = 'center';
-
-        const prevButton = document.createElement('button');
-        prevButton.textContent = 'Previous';
-        prevButton.style.padding = '5px 10px';
-
-        const pageInfo = document.createElement('span');
-        pageInfo.style.fontSize = '0.9em';
-
-        const nextButton = document.createElement('button');
-        nextButton.textContent = 'Next';
-        nextButton.style.padding = '5px 10px';
-
-        paginationControls.appendChild(prevButton);
-        paginationControls.appendChild(pageInfo);
-        paginationControls.appendChild(nextButton);
-        // Insert after the table
-        table.parentNode.insertBefore(paginationControls, table.nextSibling);
-
-        // --- Function to Display Specific Page ---
-        function displayPage(page) {
-            currentPage = page;
-            tbody.innerHTML = ''; // Clear existing rows in tbody
-
-            const start = (page - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const rowsToShow = currentFilteredRows.slice(start, end);
-
-            rowsToShow.forEach(row => tbody.appendChild(row));
-
-            updatePaginationControls();
+        // Skip if table is not visible or already initialized
+        if (!isTableVisible(table) || initializedTables.has(config.id)) {
+            return;
         }
 
-        // --- Function to Update Pagination Buttons/Info ---
-        function updatePaginationControls() {
-            const totalPages = Math.ceil(currentFilteredRows.length / rowsPerPage);
-            pageInfo.textContent = `Page ${currentPage} of ${totalPages || 1}`;
-            prevButton.disabled = currentPage <= 1;
-            nextButton.disabled = currentPage >= totalPages;
-        }
+        try {
+            initializedTables.add(config.id);
 
-        // --- Event Listener for Search ---
-        searchInput.addEventListener('input', function() {
-            const searchTerm = searchInput.value.toLowerCase().trim();
+            const tbody = table.querySelector('tbody');
+            const headers = table.querySelectorAll('thead th');
+            let originalRows = Array.from(tbody.querySelectorAll('tr')); // Store original rows
+            let rows = [...originalRows]; // Working copy of rows
+            let currentPage = 1;
+            const rowsPerPage = 10;
 
-            currentFilteredRows = originalRows.filter(row => {
-                // Check if any cell in the row contains the search term
-                return Array.from(row.querySelectorAll('td')).some(td => {
-                    return (td.textContent || td.innerText || '').toLowerCase().includes(searchTerm);
-                });
-            });
-
-            // After filtering, re-apply sorting if a column was previously sorted
-            if (currentSortColumn !== -1) {
-                sortRows(currentSortColumn, false); // Re-sort without toggling direction
-            } else {
-                 // If no active sort, just display page 1 of filtered results
-                 displayPage(1);
+            // Check for existing controls container
+            let controlsContainer = table.parentNode.querySelector(`.controls-${config.id}`);
+            if (!controlsContainer) {
+                controlsContainer = document.createElement('div');
+                controlsContainer.className = `controls-${config.id}`;
+                controlsContainer.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                `;
+                table.parentNode.insertBefore(controlsContainer, table);
             }
-        });
 
-        // --- Event Listeners for Pagination Buttons ---
-        prevButton.addEventListener('click', function() {
-            if (currentPage > 1) {
-                displayPage(currentPage - 1);
-            }
-        });
+            // Search functionality
+            let searchInput;
+            if (config.searchable && !controlsContainer.querySelector('input')) {
+                searchInput = document.createElement('input');
+                searchInput.type = 'text';
+                searchInput.placeholder = 'تلاش کریں...';
+                searchInput.style.cssText = `
+                    padding: 8px;
+                    width: 200px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    font-family: 'Noto Nastaliq Urdu', sans-serif;
+                    font-size: 1.2em;
+                `;
+                controlsContainer.appendChild(searchInput);
 
-        nextButton.addEventListener('click', function() {
-            const totalPages = Math.ceil(currentFilteredRows.length / rowsPerPage);
-            if (currentPage < totalPages) {
-                displayPage(currentPage + 1);
-            }
-        });
-
-        // --- 3. Add Sorting Functionality ---
-        const headers = thead.querySelectorAll('th');
-        headers.forEach((th, columnIndex) => {
-            // Check if the header corresponds to an "Action" column or similar, skip if needed
-            // if (th.textContent.trim().toLowerCase() === 'عمل' || th.textContent.trim().toLowerCase() === 'action') {
-            //     return;
-            // }
-
-            th.style.cursor = 'pointer'; // Indicate it's clickable
-            th.addEventListener('click', function() {
-                sortRows(columnIndex, true); // Sort and toggle direction
-            });
-
-             // Add visual indicator (optional)
-             const sortIndicator = document.createElement('span');
-             sortIndicator.style.marginLeft = '5px';
-             sortIndicator.style.opacity = '0.5';
-             sortIndicator.textContent = '↕'; // Default indicator
-             th.appendChild(sortIndicator);
-
-        });
-
-         // --- Function to Sort Rows ---
-        function sortRows(columnIndex, toggleDirection) {
-            if (toggleDirection) {
-                 if (currentSortColumn === columnIndex) {
-                    isAscending = !isAscending; // Toggle direction if same column clicked
-                 } else {
-                    isAscending = true; // Default to ascending for new column
-                    // Reset indicator on previously sorted column
-                    if (currentSortColumn !== -1 && headers[currentSortColumn]) {
-                         const oldIndicator = headers[currentSortColumn].querySelector('span');
-                         if(oldIndicator) oldIndicator.textContent = '↕';
-                         if(oldIndicator) oldIndicator.style.opacity = '0.5';
+                searchInput.addEventListener('input', debounce(() => {
+                    try {
+                        const searchTerm = searchInput.value.toLowerCase();
+                        if (searchTerm) {
+                            rows = originalRows.filter(row =>
+                                Array.from(row.cells).some(cell =>
+                                    cell.textContent.toLowerCase().includes(searchTerm)
+                                )
+                            );
+                        } else {
+                            rows = [...originalRows]; // Restore original rows when search is cleared
+                        }
+                        currentPage = 1;
+                        renderTable();
+                    } catch (error) {
+                        console.error(`Error in search for ${config.id}:`, error);
                     }
-                 }
-                 currentSortColumn = columnIndex;
+                }, 500));
             }
 
+            // Sorting functionality
+            if (config.sortable) {
+                headers.forEach((th, index) => {
+                    // Skip action columns
+                    if (th.textContent.includes('عمل')) return;
 
-            currentFilteredRows.sort((rowA, rowB) => {
-                const cellA = rowA.cells[columnIndex] ? (rowA.cells[columnIndex].textContent || rowA.cells[columnIndex].innerText || '').trim() : '';
-                const cellB = rowB.cells[columnIndex] ? (rowB.cells[columnIndex].textContent || rowB.cells[columnIndex].innerText || '').trim() : '';
+                    th.style.cursor = 'pointer';
+                    th.dataset.sortDir = 'asc';
+                    th.addEventListener('click', () => {
+                        try {
+                            const sortDir = th.dataset.sortDir === 'asc' ? 'desc' : 'asc';
+                            th.dataset.sortDir = sortDir;
 
-                // Basic case-insensitive string comparison
-                const comparison = cellA.toLowerCase().localeCompare(cellB.toLowerCase());
+                            headers.forEach(h => {
+                                if (h !== th) h.dataset.sortDir = 'asc';
+                            });
 
-                return isAscending ? comparison : -comparison;
+                            rows.sort((a, b) => {
+                                let aText = a.cells[index].textContent.trim();
+                                let bText = b.cells[index].textContent.trim();
+
+                                const isNumeric = !isNaN(parseFloat(aText)) && isFinite(aText);
+                                const isDate = Date.parse(aText) && aText.includes('-');
+
+                                if (isDate) {
+                                    aText = new Date(aText).getTime();
+                                    bText = new Date(bText).getTime();
+                                } else if (isNumeric) {
+                                    aText = parseFloat(aText);
+                                    bText = parseFloat(bText);
+                                }
+
+                                return sortDir === 'asc'
+                                    ? aText > bText ? 1 : -1
+                                    : aText < bText ? 1 : -1;
+                            });
+
+                            renderTable();
+                        } catch (error) {
+                            console.error(`Error in sorting for ${config.id}:`, error);
+                        }
+                    });
+                });
+            }
+
+            // Pagination functionality
+            let paginationContainer;
+            if (config.paginated && !controlsContainer.querySelector('.pagination')) {
+                paginationContainer = document.createElement('div');
+                paginationContainer.className = 'pagination';
+                paginationContainer.style.cssText = `
+                    display: flex;
+                    gap: 5px;
+                    align-items: center;
+                `;
+                controlsContainer.appendChild(paginationContainer);
+            } else {
+                paginationContainer = controlsContainer.querySelector('.pagination');
+            }
+
+            // Function to render table rows
+            function renderTable() {
+                try {
+                    tbody.innerHTML = '';
+                    const start = (currentPage - 1) * rowsPerPage;
+                    const end = Math.min(start + rowsPerPage, rows.length);
+                    const paginatedRows = rows.slice(start, end);
+
+                    paginatedRows.forEach(row => tbody.appendChild(row));
+
+                    if (config.paginated) {
+                        updatePagination();
+                    }
+
+                    if (rows.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="${headers.length}">کوئی ڈیٹا نہیں ملا</td></tr>`;
+                    }
+                } catch (error) {
+                    console.error(`Error rendering table ${config.id}:`, error);
+                    tbody.innerHTML = `<tr><td colspan="${headers.length}">جدول رینڈر کرنے میں خرابی</td></tr>`;
+                }
+            }
+
+            // Function to update pagination controls
+            function updatePagination() {
+                try {
+                    paginationContainer.innerHTML = '';
+                    const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+                    const prevButton = document.createElement('button');
+                    prevButton.textContent = 'پچھلا';
+                    prevButton.style.cssText = `
+                        padding: 8px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        background-color: #5cb85c;
+                        color: white;
+                        cursor: ${currentPage === 1 ? 'not-allowed' : 'pointer'};
+                        font-family: 'Noto Nastaliq Urdu', sans-serif;
+                        font-size: 1.2em;
+                    `;
+                    prevButton.disabled = currentPage === 1;
+                    prevButton.addEventListener('click', () => {
+                        try {
+                            if (currentPage > 1) {
+                                currentPage--;
+                                renderTable();
+                            }
+                        } catch (error) {
+                            console.error(`Error in prev button for ${config.id}:`, error);
+                        }
+                    });
+                    paginationContainer.appendChild(prevButton);
+
+                    const pageNumbers = document.createElement('span');
+                    pageNumbers.textContent = `صفحہ ${currentPage} از ${totalPages}`;
+                    pageNumbers.style.cssText = `
+                        padding: 8px;
+                        font-family: 'Noto Nastaliq Urdu', sans-serif;
+                        font-size: 1.2em;
+                    `;
+                    paginationContainer.appendChild(pageNumbers);
+
+                    const nextButton = document.createElement('button');
+                    nextButton.textContent = 'اگلا';
+                    nextButton.style.cssText = `
+                        padding: 8px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        background-color: #5cb85c;
+                        color: white;
+                        cursor: ${currentPage === totalPages ? 'not-allowed' : 'pointer'};
+                        font-family: 'Noto Nastaliq Urdu', sans-serif;
+                        font-size: 1.2em;
+                    `;
+                    nextButton.disabled = currentPage === totalPages;
+                    nextButton.addEventListener('click', () => {
+                        try {
+                            if (currentPage < totalPages) {
+                                currentPage++;
+                                renderTable();
+                            }
+                        } catch (error) {
+                            console.error(`Error in next button for ${config.id}:`, error);
+                        }
+                    });
+                    paginationContainer.appendChild(nextButton);
+                } catch (error) {
+                    console.error(`Error updating pagination for ${config.id}:`, error);
+                }
+            }
+
+            // Initial render
+            renderTable();
+
+            // Throttled MutationObserver for dynamic updates
+            const observer = new MutationObserver(throttle(() => {
+                try {
+                    originalRows = Array.from(tbody.querySelectorAll('tr'));
+                    rows = [...originalRows];
+                    currentPage = 1;
+                    renderTable();
+                } catch (error) {
+                    console.error(`Error in MutationObserver for ${config.id}:`, error);
+                }
+            }, 1000));
+            observer.observe(tbody, { childList: true, subtree: true });
+        } catch (error) {
+            console.error(`Error initializing table ${config.id}:`, error);
+        }
+    }
+
+    // Initialize enhanced features for all configured tables
+    function initializeTables() {
+        tableConfigs.forEach(config => {
+            try {
+                enhanceTable(config);
+            } catch (error) {
+                console.error(`Error initializing table ${config.id}:`, error);
+            }
+        });
+    }
+
+    // Run initialization
+    try {
+        initializeTables();
+    } catch (error) {
+        console.error('Error during table initialization:', error);
+    }
+
+    // Re-run initialization when module changes (for dynamically loaded tables)
+    const originalShowModule = window.showModule || function() {};
+    window.showModule = function(moduleId) {
+        try {
+            originalShowModule(moduleId);
+            // Clear initialized tables to allow reinitialization
+            initializedTables.clear();
+            // Remove existing controls to prevent duplicates
+            document.querySelectorAll('[class^="controls-"]').forEach(container => container.remove());
+            setTimeout(initializeTables, 500); // Delay to allow DOM updates
+        } catch (error) {
+            console.error('Error in showModule override:', error);
+        }
+    };
+});
+
+
+
+document.querySelectorAll("*").forEach(el => {
+  if (el.childNodes.length) {
+    el.childNodes.forEach(node => {
+      if (node.nodeType === 3) {
+        let text = node.nodeValue;
+        // Replace known Hindi/Bengali words with Urdu
+        text = text.replace(/পিরিয়ড/g, 'پیریڈ');
+        text = text.replace(/شروع/g, 'شروع');
+        text = text.replace(/শেষ/g, 'ختم');
+        text = text.replace(/দিন/g, 'دن');
+
+        // Replace Bengali digits with Urdu digits
+        const bengaliToUrduDigits = {
+          '০': '۰', '১': '۱', '২': '۲', '৩': '۳', '৪': '۴',
+          '৫': '۵', '৬': '۶', '৭': '۷', '৮': '۸', '৯': '۹'
+        };
+        text = text.replace(/[০-৯]/g, m => bengaliToUrduDigits[m]);
+
+        node.nodeValue = text;
+      }
+    });
+  }
+});
+
+
+
+
+function createResultsModule() {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = ''; // Clear existing content
+
+    // Main heading
+    const h2 = document.createElement('h2');
+    h2.textContent = 'نتائج کا انتظام';
+    resultsDiv.appendChild(h2);
+
+    // Entry section
+    const entryH3 = document.createElement('h3');
+    entryH3.textContent = 'نتائج درج کریں';
+    resultsDiv.appendChild(entryH3);
+
+    const formGrid = document.createElement('div');
+    formGrid.className = 'form-grid';
+    formGrid.innerHTML = `
+        <div>
+            <label for="resultExamName">امتحان کا نام</label>
+            <input type="text" id="resultExamName" placeholder="مثال: Mid Term" required>
+        </div>
+        <div>
+            <label for="resultClass">کلاس</label>
+            <select id="resultClass" required onchange="loadStudentsAndSubjectsForResult()">
+                <option value="">-- کلاس منتخب کریں --</option>
+            </select>
+        </div>
+        <div>
+            <label for="resultSubject">مضمون</label>
+            <select id="resultSubject" required>
+                <option value="">-- مضمون منتخب کریں --</option>
+            </select>
+        </div>
+        <div>
+            <label for="resultDate">تاریخ</label>
+            <input type="date" id="resultDate" required>
+        </div>
+    `;
+    resultsDiv.appendChild(formGrid);
+
+    const entryTable = document.createElement('table');
+    entryTable.id = 'resultsEntryTable';
+    entryTable.innerHTML = `
+        <thead>
+            <tr>
+                <th>طالب علم</th>
+                <th>کل نمبر</th>
+                <th>حاصل کردہ نمبر</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="3">کلاس منتخب کریں۔</td></tr>
+        </tbody>
+    `;
+    resultsDiv.appendChild(entryTable);
+
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'محفوظ کریں';
+    saveButton.onclick = saveResults;
+    resultsDiv.appendChild(saveButton);
+
+    // View section
+    const viewH3 = document.createElement('h3');
+    viewH3.textContent = 'موجودہ نتائج دیکھیں';
+    resultsDiv.appendChild(viewH3);
+
+    const filterGrid = document.createElement('div');
+    filterGrid.className = 'form-grid';
+    filterGrid.innerHTML = `
+        <div>
+            <label for="filterResultExam">امتحان</label>
+            <select id="filterResultExam" onchange="loadPastResults()">
+                <option value="">-- تمام --</option>
+            </select>
+        </div>
+        <div>
+            <label for="filterResultStudent">طالب علم</label>
+            <select id="filterResultStudent" onchange="loadPastResults()">
+                <option value="">-- تمام --</option>
+            </select>
+        </div>
+        <div>
+            <label for="filterResultClass">کلاس</label>
+            <select id="filterResultClass" onchange="loadPastResults()">
+                <option value="">-- تمام --</option>
+            </select>
+        </div>
+    `;
+    resultsDiv.appendChild(filterGrid);
+
+    const pastTable = document.createElement('table');
+    pastTable.id = 'pastResultsTable';
+    pastTable.innerHTML = `
+        <thead>
+            <tr>
+                <th>امتحان</th>
+                <th>کلاس</th>
+                <th>طالب علم</th>
+                <th>مضمون</th>
+                <th>تاریخ</th>
+                <th>کل نمبر</th>
+                <th>حاصل کردہ نمبر</th>
+                <th>عمل</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="8">فلٹر منتخب کریں۔</td></tr>
+        </tbody>
+    `;
+    resultsDiv.appendChild(pastTable);
+
+    // Print section
+    const printH3 = document.createElement('h3');
+    printH3.textContent = 'رزلٹ کارڈ پرنٹ کریں';
+    resultsDiv.appendChild(printH3);
+
+    const printGrid = document.createElement('div');
+    printGrid.className = 'form-grid';
+    printGrid.innerHTML = `
+        <div>
+            <label for="resultCardStudent">طالب علم</label>
+            <select id="resultCardStudent" required>
+                <option value="">-- طالب علم منتخب کریں --</option>
+            </select>
+        </div>
+        <div>
+            <label for="resultCardExam">امتحان</label>
+            <select id="resultCardExam" required>
+                <option value="">-- امتحان منتخب کریں --</option>
+            </select>
+        </div>
+    `;
+    resultsDiv.appendChild(printGrid);
+
+    const printButton = document.createElement('button');
+    printButton.className = 'print';
+    printButton.textContent = 'پرنٹ کریں';
+    printButton.onclick = printResultCard;
+    resultsDiv.appendChild(printButton);
+
+    const printContainer = document.createElement('div');
+    printContainer.id = 'resultCardPrintContainer';
+    printContainer.className = 'printable';
+    printContainer.innerHTML = `
+        <h3>رزلٹ کارڈ</h3>
+        <p><strong>مدرسہ:</strong> <span id="printResultSchoolName"></span></p>
+        <p><strong>امتحان:</strong> <span id="printResultExamName"></span></p>
+        <p><strong>طالب علم:</strong> <span id="printResultStudentName"></span></p>
+        <p><strong>کلاس:</strong> <span id="printResultClassName"></span></p>
+        <table id="resultCardPrintTable" class="printable-content">
+            <thead>
+                <tr>
+                    <th>مضمون</th>
+                    <th>کل نمبر</th>
+                    <th>حاصل کردہ نمبر</th>
+                    <th>فیصد</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <p><strong>کل نمبر:</strong> <span id="printResultTotalMarks"></span></p>
+        <p><strong>حاصل کردہ:</strong> <span id="printResultTotalObtained"></span></p>
+        <p><strong>فیصد:</strong> <span id="printResultOverallPercentage"></span>%</p>
+        <p><strong>نتیجہ:</strong> <span id="printResultStatus"></span></p>
+    `;
+    resultsDiv.appendChild(printContainer);
+}
+
+async function loadClassesForResults() {
+    const classSelect = document.getElementById('resultClass');
+    const filterClassSelect = document.getElementById('filterResultClass');
+    classSelect.innerHTML = '<option value="">-- کلاس منتخب کریں --</option>';
+    filterClassSelect.innerHTML = '<option value="">-- تمام --</option>';
+    try {
+        const classes = await getAll(STORE_CLASSES);
+        classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(cls => {
+            const option1 = document.createElement('option');
+            option1.value = cls.id;
+            option1.textContent = cls.name;
+            classSelect.appendChild(option1);
+            const option2 = option1.cloneNode(true);
+            filterClassSelect.appendChild(option2);
+        });
+    } catch (error) {
+        console.error("Error loading classes:", error);
+    }
+}
+
+async function loadStudentsForResultCard() {
+    const studentSelect = document.getElementById('resultCardStudent');
+    const filterStudentSelect = document.getElementById('filterResultStudent');
+    studentSelect.innerHTML = '<option value="">-- طالب علم منتخب کریں --</option>';
+    filterStudentSelect.innerHTML = '<option value="">-- تمام --</option>';
+    try {
+        const students = await getAll(STORE_STUDENTS);
+        students.sort((a, b) => a.name.localeCompare(b.name)).forEach(student => {
+            const option1 = document.createElement('option');
+            option1.value = student.id;
+            option1.textContent = student.name;
+            studentSelect.appendChild(option1);
+            const option2 = option1.cloneNode(true);
+            filterStudentSelect.appendChild(option2);
+        });
+    } catch (error) {
+        console.error("Error loading students:", error);
+    }
+}
+
+async function loadExamsForResultCard() {
+    const examSelect = document.getElementById('resultCardExam');
+    const filterExamSelect = document.getElementById('filterResultExam');
+    examSelect.innerHTML = '<option value="">-- امتحان منتخب کریں --</option>';
+    filterExamSelect.innerHTML = '<option value="">-- تمام --</option>';
+    try {
+        const results = await getAll(STORE_RESULTS);
+        const exams = [...new Set(results.map(r => r.examName))].sort();
+        exams.forEach(exam => {
+            const option1 = document.createElement('option');
+            option1.value = exam;
+            option1.textContent = exam;
+            examSelect.appendChild(option1);
+            const option2 = option1.cloneNode(true);
+            filterExamSelect.appendChild(option2);
+        });
+    } catch (error) {
+        console.error("Error loading exams:", error);
+    }
+}
+
+async function loadStudentsAndSubjectsForResult() {
+    const classId = document.getElementById('resultClass').value;
+    const tableBody = document.getElementById('resultsEntryTable').querySelector('tbody');
+    const subjectSelect = document.getElementById('resultSubject');
+
+    tableBody.innerHTML = '<tr><td colspan="3">لوڈ ہو رہا ہے...</td></tr>';
+    subjectSelect.innerHTML = '<option value="">-- مضمون منتخب کریں --</option>';
+
+    if (!classId) {
+        tableBody.innerHTML = '<tr><td colspan="3">کلاس منتخب کریں۔</td></tr>';
+        return;
+    }
+
+    try {
+        const cls = await getById(STORE_CLASSES, parseInt(classId));
+        if (!cls) {
+            tableBody.innerHTML = '<tr><td colspan="3">کلاس نہیں ملی۔</td></tr>';
+            return;
+        }
+
+        const students = await getAll(STORE_STUDENTS, 'classId', parseInt(classId));
+        students.sort((a, b) => a.name.localeCompare(b.name));
+
+        // Handle subjects (string or array)
+        let subjects = [];
+        if (cls.subjects) {
+            if (typeof cls.subjects === 'string') {
+                subjects = cls.subjects.split(',').map(s => s.trim()).filter(s => s);
+            } else if (Array.isArray(cls.subjects)) {
+                subjects = cls.subjects.filter(s => s).map(s => s.trim());
+            }
+        }
+
+        subjects.sort().forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject;
+            option.textContent = subject;
+            subjectSelect.appendChild(option);
+        });
+
+        tableBody.innerHTML = '';
+        if (students.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="3">اس کلاس میں کوئی طالب علم نہیں۔</td></tr>';
+            return;
+        }
+
+        students.forEach(student => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td><input type="number" class="totalMarks" min="0" value="100"></td>
+                <td><input type="number" class="obtainedMarks" min="0" max="100" value="0"></td>
+            `;
+            row.dataset.studentId = student.id;
+        });
+    } catch (error) {
+        console.error("Error loading students/subjects:", error);
+        tableBody.innerHTML = '<tr><td colspan="3">خرابی: ڈیٹا لوڈ نہیں ہو سکا۔</td></tr>';
+    }
+}
+
+async function saveResults() {
+    const examName = document.getElementById('resultExamName').value.trim();
+    const classId = parseInt(document.getElementById('resultClass').value);
+    const subject = document.getElementById('resultSubject').value;
+    const date = document.getElementById('resultDate').value;
+
+    if (!examName || !classId || !subject || !date) {
+        alert('تمام فیلڈز پُر کریں۔');
+        return;
+    }
+
+    const tableBody = document.getElementById('resultsEntryTable').querySelector('tbody');
+    const rows = tableBody.querySelectorAll('tr');
+
+    try {
+        for (const row of rows) {
+            const studentId = parseInt(row.dataset.studentId);
+            const totalMarks = parseInt(row.querySelector('.totalMarks').value) || 0;
+            const obtainedMarks = parseInt(row.querySelector('.obtainedMarks').value) || 0;
+
+            if (obtainedMarks > totalMarks) {
+                alert('حاصل کردہ نمبر کل نمبروں سے زیادہ نہیں ہو سکتے۔');
+                return;
+            }
+
+            const result = { examName, classId, subject, studentId, date, totalMarks, obtainedMarks };
+            const existing = await getAll(STORE_RESULTS, 'exam_class_subject_student', 
+                [examName, classId, subject, studentId]);
+
+            if (existing.length > 0) {
+                result.id = existing[0].id;
+                await updateData(STORE_RESULTS, result);
+            } else {
+                await addData(STORE_RESULTS, result);
+            }
+        }
+
+        alert('نتائج محفوظ ہو گئے۔');
+        loadStudentsAndSubjectsForResult();
+        loadPastResults();
+        loadExamsForResultCard();
+    } catch (error) {
+        console.error("Error saving results:", error);
+        alert('خرابی: ' + error.message);
+    }
+}
+
+async function loadPastResults() {
+    const tableBody = document.getElementById('pastResultsTable').querySelector('tbody');
+    const examName = document.getElementById('filterResultExam').value;
+    const studentId = parseInt(document.getElementById('filterResultStudent').value) || null;
+    const classId = parseInt(document.getElementById('filterResultClass').value) || null;
+
+    tableBody.innerHTML = '<tr><td colspan="8">لوڈ ہو رہا ہے...</td></tr>';
+
+    try {
+        let results = await getAll(STORE_RESULTS);
+        results = results.filter(r => 
+            (!examName || r.examName === examName) && 
+            (!studentId || r.studentId === studentId) && 
+            (!classId || r.classId === classId)
+        );
+
+        tableBody.innerHTML = '';
+        if (results.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="8">کوئی نتائج نہیں۔</td></tr>';
+            return;
+        }
+
+        for (const r of results.sort((a, b) => new Date(b.date) - new Date(a.date))) {
+            const className = await getClassName(r.classId);
+            const studentName = await getStudentName(r.studentId);
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${r.examName}</td>
+                <td>${className}</td>
+                <td>${studentName}</td>
+                <td>${r.subject}</td>
+                <td>${r.date}</td>
+                <td>${r.totalMarks}</td>
+                <td>${r.obtainedMarks}</td>
+                <td>
+                    <button class="edit" onclick="editResult(${r.id})">ترمیم</button>
+                    <button class="delete" onclick="deleteResult(${r.id})">حذف</button>
+                </td>
+            `;
+        }
+    } catch (error) {
+        console.error("Error loading past results:", error);
+        tableBody.innerHTML = '<tr><td colspan="8">خرابی۔</td></tr>';
+    }
+}
+
+async function editResult(id) {
+    try {
+        const result = await getById(STORE_RESULTS, id);
+        document.getElementById('resultExamName').value = result.examName;
+        document.getElementById('resultClass').value = result.classId;
+        document.getElementById('resultDate').value = result.date;
+        await loadStudentsAndSubjectsForResult();
+        document.getElementById('resultSubject').value = result.subject;
+
+        const row = document.getElementById('resultsEntryTable')
+            .querySelector(`tr[data-student-id="${result.studentId}"]`);
+        row.querySelector('.totalMarks').value = result.totalMarks;
+        row.querySelector('.obtainedMarks').value = result.obtainedMarks;
+
+        showModule('results');
+        window.scrollTo(0, 0);
+    } catch (error) {
+        console.error("Error editing result:", error);
+        alert('ترمیم میں خرابی۔');
+    }
+}
+
+async function deleteResult(id) {
+    if (!confirm('کیا آپ اس نتیجہ کو حذف کرنا چاہتے ہیں؟')) return;
+
+    try {
+        await deleteData(STORE_RESULTS, id);
+        alert('نتیجہ حذف ہو گیا۔');
+        loadPastResults();
+        loadExamsForResultCard();
+    } catch (error) {
+        console.error("Error deleting result:", error);
+        alert('حذف کرنے میں خرابی۔');
+    }
+}
+
+async function printResultCard() {
+    const studentId = parseInt(document.getElementById('resultCardStudent').value);
+    const examName = document.getElementById('resultCardExam').value;
+
+    if (!studentId || !examName) {
+        alert('طالب علم اور امتحان منتخب کریں۔');
+        return;
+    }
+
+    try {
+        const student = await getById(STORE_STUDENTS, studentId);
+        const results = await getAll(STORE_RESULTS);
+        const filteredResults = results.filter(r => r.studentId === studentId && r.examName === examName);
+
+        if (filteredResults.length === 0) {
+            alert('کوئی نتائج نہیں ملے۔');
+            return;
+        }
+
+        const classId = filteredResults[0].classId;
+        const className = await getClassName(classId);
+        const schoolSetting = await getById(STORE_SETTINGS, 'schoolName');
+        const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
+
+        const tableBody = document.getElementById('resultCardPrintTable').querySelector('tbody');
+        tableBody.innerHTML = '';
+
+        let totalMarks = 0;
+        let totalObtained = 0;
+
+        filteredResults.sort((a, b) => a.subject.localeCompare(b.subject)).forEach(result => {
+            const percentage = ((result.obtainedMarks / result.totalMarks) * 100).toFixed(2);
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${result.subject}</td>
+                <td>${result.totalMarks}</td>
+                <td>${result.obtainedMarks}</td>
+                <td>${percentage}%</td>
+            `;
+            totalMarks += result.totalMarks;
+            totalObtained += result.obtainedMarks;
+        });
+
+        const overallPercentage = ((totalObtained / totalMarks) * 100).toFixed(2);
+        const status = overallPercentage >= 33 ? 'کامیاب' : 'ناکام';
+
+        document.getElementById('printResultSchoolName').textContent = schoolName;
+        document.getElementById('printResultExamName').textContent = examName;
+        document.getElementById('printResultStudentName').textContent = student.name;
+        document.getElementById('printResultClassName').textContent = className;
+        document.getElementById('printResultTotalMarks').textContent = totalMarks;
+        document.getElementById('printResultTotalObtained').textContent = totalObtained;
+        document.getElementById('printResultOverallPercentage').textContent = overallPercentage;
+        document.getElementById('printResultStatus').textContent = status;
+
+        window.print();
+    } catch (error) {
+        console.error("Error printing result card:", error);
+        alert('پرنٹ میں خرابی: ' + error.message);
+    }
+}
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Function to convert printable area to image and print
+    async function printContent(containerId) {
+        try {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                alert('پرنٹ ایریا نہیں ملا۔');
+                return;
+            }
+
+            // Show the printable container temporarily for rendering
+            container.style.display = 'block';
+
+            // Use html2canvas to capture the printable area
+            const canvas = await html2canvas(container, {
+                scale: 2, // Higher scale for better quality
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
             });
 
-             // Update sort indicators
-             headers.forEach((th, index) => {
-                 const indicator = th.querySelector('span');
-                 if (indicator) {
-                     if (index === currentSortColumn) {
-                         indicator.textContent = isAscending ? '▲' : '▼';
-                         indicator.style.opacity = '1';
-                     } else {
-                         indicator.textContent = '↕';
-                          indicator.style.opacity = '0.5';
-                     }
-                 }
-             });
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                alert('پرنٹ ونڈو کھولنے میں ناکامی۔ براہ کرم پاپ اپ بلاکر چیک کریں۔');
+                container.style.display = 'none';
+                return;
+            }
 
-            displayPage(1); // Go back to page 1 after sorting
+            // Write the image to the new window
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>پرنٹ</title>
+                    <style>
+                        body { margin: 0; display: flex; justify-content: center; align-items: center; }
+                        img { max-width: 100%; height: auto; }
+                    </style>
+                </head>
+                <body>
+                    <img src="${canvas.toDataURL('image/png')}" onload="window.print(); window.close();" />
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+
+            // Hide the container again
+            container.style.display = 'none';
+        } catch (error) {
+            console.error('پرنٹنگ میں خرابی:', error);
+            alert('پرنٹنگ میں خرابی: ' + error.message);
+        }
+    }
+
+    // Override printAttendanceRegister
+    window.printAttendanceRegister = async function() {
+        const attendanceDate = document.getElementById('attendanceDate').value;
+        const classId = document.getElementById('attendanceClass').value;
+        if (!attendanceDate || !classId) {
+            alert('براہ کرم تاریخ اور کلاس منتخب کریں۔');
+            return;
         }
 
+        try {
+            const className = await getClassName(parseInt(classId));
+            const students = await getAll(STORE_STUDENTS, 'classId', parseInt(classId));
+            const attendanceRecords = await getAll(STORE_ATTENDANCE, 'date_classId', [attendanceDate, parseInt(classId)]);
 
-        // --- Initial Display ---
-        if (originalRows.length > 0) {
-             displayPage(1); // Display the first page initially
-        } else {
-            // Handle empty table case
-            tbody.innerHTML = `<tr><td colspan="${headers.length || 1}" style="text-align:center; padding:10px;">No data available in table</td></tr>`;
-             updatePaginationControls(); // Show "Page 1 of 1" even if empty
-             prevButton.disabled = true;
-             nextButton.disabled = true;
+            const tableBody = document.getElementById('attendancePrintTable').querySelector('tbody');
+            tableBody.innerHTML = '';
+            students.sort((a, b) => a.name.localeCompare(b.name)).forEach(student => {
+                const record = attendanceRecords.find(r => r.studentId === student.id);
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${student.admissionNo}</td>
+                    <td>${student.name}</td>
+                    <td>${record && record.status === 'Present' ? 'حاضر' : 'غیر حاضر'}</td>
+                `;
+            });
+
+            document.getElementById('printAttendanceDate').textContent = attendanceDate;
+            document.getElementById('printAttendanceClass').textContent = className;
+
+            await printContent('attendancePrintContainer');
+        } catch (error) {
+            console.error("Error printing attendance:", error);
+            alert('حاضری پرنٹ کرنے میں خرابی: ' + error.message);
+        }
+    };
+
+    // Override printResultCard
+    window.printResultCard = async function() {
+        const studentId = parseInt(document.getElementById('resultCardStudent').value);
+        const examName = document.getElementById('resultCardExam').value;
+
+        if (!studentId || !examName) {
+            alert('طالب علم اور امتحان منتخب کریں۔');
+            return;
         }
 
-    }); // End forEach table
+        try {
+            const student = await getById(STORE_STUDENTS, studentId);
+            const results = await getAll(STORE_RESULTS);
+            const filteredResults = results.filter(r => r.studentId === studentId && r.examName === examName);
+
+            if (filteredResults.length === 0) {
+                alert('کوئی نتائج نہیں ملے۔');
+                return;
+            }
+
+            const classId = filteredResults[0].classId;
+            const className = await getClassName(classId);
+            const schoolSetting = await getById(STORE_SETTINGS, 'schoolName');
+            const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
+
+            const tableBody = document.getElementById('resultCardPrintTable').querySelector('tbody');
+            tableBody.innerHTML = '';
+
+            let totalMarks = 0;
+            let totalObtained = 0;
+
+            filteredResults.sort((a, b) => a.subject.localeCompare(b.subject)).forEach(result => {
+                const percentage = ((result.obtainedMarks / result.totalMarks) * 100).toFixed(2);
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${result.subject}</td>
+                    <td>${result.totalMarks}</td>
+                    <td>${result.obtainedMarks}</td>
+                    <td>${percentage}%</td>
+                `;
+                totalMarks += result.totalMarks;
+                totalObtained += result.obtainedMarks;
+            });
+
+            const overallPercentage = ((totalObtained / totalMarks) * 100).toFixed(2);
+            const status = overallPercentage >= 33 ? 'کامیاب' : 'ناکام';
+
+            document.getElementById('printResultSchoolName').textContent = schoolName;
+            document.getElementById('printResultExamName').textContent = examName;
+            document.getElementById('printResultStudentName').textContent = student.name;
+            document.getElementById('printResultClassName').textContent = className;
+            document.getElementById('printResultTotalMarks').textContent = totalMarks;
+            document.getElementById('printResultTotalObtained').textContent = totalObtained;
+            document.getElementById('printResultOverallPercentage').textContent = overallPercentage;
+            document.getElementById('printResultStatus').textContent = status;
+
+            await printContent('resultCardPrintContainer');
+        } catch (error) {
+            console.error("Error printing result card:", error);
+            alert('رزلٹ کارڈ پرنٹ کرنے میں خرابی: ' + error.message);
+        }
+    };
+
+    // Override generateReceipt
+    window.generateReceipt = async function() {
+        const studentId = parseInt(document.getElementById('feeStudentSelect').value);
+        const date = document.getElementById('feeCollectionDate').value;
+        const feeType = document.getElementById('feeCollectionType').value;
+        const paidAmount = parseInt(document.getElementById('feePaidAmount').value);
+        const discount = parseInt(document.getElementById('feeDiscount').value) || 0;
+        const method = document.getElementById('feePaymentMethod').value;
+        const notes = document.getElementById('feeNotes').value;
+
+        if (!studentId || !date || !feeType || !paidAmount) {
+            alert('تمام ضروری فیلڈز پُر کریں۔');
+            return;
+        }
+
+        try {
+            const student = await getById(STORE_STUDENTS, studentId);
+            const className = await getClassName(student.classId);
+            const receiptId = 'R' + Date.now();
+
+            document.getElementById('receiptId').textContent = receiptId;
+            document.getElementById('receiptDate').textContent = date;
+            document.getElementById('receiptStudentName').textContent = student.name;
+            document.getElementById('receiptStudentClass').textContent = className;
+            document.getElementById('receiptFeeType').textContent = feeType;
+            document.getElementById('receiptPaidAmount').textContent = paidAmount.toLocaleString();
+            document.getElementById('receiptDiscount').textContent = discount.toLocaleString();
+            document.getElementById('receiptMethod').textContent = method;
+            document.getElementById('receiptNotes').textContent = notes || 'کوئی نوٹس نہیں';
+
+            await printContent('feeReceiptContainer');
+        } catch (error) {
+            console.error("Error generating receipt:", error);
+            alert('رسید بنانے میں خرابی: ' + error.message);
+        }
+    };
+
+    // Override printReport
+    window.printReport = async function() {
+        const reportType = document.getElementById('reportType').value;
+        if (!reportType) {
+            alert('براہ کرم رپورٹ کی قسم منتخب کریں۔');
+            return;
+        }
+
+        try {
+            const content = document.getElementById('reportContent');
+            if (content.innerHTML.includes('رپورٹ کا مواد یہاں ظاہر ہوگا')) {
+                alert('براہ کرم پہلے رپورٹ بنائیں۔');
+                return;
+            }
+
+            await printContent('reportOutput');
+        } catch (error) {
+            console.error("Error printing report:", error);
+            alert('رپورٹ پرنٹ کرنے میں خرابی: ' + error.message);
+        }
+    };
 });
 </script>
-
+	
+	
+	
 </body>
 </html>
