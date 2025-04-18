@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدرسہ مینجمنٹ سسٹم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- بنیادی اسٹائل --- */
+        :root {
+            --primary-color: #006400; /* Dark Green */
+            --secondary-color: #f4f4f4; /* Light Gray */
+            --text-color: #333;
+            --border-color: #ccc;
+            --input-bg: transparent; /* Transparent background for inputs */
+            --input-text-color: #000; /* Black text for inputs */
+            --register-line-color: #e0e0e0; /* Light gray lines for register look */
+            --button-bg: var(--primary-color);
+            --button-text: #fff;
+            --button-hover-bg: #004d00; /* Darker Green */
+        }
+
+        body {
+            font-family: 'Noto Nastaliq Urdu', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.8; /* Improved readability for Urdu */
+            font-size: 16px; /* Base font size */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* --- نیویگیشن --- */
+        nav {
+            background-color: var(--primary-color);
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        nav ul li button {
+            background: none;
+            border: none;
+            color: var(--button-text);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav ul li button:hover, nav ul li button.active {
+            background-color: var(--button-hover-bg);
+        }
+
+        /* --- ماڈیول سیکشنز --- */
+        .module-section {
+            display: none; /* Initially hide all sections */
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        .module-section.active {
+            display: block; /* Show active section */
+        }
+
+        /* --- فارم اور ان پٹ اسٹائل (رجسٹر لُک) --- */
+        form {
+            display: grid;
+            gap: 15px; /* Spacing between form elements */
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="tel"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px 5px; /* Padding for text */
+            font-family: 'Noto Nastaliq Urdu', 'Courier New', monospace; /* Monospace/Nastaliq for printed look */
+            font-size: 1em;
+            color: var(--input-text-color);
+            background-color: var(--input-bg);
+            border: none; /* No border */
+            border-bottom: 1px solid var(--register-line-color); /* Underline like a register */
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+            border-radius: 0; /* Sharp corners */
+            direction: rtl; /* Ensure input direction is RTL */
+            text-align: right; /* Align text to the right */
+        }
+         input[type="file"] {
+            width: 100%;
+            padding: 8px 5px;
+            font-family: inherit;
+            font-size: 1em;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+         }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-bottom-color: var(--primary-color); /* Highlight bottom border on focus */
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        button[type="submit"], .btn {
+            padding: 12px 25px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+
+        button[type="submit"]:hover, .btn:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d; /* Gray */
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-danger {
+             background-color: #dc3545; /* Red */
+        }
+        .btn-danger:hover {
+             background-color: #c82333;
+        }
+
+        /* --- ٹیبل اسٹائل --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: right;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--button-text);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--secondary-color);
+        }
+
+        /* --- پرنٹ اسٹائل --- */
+        @media print {
+            body {
+                font-family: 'Noto Nastaliq Urdu', 'Times New Roman', serif; /* Serif font for print */
+                background-color: #fff;
+                color: #000;
+                font-size: 12pt; /* Standard print size */
+            }
+
+            nav, .no-print, button, .btn {
+                display: none !important; /* Hide navigation and buttons */
+            }
+
+            .container, .module-section {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+
+            h1, h2, h3 {
+                 color: #000;
+                 text-align: center;
+                 margin-bottom: 15px;
+                 font-size: 16pt;
+            }
+             h1 { font-size: 18pt; }
+
+            table {
+                width: 100%;
+                border: 1px solid #000; /* Solid black border for table */
+                font-size: 11pt;
+            }
+
+            th, td {
+                border: 1px solid #000; /* Solid black border for cells */
+                padding: 5px;
+                color: #000;
+                background-color: #fff !important; /* Ensure no background color */
+            }
+            th {
+                font-weight: bold;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            input[type="tel"],
+            input[type="email"],
+            textarea,
+            select {
+                border: none !important;
+                border-bottom: 1px dotted #000 !important; /* Dotted line for print */
+                padding: 2px 0 !important;
+                background-color: transparent !important;
+                color: #000 !important;
+                font-family: inherit !important;
+                font-size: 11pt !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: exact; /* Ensure styles are printed */
+                 color-adjust: exact;
+            }
+             /* Style specific printable sections like receipts, ID cards etc. here */
+             .printable-receipt, .printable-id-card, .printable-register {
+                 border: 1px solid #000;
+                 padding: 15px;
+                 margin-bottom: 20px;
+             }
+             .printable-header {
+                 text-align: center;
+                 margin-bottom: 20px;
+                 border-bottom: 1px solid #000;
+                 padding-bottom: 10px;
+             }
+             .printable-header img {
+                 max-width: 80px;
+                 max-height: 80px;
+                 display: block;
+                 margin: 0 auto 10px;
+             }
+             .printable-footer {
+                 margin-top: 30px;
+                 text-align: center;
+                 font-size: 10pt;
+             }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header style="text-align: center; margin-bottom: 20px;">
+            <img id="madrasaLogoPreview" src="https://placehold.co/100x100/eee/ccc?text=لوگو" alt="مدرسہ لوگو" style="max-width: 100px; max-height: 100px; border-radius: 50%; margin-bottom: 10px;">
+            <h1 id="madrasaNamePreview">مدرسہ کا نام</h1>
+            <p id="madrasaAddressPreview" style="margin: 5px 0;">پتہ</p>
+            <p id="madrasaPhonePreview" style="margin: 5px 0;">فون نمبر</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><button onclick="showModule('settings')">ترتیبات</button></li>
+                <li><button onclick="showModule('students')">طلباء</button></li>
+                <li><button onclick="showModule('teachers')">اساتذہ</button></li>
+                <li><button onclick="showModule('classes')">کلاسیں/مضامین</button></li>
+                <li><button onclick="showModule('attendance')">حاضری</button></li>
+                <li><button onclick="showModule('exams')">امتحانات/نتائج</button></li>
+                <li><button onclick="showModule('fees')">فیس</button></li>
+                <li><button onclick="showModule('salary')">تنخواہ</button></li>
+                <li><button onclick="showModule('ledger')">کھاتہ</button></li>
+                <li><button onclick="showModule('reports')">رپورٹس</button></li>
+            </ul>
+        </nav>
+
+        <main id="mainContent">
+            <section id="settings" class="module-section">
+                <h2><span class="icon">⚙️</span> ترتیبات</h2>
+                <form id="settingsForm">
+                    <h3>مدرسہ معلومات</h3>
+                    <div>
+                        <label for="madrasaName">مدرسہ کا نام:</label>
+                        <input type="text" id="madrasaName" required>
+                    </div>
+                    <div>
+                        <label for="madrasaAddress">پتہ:</label>
+                        <textarea id="madrasaAddress" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label for="madrasaPhone">فون نمبر:</label>
+                        <input type="tel" id="madrasaPhone">
+                    </div>
+                    <div>
+                        <label for="madrasaLogo">لوگو (اختیاری):</label>
+                        <input type="file" id="madrasaLogo" accept="image/*">
+                        <small>موجودہ لوگو کو تبدیل کرنے کے لیے نئی فائل منتخب کریں۔</small>
+                    </div>
+
+                    <h3>تعلیمی سال</h3>
+                    <div>
+                        <label for="academicYearStart">آغاز:</label>
+                        <input type="date" id="academicYearStart">
+                    </div>
+                     <div>
+                        <label for="academicYearEnd">اختتام:</label>
+                        <input type="date" id="academicYearEnd">
+                    </div>
+
+                    <h3>ڈیفالٹ فیس اور تنخواہ</h3>
+                     <div>
+                        <label for="defaultFee">ڈیفالٹ ماہانہ فیس (مثال):</label>
+                        <input type="number" id="defaultFee" placeholder="مثال: 1000">
+                    </div>
+                     <div>
+                        <label for="defaultSalary">ڈیفالٹ ماہانہ تنخواہ (مثال):</label>
+                        <input type="number" id="defaultSalary" placeholder="مثال: 15000">
+                    </div>
+
+                     <h3>رسید/رپورٹ پرنٹنگ</h3>
+                     <div>
+                        <label for="printSignature">مہر/دستخط (تصویر اپلوڈ):</label>
+                        <input type="file" id="printSignature" accept="image/*">
+                         <img id="signaturePreview" src="https://placehold.co/150x50/eee/ccc?text=دستخط" alt="دستخط پیش منظر" style="max-width: 150px; max-height: 50px; margin-top: 5px;">
+                    </div>
+
+
+                    <button type="submit" class="btn">محفوظ کریں</button>
+                </form>
+
+                <hr style="margin: 30px 0;">
+
+                <h3><span class="icon">💾</span> ڈیٹا مینجمنٹ</h3>
+                 <div style="display: flex; justify-content: space-around; gap: 15px;" class="no-print">
+                    <button onclick="exportData()" class="btn btn-secondary"><span class="icon">📤</span> مکمل ڈیٹا ایکسپورٹ</button>
+                    <div>
+                        <label for="importFile" class="btn btn-secondary" style="cursor: pointer;"><span class="icon">📥</span> مکمل ڈیٹا امپورٹ</label>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                        <small style="display: block; text-align: center; margin-top: 5px;">صرف .json فائل منتخب کریں۔</small>
+                    </div>
+                     <button onclick="backupData()" class="btn btn-secondary"><span class="icon">🔄</span> بیک اپ بنائیں</button>
+                </div>
+                 <p id="importExportStatus" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+            </section>
+
+            <section id="students" class="module-section">
+                <h2><span class="icon">👨‍🎓</span> طلباء مینجمنٹ</h2>
+
+                <form id="studentForm">
+                    <input type="hidden" id="studentId"> <div>
+                        <label for="studentName">نام:</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div>
+                        <label for="fatherName">والد کا نام:</label>
+                        <input type="text" id="fatherName" required>
+                    </div>
+                    <div>
+                        <label for="dob">تاریخ پیدائش:</label>
+                        <input type="date" id="dob">
+                    </div>
+                    <div>
+                        <label for="admissionNumber">داخلہ نمبر:</label>
+                        <input type="text" id="admissionNumber" required>
+                    </div>
+                    <div>
+                        <label for="studentClass">کلاس:</label>
+                        <select id="studentClass" required>
+                            <option value="">کلاس منتخب کریں</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="contactNumber">رابطہ نمبر:</label>
+                        <input type="tel" id="contactNumber">
+                    </div>
+                     <div>
+                        <label for="studentAddress">پتہ:</label>
+                        <textarea id="studentAddress" rows="2"></textarea>
+                    </div>
+                     <div>
+                        <label for="studentStatus">اسٹیٹس:</label>
+                        <select id="studentStatus" required>
+                            <option value="active" selected>فعال</option>
+                            <option value="transferred">منتقل شدہ</option>
+                            <option value="dropout">فارغ التحصیل/خارج شدہ</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">طالب علم شامل/اپ ڈیٹ کریں</button>
+                    <button type="button" onclick="resetStudentForm()" class="btn btn-secondary">فارم ری سیٹ</button>
+                </form>
+
+                <hr>
+
+                <h3>طلباء کی فہرست</h3>
+                 <div style="margin-bottom: 15px; display: flex; gap: 10px;" class="no-print">
+                    <label for="filterStudentClass">کلاس کے لحاظ سے فلٹر:</label>
+                    <select id="filterStudentClass" onchange="renderStudentList()">
+                        <option value="">تمام کلاسیں</option>
+                        </select>
+                    <label for="filterStudentStatus">اسٹیٹس کے لحاظ سے فلٹر:</label>
+                    <select id="filterStudentStatus" onchange="renderStudentList()">
+                        <option value="">تمام اسٹیٹس</option>
+                        <option value="active">فعال</option>
+                        <option value="transferred">منتقل شدہ</option>
+                        <option value="dropout">فارغ التحصیل/خارج شدہ</option>
+                    </select>
+                 </div>
+
+                <table id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>والد کا نام</th>
+                            <th>داخلہ نمبر</th>
+                            <th>کلاس</th>
+                            <th>اسٹیٹس</th>
+                            <th>کاروائیاں</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        </tbody>
+                </table>
+                 <button onclick="printStudentList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+
+                 <div id="printableIdCardArea" style="display: none;">
+                     </div>
+
+            </section>
+
+            <section id="teachers" class="module-section"><h2><span class="icon">👨‍🏫</span> اساتذہ مینجمنٹ (جلد آرہا ہے)</h2></section>
+            <section id="classes" class="module-section"><h2><span class="icon">📚</span> کلاسیں/مضامین (جلد آرہا ہے)</h2></section>
+            <section id="attendance" class="module-section"><h2><span class="icon"> P </span> حاضری (جلد آرہا ہے)</h2></section>
+            <section id="exams" class="module-section"><h2><span class="icon">📊</span> امتحانات/نتائج (جلد آرہا ہے)</h2></section>
+            <section id="fees" class="module-section"><h2><span class="icon">💰</span> فیس مینجمنٹ (جلد آرہا ہے)</h2></section>
+            <section id="salary" class="module-section"><h2><span class="icon">💵</span> تنخواہ مینجمنٹ (جلد آرہا ہے)</h2></section>
+            <section id="ledger" class="module-section"><h2><span class="icon">📒</span> کھاتہ سسٹم (جلد آرہا ہے)</h2></section>
+            <section id="reports" class="module-section"><h2><span class="icon">📄</span> رپورٹس (جلد آرہا ہے)</h2></section>
+
+        </main>
+
+        <footer style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 0.9em;" class="no-print">
+            <p>&copy; <span id="currentYear"></span> مدرسہ مینجمنٹ سسٹم۔ تمام حقوق محفوظ ہیں۔</p>
+        </footer>
+    </div>
+
+    <script>
+// --- IndexedDB Setup ---
+const DB_NAME = 'MadrasaDB';
+const DB_VERSION = 2; // <<<<<<< INCREASED DB VERSION FOR UPGRADE
+let db;
+
+const STORE_NAMES = {
+    SETTINGS: 'settings',
+    STUDENTS: 'students',
+    TEACHERS: 'teachers',
+    CLASSES: 'classes',
+    SUBJECTS: 'subjects', // Added, though might be part of CLASSES or separate
+    ATTENDANCE: 'attendance',
+    EXAMS: 'exams',
+    RESULTS: 'results',
+    FEES: 'fees',
+    SALARIES: 'salaries',
+    LEDGER: 'ledger'
+};
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        console.log(`Opening DB ${DB_NAME} with version ${DB_VERSION}`);
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onerror = (event) => {
+            console.error("Database error:", event.target.error); // More specific error
+            reject("Database error: " + event.target.error);
+        };
+
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            console.log("Database opened successfully");
+            // Check for potential version change issues if db was already open
+            db.onversionchange = (event) => {
+                console.log("Database version change detected, closing connection.");
+                db.close();
+                alert("ڈیٹا بیس کا نیا ورژن دستیاب ہے۔ براہ کرم صفحہ ریفریش کریں۔");
+                // Optionally force reload: window.location.reload();
+            };
+            resolve(db);
+        };
+
+        // This event only executes if the DB version changes.
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            const transaction = event.target.transaction; // Get transaction from event
+            console.log(`Database upgrade needed from version ${event.oldVersion} to ${event.newVersion}`);
+
+            // Create object stores if they don't exist
+            if (!db.objectStoreNames.contains(STORE_NAMES.SETTINGS)) {
+                db.createObjectStore(STORE_NAMES.SETTINGS);
+                console.log(`Object store ${STORE_NAMES.SETTINGS} created`);
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.STUDENTS)) {
+                const studentStore = db.createObjectStore(STORE_NAMES.STUDENTS, { keyPath: 'id', autoIncrement: true });
+                studentStore.createIndex('admissionNumber', 'admissionNumber', { unique: true });
+                studentStore.createIndex('name', 'name', { unique: false });
+                studentStore.createIndex('class', 'class', { unique: false });
+                studentStore.createIndex('status', 'status', { unique: false });
+                console.log(`Object store ${STORE_NAMES.STUDENTS} created`);
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.CLASSES)) {
+                 const classStore = db.createObjectStore(STORE_NAMES.CLASSES, { keyPath: 'id', autoIncrement: true });
+                 // Index on class name for uniqueness checks and lookups
+                 classStore.createIndex('name', 'name', { unique: true });
+                 console.log(`Object store ${STORE_NAMES.CLASSES} created`);
+            }
+             // Create Teachers store if it doesn't exist (during upgrade)
+            if (!db.objectStoreNames.contains(STORE_NAMES.TEACHERS)) {
+                const teacherStore = db.createObjectStore(STORE_NAMES.TEACHERS, { keyPath: 'id', autoIncrement: true });
+                teacherStore.createIndex('name', 'name', { unique: false });
+                teacherStore.createIndex('phone', 'phone', { unique: false }); // Example index
+                 // Add other indexes as needed (subjects, salaryType etc.)
+                console.log(`Object store ${STORE_NAMES.TEACHERS} created`);
+            }
+            // Create Subjects store (optional, could be part of classes)
+            // if (!db.objectStoreNames.contains(STORE_NAMES.SUBJECTS)) {
+            //     const subjectStore = db.createObjectStore(STORE_NAMES.SUBJECTS, { keyPath: 'id', autoIncrement: true });
+            //     subjectStore.createIndex('name', 'name', { unique: true });
+            //     console.log(`Object store ${STORE_NAMES.SUBJECTS} created`);
+            // }
+
+            // Add placeholders for other stores if needed during upgrade
+            // Example:
+            // if (!db.objectStoreNames.contains(STORE_NAMES.ATTENDANCE)) {
+            //     db.createObjectStore(STORE_NAMES.ATTENDANCE, { keyPath: 'id', autoIncrement: true });
+            //     console.log(`Object store ${STORE_NAMES.ATTENDANCE} created`);
+            // }
+
+
+            console.log("Database upgrade complete");
+            // Note: Transaction commits automatically on success
+        };
+    });
+}
+
+// --- Utility Functions for DB Operations (No changes needed here) ---
+
+// Add or Update data in a store
+function dbAddOrUpdate(storeName, data, key = undefined) {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = key ? store.put(data, key) : store.put(data); // put handles both add and update
+
+        request.onsuccess = (event) => resolve(event.target.result); // result is the key
+        request.onerror = (event) => {
+            console.error(`Error adding/updating data to ${storeName}:`, event.target.error);
+            reject(event.target.error); // Pass the specific error object
+        };
+        transaction.onabort = (event) => {
+             console.error(`Add/Update transaction aborted for ${storeName}:`, event.target.error);
+             reject(event.target.error || new Error('Transaction aborted'));
+        }
+    });
+}
+
+// Get data from a store by key
+function dbGet(storeName, key) {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.get(key);
+
+        request.onsuccess = (event) => resolve(event.target.result); // result is the object or undefined
+        request.onerror = (event) => {
+            console.error(`Error getting data from ${storeName} with key ${key}:`, event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
+
+// Get all data from a store
+function dbGetAll(storeName) {
+    return new Promise((resolve, reject) => {
+         if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.getAll();
+
+        request.onsuccess = (event) => resolve(event.target.result); // result is an array of objects
+        request.onerror = (event) => {
+            console.error(`Error getting all data from ${storeName}:`, event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
+
+// Delete data from a store by key
+function dbDelete(storeName, key) {
+    return new Promise((resolve, reject) => {
+         if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.delete(key);
+
+        request.onsuccess = () => resolve(); // No result on success
+        request.onerror = (event) => {
+            console.error(`Error deleting data from ${storeName} with key ${key}:`, event.target.error);
+            reject(event.target.error);
+        };
+         transaction.onabort = (event) => {
+             console.error(`Delete transaction aborted for ${storeName}:`, event.target.error);
+             reject(event.target.error || new Error('Transaction aborted'));
+        }
+    });
+}
+
+// Clear all data from a store
+function dbClearStore(storeName) {
+     return new Promise((resolve, reject) => {
+         if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.clear();
+
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => {
+            console.error(`Error clearing store ${storeName}:`, event.target.error);
+            reject(event.target.error);
+        };
+         transaction.onabort = (event) => {
+             console.error(`Clear store transaction aborted for ${storeName}:`, event.target.error);
+             reject(event.target.error || new Error('Transaction aborted'));
+        }
+    });
+}
+
+// --- Layout Adjustment Function ---
+function applyFormLayout(formElement) {
+    if (!formElement) return;
+
+    // Simple two-column layout attempt using CSS grid applied via JS
+    formElement.style.display = 'grid';
+    // Adjust based on number of direct children (label+input pairs usually)
+    // This is a basic heuristic and might need refinement based on actual form structure
+    const directChildren = Array.from(formElement.children).filter(el => el.tagName === 'DIV'); // Assuming label/input are wrapped in DIVs
+    if (directChildren.length > 3) { // Apply grid only if there are enough elements
+        formElement.style.gridTemplateColumns = 'repeat(auto-fit, minmax(300px, 1fr))'; // Responsive columns
+        formElement.style.gap = '15px 25px'; // Row gap and column gap
+    } else {
+        formElement.style.gridTemplateColumns = '1fr'; // Single column for fewer items
+    }
+
+    // Ensure buttons span full width if needed, or handle separately
+    const buttons = formElement.querySelectorAll('button');
+    buttons.forEach(btn => {
+        // Optional: Make buttons span full grid width if they are direct children
+        if (btn.parentElement === formElement) {
+           // btn.style.gridColumn = '1 / -1'; // Span all columns
+        }
+    });
+}
+
+
+// --- Module Switching Logic ---
+function showModule(moduleId) {
+    // Hide all sections
+    document.querySelectorAll('.module-section').forEach(section => {
+        section.style.display = 'none';
+        section.classList.remove('active');
+    });
+
+    // Deactivate all nav buttons
+    document.querySelectorAll('nav ul li button').forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // Show the selected section
+    const activeSection = document.getElementById(moduleId);
+    if (activeSection) {
+        activeSection.style.display = 'block';
+        activeSection.classList.add('active');
+
+         // Activate the corresponding nav button
+         const activeButton = document.querySelector(`nav ul li button[onclick="showModule('${moduleId}')"]`);
+         if(activeButton) {
+             activeButton.classList.add('active');
+         }
+
+        // Apply layout adjustments to forms in specific modules
+        const formElement = activeSection.querySelector('form');
+        if (formElement && ['settings', 'students', 'classes', 'teachers'].includes(moduleId)) {
+             applyFormLayout(formElement);
+        }
+
+
+        // Load data specific to the module if needed
+        if (moduleId === 'students') {
+            loadClassesIntoStudentForm(); // Ensure classes are loaded in student form dropdown
+            renderStudentList();
+        } else if (moduleId === 'settings') {
+            loadSettings(); // Load settings when module is shown
+        } else if (moduleId === 'classes') {
+             renderClassList(); // Load classes when module is shown
+        } else if (moduleId === 'teachers') {
+             loadClassesIntoTeacherForm(); // Load classes into teacher form dropdown
+             // renderTeacherList(); // Add this when teacher list is implemented
+        }
+        // Add similar conditions for other modules to load their data
+    } else {
+        console.warn(`Module section with id "${moduleId}" not found.`);
+        // Optionally show a default or error section
+         const defaultSection = document.getElementById('settings'); // Show settings by default if module not found
+         if (defaultSection) {
+            defaultSection.style.display = 'block';
+            defaultSection.classList.add('active');
+            const defaultButton = document.querySelector(`nav ul li button[onclick="showModule('settings')"]`);
+            if(defaultButton) defaultButton.classList.add('active');
+            loadSettings();
+            const formElement = defaultSection.querySelector('form');
+             if (formElement) applyFormLayout(formElement);
+         }
+    }
+}
+
+// --- Settings Module Logic (Mostly unchanged) ---
+const settingsForm = document.getElementById('settingsForm');
+const madrasaNameInput = document.getElementById('madrasaName');
+const madrasaAddressInput = document.getElementById('madrasaAddress');
+const madrasaPhoneInput = document.getElementById('madrasaPhone');
+const madrasaLogoInput = document.getElementById('madrasaLogo');
+const madrasaLogoPreview = document.getElementById('madrasaLogoPreview');
+const madrasaNamePreview = document.getElementById('madrasaNamePreview');
+const madrasaAddressPreview = document.getElementById('madrasaAddressPreview');
+const madrasaPhonePreview = document.getElementById('madrasaPhonePreview');
+const academicYearStartInput = document.getElementById('academicYearStart');
+const academicYearEndInput = document.getElementById('academicYearEnd');
+const defaultFeeInput = document.getElementById('defaultFee');
+const defaultSalaryInput = document.getElementById('defaultSalary');
+const printSignatureInput = document.getElementById('printSignature');
+const signaturePreview = document.getElementById('signaturePreview');
+
+// Function to read file as Data URL (Helper)
+const readFileAsDataURL = (file) => {
+    return new Promise((resolve, reject) => {
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+    });
+};
+
+async function saveSettings() {
+    const logoFile = madrasaLogoInput.files[0];
+    const signatureFile = printSignatureInput.files[0];
+
+    try {
+        // Get current settings to preserve existing images if no new file is uploaded
+        const currentSettings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig') || {};
+
+        const logoDataUrl = logoFile ? await readFileAsDataURL(logoFile) : currentSettings.logoDataUrl;
+        const signatureDataUrl = signatureFile ? await readFileAsDataURL(signatureFile) : currentSettings.signatureDataUrl;
+
+        const settingsData = {
+            madrasaName: madrasaNameInput.value.trim(),
+            madrasaAddress: madrasaAddressInput.value.trim(),
+            madrasaPhone: madrasaPhoneInput.value.trim(),
+            academicYearStart: academicYearStartInput.value,
+            academicYearEnd: academicYearEndInput.value,
+            defaultFee: defaultFeeInput.value,
+            defaultSalary: defaultSalaryInput.value,
+            logoDataUrl: logoDataUrl,
+            signatureDataUrl: signatureDataUrl
+        };
+
+        await dbAddOrUpdate(STORE_NAMES.SETTINGS, settingsData, 'madrasaConfig');
+        alert('ترتیبات کامیابی سے محفوظ ہوگئیں۔');
+        loadSettings(); // Reload settings to update UI and previews
+    } catch (error) {
+        console.error("Error saving settings:", error);
+        alert('ترتیبات محفوظ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+async function loadSettings() {
+    try {
+        const settings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig');
+        if (settings) {
+            madrasaNameInput.value = settings.madrasaName || '';
+            madrasaAddressInput.value = settings.madrasaAddress || '';
+            madrasaPhoneInput.value = settings.madrasaPhone || '';
+            academicYearStartInput.value = settings.academicYearStart || '';
+            academicYearEndInput.value = settings.academicYearEnd || '';
+            defaultFeeInput.value = settings.defaultFee || '';
+            defaultSalaryInput.value = settings.defaultSalary || '';
+
+            // Update header previews
+            madrasaNamePreview.textContent = settings.madrasaName || 'مدرسہ کا نام';
+            madrasaAddressPreview.textContent = settings.madrasaAddress || 'پتہ';
+            madrasaPhonePreview.textContent = settings.madrasaPhone || 'فون نمبر';
+
+            // Update logo preview
+            madrasaLogoPreview.src = settings.logoDataUrl || 'https://placehold.co/100x100/eee/ccc?text=لوگو';
+             // Update signature preview
+            signaturePreview.src = settings.signatureDataUrl || 'https://placehold.co/150x50/eee/ccc?text=دستخط';
+
+        } else {
+             // Set default previews if no settings found
+             madrasaNamePreview.textContent = 'مدرسہ کا نام';
+             madrasaAddressPreview.textContent = 'پتہ';
+             madrasaPhonePreview.textContent = 'فون نمبر';
+             madrasaLogoPreview.src = 'https://placehold.co/100x100/eee/ccc?text=لوگو';
+             signaturePreview.src = 'https://placehold.co/150x50/eee/ccc?text=دستخط';
+        }
+    } catch (error) {
+        console.error("Error loading settings:", error);
+        // Handle error (e.g., show a message to the user)
+    }
+}
+
+// Event listener for settings form submission
+settingsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveSettings();
+});
+
+ // Preview logo instantly on selection
+madrasaLogoInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        readFileAsDataURL(file).then(dataUrl => {
+             if(dataUrl) madrasaLogoPreview.src = dataUrl;
+        }).catch(err => console.error("Error reading logo file:", err));
+    }
+});
+// Preview signature instantly on selection
+printSignatureInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+         readFileAsDataURL(file).then(dataUrl => {
+             if(dataUrl) signaturePreview.src = dataUrl;
+        }).catch(err => console.error("Error reading signature file:", err));
+    }
+});
+
+
+// --- Class & Subject Management Logic ---
+const classForm = document.getElementById('classForm');
+const classIdInput = document.getElementById('classId');
+const classNameInput = document.getElementById('className');
+const classSubjectsInput = document.getElementById('classSubjects'); // Assuming a textarea for subjects
+const classFeeInput = document.getElementById('classFee'); // Optional class-specific fee
+const classTableBody = document.getElementById('classTableBody');
+
+// Render the list of classes
+async function renderClassList() {
+    try {
+        const classes = await dbGetAll(STORE_NAMES.CLASSES);
+        classTableBody.innerHTML = ''; // Clear existing rows
+
+        if (classes.length === 0) {
+            classTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">کوئی کلاس موجود نہیں۔</td></tr>';
+            return;
+        }
+
+        classes.forEach(cls => {
+            const row = classTableBody.insertRow();
+            // Ensure subjects are displayed reasonably (e.g., join array or handle string)
+            const subjectsDisplay = Array.isArray(cls.subjects) ? cls.subjects.join(', ') : (cls.subjects || 'کوئی مضمون نہیں');
+            row.innerHTML = `
+                <td>${cls.name}</td>
+                <td>${subjectsDisplay}</td>
+                <td>${cls.fee || 'ڈیفالٹ'}</td>
+                <td class="no-print">
+                    <button onclick="editClass(${cls.id})" class="btn btn-secondary btn-sm">ترمیم</button>
+                    <button onclick="deleteClass(${cls.id})" class="btn btn-danger btn-sm">حذف</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering class list:", error);
+        classTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">کلاسوں کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+// Handle class form submission (Add or Update)
+classForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const classId = parseInt(classIdInput.value);
+    const className = classNameInput.value.trim();
+    // Split subjects by comma or newline, trim whitespace, remove empty entries
+    const subjects = classSubjectsInput.value.split(/[\n,]+/)
+                                        .map(s => s.trim())
+                                        .filter(s => s);
+
+    if (!className) {
+        alert("براہ کرم کلاس کا نام درج کریں۔");
+        return;
+    }
+
+    const classData = {
+        name: className,
+        subjects: subjects, // Store as an array
+        fee: classFeeInput.value.trim() || null // Store fee or null
+    };
+
+    try {
+        if (classId) {
+            // Update existing class
+            classData.id = classId;
+            await dbAddOrUpdate(STORE_NAMES.CLASSES, classData);
+            alert('کلاس کامیابی سے اپ ڈیٹ ہوگئی۔');
+        } else {
+            // Add new class - Check for duplicate name first
+            const existingClass = await getClassByName(className);
+            if (existingClass) {
+                alert(`کلاس "${className}" پہلے سے موجود ہے۔`);
+                return;
+            }
+            await dbAddOrUpdate(STORE_NAMES.CLASSES, classData);
+            alert('نئی کلاس کامیابی سے شامل ہوگئی۔');
+        }
+        resetClassForm();
+        renderClassList();
+        // Refresh class dropdowns in other modules
+        loadClassesIntoStudentForm();
+        loadClassesIntoTeacherForm(); // Add this if teacher form exists
+    } catch (error) {
+        console.error("Error saving class:", error);
+        if (error.name === 'ConstraintError') {
+             alert(`خرابی: کلاس کا نام "${className}" منفرد ہونا چاہیے۔ یہ پہلے سے موجود ہوسکتا ہے۔`);
+         } else {
+            alert('کلاس محفوظ کرنے میں خرابی پیش آئی۔');
+         }
+    }
+});
+
+// Helper to get class by name (for duplicate check)
+function getClassByName(name) {
+     return new Promise((resolve, reject) => {
+         if (!db) return reject("Database not open");
+         const transaction = db.transaction([STORE_NAMES.CLASSES], 'readonly');
+         const store = transaction.objectStore(STORE_NAMES.CLASSES);
+         const index = store.index('name'); // Assumes 'name' index exists
+         const request = index.get(name);
+
+         request.onsuccess = (event) => resolve(event.target.result); // Returns class object or undefined
+         request.onerror = (event) => {
+             console.error("Error checking class name:", event.target.error);
+             reject(event.target.error);
+         };
+     });
+ }
+
+// Populate form for editing a class
+async function editClass(id) {
+    try {
+        const cls = await dbGet(STORE_NAMES.CLASSES, id);
+        if (cls) {
+            classIdInput.value = cls.id;
+            classNameInput.value = cls.name;
+            // Join subjects array back into the textarea format
+            classSubjectsInput.value = Array.isArray(cls.subjects) ? cls.subjects.join('\n') : (cls.subjects || '');
+            classFeeInput.value = cls.fee || '';
+            classForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    } catch (error) {
+        console.error("Error fetching class for edit:", error);
+        alert('ترمیم کے لیے کلاس لوڈ کرنے میں خرابی۔');
+    }
+}
+
+// Delete a class
+async function deleteClass(id) {
+    // Add checks: Is this class assigned to any students/teachers?
+    // For simplicity now, just confirm deletion.
+    if (confirm('کیا آپ واقعی اس کلاس کو حذف کرنا چاہتے ہیں؟')) {
+        try {
+            await dbDelete(STORE_NAMES.CLASSES, id);
+            alert('کلاس کامیابی سے حذف ہوگئی۔');
+            renderClassList();
+            // Refresh class dropdowns in other modules
+            loadClassesIntoStudentForm();
+            loadClassesIntoTeacherForm();
+        } catch (error) {
+            console.error("Error deleting class:", error);
+            alert('کلاس حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+// Reset the class form
+function resetClassForm() {
+    classForm.reset();
+    classIdInput.value = '';
+}
+
+
+// --- Student Management Logic (Updates for Class Loading) ---
+const studentForm = document.getElementById('studentForm');
+const studentIdInput = document.getElementById('studentId');
+const studentNameInput = document.getElementById('studentName');
+const fatherNameInput = document.getElementById('fatherName');
+const dobInput = document.getElementById('dob');
+const admissionNumberInput = document.getElementById('admissionNumber');
+const studentClassSelect = document.getElementById('studentClass');
+const contactNumberInput = document.getElementById('contactNumber');
+const studentAddressInput = document.getElementById('studentAddress');
+const studentStatusSelect = document.getElementById('studentStatus');
+const studentTableBody = document.getElementById('studentTableBody');
+const filterStudentClassSelect = document.getElementById('filterStudentClass');
+const filterStudentStatusSelect = document.getElementById('filterStudentStatus');
+
+// Load classes into dropdowns (Student form and filter) - NOW USES DB
+async function loadClassesIntoStudentForm() {
+     try {
+         const classes = await dbGetAll(STORE_NAMES.CLASSES);
+         // Store current selections to reapply if possible
+         const currentStudentClass = studentClassSelect.value;
+         const currentFilterClass = filterStudentClassSelect.value;
+
+         studentClassSelect.innerHTML = '<option value="">کلاس منتخب کریں</option>'; // Clear existing options
+         filterStudentClassSelect.innerHTML = '<option value="">تمام کلاسیں</option>'; // Clear filter options
+
+         classes.sort((a, b) => a.name.localeCompare(b.name, 'ur')); // Sort classes alphabetically (Urdu)
+
+         classes.forEach(cls => {
+             const option = document.createElement('option');
+             option.value = cls.name; // Use class name as value
+             option.textContent = cls.name;
+             studentClassSelect.appendChild(option.cloneNode(true));
+             filterStudentClassSelect.appendChild(option);
+         });
+
+         // Reapply previous selections if they still exist
+         if (studentClassSelect.querySelector(`option[value="${currentStudentClass}"]`)) {
+             studentClassSelect.value = currentStudentClass;
+         }
+          if (filterStudentClassSelect.querySelector(`option[value="${currentFilterClass}"]`)) {
+             filterStudentClassSelect.value = currentFilterClass;
+         }
+
+     } catch (error) {
+         console.error("Error loading classes into student form:", error);
+         // Provide fallback or message
+         studentClassSelect.innerHTML = '<option value="">کلاس لوڈ کرنے میں خرابی</option>';
+         filterStudentClassSelect.innerHTML = '<option value="">کلاس لوڈ کرنے میں خرابی</option>';
+     }
+}
+
+// Render the list of students in the table (Unchanged from previous version)
+async function renderStudentList() {
+    try {
+        let students = await dbGetAll(STORE_NAMES.STUDENTS);
+
+        // Apply filters
+        const classFilter = filterStudentClassSelect.value;
+        const statusFilter = filterStudentStatusSelect.value;
+
+        if (classFilter) {
+            students = students.filter(s => s.class === classFilter);
+        }
+        if (statusFilter) {
+            students = students.filter(s => s.status === statusFilter);
+        }
+
+        // Optional: Sort students (e.g., by name or admission number)
+        students.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+
+
+        studentTableBody.innerHTML = ''; // Clear existing rows
+        if (students.length === 0) {
+             studentTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">فلٹر کے مطابق کوئی طالب علم موجود نہیں۔</td></tr>';
+             return;
+        }
+
+        students.forEach(student => {
+            const row = studentTableBody.insertRow();
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.fatherName}</td>
+                <td>${student.admissionNumber}</td>
+                <td>${student.class}</td>
+                <td>${translateStatus(student.status)}</td>
+                <td class="no-print">
+                    <button onclick="editStudent(${student.id})" class="btn btn-secondary btn-sm">ترمیم</button>
+                    <button onclick="deleteStudent(${student.id})" class="btn btn-danger btn-sm">حذف</button>
+                    <button onclick="printStudentIdCard(${student.id})" class="btn btn-sm" style="background-color: #17a2b8;">کارڈ پرنٹ</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering student list:", error);
+        studentTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">طلباء کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+// Translate status codes to Urdu (Unchanged)
+function translateStatus(status) {
+    switch (status) {
+        case 'active': return 'فعال';
+        case 'transferred': return 'منتقل شدہ';
+        case 'dropout': return 'فارغ التحصیل/خارج شدہ';
+        default: return status;
+    }
+}
+
+// Handle student form submission (Add or Update) (Unchanged logic, but uses updated DB functions)
+studentForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const studentId = parseInt(studentIdInput.value); // Get ID for update check
+
+    const studentData = {
+        name: studentNameInput.value.trim(),
+        fatherName: fatherNameInput.value.trim(),
+        dob: dobInput.value,
+        admissionNumber: admissionNumberInput.value.trim(),
+        class: studentClassSelect.value,
+        contactNumber: contactNumberInput.value.trim(),
+        address: studentAddressInput.value.trim(),
+        status: studentStatusSelect.value
+    };
+
+     // Basic validation
+    if (!studentData.name || !studentData.fatherName || !studentData.admissionNumber || !studentData.class) {
+        alert("براہ کرم تمام ضروری فیلڈز (*) پُر کریں۔");
+        return;
+    }
+
+    try {
+        if (studentId) {
+            // Update existing student
+            studentData.id = studentId; // Include ID for put() to update
+            await dbAddOrUpdate(STORE_NAMES.STUDENTS, studentData);
+            alert('طالب علم کی معلومات کامیابی سے اپ ڈیٹ ہوگئیں۔');
+        } else {
+            // Add new student - Check for duplicate admission number before adding
+             const existingStudent = await getStudentByAdmissionNumber(studentData.admissionNumber);
+             if (existingStudent) {
+                 alert(`داخلہ نمبر ${studentData.admissionNumber} پہلے سے موجود ہے۔`);
+                 return;
+             }
+            await dbAddOrUpdate(STORE_NAMES.STUDENTS, studentData);
+            alert('نیا طالب علم کامیابی سے شامل ہوگیا۔');
+        }
+        resetStudentForm();
+        renderStudentList(); // Refresh the list
+    } catch (error) {
+        console.error("Error saving student:", error);
+         if (error.name === 'ConstraintError') {
+             alert(`خرابی: داخلہ نمبر ${studentData.admissionNumber} منفرد ہونا چاہیے۔ یہ پہلے سے موجود ہوسکتا ہے۔`);
+         } else {
+            alert('طالب علم کو محفوظ کرنے میں خرابی پیش آئی۔');
+         }
+    }
+});
+
+ // Helper to check for existing admission number (Unchanged)
+ function getStudentByAdmissionNumber(admissionNumber) {
+     return new Promise((resolve, reject) => {
+         if (!db) return reject("Database not open");
+         const transaction = db.transaction([STORE_NAMES.STUDENTS], 'readonly');
+         const store = transaction.objectStore(STORE_NAMES.STUDENTS);
+         const index = store.index('admissionNumber');
+         const request = index.get(admissionNumber);
+
+         request.onsuccess = (event) => resolve(event.target.result); // Returns student object or undefined
+         request.onerror = (event) => {
+             console.error("Error checking admission number:", event.target.error);
+             reject(event.target.error);
+         };
+     });
+ }
+
+
+// Populate form for editing a student (Unchanged)
+async function editStudent(id) {
+    try {
+        const student = await dbGet(STORE_NAMES.STUDENTS, id);
+        if (student) {
+            studentIdInput.value = student.id;
+            studentNameInput.value = student.name;
+            fatherNameInput.value = student.fatherName;
+            dobInput.value = student.dob;
+            admissionNumberInput.value = student.admissionNumber;
+            studentClassSelect.value = student.class; // This should work now with loaded classes
+            contactNumberInput.value = student.contactNumber;
+            studentAddressInput.value = student.address;
+            studentStatusSelect.value = student.status;
+
+            // Scroll to the form for better UX
+            studentForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    } catch (error) {
+        console.error("Error fetching student for edit:", error);
+        alert('ترمیم کے لیے طالب علم کی معلومات لوڈ کرنے میں خرابی۔');
+    }
+}
+
+// Delete a student (Unchanged)
+async function deleteStudent(id) {
+    if (confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں کیا جا سکتا۔')) {
+        try {
+            await dbDelete(STORE_NAMES.STUDENTS, id);
+            alert('طالب علم کامیابی سے حذف ہوگیا۔');
+            renderStudentList(); // Refresh the list
+        } catch (error) {
+            console.error("Error deleting student:", error);
+            alert('طالب علم کو حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+// Reset the student form (Unchanged)
+function resetStudentForm() {
+    studentForm.reset();
+    studentIdInput.value = ''; // Clear hidden ID field
+    studentStatusSelect.value = 'active'; // Reset status to default
+}
+
+// Print Student List (Unchanged)
+function printStudentList() {
+    // Consider enhancing print view via CSS or JS if needed
+    window.print();
+}
+
+// Print Student ID Card (Unchanged)
+async function printStudentIdCard(id) {
+     try {
+         const student = await dbGet(STORE_NAMES.STUDENTS, id);
+         const settings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig') || {}; // Get settings for logo etc.
+
+         if (!student) {
+             alert("طالب علم نہیں ملا۔");
+             return;
+         }
+
+         const idCardArea = document.getElementById('printableIdCardArea');
+         // Using template literals for cleaner HTML generation
+         idCardArea.innerHTML = `
+             <div class="printable-id-card" style="border: 1px solid black; padding: 15px; margin: 20px auto; max-width: 320px; text-align: center; font-family: 'Noto Nastaliq Urdu', sans-serif; direction: rtl;">
+                 <div class="printable-header" style="border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 10px;">
+                     <img src="${settings.logoDataUrl || 'https://placehold.co/80x80/eee/ccc?text=لوگو'}" alt="لوگو" style="max-width: 60px; max-height: 60px; display: block; margin: 0 auto 5px; border-radius: 50%;">
+                     <h4 style="margin: 5px 0; font-size: 1.1em;">${settings.madrasaName || 'مدرسہ کا نام'}</h4>
+                     <p style="margin: 0; font-size: 0.9em;">شناختی کارڈ برائے طالب علم</p>
+                 </div>
+                 <div style="text-align: right; line-height: 1.7; padding-right: 10px;">
+                     <p style="margin: 3px 0;"><strong>نام:</strong> ${student.name || ''}</p>
+                     <p style="margin: 3px 0;"><strong>ولدیت:</strong> ${student.fatherName || ''}</p>
+                     <p style="margin: 3px 0;"><strong>داخلہ نمبر:</strong> ${student.admissionNumber || ''}</p>
+                     <p style="margin: 3px 0;"><strong>کلاس:</strong> ${student.class || ''}</p>
+                     <p style="margin: 3px 0;"><strong>تاریخ اجراء:</strong> ${new Date().toLocaleDateString('ur-PK', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                 </div>
+                 <div class="printable-footer" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ccc;">
+                     <img src="${settings.signatureDataUrl || 'https://placehold.co/100x30/eee/ccc?text=دستخط'}" alt="دستخط" style="max-height: 30px; max-width: 100px; display: block; margin: 5px auto;">
+                     <p style="font-size: 0.8em; margin: 0;">${settings.madrasaAddress || ''}<br>${settings.madrasaPhone || ''}</p>
+                 </div>
+             </div>
+         `;
+         idCardArea.style.display = 'block'; // Show the area
+         window.print(); // Trigger print dialog
+         // Delay hiding slightly to allow print preview to render fully
+         setTimeout(() => {
+             idCardArea.style.display = 'none'; // Hide after printing attempt
+             idCardArea.innerHTML = ''; // Clear content
+         }, 500);
+
+
+     } catch (error) {
+         console.error("Error generating ID card:", error);
+         alert("شناختی کارڈ بنانے میں خرابی پیش آئی۔");
+     }
+}
+
+// --- Teacher Management Logic (Basic Structure) ---
+const teacherForm = document.getElementById('teacherForm');
+const teacherIdInput = document.getElementById('teacherId');
+const teacherNameInput = document.getElementById('teacherName');
+const teacherSubjectsInput = document.getElementById('teacherSubjects'); // Could be multi-select or text
+const teacherPhoneInput = document.getElementById('teacherPhone');
+const teacherSalaryTypeSelect = document.getElementById('teacherSalaryType');
+const teacherSalaryAmountInput = document.getElementById('teacherSalaryAmount');
+const teacherJoiningDateInput = document.getElementById('teacherJoiningDate');
+const teacherClassesSelect = document.getElementById('teacherClasses'); // Multi-select for classes
+const teacherTableBody = document.getElementById('teacherTableBody'); // Added for teacher list
+
+// Load classes into teacher form dropdown
+async function loadClassesIntoTeacherForm() {
+     try {
+         const classes = await dbGetAll(STORE_NAMES.CLASSES);
+         teacherClassesSelect.innerHTML = ''; // Clear existing options
+
+         classes.sort((a, b) => a.name.localeCompare(b.name, 'ur')); // Sort
+
+         classes.forEach(cls => {
+             const option = document.createElement('option');
+             option.value = cls.name;
+             option.textContent = cls.name;
+             teacherClassesSelect.appendChild(option);
+         });
+     } catch (error) {
+         console.error("Error loading classes into teacher form:", error);
+         teacherClassesSelect.innerHTML = '<option value="">کلاس لوڈ کرنے میں خرابی</option>';
+     }
+}
+
+// Placeholder for rendering teacher list
+async function renderTeacherList() {
+     teacherTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اساتذہ کی فہرست جلد آرہی ہے۔</td></tr>';
+     // TODO: Implement fetching teachers from DB and rendering the table
+     console.log("renderTeacherList function needs implementation.");
+}
+
+
+// Handle teacher form submission (Placeholder)
+teacherForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const teacherId = parseInt(teacherIdInput.value);
+
+    // Collect data from form fields
+    const teacherData = {
+        name: teacherNameInput.value.trim(),
+        subjects: teacherSubjectsInput.value.trim(), // Adjust based on input type (text, multi-select)
+        phone: teacherPhoneInput.value.trim(),
+        salaryType: teacherSalaryTypeSelect.value,
+        salaryAmount: teacherSalaryAmountInput.value,
+        joiningDate: teacherJoiningDateInput.value,
+        // Get selected classes from multi-select
+        classes: Array.from(teacherClassesSelect.selectedOptions).map(option => option.value)
+    };
+
+     if (!teacherData.name || !teacherData.phone) {
+        alert("براہ کرم استاد کا نام اور فون نمبر درج کریں۔");
+        return;
+    }
+
+    console.log("Teacher Data to save:", teacherData); // Log data for now
+
+    try {
+        if (teacherId) {
+             teacherData.id = teacherId;
+             await dbAddOrUpdate(STORE_NAMES.TEACHERS, teacherData);
+             alert('استاد کی معلومات کامیابی سے اپ ڈیٹ ہوگئیں۔ (فعالیت نامکمل)');
+        } else {
+             // Add check for duplicate teacher? (e.g., by phone number)
+             await dbAddOrUpdate(STORE_NAMES.TEACHERS, teacherData);
+             alert('نیا استاد کامیابی سے شامل ہوگیا۔ (فعالیت نامکمل)');
+        }
+         resetTeacherForm();
+         // renderTeacherList(); // Uncomment when list rendering is implemented
+    } catch(error) {
+         console.error("Error saving teacher:", error);
+         alert("استاد کو محفوظ کرنے میں خرابی پیش آئی۔");
+    }
+
+
+    // TODO: Implement actual saving logic (add/update) to IndexedDB STORE_NAMES.TEACHERS
+    // alert('استاد شامل/اپ ڈیٹ کرنے کی فعالیت جلد آرہی ہے۔');
+    // resetTeacherForm();
+    // renderTeacherList(); // Call this after implementing list rendering
+});
+
+// Reset the teacher form
+function resetTeacherForm() {
+    teacherForm.reset();
+    teacherIdInput.value = '';
+    // Reset multi-select if needed
+    Array.from(teacherClassesSelect.options).forEach(option => option.selected = false);
+
+}
+
+// --- Data Export/Import Logic (Unchanged) ---
+const importExportStatus = document.getElementById('importExportStatus');
+
+async function exportData() {
+    importExportStatus.textContent = 'ڈیٹا ایکسپورٹ کیا جا رہا ہے...';
+    importExportStatus.style.color = 'orange';
+    try {
+        const exportObj = {};
+        const storeNames = Object.values(STORE_NAMES); // Get all store names from constant
+
+        // Ensure DB is open and ready
+        if (!db) {
+            alert("ڈیٹا بیس کھلا نہیں ہے۔ براہ کرم دوبارہ کوشش کریں۔");
+            importExportStatus.textContent = 'ایکسپورٹ ناکام: ڈیٹا بیس بند ہے۔';
+            importExportStatus.style.color = 'red';
+            return;
+        }
+
+        const transaction = db.transaction(db.objectStoreNames, 'readonly'); // Transaction on existing stores
+        const promises = [];
+
+        for (const storeName of db.objectStoreNames) {
+            if (STORE_NAMES[storeName.toUpperCase()]) { // Check if it's one of our defined stores
+                 promises.push(
+                     new Promise((resolve, reject) => {
+                         const request = transaction.objectStore(storeName).getAll();
+                         request.onsuccess = (event) => resolve({ storeName, data: event.target.result });
+                         request.onerror = (event) => reject(event.target.error);
+                     })
+                 );
+            }
+        }
+
+        const results = await Promise.all(promises);
+        results.forEach(result => {
+            exportObj[result.storeName] = result.data;
+        });
+
+
+        const dataStr = JSON.stringify(exportObj, null, 2); // Pretty print JSON
+        const dataBlob = new Blob([dataStr], { type: 'application/json;charset=utf-8' }); // Ensure UTF-8
+        const url = URL.createObjectURL(dataBlob);
+
+        const downloadLink = document.createElement('a');
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+        downloadLink.href = url;
+        downloadLink.download = `madrasa_backup_${timestamp}.json`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(url);
+
+        importExportStatus.textContent = 'ڈیٹا کامیابی سے ایکسپورٹ ہوگیا۔';
+        importExportStatus.style.color = 'green';
+        alert('ڈیٹا کامیابی سے ایکسپورٹ ہوگیا۔ فائل آپ کے ڈاؤنلوڈ فولڈر میں محفوظ ہوگئی ہے۔');
+
+    } catch (error) {
+        console.error("Export failed:", error);
+        importExportStatus.textContent = 'ڈیٹا ایکسپورٹ ناکام ہوگیا۔ کنسول چیک کریں۔';
+        importExportStatus.style.color = 'red';
+        alert('ڈیٹا ایکسپورٹ ناکام ہوگیا۔');
+    }
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    const fileInput = event.target; // Reference to the input element
+
+    if (!file) {
+        importExportStatus.textContent = 'کوئی فائل منتخب نہیں کی گئی۔';
+         importExportStatus.style.color = 'orange';
+        return;
+    }
+    if (!file.name.endsWith('.json')) {
+         importExportStatus.textContent = 'غلط فائل کی قسم۔ براہ کرم .json فائل منتخب کریں۔';
+         importExportStatus.style.color = 'red';
+         alert('غلط فائل کی قسم۔ براہ کرم .json فائل منتخب کریں۔');
+         fileInput.value = null; // Reset file input
+         return;
+    }
+
+    if (!confirm('کیا آپ واقعی ڈیٹا امپورٹ کرنا چاہتے ہیں؟ موجودہ تمام ڈیٹا کو منتخب فائل کے ڈیٹا سے بدل دیا جائے گا۔ یہ عمل واپس نہیں کیا جا سکتا۔')) {
+         fileInput.value = null; // Reset file input
+         importExportStatus.textContent = 'امپورٹ منسوخ کر دیا گیا۔';
+         importExportStatus.style.color = 'grey';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        importExportStatus.textContent = 'ڈیٹا امپورٹ کیا جا رہا ہے...';
+        importExportStatus.style.color = 'orange';
+        try {
+            const importObj = JSON.parse(e.target.result);
+            const storeNamesToImport = Object.keys(importObj);
+
+            // Ensure DB is open
+            if (!db) {
+                 throw new Error("Database not open for import.");
+            }
+
+            // Filter store names to only those present in the current DB version
+            const validStoreNames = storeNamesToImport.filter(name => db.objectStoreNames.contains(name));
+            const invalidStoreNames = storeNamesToImport.filter(name => !db.objectStoreNames.contains(name));
+            if (invalidStoreNames.length > 0) {
+                console.warn(`Import file contains data for unknown stores, skipping: ${invalidStoreNames.join(', ')}`);
+            }
+            if (validStoreNames.length === 0) {
+                 throw new Error("Import file contains no data for known stores.");
+            }
+
+
+            // Start a transaction covering all valid stores to import
+            const transaction = db.transaction(validStoreNames, 'readwrite');
+            const promises = [];
+
+            // Clear existing data and add new data for each valid store
+            for (const storeName of validStoreNames) {
+                 promises.push(new Promise((resolve, reject) => {
+                     const store = transaction.objectStore(storeName);
+                     const clearRequest = store.clear(); // Clear existing data
+
+                     clearRequest.onsuccess = () => {
+                         let itemsAdded = 0;
+                         const itemsToImport = importObj[storeName] || [];
+                         if (itemsToImport.length === 0) {
+                             resolve(); // Nothing to add for this store
+                             return;
+                         }
+
+                         itemsToImport.forEach((item, index) => {
+                             if (item) { // Ensure item is not null/undefined
+                                 let addRequest;
+                                 // Handle settings store specifically with its fixed key
+                                 if (storeName === STORE_NAMES.SETTINGS) {
+                                     addRequest = store.put(item, 'madrasaConfig');
+                                 } else {
+                                     // For other stores, use add. If import data contains IDs,
+                                     // and the store uses autoIncrement, this might cause issues
+                                     // if IDs clash. Using put() might be safer if imported data
+                                     // is trusted to have correct keys relative to the store setup.
+                                     // Let's stick to put() for robustness if IDs are present in JSON.
+                                     addRequest = store.put(item);
+                                 }
+                                 addRequest.onsuccess = () => {
+                                     itemsAdded++;
+                                     if (itemsAdded === itemsToImport.length) {
+                                         resolve(); // All items for this store added
+                                     }
+                                 };
+                                  addRequest.onerror = (event) => {
+                                     console.error(`Error adding item to ${storeName}:`, item, event.target.error);
+                                     // Continue importing other items/stores? Or reject?
+                                     // For now, log error and continue. Consider rejecting the whole promise.
+                                      itemsAdded++; // Count as processed even on error to finish the loop
+                                      if (itemsAdded === itemsToImport.length) {
+                                         resolve(); // Resolve even if some items failed
+                                     }
+                                 };
+                             } else {
+                                 itemsAdded++; // Count null/undefined items as processed
+                                  if (itemsAdded === itemsToImport.length) {
+                                     resolve();
+                                 }
+                             }
+                         });
+                     };
+                     clearRequest.onerror = (event) => {
+                         console.error(`Error clearing store ${storeName}:`, event.target.error);
+                         reject(event.target.error);
+                     };
+                 }));
+            }
+
+             // Wait for all store operations within the transaction to complete
+             await Promise.all(promises);
+
+
+            // Transaction completes automatically if all promises resolve without transaction errors
+
+            transaction.oncomplete = () => {
+                console.log("All data imported successfully!");
+                importExportStatus.textContent = 'ڈیٹا کامیابی سے امپورٹ ہوگیا۔ صفحہ ریفریش کریں۔';
+                importExportStatus.style.color = 'green';
+                alert('ڈیٹا کامیابی سے امپورٹ ہوگیا۔ براہ کرم ایپلیکیشن کو صحیح طریقے سے لوڈ کرنے کے لیے صفحہ ریفریش کریں۔');
+                // Reload necessary data or prompt user to refresh
+                loadSettings();
+                loadClassesIntoStudentForm(); // Reload classes everywhere
+                loadClassesIntoTeacherForm();
+                renderStudentList(); // Refresh visible data
+                // renderTeacherList(); // Refresh if implemented
+                fileInput.value = null; // Reset file input
+            };
+
+            transaction.onabort = (event) => { // Catch transaction-level errors (e.g., quota exceeded)
+                console.error("Import transaction aborted:", event.target.error);
+                importExportStatus.textContent = `امپورٹ ناکام (ٹرانزیکشن): ${event.target.error}`;
+                importExportStatus.style.color = 'red';
+                 alert(`امپورٹ ناکام: ${event.target.error}`);
+                 fileInput.value = null; // Reset file input
+            };
+
+
+        } catch (error) {
+            console.error("Import failed:", error);
+            importExportStatus.textContent = 'ڈیٹا امپورٹ ناکام ہوگیا۔ فائل خراب ہوسکتی ہے یا ڈیٹا فارمیٹ غلط ہے۔';
+            importExportStatus.style.color = 'red';
+            alert('ڈیٹا امپورٹ ناکام ہوگیا۔ فائل خراب ہوسکتی ہے یا ڈیٹا فارمیٹ غلط ہے۔\n' + error.message);
+            fileInput.value = null; // Reset file input
+        }
+    };
+
+    reader.onerror = () => {
+         importExportStatus.textContent = 'فائل پڑھنے میں خرابی۔';
+         importExportStatus.style.color = 'red';
+         alert('فائل پڑھنے میں خرابی۔');
+         fileInput.value = null; // Reset file input
+    }
+
+    reader.readAsText(file);
+}
+
+// Backup function (essentially same as export)
+function backupData() {
+     exportData(); // Reuse the export function for backup
+}
+
+
+// --- Initialization ---
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await openDB();
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Load initial data (ensure dependent data is loaded first)
+        await loadSettings(); // Load settings first for header etc.
+        await loadClassesIntoStudentForm(); // Load classes for students module
+        await loadClassesIntoTeacherForm(); // Load classes for teachers module
+
+        // Show the default module (e.g., settings)
+        showModule('settings'); // Start with settings page
+
+    } catch (error) {
+        console.error("Initialization failed:", error);
+        alert("ایپلیکیشن شروع کرنے میں ناکامی: " + error);
+        // Display a user-friendly error message on the page
+        document.getElementById('mainContent').innerHTML = `<p style="color: red; text-align: center; font-weight: bold;">ایپلیکیشن لوڈ کرنے میں خرابی۔ ڈیٹا بیس نہیں کھل سکا۔ ورژن ${DB_VERSION} میں اپ گریڈ کرنے کی کوشش کی گئی۔ براہ کرم کنسول چیک کریں یا صفحہ ریفریش کریں۔</p>`;
+    }
+});
+
+
+    </script>
+
+</body>
+</html>

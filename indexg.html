@@ -1,0 +1,2934 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدرسہ مینجمنٹ سسٹم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- بنیادی اسٹائل --- */
+        :root {
+            --primary-color: #006400; /* Dark Green */
+            --secondary-color: #f4f4f4; /* Light Gray */
+            --text-color: #333;
+            --border-color: #ccc;
+            --input-bg: transparent; /* Transparent background for inputs */
+            --input-text-color: #000; /* Black text for inputs */
+            --register-line-color: #e0e0e0; /* Light gray lines for register look */
+            --button-bg: var(--primary-color);
+            --button-text: #fff;
+            --button-hover-bg: #004d00; /* Darker Green */
+        }
+
+        body {
+            font-family: 'Noto Nastaliq Urdu', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.8; /* Improved readability for Urdu */
+            font-size: 16px; /* Base font size */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* --- نیویگیشن --- */
+        nav {
+            background-color: var(--primary-color);
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        nav ul li button {
+            background: none;
+            border: none;
+            color: var(--button-text);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav ul li button:hover, nav ul li button.active {
+            background-color: var(--button-hover-bg);
+        }
+
+        /* --- ماڈیول سیکشنز --- */
+        .module-section {
+            display: none; /* Initially hide all sections */
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        .module-section.active {
+            display: block; /* Show active section */
+        }
+
+        /* --- فارم اور ان پٹ اسٹائل (رجسٹر لُک) --- */
+        form {
+            display: grid;
+            gap: 15px; /* Spacing between form elements */
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="tel"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px 5px; /* Padding for text */
+            font-family: 'Noto Nastaliq Urdu', 'Courier New', monospace; /* Monospace/Nastaliq for printed look */
+            font-size: 1em;
+            color: var(--input-text-color);
+            background-color: var(--input-bg);
+            border: none; /* No border */
+            border-bottom: 1px solid var(--register-line-color); /* Underline like a register */
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+            border-radius: 0; /* Sharp corners */
+            direction: rtl; /* Ensure input direction is RTL */
+            text-align: right; /* Align text to the right */
+        }
+         input[type="file"] {
+            width: 100%;
+            padding: 8px 5px;
+            font-family: inherit;
+            font-size: 1em;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+         }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-bottom-color: var(--primary-color); /* Highlight bottom border on focus */
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        button[type="submit"], .btn {
+            padding: 12px 25px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+
+        button[type="submit"]:hover, .btn:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d; /* Gray */
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-danger {
+             background-color: #dc3545; /* Red */
+        }
+        .btn-danger:hover {
+             background-color: #c82333;
+        }
+
+        /* --- ٹیبل اسٹائل --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: right;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--button-text);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--secondary-color);
+        }
+
+        /* --- پرنٹ اسٹائل --- */
+        @media print {
+            body {
+                font-family: 'Noto Nastaliq Urdu', 'Times New Roman', serif; /* Serif font for print */
+                background-color: #fff;
+                color: #000;
+                font-size: 12pt; /* Standard print size */
+            }
+
+            nav, .no-print, button, .btn {
+                display: none !important; /* Hide navigation and buttons */
+            }
+
+            .container, .module-section {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+
+            h1, h2, h3 {
+                 color: #000;
+                 text-align: center;
+                 margin-bottom: 15px;
+                 font-size: 16pt;
+            }
+             h1 { font-size: 18pt; }
+
+            table {
+                width: 100%;
+                border: 1px solid #000; /* Solid black border for table */
+                font-size: 11pt;
+            }
+
+            th, td {
+                border: 1px solid #000; /* Solid black border for cells */
+                padding: 5px;
+                color: #000;
+                background-color: #fff !important; /* Ensure no background color */
+            }
+            th {
+                font-weight: bold;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            input[type="tel"],
+            input[type="email"],
+            textarea,
+            select {
+                border: none !important;
+                border-bottom: 1px dotted #000 !important; /* Dotted line for print */
+                padding: 2px 0 !important;
+                background-color: transparent !important;
+                color: #000 !important;
+                font-family: inherit !important;
+                font-size: 11pt !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: exact; /* Ensure styles are printed */
+                 color-adjust: exact;
+            }
+             /* Style specific printable sections like receipts, ID cards etc. here */
+             .printable-receipt, .printable-id-card, .printable-register {
+                 border: 1px solid #000;
+                 padding: 15px;
+                 margin-bottom: 20px;
+             }
+             .printable-header {
+                 text-align: center;
+                 margin-bottom: 20px;
+                 border-bottom: 1px solid #000;
+                 padding-bottom: 10px;
+             }
+             .printable-header img {
+                 max-width: 80px;
+                 max-height: 80px;
+                 display: block;
+                 margin: 0 auto 10px;
+             }
+             .printable-footer {
+                 margin-top: 30px;
+                 text-align: center;
+                 font-size: 10pt;
+             }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header style="text-align: center; margin-bottom: 20px;">
+            <img id="madrasaLogoPreview" src="https://placehold.co/100x100/eee/ccc?text=لوگو" alt="مدرسہ لوگو" style="max-width: 100px; max-height: 100px; border-radius: 50%; margin-bottom: 10px;">
+            <h1 id="madrasaNamePreview">مدرسہ کا نام</h1>
+            <p id="madrasaAddressPreview" style="margin: 5px 0;">پتہ</p>
+            <p id="madrasaPhonePreview" style="margin: 5px 0;">فون نمبر</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><button onclick="showModule('settings')">ترتیبات</button></li>
+                <li><button onclick="showModule('students')">طلباء</button></li>
+                <li><button onclick="showModule('teachers')">اساتذہ</button></li>
+                <li><button onclick="showModule('classes')">کلاسیں/مضامین</button></li>
+                <li><button onclick="showModule('attendance')">حاضری</button></li>
+                <li><button onclick="showModule('exams')">امتحانات/نتائج</button></li>
+                <li><button onclick="showModule('fees')">فیس</button></li>
+                <li><button onclick="showModule('salary')">تنخواہ</button></li>
+                <li><button onclick="showModule('ledger')">کھاتہ</button></li>
+                <li><button onclick="showModule('reports')">رپورٹس</button></li>
+            </ul>
+        </nav>
+
+        <main id="mainContent">
+            <section id="settings" class="module-section">
+                <h2><span class="icon">⚙️</span> ترتیبات</h2>
+                <form id="settingsForm">
+                    <h3>مدرسہ معلومات</h3>
+                    <div>
+                        <label for="madrasaName">مدرسہ کا نام:</label>
+                        <input type="text" id="madrasaName" required>
+                    </div>
+                    <div>
+                        <label for="madrasaAddress">پتہ:</label>
+                        <textarea id="madrasaAddress" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label for="madrasaPhone">فون نمبر:</label>
+                        <input type="tel" id="madrasaPhone">
+                    </div>
+                    <div>
+                        <label for="madrasaLogo">لوگو (اختیاری):</label>
+                        <input type="file" id="madrasaLogo" accept="image/*">
+                        <small>موجودہ لوگو کو تبدیل کرنے کے لیے نئی فائل منتخب کریں۔</small>
+                    </div>
+
+                    <h3>تعلیمی سال</h3>
+                    <div>
+                        <label for="academicYearStart">آغاز:</label>
+                        <input type="date" id="academicYearStart">
+                    </div>
+                     <div>
+                        <label for="academicYearEnd">اختتام:</label>
+                        <input type="date" id="academicYearEnd">
+                    </div>
+
+                    <h3>ڈیفالٹ فیس اور تنخواہ</h3>
+                     <div>
+                        <label for="defaultFee">ڈیفالٹ ماہانہ فیس (مثال):</label>
+                        <input type="number" id="defaultFee" placeholder="مثال: 1000">
+                    </div>
+                     <div>
+                        <label for="defaultSalary">ڈیفالٹ ماہانہ تنخواہ (مثال):</label>
+                        <input type="number" id="defaultSalary" placeholder="مثال: 15000">
+                    </div>
+
+                     <h3>رسید/رپورٹ پرنٹنگ</h3>
+                     <div>
+                        <label for="printSignature">مہر/دستخط (تصویر اپلوڈ):</label>
+                        <input type="file" id="printSignature" accept="image/*">
+                         <img id="signaturePreview" src="https://placehold.co/150x50/eee/ccc?text=دستخط" alt="دستخط پیش منظر" style="max-width: 150px; max-height: 50px; margin-top: 5px;">
+                    </div>
+
+
+                    <button type="submit" class="btn">محفوظ کریں</button>
+                </form>
+
+                <hr style="margin: 30px 0;">
+
+                <h3><span class="icon">💾</span> ڈیٹا مینجمنٹ</h3>
+                 <div style="display: flex; justify-content: space-around; gap: 15px;" class="no-print">
+                    <button onclick="exportData()" class="btn btn-secondary"><span class="icon">📤</span> مکمل ڈیٹا ایکسپورٹ</button>
+                    <div>
+                        <label for="importFile" class="btn btn-secondary" style="cursor: pointer;"><span class="icon">📥</span> مکمل ڈیٹا امپورٹ</label>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                        <small style="display: block; text-align: center; margin-top: 5px;">صرف .json فائل منتخب کریں۔</small>
+                    </div>
+                     <button onclick="backupData()" class="btn btn-secondary"><span class="icon">🔄</span> بیک اپ بنائیں</button>
+                </div>
+                 <p id="importExportStatus" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+            </section>
+
+            <section id="students" class="module-section">
+                <h2><span class="icon">👨‍🎓</span> طلباء مینجمنٹ</h2>
+
+                <form id="studentForm">
+                    <input type="hidden" id="studentId"> <div>
+                        <label for="studentName">نام:</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div>
+                        <label for="fatherName">والد کا نام:</label>
+                        <input type="text" id="fatherName" required>
+                    </div>
+                    <div>
+                        <label for="dob">تاریخ پیدائش:</label>
+                        <input type="date" id="dob">
+                    </div>
+                    <div>
+                        <label for="admissionNumber">داخلہ نمبر:</label>
+                        <input type="text" id="admissionNumber" required>
+                    </div>
+                    <div>
+                        <label for="studentClass">کلاس:</label>
+                        <select id="studentClass" required>
+                            <option value="">کلاس منتخب کریں</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="contactNumber">رابطہ نمبر:</label>
+                        <input type="tel" id="contactNumber">
+                    </div>
+                     <div>
+                        <label for="studentAddress">پتہ:</label>
+                        <textarea id="studentAddress" rows="2"></textarea>
+                    </div>
+                     <div>
+                        <label for="studentStatus">اسٹیٹس:</label>
+                        <select id="studentStatus" required>
+                            <option value="active" selected>فعال</option>
+                            <option value="transferred">منتقل شدہ</option>
+                            <option value="dropout">فارغ التحصیل/خارج شدہ</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">طالب علم شامل/اپ ڈیٹ کریں</button>
+                    <button type="button" onclick="resetStudentForm()" class="btn btn-secondary">فارم ری سیٹ</button>
+                </form>
+
+                <hr>
+
+                <h3>طلباء کی فہرست</h3>
+                 <div style="margin-bottom: 15px; display: flex; gap: 10px;" class="no-print">
+                    <label for="filterStudentClass">کلاس کے لحاظ سے فلٹر:</label>
+                    <select id="filterStudentClass" onchange="renderStudentList()">
+                        <option value="">تمام کلاسیں</option>
+                        </select>
+                    <label for="filterStudentStatus">اسٹیٹس کے لحاظ سے فلٹر:</label>
+                    <select id="filterStudentStatus" onchange="renderStudentList()">
+                        <option value="">تمام اسٹیٹس</option>
+                        <option value="active">فعال</option>
+                        <option value="transferred">منتقل شدہ</option>
+                        <option value="dropout">فارغ التحصیل/خارج شدہ</option>
+                    </select>
+                 </div>
+
+                <table id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>والد کا نام</th>
+                            <th>داخلہ نمبر</th>
+                            <th>کلاس</th>
+                            <th>اسٹیٹس</th>
+                            <th>کاروائیاں</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        </tbody>
+                </table>
+                 <button onclick="printStudentList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+
+                 <div id="printableIdCardArea" style="display: none;">
+                     </div>
+
+            </section>
+
+            <section id="teachers" class="module-section"><h2><span class="icon">👨‍🏫</span> اساتذہ مینجمنٹ (جلد آرہا ہے)</h2></section>
+            <section id="classes" class="module-section"><h2><span class="icon">📚</span> کلاسیں/مضامین (جلد آرہا ہے)</h2></section>
+            <section id="attendance" class="module-section"><h2><span class="icon"> P </span> حاضری (جلد آرہا ہے)</h2></section>
+            <section id="exams" class="module-section"><h2><span class="icon">📊</span> امتحانات/نتائج (جلد آرہا ہے)</h2></section>
+            <section id="fees" class="module-section"><h2><span class="icon">💰</span> فیس مینجمنٹ (جلد آرہا ہے)</h2></section>
+            <section id="salary" class="module-section"><h2><span class="icon">💵</span> تنخواہ مینجمنٹ (جلد آرہا ہے)</h2></section>
+            <section id="ledger" class="module-section"><h2><span class="icon">📒</span> کھاتہ سسٹم (جلد آرہا ہے)</h2></section>
+            <section id="reports" class="module-section"><h2><span class="icon">📄</span> رپورٹس (جلد آرہا ہے)</h2></section>
+
+        </main>
+
+        <footer style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 0.9em;" class="no-print">
+            <p>&copy; <span id="currentYear"></span> مدرسہ مینجمنٹ سسٹم۔ تمام حقوق محفوظ ہیں۔</p>
+        </footer>
+    </div>
+
+    <script>
+// --- IndexedDB Setup ---
+const DB_NAME = 'MadrasaDB';
+const DB_VERSION = 3; // Increased version for new stores
+let db;
+
+const STORE_NAMES = {
+    SETTINGS: 'settings',
+    STUDENTS: 'students',
+    TEACHERS: 'teachers',
+    CLASSES: 'classes',
+    SUBJECTS: 'subjects',
+    ATTENDANCE: 'attendance',
+    EXAMS: 'exams',
+    RESULTS: 'results',
+    FEES: 'fees',
+    SALARIES: 'salaries',
+    LEDGER: 'ledger'
+};
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        console.log(`Opening DB ${DB_NAME} with version ${DB_VERSION}`);
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onerror = (event) => {
+            console.error("Database error:", event.target.error);
+            reject("Database error: " + event.target.error);
+        };
+
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            console.log("Database opened successfully");
+            db.onversionchange = () => {
+                console.log("Database version change detected, closing connection.");
+                db.close();
+                alert("ڈیٹا بیس کا نیا ورژن دستیاب ہے۔ براہ کرم صفحہ ریفریش کریں۔");
+            };
+            resolve(db);
+        };
+
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            console.log(`Database upgrade needed from version ${event.oldVersion} to ${event.newVersion}`);
+
+            // Create or update object stores
+            if (!db.objectStoreNames.contains(STORE_NAMES.SETTINGS)) {
+                db.createObjectStore(STORE_NAMES.SETTINGS);
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.STUDENTS)) {
+                const studentStore = db.createObjectStore(STORE_NAMES.STUDENTS, { keyPath: 'id', autoIncrement: true });
+                studentStore.createIndex('admissionNumber', 'admissionNumber', { unique: true });
+                studentStore.createIndex('name', 'name', { unique: false });
+                studentStore.createIndex('class', 'class', { unique: false });
+                studentStore.createIndex('status', 'status', { unique: false });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.TEACHERS)) {
+                const teacherStore = db.createObjectStore(STORE_NAMES.TEACHERS, { keyPath: 'id', autoIncrement: true });
+                teacherStore.createIndex('name', 'name', { unique: false });
+                teacherStore.createIndex('phone', 'phone', { unique: true });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.CLASSES)) {
+                const classStore = db.createObjectStore(STORE_NAMES.CLASSES, { keyPath: 'id', autoIncrement: true });
+                classStore.createIndex('name', 'name', { unique: true });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.SUBJECTS)) {
+                const subjectStore = db.createObjectStore(STORE_NAMES.SUBJECTS, { keyPath: 'id', autoIncrement: true });
+                subjectStore.createIndex('name', 'name', { unique: true });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.ATTENDANCE)) {
+                const attendanceStore = db.createObjectStore(STORE_NAMES.ATTENDANCE, { keyPath: 'id', autoIncrement: true });
+                attendanceStore.createIndex('date', 'date', { unique: false });
+                attendanceStore.createIndex('studentId', 'studentId', { unique: false });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.EXAMS)) {
+                const examStore = db.createObjectStore(STORE_NAMES.EXAMS, { keyPath: 'id', autoIncrement: true });
+                examStore.createIndex('name', 'name', { unique: false });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.RESULTS)) {
+                const resultStore = db.createObjectStore(STORE_NAMES.RESULTS, { keyPath: 'id', autoIncrement: true });
+                resultStore.createIndex('examId', 'examId', { unique: false });
+                resultStore.createIndex('studentId', 'studentId', { unique: false });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.FEES)) {
+                const feeStore = db.createObjectStore(STORE_NAMES.FEES, { keyPath: 'id', autoIncrement: true });
+                feeStore.createIndex('studentId', 'studentId', { unique: false });
+                feeStore.createIndex('date', 'date', { unique: false });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.SALARIES)) {
+                const salaryStore = db.createObjectStore(STORE_NAMES.SALARIES, { keyPath: 'id', autoIncrement: true });
+                salaryStore.createIndex('teacherId', 'teacherId', { unique: false });
+                salaryStore.createIndex('date', 'date', { unique: false });
+            }
+            if (!db.objectStoreNames.contains(STORE_NAMES.LEDGER)) {
+                const ledgerStore = db.createObjectStore(STORE_NAMES.LEDGER, { keyPath: 'id', autoIncrement: true });
+                ledgerStore.createIndex('date', 'date', { unique: false });
+                ledgerStore.createIndex('type', 'type', { unique: false });
+            }
+            console.log("Database upgrade complete");
+        };
+    });
+}
+
+// --- Utility Functions for DB Operations ---
+function dbAddOrUpdate(storeName, data, key = undefined) {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = key ? store.put(data, key) : store.put(data);
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => {
+            console.error(`Error adding/updating data to ${storeName}:`, event.target.error);
+            reject(event.target.error);
+        };
+        transaction.onabort = (event) => {
+            console.error(`Add/Update transaction aborted for ${storeName}:`, event.target.error);
+            reject(event.target.error || new Error('Transaction aborted'));
+        };
+    });
+}
+
+function dbGet(storeName, key) {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.get(key);
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => {
+            console.error(`Error getting data from ${storeName} with key ${key}:`, event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
+
+function dbGetAll(storeName, indexName = null, query = null) {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const source = indexName ? store.index(indexName) : store;
+        const request = query ? source.getAll(query) : source.getAll();
+
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => {
+            console.error(`Error getting all data from ${storeName}:`, event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
+
+function dbDelete(storeName, key) {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.delete(key);
+
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => {
+            console.error(`Error deleting data from ${storeName} with key ${key}:`, event.target.error);
+            reject(event.target.error);
+        };
+        transaction.onabort = (event) => {
+            console.error(`Delete transaction aborted for ${storeName}:`, event.target.error);
+            reject(event.target.error || new Error('Transaction aborted'));
+        };
+    });
+}
+
+function dbClearStore(storeName) {
+    return new Promise((resolve, reject) => {
+        if (!db) return reject("Database not open");
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.clear();
+
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => {
+            console.error(`Error clearing store ${storeName}:`, event.target.error);
+            reject(event.target.error);
+        };
+        transaction.onabort = (event) => {
+            console.error(`Clear store transaction aborted for ${storeName}:`, event.target.error);
+            reject(event.target.error || new Error('Transaction aborted'));
+        };
+    });
+}
+
+// --- Layout Adjustment Function ---
+function applyFormLayout(formElement) {
+    if (!formElement) return;
+    formElement.style.display = 'grid';
+    const directChildren = Array.from(formElement.children).filter(el => el.tagName === 'DIV');
+    if (directChildren.length > 3) {
+        formElement.style.gridTemplateColumns = 'repeat(auto-fit, minmax(300px, 1fr))';
+        formElement.style.gap = '15px 25px';
+    } else {
+        formElement.style.gridTemplateColumns = '1fr';
+    }
+}
+
+// --- Module Switching Logic ---
+function showModule(moduleId) {
+    document.querySelectorAll('.module-section').forEach(section => {
+        section.style.display = 'none';
+        section.classList.remove('active');
+    });
+    document.querySelectorAll('nav ul li button').forEach(button => {
+        button.classList.remove('active');
+    });
+
+    const activeSection = document.getElementById(moduleId);
+    if (activeSection) {
+        activeSection.style.display = 'block';
+        activeSection.classList.add('active');
+        const activeButton = document.querySelector(`nav ul li button[onclick="showModule('${moduleId}')"]`);
+        if (activeButton) activeButton.classList.add('active');
+
+        const formElement = activeSection.querySelector('form');
+        if (formElement) applyFormLayout(formElement);
+
+        // Load module-specific data
+        if (moduleId === 'settings') loadSettings();
+        else if (moduleId === 'students') {
+            loadClassesIntoStudentForm();
+            renderStudentList();
+        } else if (moduleId === 'teachers') {
+            loadClassesIntoTeacherForm();
+            renderTeacherList();
+        } else if (moduleId === 'classes') {
+            loadSubjectsIntoClassForm();
+            renderClassList();
+        } else if (moduleId === 'attendance') {
+            loadClassesIntoAttendanceForm();
+            renderAttendanceList();
+        } else if (moduleId === 'exams') {
+            loadClassesIntoExamForm();
+            renderExamList();
+        } else if (moduleId === 'fees') {
+            loadStudentsIntoFeeForm();
+            renderFeeList();
+        } else if (moduleId === 'salary') {
+            loadTeachersIntoSalaryForm();
+            renderSalaryList();
+        } else if (moduleId === 'ledger') {
+            renderLedgerList();
+        } else if (moduleId === 'reports') {
+            loadReportOptions();
+        }
+    } else {
+        console.warn(`Module section with id "${moduleId}" not found.`);
+        showModule('settings');
+    }
+}
+
+// --- Settings Module Logic ---
+const settingsForm = document.getElementById('settingsForm');
+const madrasaNameInput = document.getElementById('madrasaName');
+const madrasaAddressInput = document.getElementById('madrasaAddress');
+const madrasaPhoneInput = document.getElementById('madrasaPhone');
+const madrasaLogoInput = document.getElementById('madrasaLogo');
+const madrasaLogoPreview = document.getElementById('madrasaLogoPreview');
+const madrasaNamePreview = document.getElementById('madrasaNamePreview');
+const madrasaAddressPreview = document.getElementById('madrasaAddressPreview');
+const madrasaPhonePreview = document.getElementById('madrasaPhonePreview');
+const academicYearStartInput = document.getElementById('academicYearStart');
+const academicYearEndInput = document.getElementById('academicYearEnd');
+const defaultFeeInput = document.getElementById('defaultFee');
+const defaultSalaryInput = document.getElementById('defaultSalary');
+const printSignatureInput = document.getElementById('printSignature');
+const signaturePreview = document.getElementById('signaturePreview');
+
+const readFileAsDataURL = (file) => {
+    return new Promise((resolve, reject) => {
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+    });
+};
+
+async function saveSettings() {
+    const logoFile = madrasaLogoInput.files[0];
+    const signatureFile = printSignatureInput.files[0];
+
+    try {
+        const currentSettings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig') || {};
+        const logoDataUrl = logoFile ? await readFileAsDataURL(logoFile) : currentSettings.logoDataUrl;
+        const signatureDataUrl = signatureFile ? await readFileAsDataURL(signatureFile) : currentSettings.signatureDataUrl;
+
+        const settingsData = {
+            madrasaName: madrasaNameInput.value.trim(),
+            madrasaAddress: madrasaAddressInput.value.trim(),
+            madrasaPhone: madrasaPhoneInput.value.trim(),
+            academicYearStart: academicYearStartInput.value,
+            academicYearEnd: academicYearEndInput.value,
+            defaultFee: defaultFeeInput.value,
+            defaultSalary: defaultSalaryInput.value,
+            logoDataUrl: logoDataUrl,
+            signatureDataUrl: signatureDataUrl
+        };
+
+        await dbAddOrUpdate(STORE_NAMES.SETTINGS, settingsData, 'madrasaConfig');
+        alert('ترتیبات کامیابی سے محفوظ ہوگئیں۔');
+        loadSettings();
+    } catch (error) {
+        console.error("Error saving settings:", error);
+        alert('ترتیبات محفوظ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+async function loadSettings() {
+    try {
+        const settings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig');
+        if (settings) {
+            madrasaNameInput.value = settings.madrasaName || '';
+            madrasaAddressInput.value = settings.madrasaAddress || '';
+            madrasaPhoneInput.value = settings.madrasaPhone || '';
+            academicYearStartInput.value = settings.academicYearStart || '';
+            academicYearEndInput.value = settings.academicYearEnd || '';
+            defaultFeeInput.value = settings.defaultFee || '';
+            defaultSalaryInput.value = settings.defaultSalary || '';
+            madrasaNamePreview.textContent = settings.madrasaName || 'مدرسہ کا نام';
+            madrasaAddressPreview.textContent = settings.madrasaAddress || 'پتہ';
+            madrasaPhonePreview.textContent = settings.madrasaPhone || 'فون نمبر';
+            madrasaLogoPreview.src = settings.logoDataUrl || 'https://placehold.co/100x100/eee/ccc?text=لوگو';
+            signaturePreview.src = settings.signatureDataUrl || 'https://placehold.co/150x50/eee/ccc?text=دستخط';
+        }
+    } catch (error) {
+        console.error("Error loading settings:", error);
+    }
+}
+
+settingsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveSettings();
+});
+
+madrasaLogoInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        readFileAsDataURL(file).then(dataUrl => {
+            if (dataUrl) madrasaLogoPreview.src = dataUrl;
+        }).catch(err => console.error("Error reading logo file:", err));
+    }
+});
+
+printSignatureInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        readFileAsDataURL(file).then(dataUrl => {
+            if (dataUrl) signaturePreview.src = dataUrl;
+        }).catch(err => console.error("Error reading signature file:", err));
+    }
+});
+
+// --- Teachers Module Logic ---
+async function updateTeachersSection() {
+    const section = document.getElementById('teachers');
+    section.innerHTML = `
+        <h2><span class="icon">👨‍🏫</span> اساتذہ مینجمنٹ</h2>
+        <form id="teacherForm">
+            <input type="hidden" id="teacherId">
+            <div>
+                <label for="teacherName">نام:</label>
+                <input type="text" id="teacherName" required>
+            </div>
+            <div>
+                <label for="teacherPhone">فون نمبر:</label>
+                <input type="tel" id="teacherPhone" required>
+            </div>
+            <div>
+                <label for="teacherSubjects">مضامین (ہر لائن پر ایک):</label>
+                <textarea id="teacherSubjects" rows="4"></textarea>
+            </div>
+            <div>
+                <label for="teacherClasses">کلاسیں:</label>
+                <select id="teacherClasses" multiple></select>
+            </div>
+            <div>
+                <label for="teacherSalaryType">تنخواہ کی قسم:</label>
+                <select id="teacherSalaryType" required>
+                    <option value="monthly">ماہانہ</option>
+                    <option value="perClass">فی کلاس</option>
+                </select>
+            </div>
+            <div>
+                <label for="teacherSalaryAmount">تنخواہ کی رقم:</label>
+                <input type="number" id="teacherSalaryAmount" required>
+            </div>
+            <div>
+                <label for="teacherJoiningDate">شمولیت کی تاریخ:</label>
+                <input type="date" id="teacherJoiningDate">
+            </div>
+            <button type="submit" class="btn">استاد شامل/اپ ڈیٹ کریں</button>
+            <button type="button" onclick="resetTeacherForm()" class="btn btn-secondary">فارم ری سیٹ</button>
+        </form>
+        <hr>
+        <h3>اساتذہ کی فہرست</h3>
+        <table id="teacherTable">
+            <thead>
+                <tr>
+                    <th>نام</th>
+                    <th>فون نمبر</th>
+                    <th>مضامین</th>
+                    <th>کلاسیں</th>
+                    <th>تنخواہ</th>
+                    <th>کاروائیاں</th>
+                </tr>
+            </thead>
+            <tbody id="teacherTableBody"></tbody>
+        </table>
+        <button onclick="printTeacherList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+    `;
+    applyFormLayout(document.getElementById('teacherForm'));
+}
+
+async function loadClassesIntoTeacherForm() {
+    try {
+        const classes = await dbGetAll(STORE_NAMES.CLASSES);
+        const teacherClassesSelect = document.getElementById('teacherClasses');
+        if (!teacherClassesSelect) return;
+        teacherClassesSelect.innerHTML = '';
+        classes.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls.name;
+            option.textContent = cls.name;
+            teacherClassesSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading classes into teacher form:", error);
+    }
+}
+
+async function renderTeacherList() {
+    try {
+        const teachers = await dbGetAll(STORE_NAMES.TEACHERS);
+        const teacherTableBody = document.getElementById('teacherTableBody');
+        teacherTableBody.innerHTML = '';
+        if (teachers.length === 0) {
+            teacherTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">کوئی استاد موجود نہیں۔</td></tr>';
+            return;
+        }
+        teachers.forEach(teacher => {
+            const row = teacherTableBody.insertRow();
+            row.innerHTML = `
+                <td>${teacher.name}</td>
+                <td>${teacher.phone}</td>
+                <td>${teacher.subjects.join(', ') || 'کوئی مضمون نہیں'}</td>
+                <td>${teacher.classes.join(', ') || 'کوئی کلاس نہیں'}</td>
+                <td>${teacher.salaryAmount} (${teacher.salaryType})</td>
+                <td class="no-print">
+                    <button onclick="editTeacher(${teacher.id})" class="btn btn-secondary btn-sm">ترمیم</button>
+                    <button onclick="deleteTeacher(${teacher.id})" class="btn btn-danger btn-sm">حذف</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering teacher list:", error);
+        document.getElementById('teacherTableBody').innerHTML = '<tr><td colspan="6" style="text-align:center;">اساتذہ کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+document.addEventListener('submit', async (e) => {
+    if (e.target.id === 'teacherForm') {
+        e.preventDefault();
+        const teacherId = parseInt(document.getElementById('teacherId').value);
+        const teacherData = {
+            name: document.getElementById('teacherName').value.trim(),
+            phone: document.getElementById('teacherPhone').value.trim(),
+            subjects: document.getElementById('teacherSubjects').value.split('\n').map(s => s.trim()).filter(s => s),
+            classes: Array.from(document.getElementById('teacherClasses').selectedOptions).map(opt => opt.value),
+            salaryType: document.getElementById('teacherSalaryType').value,
+            salaryAmount: parseFloat(document.getElementById('teacherSalaryAmount').value),
+            joiningDate: document.getElementById('teacherJoiningDate').value
+        };
+
+        if (!teacherData.name || !teacherData.phone || !teacherData.salaryAmount) {
+            alert('براہ کرم تمام ضروری فیلڈز پُر کریں۔');
+            return;
+        }
+
+        try {
+            if (teacherId) {
+                teacherData.id = teacherId;
+                await dbAddOrUpdate(STORE_NAMES.TEACHERS, teacherData);
+                alert('استاد کی معلومات کامیابی سے اپ ڈیٹ ہوگئیں۔');
+            } else {
+                const existing = await dbGetAll(STORE_NAMES.TEACHERS, 'phone', teacherData.phone);
+                if (existing.length > 0) {
+                    alert(`فون نمبر ${teacherData.phone} پہلے سے موجود ہے۔`);
+                    return;
+                }
+                await dbAddOrUpdate(STORE_NAMES.TEACHERS, teacherData);
+                alert('نیا استاد کامیابی سے شامل ہوگیا۔');
+            }
+            resetTeacherForm();
+            renderTeacherList();
+        } catch (error) {
+            console.error("Error saving teacher:", error);
+            alert('استاد کو محفوظ کرنے میں خرابی پیش آئی۔');
+        }
+    }
+});
+
+async function editTeacher(id) {
+    try {
+        const teacher = await dbGet(STORE_NAMES.TEACHERS, id);
+        if (teacher) {
+            document.getElementById('teacherId').value = teacher.id;
+            document.getElementById('teacherName').value = teacher.name;
+            document.getElementById('teacherPhone').value = teacher.phone;
+            document.getElementById('teacherSubjects').value = teacher.subjects.join('\n');
+            document.getElementById('teacherSalaryType').value = teacher.salaryType;
+            document.getElementById('teacherSalaryAmount').value = teacher.salaryAmount;
+            document.getElementById('teacherJoiningDate').value = teacher.joiningDate;
+            const teacherClassesSelect = document.getElementById('teacherClasses');
+            Array.from(teacherClassesSelect.options).forEach(opt => {
+                opt.selected = teacher.classes.includes(opt.value);
+            });
+            document.getElementById('teacherForm').scrollIntoView({ behavior: 'smooth' });
+        }
+    } catch (error) {
+        console.error("Error fetching teacher for edit:", error);
+        alert('ترمیم کے لیے استاد کی معلومات لوڈ کرنے میں خرابی۔');
+    }
+}
+
+async function deleteTeacher(id) {
+    if (confirm('کیا آپ واقعی اس استاد کو حذف کرنا چاہتے ہیں؟')) {
+        try {
+            await dbDelete(STORE_NAMES.TEACHERS, id);
+            alert('استاد کامیابی سے حذف ہوگیا۔');
+            renderTeacherList();
+        } catch (error) {
+            console.error("Error deleting teacher:", error);
+            alert('استاد کو حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+function resetTeacherForm() {
+    document.getElementById('teacherForm').reset();
+    document.getElementById('teacherId').value = '';
+    Array.from(document.getElementById('teacherClasses').options).forEach(opt => opt.selected = false);
+}
+
+function printTeacherList() {
+    window.print();
+}
+
+// --- Classes/Subjects Module Logic ---
+async function updateClassesSection() {
+    const section = document.getElementById('classes');
+    section.innerHTML = `
+        <h2><span class="icon">📚</span> کلاسیں/مضامین مینجمنٹ</h2>
+        <form id="classForm">
+            <input type="hidden" id="classId">
+            <div>
+                <label for="className">کلاس کا نام:</label>
+                <input type="text" id="className" required>
+            </div>
+            <div>
+                <label for="classSubjects">مضامین (ہر لائن پر ایک):</label>
+                <textarea id="classSubjects" rows="4"></textarea>
+            </div>
+            <div>
+                <label for="classFee">ماہانہ فیس (اختیاری):</label>
+                <input type="number" id="classFee" placeholder="مثال: 1000">
+            </div>
+            <button type="submit" class="btn">کلاس شامل/اپ ڈیٹ کریں</button>
+            <button type="button" onclick="resetClassForm()" class="btn btn-secondary">فارم ری سیٹ</button>
+        </form>
+        <hr>
+        <h3>کلاسوں کی فہرست</h3>
+        <table id="classTable">
+            <thead>
+                <tr>
+                    <th>کلاس کا نام</th>
+                    <th>مضامین</th>
+                    <th>فیس</th>
+                    <th>کاروائیاں</th>
+                </tr>
+            </thead>
+            <tbody id="classTableBody"></tbody>
+        </table>
+        <button onclick="printClassList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+    `;
+    applyFormLayout(document.getElementById('classForm'));
+}
+
+async function loadSubjectsIntoClassForm() {
+    // Subjects are managed within classes for simplicity
+}
+
+async function renderClassList() {
+    try {
+        const classes = await dbGetAll(STORE_NAMES.CLASSES);
+        const classTableBody = document.getElementById('classTableBody');
+        classTableBody.innerHTML = '';
+        if (classes.length === 0) {
+            classTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">کوئی کلاس موجود نہیں۔</td></tr>';
+            return;
+        }
+        classes.forEach(cls => {
+            const row = classTableBody.insertRow();
+            row.innerHTML = `
+                <td>${cls.name}</td>
+                <td>${cls.subjects.join(', ') || 'کوئی مضمون نہیں'}</td>
+                <td>${cls.fee || 'ڈیفالٹ'}</td>
+                <td class="no-print">
+                    <button onclick="editClass(${cls.id})" class="btn btn-secondary btn-sm">ترمیم</button>
+                    <button onclick="deleteClass(${cls.id})" class="btn btn-danger btn-sm">حذف</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering class list:", error);
+        document.getElementById('classTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;">کلاسوں کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+document.addEventListener('submit', async (e) => {
+    if (e.target.id === 'classForm') {
+        e.preventDefault();
+        const classId = parseInt(document.getElementById('classId').value);
+        const classData = {
+            name: document.getElementById('className').value.trim(),
+            subjects: document.getElementById('classSubjects').value.split('\n').map(s => s.trim()).filter(s => s),
+            fee: document.getElementById('classFee').value.trim() || null
+        };
+
+        if (!classData.name) {
+            alert('براہ کرم کلاس کا نام درج کریں۔');
+            return;
+        }
+
+        try {
+            if (classId) {
+                classData.id = classId;
+                await dbAddOrUpdate(STORE_NAMES.CLASSES, classData);
+                alert('کلاس کامیابی سے اپ ڈیٹ ہوگئی۔');
+            } else {
+                const existing = await dbGetAll(STORE_NAMES.CLASSES, 'name', classData.name);
+                if (existing.length > 0) {
+                    alert(`کلاس "${classData.name}" پہلے سے موجود ہے۔`);
+                    return;
+                }
+                await dbAddOrUpdate(STORE_NAMES.CLASSES, classData);
+                alert('نئی کلاس کامیابی سے شامل ہوگئی۔');
+            }
+            resetClassForm();
+            renderClassList();
+            loadClassesIntoStudentForm();
+            loadClassesIntoTeacherForm();
+            loadClassesIntoAttendanceForm();
+            loadClassesIntoExamForm();
+        } catch (error) {
+            console.error("Error saving class:", error);
+            alert('کلاس محفوظ کرنے میں خرابی پیش آئی۔');
+        }
+    }
+});
+
+async function editClass(id) {
+    try {
+        const cls = await dbGet(STORE_NAMES.CLASSES, id);
+        if (cls) {
+            document.getElementById('classId').value = cls.id;
+            document.getElementById('className').value = cls.name;
+            document.getElementById('classSubjects').value = cls.subjects.join('\n');
+            document.getElementById('classFee').value = cls.fee || '';
+            document.getElementById('classForm').scrollIntoView({ behavior: 'smooth' });
+        }
+    } catch (error) {
+        console.error("Error fetching class for edit:", error);
+        alert('ترمیم کے لیے کلاس لوڈ کرنے میں خرابی۔');
+    }
+}
+
+async function deleteClass(id) {
+    if (confirm('کیا آپ واقعی اس کلاس کو حذف کرنا چاہتے ہیں؟')) {
+        try {
+            await dbDelete(STORE_NAMES.CLASSES, id);
+            alert('کلاس کامیابی سے حذف ہوگئی۔');
+            renderClassList();
+            loadClassesIntoStudentForm();
+            loadClassesIntoTeacherForm();
+            loadClassesIntoAttendanceForm();
+            loadClassesIntoExamForm();
+        } catch (error) {
+            console.error("Error deleting class:", error);
+            alert('کلاس حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+function resetClassForm() {
+    document.getElementById('classForm').reset();
+    document.getElementById('classId').value = '';
+}
+
+function printClassList() {
+    window.print();
+}
+
+// --- Attendance Module Logic ---
+async function updateAttendanceSection() {
+    const section = document.getElementById('attendance');
+    section.innerHTML = `
+        <h2><span class="icon">✅</span> حاضری مینجمنٹ</h2>
+        <form id="attendanceForm">
+            <div>
+                <label for="attendanceDate">تاریخ:</label>
+                <input type="date" id="attendanceDate" required>
+            </div>
+            <div>
+                <label for="attendanceClass">کلاس:</label>
+                <select id="attendanceClass" required onchange="loadStudentsForAttendance()">
+                    <option value="">کلاس منتخب کریں</option>
+                </select>
+            </div>
+            <div id="attendanceStudentList"></div>
+            <button type="submit" class="btn">حاضری محفوظ کریں</button>
+        </form>
+        <hr>
+        <h3>حاضری کی فہرست</h3>
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;" class="no-print">
+            <label for="filterAttendanceDate">تاریخ:</label>
+            <input type="date" id="filterAttendanceDate" onchange="renderAttendanceList()">
+            <label for="filterAttendanceClass">کلاس:</label>
+            <select id="filterAttendanceClass" onchange="renderAttendanceList()">
+                <option value="">تمام کلاسیں</option>
+            </select>
+        </div>
+        <table id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>تاریخ</th>
+                    <th>کلاس</th>
+                    <th>طالب علم</th>
+                    <th>حاضری</th>
+                    <th>کاروائیاں</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceTableBody"></tbody>
+        </table>
+        <button onclick="printAttendanceList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+    `;
+    applyFormLayout(document.getElementById('attendanceForm'));
+}
+
+async function loadClassesIntoAttendanceForm() {
+    try {
+        const classes = await dbGetAll(STORE_NAMES.CLASSES);
+        const attendanceClassSelect = document.getElementById('attendanceClass');
+        const filterAttendanceClassSelect = document.getElementById('filterAttendanceClass');
+        attendanceClassSelect.innerHTML = '<option value="">کلاس منتخب کریں</option>';
+        filterAttendanceClassSelect.innerHTML = '<option value="">تمام کلاسیں</option>';
+        classes.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls.name;
+            option.textContent = cls.name;
+            attendanceClassSelect.appendChild(option.cloneNode(true));
+            filterAttendanceClassSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading classes into attendance form:", error);
+    }
+}
+
+async function loadStudentsForAttendance() {
+    try {
+        const className = document.getElementById('attendanceClass').value;
+        const students = await dbGetAll(STORE_NAMES.STUDENTS);
+        const filteredStudents = students.filter(s => s.class === className && s.status === 'active');
+        const studentListDiv = document.getElementById('attendanceStudentList');
+        studentListDiv.innerHTML = '<h3>طلباء کی فہرست</h3>';
+        filteredStudents.forEach(student => {
+            studentListDiv.innerHTML += `
+                <div style="margin-bottom: 10px;">
+                    <label>${student.name} (${student.admissionNumber}): </label>
+                    <select name="attendance_${student.id}" required>
+                        <option value="present">حاضر</option>
+                        <option value="absent">غیر حاضر</option>
+                        <option value="leave">رخصت</option>
+                    </select>
+                </div>
+            `;
+        });
+    } catch (error) {
+        console.error("Error loading students for attendance:", error);
+    }
+}
+
+document.addEventListener('submit', async (e) => {
+    if (e.target.id === 'attendanceForm') {
+        e.preventDefault();
+        const date = document.getElementById('attendanceDate').value;
+        const className = document.getElementById('attendanceClass').value;
+        const students = await dbGetAll(STORE_NAMES.STUDENTS);
+        const filteredStudents = students.filter(s => s.class === className && s.status === 'active');
+
+        try {
+            const transaction = db.transaction([STORE_NAMES.ATTENDANCE], 'readwrite');
+            const store = transaction.objectStore(STORE_NAMES.ATTENDANCE);
+
+            for (const student of filteredStudents) {
+                const status = document.querySelector(`select[name="attendance_${student.id}"]`).value;
+                const attendanceData = {
+                    date,
+                    class: className,
+                    studentId: student.id,
+                    studentName: student.name,
+                    status
+                };
+                store.put(attendanceData);
+            }
+
+            transaction.oncomplete = () => {
+                alert('حاضری کامیابی سے محفوظ ہوگئی۔');
+                document.getElementById('attendanceForm').reset();
+                document.getElementById('attendanceStudentList').innerHTML = '';
+                renderAttendanceList();
+            };
+            transaction.onerror = (event) => {
+                console.error("Error saving attendance:", event.target.error);
+                alert('حاضری محفوظ کرنے میں خرابی پیش آئی۔');
+            };
+        } catch (error) {
+            console.error("Error saving attendance:", error);
+            alert('حاضری محفوظ کرنے میں خرابی پیش آئی۔');
+        }
+    }
+});
+
+async function renderAttendanceList() {
+    try {
+        const dateFilter = document.getElementById('filterAttendanceDate').value;
+        const classFilter = document.getElementById('filterAttendanceClass').value;
+        let attendances = await dbGetAll(STORE_NAMES.ATTENDANCE);
+
+        if (dateFilter) attendances = attendances.filter(a => a.date === dateFilter);
+        if (classFilter) attendances = attendances.filter(a => a.class === classFilter);
+
+        const attendanceTableBody = document.getElementById('attendanceTableBody');
+        attendanceTableBody.innerHTML = '';
+        if (attendances.length === 0) {
+            attendanceTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">کوئی حاضری موجود نہیں۔</td></tr>';
+            return;
+        }
+        attendances.forEach(att => {
+            const row = attendanceTableBody.insertRow();
+            row.innerHTML = `
+                <td>${att.date}</td>
+                <td>${att.class}</td>
+                <td>${att.studentName}</td>
+                <td>${translateAttendanceStatus(att.status)}</td>
+                <td class="no-print">
+                    <button onclick="deleteAttendance(${att.id})" class="btn btn-danger btn-sm">حذف</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering attendance list:", error);
+        document.getElementById('attendanceTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center;">حاضری کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+function translateAttendanceStatus(status) {
+    switch (status) {
+        case 'present': return 'حاضر';
+        case 'absent': return 'غیر حاضر';
+        case 'leave': return 'رخصت';
+        default: return status;
+    }
+}
+
+async function deleteAttendance(id) {
+    if (confirm('کیا آپ واقعی اس حاضری کو حذف کرنا چاہتے ہیں؟')) {
+        try {
+            await dbDelete(STORE_NAMES.ATTENDANCE, id);
+            alert('حاضری کامیابی سے حذف ہوگئی۔');
+            renderAttendanceList();
+        } catch (error) {
+            console.error("Error deleting attendance:", error);
+            alert('حاضری حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+function printAttendanceList() {
+    window.print();
+}
+
+// --- Exams/Results Module Logic ---
+async function updateExamsSection() {
+    const section = document.getElementById('exams');
+    section.innerHTML = `
+        <h2><span class="icon">📊</span> امتحانات/نتائج مینجمنٹ</h2>
+        <form id="examForm">
+            <div>
+                <label for="examName">امتحان کا نام:</label>
+                <input type="text" id="examName" required>
+            </div>
+            <div>
+                <label for="examDate">تاریخ:</label>
+                <input type="date" id="examDate" required>
+            </div>
+            <div>
+                <label for="examClass">کلاس:</label>
+                <select id="examClass" required>
+                    <option value="">کلاس منتخب کریں</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">امتحان شامل کریں</button>
+        </form>
+        <hr>
+        <h3>امتحانات کی فہرست</h3>
+        <table id="examTable">
+            <thead>
+                <tr>
+                    <th>امتحان کا نام</th>
+                    <th>تاریخ</th>
+                    <th>کلاس</th>
+                    <th>کاروائیاں</th>
+                </tr>
+            </thead>
+            <tbody id="examTableBody"></tbody>
+        </table>
+        <hr>
+        <h3>نتائج درج کریں</h3>
+        <form id="resultForm">
+            <div>
+                <label for="resultExam">امتحان:</label>
+                <select id="resultExam" required onchange="loadStudentsForResults()">
+                    <option value="">امتحان منتخب کریں</option>
+                </select>
+            </div>
+            <div id="resultStudentList"></div>
+            <button type="submit" class="btn">نتائج محفوظ کریں</button>
+        </form>
+        <button onclick="printResultList()" class="btn no-print" style="margin-top: 15px;">نتائج پرنٹ کریں</button>
+    `;
+    applyFormLayout(document.getElementById('examForm'));
+    applyFormLayout(document.getElementById('resultForm'));
+}
+
+async function loadClassesIntoExamForm() {
+    try {
+        const classes = await dbGetAll(STORE_NAMES.CLASSES);
+        const examClassSelect = document.getElementById('examClass');
+        examClassSelect.innerHTML = '<option value="">کلاس منتخب کریں</option>';
+        classes.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls.name;
+            option.textContent = cls.name;
+            examClassSelect.appendChild(option);
+        });
+
+        const resultExamSelect = document.getElementById('resultExam');
+        resultExamSelect.innerHTML = '<option value="">امتحان منتخب کریں</option>';
+        const exams = await dbGetAll(STORE_NAMES.EXAMS);
+        exams.forEach(exam => {
+            const option = document.createElement('option');
+            option.value = exam.id;
+            option.textContent = `${exam.name} (${exam.class})`;
+            resultExamSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading classes into exam form:", error);
+    }
+}
+
+async function renderExamList() {
+    try {
+        const exams = await dbGetAll(STORE_NAMES.EXAMS);
+        const examTableBody = document.getElementById('examTableBody');
+        examTableBody.innerHTML = '';
+        if (exams.length === 0) {
+            examTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">کوئی امتحان موجود نہیں۔</td></tr>';
+            return;
+        }
+        exams.forEach(exam => {
+            const row = examTableBody.insertRow();
+            row.innerHTML = `
+                <td>${exam.name}</td>
+                <td>${exam.date}</td>
+                <td>${exam.class}</td>
+                <td class="no-print">
+                    <button onclick="deleteExam(${exam.id})" class="btn btn-danger btn-sm">حذف</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering exam list:", error);
+        document.getElementById('examTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center;">امتحانات کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+document.addEventListener('submit', async (e) => {
+    if (e.target.id === 'examForm') {
+        e.preventDefault();
+        const examData = {
+            name: document.getElementById('examName').value.trim(),
+            date: document.getElementById('examDate').value,
+            class: document.getElementById('examClass').value
+        };
+
+        if (!examData.name || !examData.date || !examData.class) {
+            alert('براہ کرم تمام ضروری فیلڈز پُر کریں۔');
+            return;
+        }
+
+        try {
+            await dbAddOrUpdate(STORE_NAMES.EXAMS, examData);
+            alert('امتحان کامیابی سے شامل ہوگیا۔');
+            document.getElementById('examForm').reset();
+            renderExamList();
+            loadClassesIntoExamForm();
+        } catch (error) {
+            console.error("Error saving exam:", error);
+            alert('امتحان محفوظ کرنے میں خرابی پیش آئی۔');
+        }
+    } else if (e.target.id === 'resultForm') {
+        e.preventDefault();
+        const examId = parseInt(document.getElementById('resultExam').value);
+        const students = await dbGetAll(STORE_NAMES.STUDENTS);
+        const exam = await dbGet(STORE_NAMES.EXAMS, examId);
+        const filteredStudents = students.filter(s => s.class === exam.class && s.status === 'active');
+
+        try {
+            const transaction = db.transaction([STORE_NAMES.RESULTS], 'readwrite');
+            const store = transaction.objectStore(STORE_NAMES.RESULTS);
+
+            for (const student of filteredStudents) {
+                const marks = parseFloat(document.querySelector(`input[name="marks_${student.id}"]`).value) || 0;
+                const totalMarks = parseFloat(document.querySelector(`input[name="totalMarks_${student.id}"]`).value) || 100;
+                const resultData = {
+                    examId,
+                    studentId: student.id,
+                    studentName: student.name,
+                    marks,
+                    totalMarks
+                };
+                store.put(resultData);
+            }
+
+            transaction.oncomplete = () => {
+                alert('نتائج کامیابی سے محفوظ ہوگئے۔');
+                document.getElementById('resultForm').reset();
+                document.getElementById('resultStudentList').innerHTML = '';
+                renderExamList();
+            };
+            transaction.onerror = (event) => {
+                console.error("Error saving results:", event.target.error);
+                alert('نتائج محفوظ کرنے میں خرابی پیش آئی۔');
+            };
+        } catch (error) {
+            console.error("Error saving results:", error);
+            alert('نتائج محفوظ کرنے میں خرابی پیش آئی۔');
+        }
+    }
+});
+
+async function loadStudentsForResults() {
+    try {
+        const examId = parseInt(document.getElementById('resultExam').value);
+        const exam = await dbGet(STORE_NAMES.EXAMS, examId);
+        if (!exam) return;
+        const students = await dbGetAll(STORE_NAMES.STUDENTS);
+        const filteredStudents = students.filter(s => s.class === exam.class && s.status === 'active');
+        const resultStudentList = document.getElementById('resultStudentList');
+        resultStudentList.innerHTML = '<h3>طلباء کی فہرست</h3>';
+        filteredStudents.forEach(student => {
+            resultStudentList.innerHTML += `
+                <div style="margin-bottom: 10px;">
+                    <label>${student.name} (${student.admissionNumber}): </label>
+                    <input type="number" name="marks_${student.id}" placeholder="نمبرات" required>
+                    <input type="number" name="totalMarks_${student.id}" placeholder="کل نمبرات" value="100" required>
+                </div>
+            `;
+        });
+    } catch (error) {
+        console.error("Error loading students for results:", error);
+    }
+}
+
+async function deleteExam(id) {
+    if (confirm('کیا آپ واقعی اس امتحان کو حذف کرنا چاہتے ہیں؟ تمام متعلقہ نتائج بھی حذف ہو جائیں گے۔')) {
+        try {
+            const results = await dbGetAll(STORE_NAMES.RESULTS, 'examId', id);
+            const transaction = db.transaction([STORE_NAMES.EXAMS, STORE_NAMES.RESULTS], 'readwrite');
+            const examStore = transaction.objectStore(STORE_NAMES.EXAMS);
+            const resultStore = transaction.objectStore(STORE_NAMES.RESULTS);
+            examStore.delete(id);
+            results.forEach(res => resultStore.delete(res.id));
+            transaction.oncomplete = () => {
+                alert('امتحان کامیابی سے حذف ہوگیا۔');
+                renderExamList();
+                loadClassesIntoExamForm();
+            };
+            transaction.onerror = (event) => {
+                console.error("Error deleting exam:", event.target.error);
+                alert('امتحان حذف کرنے میں خرابی پیش آئی۔');
+            };
+        } catch (error) {
+            console.error("Error deleting exam:", error);
+            alert('امتحان حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+async function printResultList() {
+    try {
+        const examId = parseInt(document.getElementById('resultExam').value);
+        const exam = await dbGet(STORE_NAMES.EXAMS, examId);
+        const results = await dbGetAll(STORE_NAMES.RESULTS, 'examId', examId);
+        const settings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig') || {};
+        const idCardArea = document.getElementById('printableIdCardArea');
+        idCardArea.innerHTML = `
+            <div class="printable-receipt" style="border: 1px solid black; padding: 15px; margin: 20px auto; max-width: 600px; font-family: 'Noto Nastaliq Urdu', sans-serif; direction: rtl;">
+                <div class="printable-header">
+                    <img src="${settings.logoDataUrl || 'https://placehold.co/80x80/eee/ccc?text=لوگو'}" alt="لوگو" style="max-width: 60px;">
+                    <h3>${settings.madrasaName || 'مدرسہ کا نام'}</h3>
+                    <p>امتحانی نتائج - ${exam.name} (${exam.class})</p>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>طالب علم</th>
+                            <th>نمبرات</th>
+                            <th>کل نمبرات</th>
+                            <th>فیصد</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${results.map(res => `
+                            <tr>
+                                <td>${res.studentName}</td>
+                                <td>${res.marks}</td>
+                                <td>${res.totalMarks}</td>
+                                <td>${((res.marks / res.totalMarks) * 100).toFixed(2)}%</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <div class="printable-footer">
+                    <img src="${settings.signatureDataUrl || 'https://placehold.co/100x30/eee/ccc?text=دستخط'}" alt="دستخط" style="max-height: 30px;">
+                    <p>${settings.madrasaAddress || ''}<br>${settings.madrasaPhone || ''}</p>
+                </div>
+            </div>
+        `;
+        idCardArea.style.display = 'block';
+        window.print();
+        setTimeout(() => {
+            idCardArea.style.display = 'none';
+            idCardArea.innerHTML = '';
+        }, 500);
+    } catch (error) {
+        console.error("Error printing results:", error);
+        alert('نتائج پرنٹ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+// --- Fees Module Logic ---
+async function updateFeesSection() {
+    const section = document.getElementById('fees');
+    section.innerHTML = `
+        <h2><span class="icon">💰</span> فیس مینجمنٹ</h2>
+        <form id="feeForm">
+            <div>
+                <label for="feeStudent">طالب علم:</label>
+                <select id="feeStudent" required>
+                    <option value="">طالب علم منتخب کریں</option>
+                </select>
+            </div>
+            <div>
+                <label for="feeAmount">رقم:</label>
+                <input type="number" id="feeAmount" required>
+            </div>
+            <div>
+                <label for="feeDate">تاریخ:</label>
+                <input type="date" id="feeDate" required>
+            </div>
+            <div>
+                <label for="feeMonth">ماہ:</label>
+                <input type="month" id="feeMonth" required>
+            </div>
+            <button type="submit" class="btn">فیس جمع کریں</button>
+        </form>
+        <hr>
+        <h3>فیس کی فہرست</h3>
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;" class="no-print">
+            <label for="filterFeeStudent">طالب علم:</label>
+            <select id="filterFeeStudent" onchange="renderFeeList()">
+                <option value="">تمام طلباء</option>
+            </select>
+            <label for="filterFeeMonth">ماہ:</label>
+            <input type="month" id="filterFeeMonth" onchange="renderFeeList()">
+        </div>
+        <table id="feeTable">
+            <thead>
+                <tr>
+                    <th>طالب علم</th>
+                    <th>رقم</th>
+                    <th>تاریخ</th>
+                    <th>ماہ</th>
+                    <th>کاروائیاں</th>
+                </tr>
+            </thead>
+            <tbody id="feeTableBody"></tbody>
+        </table>
+        <button onclick="printFeeList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+    `;
+    applyFormLayout(document.getElementById('feeForm'));
+}
+
+async function loadStudentsIntoFeeForm() {
+    try {
+        const students = await dbGetAll(STORE_NAMES.STUDENTS);
+        const feeStudentSelect = document.getElementById('feeStudent');
+        const filterFeeStudentSelect = document.getElementById('filterFeeStudent');
+        feeStudentSelect.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
+        filterFeeStudentSelect.innerHTML = '<option value="">تمام طلباء</option>';
+        students.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+        students.forEach(student => {
+            const option = document.createElement('option');
+            option.value = student.id;
+            option.textContent = `${student.name} (${student.admissionNumber})`;
+            feeStudentSelect.appendChild(option.cloneNode(true));
+            filterFeeStudentSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading students into fee form:", error);
+    }
+}
+
+document.addEventListener('submit', async (e) => {
+    if (e.target.id === 'feeForm') {
+        e.preventDefault();
+        const studentId = parseInt(document.getElementById('feeStudent').value);
+        const student = await dbGet(STORE_NAMES.STUDENTS, studentId);
+        const feeData = {
+            studentId,
+            studentName: student.name,
+            amount: parseFloat(document.getElementById('feeAmount').value),
+            date: document.getElementById('feeDate').value,
+            month: document.getElementById('feeMonth').value
+        };
+
+        if (!feeData.studentId || !feeData.amount || !feeData.date || !feeData.month) {
+            alert('براہ کرم تمام ضروری فیلڈز پُر کریں۔');
+            return;
+        }
+
+        try {
+            await dbAddOrUpdate(STORE_NAMES.FEES, feeData);
+            // Add to ledger
+            await dbAddOrUpdate(STORE_NAMES.LEDGER, {
+                date: feeData.date,
+                type: 'income',
+                description: `فیس: ${student.name} (${feeData.month})`,
+                amount: feeData.amount
+            });
+            alert('فیس کامیابی سے جمع ہوگئی۔');
+            document.getElementById('feeForm').reset();
+            renderFeeList();
+            printFeeReceipt(feeData);
+        } catch (error) {
+            console.error("Error saving fee:", error);
+            alert('فیس جمع کرنے میں خرابی پیش آئی۔');
+        }
+    }
+});
+
+async function renderFeeList() {
+    try {
+        const studentFilter = document.getElementById('filterFeeStudent').value;
+        const monthFilter = document.getElementById('filterFeeMonth').value;
+        let fees = await dbGetAll(STORE_NAMES.FEES);
+
+        if (studentFilter) fees = fees.filter(f => f.studentId === parseInt(studentFilter));
+        if (monthFilter) fees = fees.filter(f => f.month === monthFilter);
+
+        const feeTableBody = document.getElementById('feeTableBody');
+        feeTableBody.innerHTML = '';
+        if (fees.length === 0) {
+            feeTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">کوئی فیس موجود نہیں۔</td></tr>';
+            return;
+        }
+        fees.forEach(fee => {
+            const row = feeTableBody.insertRow();
+            row.innerHTML = `
+                <td>${fee.studentName}</td>
+                <td>${fee.amount}</td>
+                <td>${fee.date}</td>
+                <td>${fee.month}</td>
+                <td class="no-print">
+                    <button onclick="deleteFee(${fee.id})" class="btn btn-danger btn-sm">حذف</button>
+                    <button onclick="printFeeReceipt(${fee.id})" class="btn btn-sm" style="background-color: #17a2b8;">رسید پرنٹ</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering fee list:", error);
+        document.getElementById('feeTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center;">فیس کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+async function deleteFee(id) {
+    if (confirm('کیا آپ واقعی اس فیس ریکارڈ کو حذف کرنا چاہتے ہیں؟')) {
+        try {
+            const fee = await dbGet(STORE_NAMES.FEES, id);
+            await dbDelete(STORE_NAMES.FEES, id);
+            // Remove from ledger
+            const ledgerEntries = await dbGetAll(STORE_NAMES.LEDGER);
+            const ledgerEntry = ledgerEntries.find(e => e.description.includes(fee.studentName) && e.date === fee.date && e.amount === fee.amount);
+            if (ledgerEntry) await dbDelete(STORE_NAMES.LEDGER, ledgerEntry.id);
+            alert('فیس ریکارڈ کامیابی سے حذف ہوگیا۔');
+            renderFeeList();
+        } catch (error) {
+            console.error("Error deleting fee:", error);
+            alert('فیس ریکارڈ حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+async function printFeeReceipt(feeOrId) {
+    try {
+        let fee;
+        if (typeof feeOrId === 'object') {
+            fee = feeOrId;
+        } else {
+            fee = await dbGet(STORE_NAMES.FEES, feeOrId);
+        }
+        const student = await dbGet(STORE_NAMES.STUDENTS, fee.studentId);
+        const settings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig') || {};
+        const idCardArea = document.getElementById('printableIdCardArea');
+        idCardArea.innerHTML = `
+            <div class="printable-receipt" style="border: 1px solid black; padding: 15px; margin: 20px auto; max-width: 400px; font-family: 'Noto Nastaliq Urdu', sans-serif; direction: rtl;">
+                <div class="printable-header">
+                    <img src="${settings.logoDataUrl || 'https://placehold.co/80x80/eee/ccc?text=لوگو'}" alt="لوگو" style="max-width: 60px;">
+                    <h3>${settings.madrasaName || 'مدرسہ کا نام'}</h3>
+                    <p>فیس رسید</p>
+                </div>
+                <div style="text-align: right; line-height: 1.7;">
+                    <p><strong>طالب علم:</strong> ${fee.studentName}</p>
+                    <p><strong>داخلہ نمبر:</strong> ${student.admissionNumber}</p>
+                    <p><strong>رقم:</strong> ${fee.amount}</p>
+                    <p><strong>ماہ:</strong> ${fee.month}</p>
+                    <p><strong>تاریخ:</strong> ${fee.date}</p>
+                </div>
+                <div class="printable-footer">
+                    <img src="${settings.signatureDataUrl || 'https://placehold.co/100x30/eee/ccc?text=دستخط'}" alt="دستخط" style="max-height: 30px;">
+                    <p>${settings.madrasaAddress || ''}<br>${settings.madrasaPhone || ''}</p>
+                </div>
+            </div>
+        `;
+        idCardArea.style.display = 'block';
+        window.print();
+        setTimeout(() => {
+            idCardArea.style.display = 'none';
+            idCardArea.innerHTML = '';
+        }, 500);
+    } catch (error) {
+        console.error("Error printing fee receipt:", error);
+        alert('فیس رسید پرنٹ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+function printFeeList() {
+    window.print();
+}
+
+// --- Salary Module Logic ---
+async function updateSalarySection() {
+    const section = document.getElementById('salary');
+    section.innerHTML = `
+        <h2><span class="icon">💵</span> تنخواہ مینجمنٹ</h2>
+        <form id="salaryForm">
+            <div>
+                <label for="salaryTeacher">استاد:</label>
+                <select id="salaryTeacher" required>
+                    <option value="">استاد منتخب کریں</option>
+                </select>
+            </div>
+            <div>
+                <label for="salaryAmount">رقم:</label>
+                <input type="number" id="salaryAmount" required>
+            </div>
+            <div>
+                <label for="salaryDate">تاریخ:</label>
+                <input type="date" id="salaryDate" required>
+            </div>
+            <div>
+                <label for="salaryMonth">ماہ:</label>
+                <input type="month" id="salaryMonth" required>
+            </div>
+            <button type="submit" class="btn">تنخواہ ادا کریں</button>
+        </form>
+        <hr>
+        <h3>تنخواہ کی فہرست</h3>
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;" class="no-print">
+            <label for="filterSalaryTeacher">استاد:</label>
+            <select id="filterSalaryTeacher" onchange="renderSalaryList()">
+                <option value="">تمام اساتذہ</option>
+            </select>
+            <label for="filterSalaryMonth">ماہ:</label>
+            <input type="month" id="filterSalaryMonth" onchange="renderSalaryList()">
+        </div>
+        <table id="salaryTable">
+            <thead>
+                <tr>
+                    <th>استاد</th>
+                    <th>رقم</th>
+                    <th>تاریخ</th>
+                    <th>ماہ</th>
+                    <th>کاروائیاں</th>
+                </tr>
+            </thead>
+            <tbody id="salaryTableBody"></tbody>
+        </table>
+        <button onclick="printSalaryList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+    `;
+    applyFormLayout(document.getElementById('salaryForm'));
+}
+
+async function loadTeachersIntoSalaryForm() {
+    try {
+        const teachers = await dbGetAll(STORE_NAMES.TEACHERS);
+        const salaryTeacherSelect = document.getElementById('salaryTeacher');
+        const filterSalaryTeacherSelect = document.getElementById('filterSalaryTeacher');
+        salaryTeacherSelect.innerHTML = '<option value="">استاد منتخب کریں</option>';
+        filterSalaryTeacherSelect.innerHTML = '<option value="">تمام اساتذہ</option>';
+        teachers.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+        teachers.forEach(teacher => {
+            const option = document.createElement('option');
+            option.value = teacher.id;
+            option.textContent = teacher.name;
+            salaryTeacherSelect.appendChild(option.cloneNode(true));
+            filterSalaryTeacherSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading teachers into salary form:", error);
+    }
+}
+
+document.addEventListener('submit', async (e) => {
+    if (e.target.id === 'salaryForm') {
+        e.preventDefault();
+        const teacherId = parseInt(document.getElementById('salaryTeacher').value);
+        const teacher = await dbGet(STORE_NAMES.TEACHERS, teacherId);
+        const salaryData = {
+            teacherId,
+            teacherName: teacher.name,
+            amount: parseFloat(document.getElementById('salaryAmount').value),
+            date: document.getElementById('salaryDate').value,
+            month: document.getElementById('salaryMonth').value
+        };
+
+        if (!salaryData.teacherId || !salaryData.amount || !salaryData.date || !salaryData.month) {
+            alert('براہ کرم تمام ضروری فیلڈز پُر کریں۔');
+            return;
+        }
+
+        try {
+            await dbAddOrUpdate(STORE_NAMES.SALARIES, salaryData);
+            await dbAddOrUpdate(STORE_NAMES.LEDGER, {
+                date: salaryData.date,
+                type: 'expense',
+                description: `تنخواہ: ${teacher.name} (${salaryData.month})`,
+                amount: salaryData.amount
+            });
+            alert('تنخواہ کامیابی سے ادا ہوگئی۔');
+            document.getElementById('salaryForm').reset();
+            renderSalaryList();
+        } catch (error) {
+            console.error("Error saving salary:", error);
+            alert('تنخواہ ادا کرنے میں خرابی پیش آئی۔');
+        }
+    }
+});
+
+async function renderSalaryList() {
+    try {
+        const teacherFilter = document.getElementById('filterSalaryTeacher').value;
+        const monthFilter = document.getElementById('filterSalaryMonth').value;
+        let salaries = await dbGetAll(STORE_NAMES.SALARIES);
+
+        if (teacherFilter) salaries = salaries.filter(s => s.teacherId === parseInt(teacherFilter));
+        if (monthFilter) salaries = salaries.filter(s => s.month === monthFilter);
+
+        const salaryTableBody = document.getElementById('salaryTableBody');
+        salaryTableBody.innerHTML = '';
+        if (salaries.length === 0) {
+            salaryTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">کوئی تنخواہ موجود نہیں۔</td></tr>';
+            return;
+        }
+        salaries.forEach(salary => {
+            const row = salaryTableBody.insertRow();
+            row.innerHTML = `
+                <td>${salary.teacherName}</td>
+                <td>${salary.amount}</td>
+                <td>${salary.date}</td>
+                <td>${salary.month}</td>
+                <td class="no-print">
+                    <button onclick="deleteSalary(${salary.id})" class="btn btn-danger btn-sm">حذف</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering salary list:", error);
+        document.getElementById('salaryTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center;">تنخواہ کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+async function deleteSalary(id) {
+    if (confirm('کیا آپ واقعی اس تنخواہ ریکارڈ کو حذف کرنا چاہتے ہیں؟')) {
+        try {
+            const salary = await dbGet(STORE_NAMES.SALARIES, id);
+            await dbDelete(STORE_NAMES.SALARIES, id);
+            const ledgerEntries = await dbGetAll(STORE_NAMES.LEDGER);
+            const ledgerEntry = ledgerEntries.find(e => e.description.includes(salary.teacherName) && e.date === salary.date && e.amount === salary.amount);
+            if (ledgerEntry) await dbDelete(STORE_NAMES.LEDGER, ledgerEntry.id);
+            alert('تنخواہ ریکارڈ کامیابی سے حذف ہوگیا۔');
+            renderSalaryList();
+        } catch (error) {
+            console.error("Error deleting salary:", error);
+            alert('تنخواہ ریکارڈ حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+function printSalaryList() {
+    window.print();
+}
+
+// --- Ledger Module Logic ---
+async function updateLedgerSection() {
+    const section = document.getElementById('ledger');
+    section.innerHTML = `
+        <h2><span class="icon">📒</span> کھاتہ مینجمنٹ</h2>
+        <form id="ledgerForm">
+            <div>
+                <label for="ledgerDate">تاریخ:</label>
+                <input type="date" id="ledgerDate" required>
+            </div>
+            <div>
+                <label for="ledgerType">قسم:</label>
+                <select id="ledgerType" required>
+                    <option value="income">آمدنی</option>
+                    <option value="expense">خرچ</option>
+                </select>
+            </div>
+            <div>
+                <label for="ledgerDescription">تفصیل:</label>
+                <input type="text" id="ledgerDescription" required>
+            </div>
+            <div>
+                <label for="ledgerAmount">رقم:</label>
+                <input type="number" id="ledgerAmount" required>
+            </div>
+            <button type="submit" class="btn">اندراج شامل کریں</button>
+        </form>
+        <hr>
+        <h3>کھاتہ کی فہرست</h3>
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;" class="no-print">
+            <label for="filterLedgerDate">تاریخ:</label>
+            <input type="date" id="filterLedgerDate" onchange="renderLedgerList()">
+            <label for="filterLedgerType">قسم:</label>
+            <select id="filterLedgerType" onchange="renderLedgerList()">
+                <option value="">تمام</option>
+                <option value="income">آمدنی</option>
+                <option value="expense">خرچ</option>
+            </select>
+        </div>
+        <table id="ledgerTable">
+            <thead>
+                <tr>
+                    <th>تاریخ</th>
+                    <th>قسم</th>
+                    <th>تفصیل</th>
+                    <th>رقم</th>
+                    <th>کاروائیاں</th>
+                </tr>
+            </thead>
+            <tbody id="ledgerTableBody"></tbody>
+        </table>
+        <button onclick="printLedgerList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+    `;
+    applyFormLayout(document.getElementById('ledgerForm'));
+}
+
+document.addEventListener('submit', async (e) => {
+    if (e.target.id === 'ledgerForm') {
+        e.preventDefault();
+        const ledgerData = {
+            date: document.getElementById('ledgerDate').value,
+            type: document.getElementById('ledgerType').value,
+            description: document.getElementById('ledgerDescription').value.trim(),
+            amount: parseFloat(document.getElementById('ledgerAmount').value)
+        };
+
+        if (!ledgerData.date || !ledgerData.type || !ledgerData.description || !ledgerData.amount) {
+            alert('براہ کرم تمام ضروری فیلڈز پُر کریں۔');
+            return;
+        }
+
+        try {
+            await dbAddOrUpdate(STORE_NAMES.LEDGER, ledgerData);
+            alert('کھاتہ اندراج کامیابی سے شامل ہوگیا۔');
+            document.getElementById('ledgerForm').reset();
+            renderLedgerList();
+        } catch (error) {
+            console.error("Error saving ledger entry:", error);
+            alert('کھاتہ اندراج شامل کرنے میں خرابی پیش آئی۔');
+        }
+    }
+});
+
+async function renderLedgerList() {
+    try {
+        const dateFilter = document.getElementById('filterLedgerDate').value;
+        const typeFilter = document.getElementById('filterLedgerType').value;
+        let ledgerEntries = await dbGetAll(STORE_NAMES.LEDGER);
+
+        if (dateFilter) ledgerEntries = ledgerEntries.filter(e => e.date === dateFilter);
+        if (typeFilter) ledgerEntries = ledgerEntries.filter(e => e.type === typeFilter);
+
+        const ledgerTableBody = document.getElementById('ledgerTableBody');
+        ledgerTableBody.innerHTML = '';
+        if (ledgerEntries.length === 0) {
+            ledgerTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">کوئی اندراج موجود نہیں۔</td></tr>';
+            return;
+        }
+        ledgerEntries.forEach(entry => {
+            const row = ledgerTableBody.insertRow();
+            row.innerHTML = `
+                <td>${entry.date}</td>
+                <td>${entry.type === 'income' ? 'آمدنی' : 'خرچ'}</td>
+                <td>${entry.description}</td>
+                <td>${entry.amount}</td>
+                <td class="no-print">
+                    <button onclick="deleteLedgerEntry(${entry.id})" class="btn btn-danger btn-sm">حذف</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering ledger list:", error);
+        document.getElementById('ledgerTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center;">کھاتہ کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+async function deleteLedgerEntry(id) {
+    if (confirm('کیا آپ واقعی اس کھاتہ اندراج کو حذف کرنا چاہتے ہیں؟')) {
+        try {
+            await dbDelete(STORE_NAMES.LEDGER, id);
+            alert('کھاتہ اندراج کامیابی سے حذف ہوگیا۔');
+            renderLedgerList();
+        } catch (error) {
+            console.error("Error deleting ledger entry:", error);
+            alert('کھاتہ اندراج حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+function printLedgerList() {
+    window.print();
+}
+
+// --- Reports Module Logic ---
+async function updateReportsSection() {
+    const section = document.getElementById('reports');
+    section.innerHTML = `
+        <h2><span class="icon">📈</span> رپورٹس</h2>
+        <div id="reportOptions" style="margin-bottom: 20px;">
+            <label for="reportType">رپورٹ کی قسم:</label>
+            <select id="reportType" onchange="loadReportFilters()">
+                <option value="">رپورٹ منتخب کریں</option>
+                <option value="attendance">حاضری رپورٹ</option>
+                <option value="fees">فیس رپورٹ</option>
+                <option value="results">نتائج رپورٹ</option>
+                <option value="financial">مالی رپورٹ</option>
+            </select>
+            <div id="reportFilters" style="margin-top: 15px;"></div>
+            <button onclick="generateReport()" class="btn no-print" style="margin-top: 10px;">رپورٹ تیار کریں</button>
+        </div>
+        <div id="reportOutput"></div>
+    `;
+}
+
+function loadReportOptions() {
+    loadReportFilters();
+}
+
+function loadReportFilters() {
+    const reportType = document.getElementById('reportType').value;
+    const reportFilters = document.getElementById('reportFilters');
+    reportFilters.innerHTML = '';
+
+    if (reportType === 'attendance') {
+        reportFilters.innerHTML = `
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div>
+                    <label for="reportClass">کلاس:</label>
+                    <select id="reportClass">
+                        <option value="">تمام کلاسیں</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="reportDate">تاریخ:</label>
+                    <input type="date" id="reportDate">
+                </div>
+            </div>
+        `;
+        loadClassesIntoReportForm();
+    } else if (reportType === 'fees') {
+        reportFilters.innerHTML = `
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div>
+                    <label for="reportStudent">طالب علم:</label>
+                    <select id="reportStudent">
+                        <option value="">تمام طلباء</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="reportMonth">ماہ:</label>
+                    <input type="month" id="reportMonth">
+                </div>
+            </div>
+        `;
+        loadStudentsIntoReportForm();
+    } else if (reportType === 'results') {
+        reportFilters.innerHTML = `
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div>
+                    <label for="reportExam">امتحان:</label>
+                    <select id="reportExam">
+                        <option value="">امتحان منتخب کریں</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        loadExamsIntoReportForm();
+    } else if (reportType === 'financial') {
+        reportFilters.innerHTML = `
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div>
+                    <label for="reportStartDate">شروع تاریخ:</label>
+                    <input type="date" id="reportStartDate">
+                </div>
+                <div>
+                    <label for="reportEndDate">اختتامی تاریخ:</label>
+                    <input type="date" id="reportEndDate">
+                </div>
+            </div>
+        `;
+    }
+}
+
+async function loadClassesIntoReportForm() {
+    try {
+        const classes = await dbGetAll(STORE_NAMES.CLASSES);
+        const reportClassSelect = document.getElementById('reportClass');
+        reportClassSelect.innerHTML = '<option value="">تمام کلاسیں</option>';
+        classes.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls.name;
+            option.textContent = cls.name;
+            reportClassSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading classes into report form:", error);
+    }
+}
+
+async function loadStudentsIntoReportForm() {
+    try {
+        const students = await dbGetAll(STORE_NAMES.STUDENTS);
+        const reportStudentSelect = document.getElementById('reportStudent');
+        reportStudentSelect.innerHTML = '<option value="">تمام طلباء</option>';
+        students.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+        students.forEach(student => {
+            const option = document.createElement('option');
+            option.value = student.id;
+            option.textContent = `${student.name} (${student.admissionNumber})`;
+            reportStudentSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading students into report form:", error);
+    }
+}
+
+async function loadExamsIntoReportForm() {
+    try {
+        const exams = await dbGetAll(STORE_NAMES.EXAMS);
+        const reportExamSelect = document.getElementById('reportExam');
+        reportExamSelect.innerHTML = '<option value="">امتحان منتخب کریں</option>';
+        exams.forEach(exam => {
+            const option = document.createElement('option');
+            option.value = exam.id;
+            option.textContent = `${exam.name} (${exam.class})`;
+            reportExamSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading exams into report form:", error);
+    }
+}
+
+async function generateReport() {
+    const reportType = document.getElementById('reportType').value;
+    const reportOutput = document.getElementById('reportOutput');
+    reportOutput.innerHTML = '';
+
+    try {
+        const settings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig') || {};
+        let reportHtml = `
+            <div class="printable-receipt" style="border: 1px solid black; padding: 15px; margin: 20px auto; max-width: 800px; font-family: 'Noto Nastaliq Urdu', sans-serif; direction: rtl;">
+                <div class="printable-header">
+                    <img src="${settings.logoDataUrl || 'https://placehold.co/80x80/eee/ccc?text=لوگو'}" alt="لوگو" style="max-width: 60px;">
+                    <h3>${settings.madrasaName || 'مدرسہ کا نام'}</h3>
+                </div>
+                <div style="text-align: right;">
+        `;
+
+        if (reportType === 'attendance') {
+            const classFilter = document.getElementById('reportClass').value;
+            const dateFilter = document.getElementById('reportDate').value;
+            let attendances = await dbGetAll(STORE_NAMES.ATTENDANCE);
+
+            if (classFilter) attendances = attendances.filter(a => a.class === classFilter);
+            if (dateFilter) attendances = attendances.filter(a => a.date === dateFilter);
+
+            reportHtml += `
+                <h4>حاضری رپورٹ</h4>
+                <p>کلاس: ${classFilter || 'تمام'}</p>
+                <p>تاریخ: ${dateFilter || 'تمام'}</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>طالب علم</th>
+                            <th>کلاس</th>
+                            <th>تاریخ</th>
+                            <th>حاضری</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${attendances.length === 0 ? '<tr><td colspan="4" style="text-align:center;">کوئی ڈیٹا موجود نہیں</td></tr>' : attendances.map(a => `
+                            <tr>
+                                <td>${a.studentName}</td>
+                                <td>${a.class}</td>
+                                <td>${a.date}</td>
+                                <td>${translateAttendanceStatus(a.status)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else if (reportType === 'fees') {
+            const studentFilter = document.getElementById('reportStudent').value;
+            const monthFilter = document.getElementById('reportMonth').value;
+            let fees = await dbGetAll(STORE_NAMES.FEES);
+
+            if (studentFilter) fees = fees.filter(f => f.studentId === parseInt(studentFilter));
+            if (monthFilter) fees = fees.filter(f => f.month === monthFilter);
+
+            reportHtml += `
+                <h4>فیس رپورٹ</h4>
+                <p>طالب علم: ${studentFilter ? (await dbGet(STORE_NAMES.STUDENTS, parseInt(studentFilter))).name : 'تمام'}</p>
+                <p>ماہ: ${monthFilter || 'تمام'}</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>طالب علم</th>
+                            <th>رقم</th>
+                            <th>ماہ</th>
+                            <th>تاریخ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${fees.length === 0 ? '<tr><td colspan="4" style="text-align:center;">کوئی ڈیٹا موجود نہیں</td></tr>' : fees.map(f => `
+                            <tr>
+                                <td>${f.studentName}</td>
+                                <td>${f.amount}</td>
+                                <td>${f.month}</td>
+                                <td>${f.date}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else if (reportType === 'results') {
+            const examId = parseInt(document.getElementById('reportExam').value);
+            const exam = await dbGet(STORE_NAMES.EXAMS, examId);
+            const results = await dbGetAll(STORE_NAMES.RESULTS, 'examId', examId);
+
+            reportHtml += `
+                <h4>نتائج رپورٹ</h4>
+                <p>امتحان: ${exam ? exam.name : 'منتخب نہیں'}</p>
+                <p>کلاس: ${exam ? exam.class : ''}</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>طالب علم</th>
+                            <th>نمبرات</th>
+                            <th>کل نمبرات</th>
+                            <th>فیصد</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${results.length === 0 ? '<tr><td colspan="4" style="text-align:center;">کوئی ڈیٹا موجود نہیں</td></tr>' : results.map(r => `
+                            <tr>
+                                <td>${r.studentName}</td>
+                                <td>${r.marks}</td>
+                                <td>${r.totalMarks}</td>
+                                <td>${((r.marks / r.totalMarks) * 100).toFixed(2)}%</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else if (reportType === 'financial') {
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+            let ledgerEntries = await dbGetAll(STORE_NAMES.LEDGER);
+
+            if (startDate) ledgerEntries = ledgerEntries.filter(e => e.date >= startDate);
+            if (endDate) ledgerEntries = ledgerEntries.filter(e => e.date <= endDate);
+
+            const totalIncome = ledgerEntries.filter(e => e.type === 'income').reduce((sum, e) => sum + e.amount, 0);
+            const totalExpense = ledgerEntries.filter(e => e.type === 'expense').reduce((sum, e) => sum + e.amount, 0);
+
+            reportHtml += `
+                <h4>مالی رپورٹ</h4>
+                <p>شروع تاریخ: ${startDate || 'تمام'}</p>
+                <p>اختتامی تاریخ: ${endDate || 'تمام'}</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>تاریخ</th>
+                            <th>قسم</th>
+                            <th>تفصیل</th>
+                            <th>رقم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${ledgerEntries.length === 0 ? '<tr><td colspan="4" style="text-align:center;">کوئی ڈیٹا موجود نہیں</td></tr>' : ledgerEntries.map(e => `
+                            <tr>
+                                <td>${e.date}</td>
+                                <td>${e.type === 'income' ? 'آمدنی' : 'خرچ'}</td>
+                                <td>${e.description}</td>
+                                <td>${e.amount}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <div style="margin-top: 15px;">
+                    <p><strong>کل آمدنی:</strong> ${totalIncome}</p>
+                    <p><strong>کل اخراجات:</strong> ${totalExpense}</p>
+                    <p><strong>بقایا:</strong> ${totalIncome - totalExpense}</p>
+                </div>
+            `;
+        } else {
+            alert('براہ کرم رپورٹ کی قسم منتخب کریں۔');
+            return;
+        }
+
+        reportHtml += `
+                </div>
+                <div class="printable-footer">
+                    <img src="${settings.signatureDataUrl || 'https://placehold.co/100x30/eee/ccc?text=دستخط'}" alt="دستخط" style="max-height: 30px;">
+                    <p>${settings.madrasaAddress || ''}<br>${settings.madrasaPhone || ''}</p>
+                </div>
+            </div>
+            <button onclick="printReport()" class="btn no-print" style="margin-top: 15px;">رپورٹ پرنٹ کریں</button>
+        `;
+        reportOutput.innerHTML = reportHtml;
+    } catch (error) {
+        console.error("Error generating report:", error);
+        reportOutput.innerHTML = '<p style="text-align:center;">رپورٹ تیار کرنے میں خرابی پیش آئی۔</p>';
+    }
+}
+
+function printReport() {
+    window.print();
+}
+
+// --- Students Module Logic (Updated for Consistency) ---
+async function updateStudentsSection() {
+    const section = document.getElementById('students');
+    section.innerHTML = `
+        <h2><span class="icon">👩‍🎓</span> طلباء مینجمنٹ</h2>
+        <form id="studentForm">
+            <input type="hidden" id="studentId">
+            <div>
+                <label for="studentName">نام:</label>
+                <input type="text" id="studentName" required>
+            </div>
+            <div>
+                <label for="admissionNumber">داخلہ نمبر:</label>
+                <input type="text" id="admissionNumber" required>
+            </div>
+            <div>
+                <label for="studentClass">کلاس:</label>
+                <select id="studentClass" required>
+                    <option value="">کلاس منتخب کریں</option>
+                </select>
+            </div>
+            <div>
+                <label for="studentFatherName">والد کا نام:</label>
+                <input type="text" id="studentFatherName">
+            </div>
+            <div>
+                <label for="studentPhone">فون نمبر:</label>
+                <input type="tel" id="studentPhone">
+            </div>
+            <div>
+                <label for="studentAddress">پتہ:</label>
+                <textarea id="studentAddress"></textarea>
+            </div>
+            <div>
+                <label for="studentPhoto">تصویر:</label>
+                <input type="file" id="studentPhoto" accept="image/*">
+                <img id="studentPhotoPreview" src="https://placehold.co/100x100/eee/ccc?text=تصویر" alt="طالب علم کی تصویر" style="max-width: 100px; margin-top: 5px;">
+            </div>
+            <div>
+                <label for="studentStatus">حالت:</label>
+                <select id="studentStatus">
+                    <option value="active">فعال</option>
+                    <option value="inactive">غیر فعال</option>
+                </select>
+            </div>
+            <div>
+                <label for="admissionDate">داخلہ کی تاریخ:</label>
+                <input type="date" id="admissionDate">
+            </div>
+            <button type="submit" class="btn">طالب علم شامل/اپ ڈیٹ کریں</button>
+            <button type="button" onclick="resetStudentForm()" class="btn btn-secondary">فارم ری سیٹ</button>
+        </form>
+        <hr>
+        <h3>طلباء کی فہرست</h3>
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;" class="no-print">
+            <input type="text" id="searchStudent" placeholder="نام یا داخلہ نمبر تلاش کریں" oninput="renderStudentList()">
+            <select id="filterClass" onchange="renderStudentList()">
+                <option value="">تمام کلاسیں</option>
+            </select>
+            <select id="filterStatus" onchange="renderStudentList()">
+                <option value="">تمام حالتیں</option>
+                <option value="active">فعال</option>
+                <option value="inactive">غیر فعال</option>
+            </select>
+        </div>
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th>نام</th>
+                    <th>داخلہ نمبر</th>
+                    <th>کلاس</th>
+                    <th>والد کا نام</th>
+                    <th>فون</th>
+                    <th>حالت</th>
+                    <th>کاروائیاں</th>
+                </tr>
+            </thead>
+            <tbody id="studentTableBody"></tbody>
+        </table>
+        <button onclick="printStudentList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+        <button onclick="exportStudentData()" class="btn no-print" style="margin-top: 15px;">ڈیٹا ایکسپورٹ کریں</button>
+        <input type="file" id="importStudentData" accept=".json" class="no-print" style="margin-top: 15px;">
+        <button onclick="importStudentData()" class="btn no-print" style="margin-top: 15px;">ڈیٹا امپورٹ کریں</button>
+    `;
+    applyFormLayout(document.getElementById('studentForm'));
+}
+
+async function loadClassesIntoStudentForm() {
+    try {
+        const classes = await dbGetAll(STORE_NAMES.CLASSES);
+        const studentClassSelect = document.getElementById('studentClass');
+        const filterClassSelect = document.getElementById('filterClass');
+        studentClassSelect.innerHTML = '<option value="">کلاس منتخب کریں</option>';
+        filterClassSelect.innerHTML = '<option value="">تمام کلاسیں</option>';
+        classes.sort((a, b) => a.name.localeCompare(b.name, 'ur'));
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls.name;
+            option.textContent = cls.name;
+            studentClassSelect.appendChild(option.cloneNode(true));
+            filterClassSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading classes into student form:", error);
+    }
+}
+
+document.addEventListener('submit', async (e) => {
+    if (e.target.id === 'studentForm') {
+        e.preventDefault();
+        const studentId = parseInt(document.getElementById('studentId').value);
+        const photoFile = document.getElementById('studentPhoto').files[0];
+        const admissionNumber = document.getElementById('admissionNumber').value.trim();
+
+        try {
+            const currentStudent = studentId ? await dbGet(STORE_NAMES.STUDENTS, studentId) : {};
+            const photoDataUrl = photoFile ? await readFileAsDataURL(photoFile) : currentStudent.photoDataUrl;
+
+            const studentData = {
+                name: document.getElementById('studentName').value.trim(),
+                admissionNumber,
+                class: document.getElementById('studentClass').value,
+                fatherName: document.getElementById('studentFatherName').value.trim(),
+                phone: document.getElementById('studentPhone').value.trim(),
+                address: document.getElementById('studentAddress').value.trim(),
+                status: document.getElementById('studentStatus').value,
+                admissionDate: document.getElementById('admissionDate').value,
+                photoDataUrl
+            };
+
+            if (!studentData.name || !studentData.admissionNumber || !studentData.class) {
+                alert('براہ کرم تمام ضروری فیلڈز پُر کریں۔');
+                return;
+            }
+
+            if (studentId) {
+                studentData.id = studentId;
+                await dbAddOrUpdate(STORE_NAMES.STUDENTS, studentData);
+                alert('طالب علم کی معلومات کامیابی سے اپ ڈیٹ ہوگئیں۔');
+            } else {
+                const existing = await dbGetAll(STORE_NAMES.STUDENTS, 'admissionNumber', admissionNumber);
+                if (existing.length > 0) {
+                    alert(`داخلہ نمبر ${admissionNumber} پہلے سے موجود ہے۔`);
+                    return;
+                }
+                await dbAddOrUpdate(STORE_NAMES.STUDENTS, studentData);
+                alert('نیا طالب علم کامیابی سے شامل ہوگیا۔');
+            }
+            resetStudentForm();
+            renderStudentList();
+            loadStudentsIntoFeeForm();
+            loadStudentsIntoReportForm();
+        } catch (error) {
+            console.error("Error saving student:", error);
+            alert('طالب علم کو محفوظ کرنے میں خرابی پیش آئی۔');
+        }
+    }
+});
+
+async function renderStudentList() {
+    try {
+        const searchQuery = document.getElementById('searchStudent').value.toLowerCase();
+        const classFilter = document.getElementById('filterClass').value;
+        const statusFilter = document.getElementById('filterStatus').value;
+        let students = await dbGetAll(STORE_NAMES.STUDENTS);
+
+        if (searchQuery) {
+            students = students.filter(s => s.name.toLowerCase().includes(searchQuery) || s.admissionNumber.toLowerCase().includes(searchQuery));
+        }
+        if (classFilter) students = students.filter(s => s.class === classFilter);
+        if (statusFilter) students = students.filter(s => s.status === statusFilter);
+
+        const studentTableBody = document.getElementById('studentTableBody');
+        studentTableBody.innerHTML = '';
+        if (students.length === 0) {
+            studentTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">کوئی طالب علم موجود نہیں۔</td></tr>';
+            return;
+        }
+        students.forEach(student => {
+            const row = studentTableBody.insertRow();
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.admissionNumber}</td>
+                <td>${student.class}</td>
+                <td>${student.fatherName || '-'}</td>
+                <td>${student.phone || '-'}</td>
+                <td>${student.status === 'active' ? 'فعال' : 'غیر فعال'}</td>
+                <td class="no-print">
+                    <button onclick="editStudent(${student.id})" class="btn btn-secondary btn-sm">ترمیم</button>
+                    <button onclick="deleteStudent(${student.id})" class="btn btn-danger btn-sm">حذف</button>
+                    <button onclick="printStudentIdCard(${student.id})" class="btn btn-sm" style="background-color: #17a2b8;">شناختی کارڈ</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error rendering student list:", error);
+        document.getElementById('studentTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">طلباء کی فہرست لوڈ کرنے میں خرابی۔</td></tr>';
+    }
+}
+
+async function editStudent(id) {
+    try {
+        const student = await dbGet(STORE_NAMES.STUDENTS, id);
+        if (student) {
+            document.getElementById('studentId').value = student.id;
+            document.getElementById('studentName').value = student.name;
+            document.getElementById('admissionNumber').value = student.admissionNumber;
+            document.getElementById('studentClass').value = student.class;
+            document.getElementById('studentFatherName').value = student.fatherName || '';
+            document.getElementById('studentPhone').value = student.phone || '';
+            document.getElementById('studentAddress').value = student.address || '';
+            document.getElementById('studentStatus').value = student.status;
+            document.getElementById('admissionDate').value = student.admissionDate || '';
+            document.getElementById('studentPhotoPreview').src = student.photoDataUrl || 'https://placehold.co/100x100/eee/ccc?text=تصویر';
+            document.getElementById('studentForm').scrollIntoView({ behavior: 'smooth' });
+        }
+    } catch (error) {
+        console.error("Error fetching student for edit:", error);
+        alert('ترمیم کے لیے طالب علم کی معلومات لوڈ کرنے میں خرابی۔');
+    }
+}
+
+async function deleteStudent(id) {
+    if (confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟ تمام متعلقہ ڈیٹا بھی حذف ہو جائے گا۔')) {
+        try {
+            const transaction = db.transaction([STORE_NAMES.STUDENTS, STORE_NAMES.ATTENDANCE, STORE_NAMES.FEES, STORE_NAMES.RESULTS], 'readwrite');
+            const studentStore = transaction.objectStore(STORE_NAMES.STUDENTS);
+            const attendanceStore = transaction.objectStore(STORE_NAMES.ATTENDANCE);
+            const feeStore = transaction.objectStore(STORE_NAMES.FEES);
+            const resultStore = transaction.objectStore(STORE_NAMES.RESULTS);
+
+            studentStore.delete(id);
+            const attendances = await dbGetAll(STORE_NAMES.ATTENDANCE, 'studentId', id);
+            const fees = await dbGetAll(STORE_NAMES.FEES, 'studentId', id);
+            const results = await dbGetAll(STORE_NAMES.RESULTS, 'studentId', id);
+
+            attendances.forEach(a => attendanceStore.delete(a.id));
+            fees.forEach(f => feeStore.delete(f.id));
+            results.forEach(r => resultStore.delete(r.id));
+
+            transaction.oncomplete = () => {
+                alert('طالب علم کامیابی سے حذف ہوگیا۔');
+                renderStudentList();
+                loadStudentsIntoFeeForm();
+                loadStudentsIntoReportForm();
+            };
+            transaction.onerror = (event) => {
+                console.error("Error deleting student:", event.target.error);
+                alert('طالب علم حذف کرنے میں خرابی پیش آئی۔');
+            };
+        } catch (error) {
+            console.error("Error deleting student:", error);
+            alert('طالب علم حذف کرنے میں خرابی پیش آئی۔');
+        }
+    }
+}
+
+function resetStudentForm() {
+    document.getElementById('studentForm').reset();
+    document.getElementById('studentId').value = '';
+    document.getElementById('studentPhotoPreview').src = 'https://placehold.co/100x100/eee/ccc?text=تصویر';
+}
+
+async function printStudentIdCard(id) {
+    try {
+        const student = await dbGet(STORE_NAMES.STUDENTS, id);
+        const settings = await dbGet(STORE_NAMES.SETTINGS, 'madrasaConfig') || {};
+        const idCardArea = document.getElementById('printableIdCardArea');
+        idCardArea.innerHTML = `
+            <div class="printable-id-card" style="border: 1px solid black; padding: 15px; margin: 20px auto; max-width: 300px; font-family: 'Noto Nastaliq Urdu', sans-serif; direction: rtl; text-align: right;">
+                <div class="printable-header">
+                    <img src="${settings.logoDataUrl || 'https://placehold.co/80x80/eee/ccc?text=لوگو'}" alt="لوگو" style="max-width: 50px;">
+                    <h4>${settings.madrasaName || 'مدرسہ کا نام'}</h4>
+                    <p>طالب علم کا شناختی کارڈ</p>
+                </div>
+                <div style="margin: 10px 0;">
+                    <img src="${student.photoDataUrl || 'https://placehold.co/100x100/eee/ccc?text=تصویر'}" alt="طالب علم کی تصویر" style="max-width: 80px; border: 1px solid #ccc;">
+                    <p><strong>نام:</strong> ${student.name}</p>
+                    <p><strong>داخلہ نمبر:</strong> ${student.admissionNumber}</p>
+                    <p><strong>کلاس:</strong> ${student.class}</p>
+                    <p><strong>والد کا نام:</strong> ${student.fatherName || '-'}</p>
+                    <p><strong>داخلہ کی تاریخ:</strong> ${student.admissionDate || '-'}</p>
+                </div>
+                <div class="printable-footer">
+                    <p>${settings.madrasaAddress || ''}<br>${settings.madrasaPhone || ''}</p>
+                    <img src="${settings.signatureDataUrl || 'https://placehold.co/100x30/eee/ccc?text=دستخط'}" alt="دستخط" style="max-height: 25px;">
+                </div>
+            </div>
+        `;
+        idCardArea.style.display = 'block';
+        window.print();
+        setTimeout(() => {
+            idCardArea.style.display = 'none';
+            idCardArea.innerHTML = '';
+        }, 500);
+    } catch (error) {
+        console.error("Error printing student ID card:", error);
+        alert('شناختی کارڈ پرنٹ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+function printStudentList() {
+    window.print();
+}
+
+async function exportStudentData() {
+    try {
+        const students = await dbGetAll(STORE_NAMES.STUDENTS);
+        const data = JSON.stringify(students, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'madrasa_students.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('طلباء کا ڈیٹا کامیابی سے ایکسپورٹ ہوگیا۔');
+    } catch (error) {
+        console.error("Error exporting student data:", error);
+        alert('ڈیٹا ایکسپورٹ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+async function importStudentData() {
+    const fileInput = document.getElementById('importStudentData');
+    if (!fileInput.files.length) {
+        alert('براہ کرم فائل منتخب کریں۔');
+        return;
+    }
+
+    try {
+        const file = fileInput.files[0];
+        const text = await file.text();
+        const students = JSON.parse(text);
+        const transaction = db.transaction([STORE_NAMES.STUDENTS], 'readwrite');
+        const store = transaction.objectStore(STORE_NAMES.STUDENTS);
+
+        for (const student of students) {
+            store.put(student);
+        }
+
+        transaction.oncomplete = () => {
+            alert('طلباء کا ڈیٹا کامیابی سے امپورٹ ہوگیا۔');
+            renderStudentList();
+            loadStudentsIntoFeeForm();
+            loadStudentsIntoReportForm();
+            fileInput.value = '';
+        };
+        transaction.onerror = (event) => {
+            console.error("Error importing student data:", event.target.error);
+            alert('ڈیٹا امپورٹ کرنے میں خرابی پیش آئی۔');
+        };
+    } catch (error) {
+        console.error("Error importing student data:", error);
+        alert('ڈیٹا امپورٹ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+
+
+// --- Data Backup and Restore ---
+async function exportAllData() {
+    try {
+        const data = {};
+        for (const storeName of Object.values(STORE_NAMES)) {
+            data[storeName] = await dbGetAll(storeName);
+        }
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'madrasa_backup.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('تمام ڈیٹا کامیابی سے ایکسپورٹ ہوگیا۔');
+    } catch (error) {
+        console.error("Error exporting data:", error);
+        alert('ڈیٹا ایکسپورٹ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+async function importAllData(file) {
+    try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        const transaction = db.transaction(Object.values(STORE_NAMES), 'readwrite');
+
+        for (const storeName of Object.values(STORE_NAMES)) {
+            const store = transaction.objectStore(storeName);
+            await dbClearStore(storeName);
+            if (data[storeName]) {
+                for (const item of data[storeName]) {
+                    store.put(item);
+                }
+            }
+        }
+
+        transaction.oncomplete = () => {
+            alert('تمام ڈیٹا کامیابی سے امپورٹ ہوگیا۔');
+            showModule('settings');
+            loadSettings();
+            renderStudentList();
+            renderTeacherList();
+            renderClassList();
+            renderAttendanceList();
+            renderExamList();
+            renderFeeList();
+            renderSalaryList();
+            renderLedgerList();
+        };
+        transaction.onerror = (event) => {
+            console.error("Error importing data:", event.target.error);
+            alert('ڈیٹا امپورٹ کرنے میں خرابی پیش آئی۔');
+        };
+    } catch (error) {
+        console.error("Error importing data:", error);
+        alert('ڈیٹا امپورٹ کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+// --- Initialization ---
+async function initApp() {
+    try {
+        await openDB();
+        await updateSettingsSection();
+        await updateStudentsSection();
+        await updateTeachersSection();
+        await updateClassesSection();
+        await updateAttendanceSection();
+        await updateExamsSection();
+        await updateFeesSection();
+        await updateSalarySection();
+        await updateLedgerSection();
+        await updateReportsSection();
+        showModule('settings');
+    } catch (error) {
+        console.error("Error initializing app:", error);
+        alert('ایپلیکیشن شروع کرنے میں خرابی پیش آئی۔');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+
+</body>
+</html>

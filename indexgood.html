@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدرسہ انتظامی نظام</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
+
+        :root {
+             --input-border-color: #555;
+             --input-focus-border-color: #000;
+             --table-border-color: #bbb;
+             --table-header-bg: #e9e9e9;
+             --button-bg: #e0e0e0;
+             --button-hover-bg: #d0d0d0;
+             --button-primary-bg: #d4edda;
+             --button-primary-hover-bg: #c3e6cb;
+             --tab-bg: #f1f1f1;
+             --tab-active-bg: #fff;
+             --container-bg: #fff;
+             --body-bg: #f8f8f8;
+             --text-color: #000;
+             --heading-color: #333;
+             --label-color: #444;
+             --border-color-light: #eee;
+             --border-color-medium: #ccc;
+             --border-color-dark: #aaa;
+        }
+
+        body {
+            direction: rtl;
+            font-family: 'Noto Nastaliq Urdu', serif;
+            background-color: var(--body-bg);
+            margin: 0;
+            padding: 10px 20px; /* Reduced top/bottom padding */
+            color: var(--text-color);
+            font-size: 15px; /* Slightly smaller base */
+            line-height: 1.7; /* Adjusted line height */
+        }
+
+        .container {
+            max-width: 1100px; /* Slightly wider */
+            margin: 15px auto;
+            background-color: var(--container-bg);
+            padding: 25px;
+            border: 1px solid var(--border-color-medium);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+        }
+
+        h1, h2, h3 {
+            color: var(--heading-color);
+            border-bottom: 2px solid var(--border-color-light);
+            padding-bottom: 8px;
+            margin-bottom: 18px;
+            font-weight: normal;
+        }
+        h1 { text-align: center; font-size: 1.8em; border-bottom: none; margin-bottom: 25px;}
+        h2 { font-size: 1.5em; }
+        h3 { font-size: 1.25em; margin-top: 25px; border-bottom-style: dashed; border-bottom-width: 1px; }
+
+        form { margin-bottom: 25px; padding: 15px; border: 1px dotted var(--border-color-medium); background-color: var(--container-bg); }
+        .form-group { margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; border-bottom: 1px dotted var(--border-color-light); padding-bottom: 12px; gap: 10px; /* Added gap */ }
+        .form-group label { min-width: 130px; /* Reduced width */ margin-left: 10px; font-weight: bold; color: var(--label-color); flex-shrink: 0; }
+        input[type="text"], input[type="number"], input[type="date"], input[type="tel"], input[type="email"], textarea, select {
+            flex-grow: 1; border: none; border-bottom: 1px solid var(--input-border-color); background-color: transparent; padding: 6px 4px; font-family: inherit; font-size: 1em; color: var(--text-color); width: auto; min-width: 150px; margin-top: 0; /* Removed margin-top */
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-bottom: 1.5px solid var(--input-focus-border-color); }
+        textarea { height: 70px; resize: vertical; }
+        input[type="file"] { border: 1px solid var(--border-color-medium); padding: 5px; background-color: var(--tab-bg); margin-top: 5px; }
+        button { background-color: var(--button-bg); color: var(--text-color); border: 1px solid var(--border-color-dark); padding: 8px 18px; font-family: inherit; cursor: pointer; font-size: 0.95em; margin-right: 8px; transition: background-color 0.2s ease; border-radius: 3px; }
+        button:hover { background-color: var(--button-hover-bg); }
+        button:disabled { background-color: #f0f0f0; color: #999; cursor: not-allowed; border-color: #ddd;}
+        button.primary { background-color: var(--button-primary-bg); border-color: #c3e6cb; }
+        button.primary:hover { background-color: var(--button-primary-hover-bg); }
+
+        .tabs { display: flex; flex-wrap: wrap; margin-bottom: 0; /* Removed bottom margin */ border-bottom: 2px solid var(--border-color-medium); }
+        .tab-button { padding: 10px 15px; cursor: pointer; background-color: var(--tab-bg); border: 1px solid var(--border-color-medium); border-bottom: none; margin-left: 4px; border-radius: 4px 4px 0 0; font-size: 0.9em; position: relative; bottom: -1px; }
+        .tab-button.active { background-color: var(--tab-active-bg); border-color: var(--border-color-medium); border-bottom: 1px solid var(--tab-active-bg); font-weight: bold; z-index: 1; } /* Added z-index */
+        .tab-content { display: none; padding: 15px; border: 1px solid var(--border-color-medium); border-top: none; background-color: var(--container-bg); animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; border: 1px solid var(--border-color-dark); }
+        th, td { border: 1px solid var(--table-border-color); padding: 8px; text-align: right; vertical-align: middle; /* Changed to middle */ }
+        th { background-color: var(--table-header-bg); font-weight: bold; }
+        tbody tr:nth-child(even) { background-color: var(--tab-bg); }
+        td button { padding: 4px 8px; font-size: 0.85em; margin: 0 2px; } /* Smaller buttons in tables */
+
+        #feeReceiptPrint { display: none; }
+
+        @media print {
+             body { font-size: 11pt; background-color: #fff; color: #000; margin: 0; padding: 0; }
+             .container, .tab-content, form, #madrasahHeaderPrint, #reportOutput, #feeReceiptPrint { width: 100%; margin: 0; padding: 0; border: none !important; box-shadow: none; display: block !important; animation: none; background-color: #fff !important; }
+             .tabs, button, input[type="file"], .no-print, #madrasahHeaderPreview, #settings, #students, #teachers, #classes, #attendance, #results, #fees form, #finance form, #data, #reports .report-filters, #studentsTable, #teachersTable, #classesTable, #studentFeeHistoryTable, #financialsTable { display: none !important; } /* Hide more specific elements */
+
+             /* Show only the targeted print area */
+             body > *:not(#madrasahHeaderPrint):not(#reportOutput):not(#feeReceiptPrint):not(.printable-area) { display: none !important; } /* Hide everything except print targets */
+             #madrasahHeaderPrint { display: block !important; page-break-after: avoid; border-bottom: 2px solid #000; text-align: center; margin-bottom: 15px; padding-bottom: 10px;}
+             #logoPreviewPrint { max-width: 80px; max-height: 80px; margin: 0 auto 8px auto; display: block; }
+
+             #reportOutput, #feeReceiptPrint { display: block !important; padding: 10mm; /* Add print padding */}
+             #reportOutput table, #feeReceiptPrint table { font-size: 9pt; border: 1px solid #000 !important; margin-top: 10px; }
+             #reportOutput th, #reportOutput td, #feeReceiptPrint th, #feeReceiptPrint td { border: 1px solid #000 !important; padding: 5px; background-color: #fff !important; }
+             #reportOutput th, #feeReceiptPrint th { background-color: #eee !important; font-weight: bold; }
+
+             #feeReceiptPrint h2 { text-align: center; border: none; font-size: 1.3em; margin-bottom: 12px;}
+             #feeReceiptPrint p { margin-bottom: 6px; line-height: 1.4; }
+             #feeReceiptPrint .detail { display: flex; justify-content: space-between; margin-bottom: 4px; }
+             #feeReceiptPrint .detail span:first-child { font-weight: bold; margin-left: 8px;}
+        }
+
+        #logoPreview, #logoPreviewPrint, #logoPreviewHeader { max-width: 100px; max-height: 100px; margin-top: 8px; border: 1px dashed var(--border-color-medium); padding: 4px; display: none; /* Hidden initially */ object-fit: contain; } /* Added object-fit */
+        #logoPreviewHeader { margin: 5px auto; }
+        #madrasahHeaderPreview, #madrasahHeaderPrint { border: 1px solid var(--border-color-light); padding: 10px; margin-top: 15px; background-color: #fdfdfd; text-align: center; }
+        #madrasahHeaderPrint { display: none; }
+
+        .report-filters { background-color: #f0f0f0; padding: 12px; border: 1px solid #ddd; margin-bottom: 15px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .report-filters label { font-weight: normal; margin-left: 4px; }
+        .report-filters input, .report-filters select { border: 1px solid var(--border-color-medium); padding: 4px; background-color: #fff; border-radius: 3px; font-size: 0.9em; }
+
+        .data-actions { margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color-medium); }
+        .data-actions button, .data-actions input[type="file"] { margin-right: 0; margin-left: 8px; }
+        #financeTeacherGroup { display: none; width: 100%; } /* Ensure it takes full width in flex */
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+             body { padding: 5px; font-size: 14px; }
+             .container { padding: 15px; margin: 10px auto;}
+             .form-group { flex-direction: column; align-items: stretch; gap: 5px; padding-bottom: 10px; margin-bottom: 12px;}
+             .form-group label { min-width: auto; margin-left: 0; margin-bottom: 3px; }
+             input[type="text"], input[type="number"], input[type="date"], input[type="tel"], input[type="email"], textarea, select { width: 100% !important; min-width: 0; }
+             .tabs { flex-direction: column; }
+             .tab-button { width: 100%; margin-left: 0; margin-bottom: 2px; border-radius: 4px;}
+             .tab-button.active { border-bottom: 1px solid var(--border-color-medium);}
+             .report-filters { flex-direction: column; align-items: stretch; }
+             table { font-size: 0.8em;}
+             th, td { padding: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>مدرسہ انتظامی نظام</h1>
+
+        <div id="madrasahHeaderPrint">
+             <img id="logoPreviewPrint" src="" alt="مدرسہ کا لوگو">
+             <h2 id="headerNamePrint"></h2>
+             <p id="headerAddressPrint"></p>
+             <p id="headerPhonePrint"></p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'settings')">مدرسہ سیٹنگز</button>
+            <button class="tab-button" onclick="openTab(event, 'students')">طلباء کا اندراج</button>
+            <button class="tab-button" onclick="openTab(event, 'teachers')">اساتذہ کا اندراج</button>
+            <button class="tab-button" onclick="openTab(event, 'classes')">کلاسز و مضامین</button>
+            <button class="tab-button" onclick="openTab(event, 'attendance')">حاضری نظام</button>
+            <button class="tab-button" onclick="openTab(event, 'results')">نتائج کا ریکارڈ</button>
+            <button class="tab-button" onclick="openTab(event, 'fees')">فیس سسٹم</button>
+            <button class="tab-button" onclick="openTab(event, 'finance')">مدرسہ کا مالی ریکارڈ</button>
+            <button class="tab-button" onclick="openTab(event, 'reports')">رپورٹس</button>
+            <button class="tab-button" onclick="openTab(event, 'data')">ڈیٹا مینجمنٹ</button>
+        </div>
+
+        <div id="settings" class="tab-content active">
+            <h2>مدرسہ سیٹنگز</h2>
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="madrasahName">مدرسہ کا نام:</label>
+                    <input type="text" id="madrasahName" required>
+                </div>
+                <div class="form-group">
+                    <label for="madrasahAddress">پتہ:</label>
+                    <textarea id="madrasahAddress" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="madrasahPhone">فون نمبر:</label>
+                    <input type="tel" id="madrasahPhone">
+                </div>
+                <div class="form-group">
+                    <label for="madrasahLogo">مہر/لوگو اپ لوڈ:</label>
+                    <input type="file" id="madrasahLogo" accept="image/*">
+                     <img id="logoPreview" src="" alt="لوگو پریویو">
+                </div>
+                <button type="submit" class="primary">سیٹنگز محفوظ کریں</button>
+            </form>
+
+            <h3>ہیڈر پریویو برائے پرنٹ</h3>
+            <div id="madrasahHeaderPreview">
+                 <img id="logoPreviewHeader" src="" alt="">
+                 <h3 id="headerNamePreview" style="border: none; margin-bottom: 5px;"></h3>
+                 <p id="headerAddressPreview" style="margin-bottom: 5px;"></p>
+                 <p id="headerPhonePreview"></p>
+            </div>
+        </div>
+
+        <div id="students" class="tab-content">
+            <h2>طلباء کا اندراج</h2>
+            <form id="studentForm">
+                 <input type="hidden" id="studentId">
+                <div class="form-group"><label for="studentName">نام:</label><input type="text" id="studentName" required></div>
+                <div class="form-group"><label for="fatherName">والد کا نام:</label><input type="text" id="fatherName" required></div>
+                <div class="form-group"><label for="studentClass">کلاس:</label><select id="studentClass" required><option value="">منتخب کریں</option></select></div>
+                <div class="form-group"><label for="admissionNo">داخلہ نمبر:</label><input type="text" id="admissionNo" required></div>
+                <div class="form-group"><label for="admissionDate">داخلہ تاریخ:</label><input type="date" id="admissionDate" required></div>
+                 <h3>پتہ اور رابطہ معلومات</h3>
+                 <div class="form-group"><label for="studentAddress">مکمل پتہ:</label><textarea id="studentAddress"></textarea></div>
+                 <div class="form-group"><label for="studentPhone">رابطہ نمبر:</label><input type="tel" id="studentPhone"></div>
+                <button type="submit" class="primary">طالب علم شامل کریں / اپ ڈیٹ کریں</button>
+                <button type="button" onclick="resetStudentForm()">نیا اندراج</button>
+            </form>
+            <h3>داخل طلباء کی فہرست</h3>
+            <table id="studentsTable"><thead><tr><th>داخلہ نمبر</th><th>نام</th><th>والد کا نام</th><th>کلاس</th><th>داخلہ تاریخ</th><th>عمل</th></tr></thead><tbody></tbody></table>
+        </div>
+
+        <div id="teachers" class="tab-content">
+            <h2>اساتذہ کا اندراج</h2>
+             <form id="teacherForm">
+                 <input type="hidden" id="teacherId">
+                <div class="form-group"><label for="teacherName">نام:</label><input type="text" id="teacherName" required></div>
+                <div class="form-group"><label for="teacherSubjects">مضامین:</label><input type="text" id="teacherSubjects" placeholder="مثال: قرآن، حدیث، فقہ"></div>
+                <div class="form-group"><label for="teacherMobile">موبائل نمبر:</label><input type="tel" id="teacherMobile" required></div>
+                <div class="form-group"><label for="teacherSalary">طے شدہ تنخواہ:</label><input type="number" id="teacherSalary" min="0"></div>
+                <div class="form-group"><label for="appointmentDate">تقرری تاریخ:</label><input type="date" id="appointmentDate" required></div>
+                <button type="submit" class="primary">استاد شامل کریں / اپ ڈیٹ کریں</button>
+                <button type="button" onclick="resetTeacherForm()">نیا اندراج</button>
+            </form>
+            <h3>اساتذہ کی فہرست</h3>
+             <table id="teachersTable"><thead><tr><th>نام</th><th>مضامین</th><th>موبائل نمبر</th><th>طے شدہ تنخواہ</th><th>تقرری تاریخ</th><th>عمل</th></tr></thead><tbody></tbody></table>
+        </div>
+
+        <div id="classes" class="tab-content">
+            <h2>کلاسز اور مضامین</h2>
+             <form id="classForm">
+                  <input type="hidden" id="classId">
+                 <div class="form-group"><label for="className">کلاس کا نام:</label><input type="text" id="className" required></div>
+                 <div class="form-group"><label for="classTeacher">استاد:</label><select id="classTeacher" required><option value="">استاد منتخب کریں</option></select></div>
+                 <div class="form-group"><label for="classSubjects">مضامین:</label><input type="text" id="classSubjects" placeholder="مثال: ناظرہ، حفظ، تجوید"></div>
+                 <button type="submit" class="primary">کلاس شامل کریں / اپ ڈیٹ کریں</button>
+                 <button type="button" onclick="resetClassForm()">نیا اندراج</button>
+             </form>
+             <h3>موجودہ کلاسز</h3>
+             <table id="classesTable"><thead><tr><th>کلاس کا نام</th><th>استاد</th><th>مضامین</th><th>عمل</th></tr></thead><tbody></tbody></table>
+        </div>
+
+        <div id="attendance" class="tab-content">
+            <h2>حاضری نظام</h2>
+             <p>(بنیادی ڈھانچہ موجود، تفصیلی کوڈ درکار)</p>
+            <h3>طلباء کی حاضری</h3>
+             <form id="studentAttendanceForm">
+                <div class="form-group"><label for="attStudentClass">کلاس:</label><select id="attStudentClass" required onchange="loadStudentsForAttendance()"><option value="">کلاس منتخب کریں</option></select></div>
+                <div class="form-group"><label for="attDate">تاریخ:</label><input type="date" id="attDate" required></div>
+                <div id="studentAttendanceList"><p>براہ کرم کلاس منتخب کریں</p></div>
+                <button type="submit" class="primary">حاضری محفوظ کریں</button>
+             </form>
+             <h3>اساتذہ کی حاضری</h3>
+              <form id="teacherAttendanceForm">
+                 <div class="form-group"><label for="attTeacherDate">تاریخ:</label><input type="date" id="attTeacherDate" required></div>
+                 <div id="teacherAttendanceList"><p>اساتذہ لوڈ ہو رہے ہیں...</p></div>
+                 <button type="submit" class="primary">حاضری محفوظ کریں</button>
+             </form>
+             <h3>حاضری رجسٹر (مثال)</h3>
+             <button onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
+             <div id="attendanceRegisterPreview"></div>
+        </div>
+
+        <div id="results" class="tab-content">
+            <h2>نتائج کا ریکارڈ</h2>
+             <p>(بنیادی ڈھانچہ موجود، تفصیلی کوڈ درکار)</p>
+            <form id="resultForm">
+                 <div class="form-group"><label for="resultExamName">امتحان کا نام:</label><input type="text" id="resultExamName" required></div>
+                 <div class="form-group"><label for="resultDate">تاریخ:</label><input type="date" id="resultDate" required></div>
+                 <div class="form-group"><label for="resultStudent">طالب علم:</label><select id="resultStudent" required><option value="">طالب علم منتخب کریں</option></select></div>
+                 <div class="form-group"><label for="resultSubject">مضمون:</label><input type="text" id="resultSubject" required></div>
+                 <div class="form-group"><label for="resultMarks">حاصل کردہ نمبر:</label><input type="number" id="resultMarks" required min="0"></div>
+                 <div class="form-group"><label for="resultTotalMarks">کل نمبر:</label><input type="number" id="resultTotalMarks" required min="0"></div>
+                 <div class="form-group"><label for="resultGrade">گریڈ:</label><input type="text" id="resultGrade"></div>
+                 <button type="submit" class="primary">نتیجہ محفوظ کریں</button>
+            </form>
+             <h3>نتائج دیکھیں</h3>
+             <button onclick="printResultCard()">رزلٹ کارڈ پرنٹ کریں (منتخب طالب علم)</button>
+        </div>
+
+        <div id="fees" class="tab-content">
+            <h2>فیس سسٹم</h2>
+            <form id="feePaymentForm">
+                 <div class="form-group"><label for="feeStudent">طالب علم:</label><select id="feeStudent" required onchange="loadStudentFeeDetails()"><option value="">طالب علم منتخب کریں</option></select></div>
+                 <div class="form-group"><label>موجودہ بیلنس:</label><span id="feeBalance" style="font-weight:bold;">---</span></div>
+                 <div class="form-group"><label for="feeAmountPaid">ادا شدہ رقم:</label><input type="number" id="feeAmountPaid" required min="0"></div>
+                 <div class="form-group"><label for="feeDiscount">رعایت:</label><input type="number" id="feeDiscount" value="0" min="0"></div>
+                 <div class="form-group"><label for="feePaymentDate">ادائیگی کی تاریخ:</label><input type="date" id="feePaymentDate" required></div>
+                 <div class="form-group"><label for="feePaymentMethod">طریقہ ادائیگی:</label><select id="feePaymentMethod"><option value="Cash">کیش</option><option value="Online">آن لائن/بینک</option></select></div>
+                 <div class="form-group"><label for="feeRemarks">نوٹس:</label><input type="text" id="feeRemarks" placeholder="مثلاً: ماہ جنوری کی فیس"></div>
+                 <button type="submit" class="primary">ادائیگی محفوظ کریں</button>
+                 <button type="button" onclick="printFeeReceipt()" id="printReceiptBtn" disabled>آخری رسید پرنٹ کریں</button>
+             </form>
+             <h3>فیس ریکارڈ (منتخب طالب علم)</h3>
+             <table id="studentFeeHistoryTable"><thead><tr><th>تاریخ</th><th>تفصیل/نوٹس</th><th>ادا شدہ رقم</th><th>رعایت</th><th>طریقہ</th><th>عمل</th></tr></thead><tbody><tr><td colspan="6" style="text-align:center;">براہ کرم اوپر سے طالب علم منتخب کریں۔</td></tr></tbody></table>
+        </div>
+
+        <div id="finance" class="tab-content">
+            <h2>مدرسہ کا مالی ریکارڈ</h2>
+            <h3>نئی ٹرانزیکشن</h3>
+             <form id="financeForm">
+                 <div class="form-group"><label for="financeType">قسم:</label><select id="financeType" required onchange="toggleFinanceTeacher()"><option value="Income">آمدن</option><option value="Expense">خرچ</option><option value="Donation">عطیہ</option><option value="Salary">تنخواہ</option></select></div>
+                 <div class="form-group" id="financeTeacherGroup"><label for="financeTeacher">استاد:</label><select id="financeTeacher"><option value="">استاد منتخب کریں</option></select></div>
+                 <div class="form-group"><label for="financeDescription">تفصیل:</label><input type="text" id="financeDescription" required></div>
+                 <div class="form-group"><label for="financeAmount">رقم:</label><input type="number" id="financeAmount" required min="0"></div>
+                 <div class="form-group"><label for="financeDate">تاریخ:</label><input type="date" id="financeDate" required></div>
+                 <button type="submit" class="primary">ریکارڈ محفوظ کریں</button>
+                 <button type="button" onclick="resetFinanceForm()">نیا اندراج</button>
+             </form>
+             <h3>مالی ریکارڈ کی تفصیل</h3>
+             <table id="financialsTable"><thead><tr><th>تاریخ</th><th>قسم</th><th>تفصیل</th><th>استاد</th><th>رقم</th><th>عمل</th></tr></thead><tbody></tbody></table>
+             <button onclick="generateFinancialReport()">مجموعی مالی رپورٹ دیکھیں</button>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <h2>رپورٹس</h2>
+            <div class="report-filters no-print">
+                <label for="reportType">رپورٹ کی قسم:</label>
+                <select id="reportType" onchange="showReportFilters()"><option value="">منتخب کریں</option><option value="students">طلباء</option><option value="teachers">اساتذہ</option><option value="fees">فیس ادائیگی</option><option value="attendance_student">حاضری (طلباء)</option><option value="attendance_teacher">حاضری (اساتذہ)</option><option value="results">نتائج</option><option value="finance_summary">مالیات (خلاصہ)</option><option value="finance_detailed">مالیات (تفصیلی)</option></select>
+                <label for="filterClass" style="display:none;">کلاس:</label><select id="filterClass" style="display:none;"><option value="">تمام</option></select>
+                <label for="filterStudent" style="display:none;">طالب علم:</label><select id="filterStudent" style="display:none;"><option value="">تمام</option></select>
+                <label for="filterTeacher" style="display:none;">استاد:</label><select id="filterTeacher" style="display:none;"><option value="">تمام</option></select>
+                <label for="filterStartDate" style="display:none;">شروع تاریخ:</label><input type="date" id="filterStartDate" style="display:none;">
+                <label for="filterEndDate" style="display:none;">اختتام تاریخ:</label><input type="date" id="filterEndDate" style="display:none;">
+                <button onclick="generateReport()" class="primary">رپورٹ بنائیں</button>
+                <button onclick="printReport()">رپورٹ پرنٹ کریں</button>
+            </div>
+            <div id="reportOutput" class="printable-area"><p>براہ کرم رپورٹ کی قسم منتخب کریں اور فلٹرز کا اطلاق کریں۔</p></div>
+        </div>
+
+        <div id="data" class="tab-content">
+            <h2>ڈیٹا مینجمنٹ</h2>
+            <p>تمام معلومات آپ کے براؤزر میں IndexedDB میں محفوظ ہے۔</p>
+             <div class="data-actions"><button onclick="backupData()">ڈیٹا کا بیک اپ بنائیں (JSON)</button></div>
+             <div class="data-actions"><label for="importFile">بیک اپ فائل امپورٹ کریں (JSON):</label><input type="file" id="importFile" accept=".json" class="no-print"><button onclick="importData()">ڈیٹا امپورٹ کریں</button><p><small>نوٹ: امپورٹ کرنے سے موجودہ ڈیٹا مٹ سکتا ہے۔ پہلے بیک اپ ضرور بنا لیں۔</small></p></div>
+             <div class="data-actions"><button onclick="clearAllData()" style="background-color: #f8d7da; border-color: #f5c6cb;">تمام ڈیٹا صاف کریں (احتیاط!)</button></div>
+        </div>
+    </div>
+
+    <div id="feeReceiptPrint" class="printable-area">
+        <div id="receiptHeader"></div>
+        <h2>فیس رسید</h2>
+        <p id="receiptDate" style="text-align: left; font-size: 0.9em;"></p>
+        <hr>
+        <div class="detail"><span>طالب علم کا نام:</span> <span id="receiptStudentName"></span></div>
+        <div class="detail"><span>والد کا نام:</span> <span id="receiptFatherName"></span></div>
+        <div class="detail"><span>کلاس:</span> <span id="receiptClassName"></span></div>
+        <div class="detail"><span>داخلہ نمبر:</span> <span id="receiptAdmissionNo"></span></div>
+        <hr>
+        <div class="detail"><span>ادائیگی کی تاریخ:</span> <span id="receiptPaymentDate"></span></div>
+        <div class="detail"><span>تفصیل/نوٹس:</span> <span id="receiptRemarks"></span></div>
+        <div class="detail"><span>ادا شدہ رقم:</span> <span id="receiptAmountPaid"></span></div>
+        <div class="detail"><span>رعایت:</span> <span id="receiptDiscount"></span></div>
+        <div class="detail"><span>طریقہ ادائیگی:</span> <span id="receiptMethod"></span></div>
+        <hr>
+        <p style="text-align: left; margin-top: 40px; font-size: 0.9em;">دستخط وصول کنندہ: _______________</p>
+        <p style="font-size: 0.8em; text-align: center; margin-top: 25px;">یہ کمپیوٹر سے تیار کردہ رسید ہے۔</p>
+    </div>
+
+    <script>
+        let db;
+        const DB_NAME = 'MadrasahDB';
+        const DB_VERSION = 2; // Keep version 2
+        const STORES = { settings: 'settings', students: 'students', teachers: 'teachers', classes: 'classes', attendanceStudents: 'attendanceStudents', attendanceTeachers: 'attendanceTeachers', results: 'results', fees: 'fees', financials: 'financials' };
+        let studentNameCache = new Map();
+        let teacherNameCache = new Map();
+        let lastPrintedFeeId = null;
+        let madrasahSettingsCache = null; // Cache for settings
+
+        // --- Logging Wrapper ---
+        function logError(message, error) {
+             console.error(message, error);
+             // Optionally display a user-friendly message or log to a hidden div
+        }
+         function logInfo(message) {
+             console.log(message);
+         }
+
+        // --- IndexedDB Initialization ---
+        function initDB() {
+             logInfo(`Requesting DB version: ${DB_VERSION}`);
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onupgradeneeded = (event) => {
+                     logInfo(`Upgrading DB from version ${event.oldVersion} to ${event.newVersion}`);
+                    db = event.target.result;
+                    const transaction = event.target.transaction; // Use the upgrade transaction
+
+                    try {
+                        // Settings Store
+                        if (!db.objectStoreNames.contains(STORES.settings)) {
+                           logInfo(`Creating store: ${STORES.settings}`);
+                           db.createObjectStore(STORES.settings, { keyPath: 'id' });
+                           // Initial data added on first creation below (outside if)
+                        }
+                        // Students Store
+                        if (!db.objectStoreNames.contains(STORES.students)) {
+                           logInfo(`Creating store: ${STORES.students}`);
+                           const studentStore = db.createObjectStore(STORES.students, { keyPath: 'id', autoIncrement: true });
+                           studentStore.createIndex('admissionNo', 'admissionNo', { unique: true });
+                           studentStore.createIndex('name', 'name', { unique: false });
+                           studentStore.createIndex('className', 'className', { unique: false });
+                        }
+                        // Teachers Store
+                         if (!db.objectStoreNames.contains(STORES.teachers)) {
+                            logInfo(`Creating store: ${STORES.teachers}`);
+                           const teacherStore = db.createObjectStore(STORES.teachers, { keyPath: 'id', autoIncrement: true });
+                           teacherStore.createIndex('name', 'name', { unique: false });
+                           teacherStore.createIndex('mobile', 'mobile', { unique: true });
+                        }
+                        // Classes Store
+                        if (!db.objectStoreNames.contains(STORES.classes)) {
+                            logInfo(`Creating store: ${STORES.classes}`);
+                           const classStore = db.createObjectStore(STORES.classes, { keyPath: 'id', autoIncrement: true });
+                           classStore.createIndex('className', 'className', { unique: true });
+                           classStore.createIndex('teacherId', 'teacherId', { unique: false });
+                        }
+                         // Attendance Stores
+                         if (!db.objectStoreNames.contains(STORES.attendanceStudents)) { logInfo(`Creating store: ${STORES.attendanceStudents}`); db.createObjectStore(STORES.attendanceStudents, { keyPath: 'id', autoIncrement: true }).createIndex('studentId_date', ['studentId', 'date'], { unique: true }); }
+                         if (!db.objectStoreNames.contains(STORES.attendanceTeachers)) { logInfo(`Creating store: ${STORES.attendanceTeachers}`); db.createObjectStore(STORES.attendanceTeachers, { keyPath: 'id', autoIncrement: true }).createIndex('teacherId_date', ['teacherId', 'date'], { unique: true }); }
+                         // Results Store
+                        if (!db.objectStoreNames.contains(STORES.results)) { logInfo(`Creating store: ${STORES.results}`); db.createObjectStore(STORES.results, { keyPath: 'id', autoIncrement: true }).createIndex('studentId', 'studentId', { unique: false }); }
+                        // Fees Store
+                        if (!db.objectStoreNames.contains(STORES.fees)) { logInfo(`Creating store: ${STORES.fees}`); db.createObjectStore(STORES.fees, { keyPath: 'id', autoIncrement: true }).createIndex('studentId', 'studentId', { unique: false }); }
+
+                        // Financials Store (Create or Modify)
+                        let financeStore;
+                        if (!db.objectStoreNames.contains(STORES.financials)) {
+                            logInfo(`Creating store: ${STORES.financials}`);
+                            financeStore = db.createObjectStore(STORES.financials, { keyPath: 'id', autoIncrement: true });
+                            financeStore.createIndex('type', 'type', { unique: false });
+                            financeStore.createIndex('date', 'date', { unique: false });
+                            financeStore.createIndex('teacherId', 'teacherId', { unique: false }); // Add index on creation
+                         } else {
+                            // Use existing transaction to access the store for modification check
+                            financeStore = transaction.objectStore(STORES.financials);
+                             // Add teacherId index if upgrading and it doesn't exist
+                             if (event.oldVersion < 2 && !financeStore.indexNames.contains('teacherId')) {
+                                logInfo(`Creating 'teacherId' index on existing store: ${STORES.financials}`);
+                                financeStore.createIndex('teacherId', 'teacherId', { unique: false });
+                             }
+                         }
+
+                          // Add initial settings data if the store was just created
+                         if (!transaction.objectStore(STORES.settings).count()) {
+                              logInfo(`Adding initial settings record.`);
+                              transaction.objectStore(STORES.settings).put({ id: 'madrasahInfo', name: '', address: '', phone: '', logo: '' });
+                         }
+                          logInfo("DB upgrade structure checks complete.");
+                     } catch (upgradeError) {
+                        logError("Error during DB upgrade structure change:", upgradeError);
+                        // Attempt to abort the transaction
+                         if (transaction && transaction.abort) {
+                             transaction.abort();
+                         }
+                        reject(upgradeError); // Reject the main promise
+                        return; // Stop further execution in onupgradeneeded
+                    }
+                }; // end onupgradeneeded
+
+                 request.onsuccess = (event) => {
+                    db = event.target.result;
+                    logInfo('Database opened successfully.');
+                    db.onerror = (errorEvent) => { // Global DB error handler
+                        logError("Unhandled Database Error:", errorEvent.target.error);
+                    };
+                    // Clear caches and load initial data
+                    studentNameCache.clear();
+                    teacherNameCache.clear();
+                    madrasahSettingsCache = null;
+                    loadInitialData().then(() => {
+                        logInfo("Initial data loading sequence complete.");
+                        resolve(db);
+                    }).catch(loadErr => {
+                         logError("Error during initial data load sequence:", loadErr);
+                         // Still resolve the DB connection, but indicate loading failure
+                         resolve(db); // App might be partially functional
+                    });
+                }; // end onsuccess
+
+                request.onerror = (event) => {
+                    logError('Database open request error:', event.target.error);
+                    reject(event.target.error); // Reject the promise
+                }; // end onerror
+
+                 request.onblocked = (event) => {
+                     logError('Database is blocked. Please close other tabs/windows using this app.', event);
+                     alert('ڈیٹا بیس بلاک ہے۔ براہ کرم اس ایپ کو استعمال کرنے والی دیگر ٹیبز یا ونڈوز بند کریں اور صفحہ کو ریفریش کریں۔');
+                     reject('Database blocked');
+                 };
+
+            }); // end Promise
+        } // end initDB
+
+        // --- Generic DB Operations (with added logging) ---
+        function getStore(storeName, mode = 'readonly') {
+            if (!db) { throw new Error("Database not initialized"); }
+            try {
+                 const transaction = db.transaction([storeName], mode);
+                 return transaction.objectStore(storeName);
+            } catch (e) {
+                 logError(`Error getting store ${storeName} with mode ${mode}:`, e);
+                 throw e; // Re-throw the error
+            }
+        }
+
+        function addToStore(storeName, data) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const store = getStore(storeName, 'readwrite');
+                    const request = store.add(data);
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(new Error(`Error adding data to ${storeName}: ${event.target.error?.message || event.target.error}`));
+                    store.transaction.onerror = (event) => reject(new Error(`Transaction error on ${storeName} (add): ${event.target.error?.message || event.target.error}`));
+                 } catch (e) { reject(e); }
+            });
+        }
+         function updateStore(storeName, data) {
+             return new Promise((resolve, reject) => {
+                 try {
+                     const store = getStore(storeName, 'readwrite');
+                     if (!data.hasOwnProperty(store.keyPath)) { return reject(new Error(`Key (${store.keyPath}) missing in data object for update in ${storeName}.`)); }
+                     const request = store.put(data);
+                     request.onsuccess = (event) => resolve(event.target.result);
+                     request.onerror = (event) => reject(new Error(`Error updating data in ${storeName}: ${event.target.error?.message || event.target.error}`));
+                      store.transaction.onerror = (event) => reject(new Error(`Transaction error on ${storeName} (update): ${event.target.error?.message || event.target.error}`));
+                 } catch (e) { reject(e); }
+             });
+         }
+         function getFromStore(storeName, key) {
+             return new Promise((resolve, reject) => {
+                 try {
+                     const store = getStore(storeName);
+                     const request = store.get(key);
+                     request.onsuccess = (event) => resolve(event.target.result);
+                     request.onerror = (event) => reject(new Error(`Error getting data from ${storeName}: ${event.target.error?.message || event.target.error}`));
+                      store.transaction.onerror = (event) => reject(new Error(`Transaction error on ${storeName} (get): ${event.target.error?.message || event.target.error}`));
+                 } catch (e) { reject(e); }
+             });
+         }
+         function getAllFromStore(storeName, indexName = null, query = null) {
+             return new Promise((resolve, reject) => {
+                 try {
+                     const store = getStore(storeName);
+                     let request;
+                     if (indexName && query !== null && query !== undefined) {
+                         try {
+                             const index = store.index(indexName);
+                             request = index.getAll(query);
+                         } catch (e) { return reject(new Error(`Error accessing index '${indexName}' in store '${storeName}': ${e.message || e}`)); }
+                     } else { request = store.getAll(); }
+                     request.onsuccess = (event) => resolve(event.target.result || []); // Ensure array return
+                     request.onerror = (event) => reject(new Error(`Error getting all data from ${storeName} (index: ${indexName}): ${event.target.error?.message || event.target.error}`));
+                      store.transaction.onerror = (event) => reject(new Error(`Transaction error on ${storeName} (getAll): ${event.target.error?.message || event.target.error}`));
+                 } catch (e) { reject(e); }
+             });
+         }
+         function deleteFromStore(storeName, key) {
+             return new Promise((resolve, reject) => {
+                 try {
+                     const store = getStore(storeName, 'readwrite');
+                     const request = store.delete(key);
+                     request.onsuccess = () => resolve(true);
+                     request.onerror = (event) => reject(new Error(`Error deleting data from ${storeName}: ${event.target.error?.message || event.target.error}`));
+                      store.transaction.onerror = (event) => reject(new Error(`Transaction error on ${storeName} (delete): ${event.target.error?.message || event.target.error}`));
+                 } catch (e) { reject(e); }
+             });
+         }
+
+
+        // --- Helper: Get Names/Settings (with Cache) ---
+        async function getSettings() {
+             if (madrasahSettingsCache) return madrasahSettingsCache;
+             try {
+                  madrasahSettingsCache = await getFromStore(STORES.settings, 'madrasahInfo');
+                  return madrasahSettingsCache || {}; // Return empty object if not found
+             } catch (error) {
+                  logError("Error fetching settings:", error);
+                  return {}; // Return empty object on error
+             }
+         }
+        async function getStudentName(studentId) {
+             const id = parseInt(studentId);
+             if (isNaN(id)) return 'غلط ID';
+             if (studentNameCache.has(id)) return studentNameCache.get(id);
+             try {
+                 const student = await getFromStore(STORES.students, id);
+                 const name = student ? `${student.name} (${student.admissionNo || '?'})` : 'نامعلوم طالب علم';
+                 studentNameCache.set(id, name);
+                 return name;
+             } catch (error) { logError("Error fetching student name:", error); return 'غلطی'; }
+         }
+        async function getTeacherName(teacherId) {
+            const id = parseInt(teacherId);
+            if (isNaN(id)) return '';
+            if (teacherNameCache.has(id)) return teacherNameCache.get(id);
+            try {
+                const teacher = await getFromStore(STORES.teachers, id);
+                const name = teacher ? teacher.name : 'نامعلوم استاد';
+                teacherNameCache.set(id, name);
+                return name;
+            } catch (error) { logError("Error fetching teacher name:", error); return 'غلطی'; }
+        }
+
+        // --- Tab Navigation ---
+        function openTab(evt, tabName) {
+            // Basic check if DB connection failed earlier
+            if (!db && tabName !== 'settings' && tabName !== 'data') {
+                 alert("ڈیٹا بیس منسلک نہیں ہے۔ براہ کرم صفحہ ریفریش کریں یا کنسول چیک کریں۔");
+                 // return; // Allow switching but show warning
+             }
+
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) { tablinks[i].classList.remove("active"); }
+
+            const currentTabContent = document.getElementById(tabName);
+             const currentTabButton = evt?.currentTarget; // Use optional chaining
+
+            if (currentTabContent) { currentTabContent.style.display = "block"; currentTabContent.classList.add("active"); }
+            else { logError(`Tab content not found for id: ${tabName}`); }
+
+            if(currentTabButton) { currentTabButton.classList.add("active"); }
+            else {
+                 // If called without event (e.g., programmatically), find the button
+                 const btn = document.querySelector(`.tab-button[onclick*="('${tabName}')"]`);
+                 if (btn) btn.classList.add("active");
+             }
+
+
+            // Refresh data when tab is opened (use try-catch for safety)
+            try {
+                 if (tabName === 'students') loadStudents();
+                 else if (tabName === 'teachers') loadTeachers();
+                 else if (tabName === 'classes') { loadClasses(); loadTeachersIntoDropdown('classTeacher'); }
+                 else if (tabName === 'attendance') { loadClassesIntoDropdown('attStudentClass'); loadTeachersForAttendance(); }
+                 else if (tabName === 'results') loadStudentsIntoDropdown('resultStudent');
+                 else if (tabName === 'fees') loadStudentsIntoDropdown('feeStudent');
+                 else if (tabName === 'finance') loadFinancials(); // Load financials table when tab is opened
+                 else if (tabName === 'reports') { loadClassesIntoDropdown('filterClass'); loadStudentsIntoDropdown('filterStudent'); loadTeachersIntoDropdown('filterTeacher'); }
+            } catch (tabLoadError) {
+                 logError(`Error loading data for tab ${tabName}:`, tabLoadError);
+            }
+        }
+
+        // --- Safe Query Selector ---
+         function safeQS(selector, parent = document) {
+             const element = parent.querySelector(selector);
+             if (!element) {
+                 logError(`Element not found for selector: ${selector}`);
+                 // throw new Error(`Element not found for selector: ${selector}`); // Option: throw error
+             }
+             return element;
+         }
+
+
+        // --- Settings Module ---
+        const settingsForm = safeQS('#settingsForm');
+        const madrasahNameInput = safeQS('#madrasahName');
+        const madrasahAddressInput = safeQS('#madrasahAddress');
+        const madrasahPhoneInput = safeQS('#madrasahPhone');
+        const madrasahLogoInput = safeQS('#madrasahLogo');
+        const logoPreview = safeQS('#logoPreview');
+        const logoPreviewHeader = safeQS('#logoPreviewHeader');
+        const logoPreviewPrint = safeQS('#logoPreviewPrint');
+        const headerNamePreview = safeQS('#headerNamePreview');
+        const headerAddressPreview = safeQS('#headerAddressPreview');
+        const headerPhonePreview = safeQS('#headerPhonePreview');
+        const headerNamePrint = safeQS('#headerNamePrint');
+        const headerAddressPrint = safeQS('#headerAddressPrint');
+        const headerPhonePrint = safeQS('#headerPhonePrint');
+        let currentLogoData = null;
+
+        async function loadSettings() {
+             logInfo("Loading settings...");
+             try {
+                 const settings = await getSettings(); // Use cached getter
+                 if (settings && madrasahNameInput) { // Check if elements exist
+                     madrasahNameInput.value = settings.name || '';
+                     madrasahAddressInput.value = settings.address || '';
+                     madrasahPhoneInput.value = settings.phone || '';
+                     currentLogoData = settings.logo || null;
+                     const logoSrc = settings.logo || '';
+
+                      [logoPreview, logoPreviewHeader, logoPreviewPrint].forEach(img => {
+                         if(img) {
+                             img.src = logoSrc;
+                             img.style.display = logoSrc ? 'block' : 'none';
+                         }
+                      });
+
+                     if(headerNamePreview) headerNamePreview.textContent = settings.name || '';
+                     if(headerAddressPreview) headerAddressPreview.textContent = settings.address || '';
+                     if(headerPhonePreview) headerPhonePreview.textContent = settings.phone || '';
+                     if(headerNamePrint) headerNamePrint.textContent = settings.name || '';
+                     if(headerAddressPrint) headerAddressPrint.textContent = settings.address || '';
+                     if(headerPhonePrint) headerPhonePrint.textContent = settings.phone || '';
+                     logInfo("Settings loaded into form and headers.");
+                 } else {
+                     logInfo("No settings found or form elements missing.");
+                 }
+             } catch (error) {
+                 logError("Error loading settings:", error);
+             }
+         }
+
+        if(madrasahLogoInput) {
+             madrasahLogoInput.addEventListener('change', (event) => {
+                 const file = event.target.files[0];
+                 if (file && logoPreview) {
+                     const reader = new FileReader();
+                     reader.onload = (e) => {
+                         currentLogoData = e.target.result; // Base64 string
+                         logoPreview.src = currentLogoData;
+                         logoPreview.style.display = 'block';
+                     }
+                     reader.onerror = (e) => logError("Error reading logo file:", e);
+                     reader.readAsDataURL(file);
+                 }
+             });
+         }
+
+        if(settingsForm) {
+             settingsForm.addEventListener('submit', async (event) => {
+                 event.preventDefault();
+                 const settingsData = {
+                     id: 'madrasahInfo',
+                     name: madrasahNameInput.value,
+                     address: madrasahAddressInput.value,
+                     phone: madrasahPhoneInput.value,
+                     logo: currentLogoData
+                 };
+                 try {
+                     await updateStore(STORES.settings, settingsData);
+                     madrasahSettingsCache = settingsData; // Update cache immediately
+                     alert('سیٹنگز کامیابی سے محفوظ ہو گئیں۔');
+                     loadSettings(); // Refresh display visually
+                 } catch (error) {
+                     logError("Error saving settings:", error);
+                     alert('سیٹنگز محفوظ کرنے میں خرابی: ' + error?.message);
+                 }
+             });
+        }
+
+
+        // --- Students Module ---
+        const studentForm = safeQS('#studentForm');
+        const studentIdInput = safeQS('#studentId');
+        const studentNameInput = safeQS('#studentName');
+        const fatherNameInput = safeQS('#fatherName');
+        const studentClassSelect = safeQS('#studentClass');
+        const admissionNoInput = safeQS('#admissionNo');
+        const admissionDateInput = safeQS('#admissionDate');
+        const studentAddressInput = safeQS('#studentAddress');
+        const studentPhoneInput = safeQS('#studentPhone');
+        const studentsTableBody = safeQS('#studentsTable tbody');
+
+        if(studentForm) {
+            studentForm.addEventListener('submit', async (event) => {
+                 event.preventDefault();
+                 const studentData = {
+                     name: studentNameInput.value, fatherName: fatherNameInput.value, className: studentClassSelect.value,
+                     admissionNo: admissionNoInput.value, admissionDate: admissionDateInput.value,
+                     address: studentAddressInput.value, phone: studentPhoneInput.value,
+                 };
+                 const studentId = studentIdInput.value;
+                 try {
+                     if (studentId) {
+                         studentData.id = parseInt(studentId);
+                         if(isNaN(studentData.id)) throw new Error("Invalid student ID for update.");
+                         await updateStore(STORES.students, studentData);
+                         alert('طالب علم کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں۔');
+                     } else {
+                         const existing = await getAllFromStore(STORES.students, 'admissionNo', studentData.admissionNo);
+                         if (existing && existing.length > 0) { alert('یہ داخلہ نمبر پہلے سے موجود ہے۔'); return; }
+                         await addToStore(STORES.students, studentData);
+                         alert('نیا طالب علم کامیابی سے شامل ہو گیا۔');
+                     }
+                     resetStudentForm();
+                     loadStudents();
+                     loadStudentsIntoDropdown('feeStudent'); // Update fee dropdown
+                     loadStudentsIntoDropdown('filterStudent'); // Update report dropdown
+                 } catch (error) { logError("Error saving student:", error); alert('طالب علم کو محفوظ کرنے میں خرابی: ' + error?.message); }
+            });
+        }
+        function resetStudentForm() { if(studentForm) studentForm.reset(); if(studentIdInput) studentIdInput.value = ''; if(admissionDateInput) admissionDateInput.valueAsDate = new Date(); }
+        async function loadStudents(filterClass = null) {
+             if (!studentsTableBody) return;
+             studentsTableBody.innerHTML = '<tr><td colspan="6">لوڈ ہو رہا ہے...</td></tr>';
+             try {
+                 let students = await getAllFromStore(STORES.students);
+                 studentNameCache.clear();
+                 students.forEach(s => studentNameCache.set(s.id, `${s.name} (${s.admissionNo || '?'})`));
+
+                 if (filterClass) { students = students.filter(s => s.className === filterClass); }
+
+                 studentsTableBody.innerHTML = ''; // Clear
+                 if(students.length === 0) { studentsTableBody.innerHTML = '<tr><td colspan="6">کوئی طالب علم موجود نہیں۔</td></tr>'; return; }
+
+                 students.forEach(student => {
+                     const row = studentsTableBody.insertRow();
+                     row.innerHTML = `
+                         <td>${student.admissionNo}</td> <td>${student.name}</td> <td>${student.fatherName}</td>
+                         <td>${student.className}</td> <td>${student.admissionDate}</td>
+                         <td><button onclick="editStudent(${student.id})">ترمیم</button> <button onclick="deleteStudent(${student.id}, '${student.admissionNo}')">حذف</button></td>`;
+                 });
+             } catch (error) { logError("Error loading students:", error); studentsTableBody.innerHTML = '<tr><td colspan="6">طلباء لوڈ کرنے میں خرابی۔</td></tr>'; }
+         }
+        async function editStudent(id) {
+             try {
+                 const student = await getFromStore(STORES.students, id);
+                 if (student && studentIdInput) { // Check elements exist
+                     studentIdInput.value = student.id; studentNameInput.value = student.name; fatherNameInput.value = student.fatherName;
+                     admissionNoInput.value = student.admissionNo; admissionDateInput.value = student.admissionDate;
+                     studentAddressInput.value = student.address || ''; studentPhoneInput.value = student.phone || '';
+                      // Ensure class exists in dropdown, then select it
+                     await loadClassesIntoDropdown('studentClass'); // Ensure dropdown is populated first
+                     if (studentClassSelect) studentClassSelect.value = student.className;
+
+                     openTab(null, 'students'); // Switch to tab programmatically
+                      if(studentNameInput) studentNameInput.focus();
+                 }
+             } catch (error) { logError("Error fetching student for edit:", error); alert("ترمیم کے لیے طالب علم لوڈ کرنے میں خرابی۔");}
+         }
+         async function deleteStudent(id, admissionNo) {
+             if (confirm(`کیا آپ واقعی طالب علم نمبر ${admissionNo} کو حذف کرنا چاہتے ہیں؟\n(متعلقہ فیس/نتیجہ کا ریکارڈ متاثر نہیں ہوگا۔)`)) {
+                 try { await deleteFromStore(STORES.students, id); alert('طالب علم کامیابی سے حذف ہو گیا۔'); loadStudents(); loadStudentsIntoDropdown('feeStudent'); loadStudentsIntoDropdown('filterStudent'); }
+                 catch (error) { logError("Error deleting student:", error); alert('طالب علم کو حذف کرنے میں خرابی: ' + error?.message); }
+             }
+         }
+
+
+        // --- Teachers Module ---
+        const teacherForm = safeQS('#teacherForm');
+        const teacherIdInput = safeQS('#teacherId');
+        const teacherNameInput = safeQS('#teacherName');
+        const teacherSubjectsInput = safeQS('#teacherSubjects');
+        const teacherMobileInput = safeQS('#teacherMobile');
+        const teacherSalaryInput = safeQS('#teacherSalary');
+        const appointmentDateInput = safeQS('#appointmentDate');
+        const teachersTableBody = safeQS('#teachersTable tbody');
+
+        if(teacherForm){
+             teacherForm.addEventListener('submit', async (event) => {
+                 event.preventDefault();
+                 const teacherData = {
+                     name: teacherNameInput.value, subjects: teacherSubjectsInput.value, mobile: teacherMobileInput.value,
+                     salary: teacherSalaryInput.value ? parseFloat(teacherSalaryInput.value) : null, appointmentDate: appointmentDateInput.value,
+                 };
+                 const teacherId = teacherIdInput.value;
+                 try {
+                     if (teacherId) {
+                         teacherData.id = parseInt(teacherId);
+                          if(isNaN(teacherData.id)) throw new Error("Invalid teacher ID for update.");
+                         await updateStore(STORES.teachers, teacherData); alert('استاد کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں۔');
+                     } else {
+                         const existing = await getAllFromStore(STORES.teachers, 'mobile', teacherData.mobile);
+                         if (existing && existing.length > 0) { alert('یہ موبائل نمبر پہلے سے موجود ہے۔'); return; }
+                         await addToStore(STORES.teachers, teacherData); alert('نیا استاد کامیابی سے شامل ہو گیا۔');
+                     }
+                     resetTeacherForm(); loadTeachers();
+                 } catch (error) { logError("Error saving teacher:", error); alert('استاد کو محفوظ کرنے میں خرابی: ' + error?.message); }
+             });
+         }
+         function resetTeacherForm() { if(teacherForm) teacherForm.reset(); if(teacherIdInput) teacherIdInput.value = ''; if(appointmentDateInput) appointmentDateInput.valueAsDate = new Date(); }
+         async function loadTeachers() {
+             if(!teachersTableBody) return;
+             teachersTableBody.innerHTML = '<tr><td colspan="6">لوڈ ہو رہا ہے...</td></tr>';
+             try {
+                 const teachers = await getAllFromStore(STORES.teachers);
+                 teacherNameCache.clear(); teachers.forEach(t => teacherNameCache.set(t.id, t.name));
+
+                 teachersTableBody.innerHTML = '';
+                 if(teachers.length === 0) { teachersTableBody.innerHTML = '<tr><td colspan="6">کوئی استاد موجود نہیں۔</td></tr>'; return; }
+
+                 teachers.forEach(teacher => {
+                     const row = teachersTableBody.insertRow();
+                     row.innerHTML = `<td>${teacher.name}</td><td>${teacher.subjects || ''}</td><td>${teacher.mobile}</td><td>${teacher.salary || 'N/A'}</td><td>${teacher.appointmentDate}</td><td><button onclick="editTeacher(${teacher.id})">ترمیم</button> <button onclick="deleteTeacher(${teacher.id}, '${teacher.name}')">حذف</button></td>`;
+                 });
+                 loadTeachersIntoDropdown('classTeacher'); loadTeachersIntoDropdown('financeTeacher'); loadTeachersIntoDropdown('filterTeacher');
+             } catch (error) { logError("Error loading teachers:", error); teachersTableBody.innerHTML = '<tr><td colspan="6">اساتذہ لوڈ کرنے میں خرابی۔</td></tr>'; }
+         }
+         async function editTeacher(id) {
+             try {
+                 const teacher = await getFromStore(STORES.teachers, id);
+                 if (teacher && teacherIdInput) {
+                     teacherIdInput.value = teacher.id; teacherNameInput.value = teacher.name; teacherSubjectsInput.value = teacher.subjects || '';
+                     teacherMobileInput.value = teacher.mobile; teacherSalaryInput.value = teacher.salary || ''; appointmentDateInput.value = teacher.appointmentDate;
+                     openTab(null, 'teachers'); if(teacherNameInput) teacherNameInput.focus();
+                 }
+             } catch (error) { logError("Error fetching teacher for edit:", error); alert("ترمیم کے لیے استاد لوڈ کرنے میں خرابی۔"); }
+         }
+        async function deleteTeacher(id, name) {
+             if (confirm(`کیا آپ واقعی استاد ${name} کو حذف کرنا چاہتے ہیں؟`)) {
+                 try { await deleteFromStore(STORES.teachers, id); alert('استاد کامیابی سے حذف ہو گیا۔'); loadTeachers(); }
+                 catch (error) { logError("Error deleting teacher:", error); alert('استاد کو حذف کرنے میں خرابی: ' + error?.message); }
+             }
+         }
+
+
+        // --- Classes Module ---
+        const classForm = safeQS('#classForm');
+        const classIdInput = safeQS('#classId');
+        const classNameInput = safeQS('#className');
+        const classTeacherSelect = safeQS('#classTeacher');
+        const classSubjectsInput = safeQS('#classSubjects');
+        const classesTableBody = safeQS('#classesTable tbody');
+
+        if(classForm) {
+             classForm.addEventListener('submit', async (event) => {
+                 event.preventDefault();
+                 const classData = {
+                     className: classNameInput.value, teacherId: classTeacherSelect.value ? parseInt(classTeacherSelect.value) : null, subjects: classSubjectsInput.value,
+                 };
+                 const classId = classIdInput.value;
+                 try {
+                     if (classId) {
+                         classData.id = parseInt(classId);
+                          if(isNaN(classData.id)) throw new Error("Invalid class ID for update.");
+                         await updateStore(STORES.classes, classData); alert('کلاس کامیابی سے اپ ڈیٹ ہو گئی۔');
+                     } else {
+                         const existing = await getAllFromStore(STORES.classes, 'className', classData.className);
+                         if (existing && existing.length > 0) { alert('یہ کلاس نام پہلے سے موجود ہے۔'); return; }
+                         await addToStore(STORES.classes, classData); alert('نئی کلاس کامیابی سے شامل ہو گئی۔');
+                     }
+                     resetClassForm(); loadClasses();
+                 } catch (error) { logError("Error saving class:", error); alert('کلاس محفوظ کرنے میں خرابی: ' + error?.message); }
+             });
+        }
+        function resetClassForm() { if(classForm) classForm.reset(); if(classIdInput) classIdInput.value = ''; if(classTeacherSelect) classTeacherSelect.value = ''; }
+        async function loadClasses() {
+             if(!classesTableBody) return;
+             classesTableBody.innerHTML = '<tr><td colspan="4">لوڈ ہو رہا ہے...</td></tr>';
+             try {
+                 const classes = await getAllFromStore(STORES.classes);
+                 classesTableBody.innerHTML = '';
+                 if(classes.length === 0) { classesTableBody.innerHTML = '<tr><td colspan="4">کوئی کلاس موجود نہیں۔</td></tr>'; return; }
+
+                 for (const cls of classes) {
+                     const row = classesTableBody.insertRow();
+                     const teacherName = await getTeacherName(cls.teacherId);
+                     row.innerHTML = `<td>${cls.className}</td><td>${teacherName || 'N/A'}</td><td>${cls.subjects || ''}</td><td><button onclick="editClass(${cls.id})">ترمیم</button> <button onclick="deleteClass(${cls.id}, '${cls.className}')">حذف</button></td>`;
+                 }
+                 loadClassesIntoDropdown('studentClass'); loadClassesIntoDropdown('attStudentClass'); loadClassesIntoDropdown('filterClass');
+             } catch (error) { logError("Error loading classes:", error); classesTableBody.innerHTML = '<tr><td colspan="4">کلاسز لوڈ کرنے میں خرابی۔</td></tr>'; }
+        }
+         async function editClass(id) {
+             try {
+                 const cls = await getFromStore(STORES.classes, id);
+                 if (cls && classIdInput) {
+                     classIdInput.value = cls.id; classNameInput.value = cls.className;
+                     await loadTeachersIntoDropdown('classTeacher'); // Ensure dropdown is populated
+                     if(classTeacherSelect) classTeacherSelect.value = cls.teacherId || '';
+                     if(classSubjectsInput) classSubjectsInput.value = cls.subjects || '';
+                     openTab(null, 'classes'); if(classNameInput) classNameInput.focus();
+                 }
+             } catch (error) { logError("Error fetching class for edit:", error); alert("ترمیم کے لیے کلاس لوڈ کرنے میں خرابی۔"); }
+         }
+        async function deleteClass(id, name) {
+             if (confirm(`کیا آپ واقعی کلاس ${name} کو حذف کرنا چاہتے ہیں؟\n(طلباء متاثر ہو سکتے ہیں۔)`)) {
+                 try { await deleteFromStore(STORES.classes, id); alert('کلاس کامیابی سے حذف ہو گئی۔'); loadClasses(); }
+                 catch (error) { logError("Error deleting class:", error); alert('کلاس حذف کرنے میں خرابی: ' + error?.message); }
+             }
+         }
+
+
+        // --- Helper Functions for Dropdowns ---
+        async function populateDropdown(selectId, storeName, valueField, textFieldFn, defaultOptionText = 'منتخب کریں') {
+             const selectElement = safeQS(`#${selectId}`);
+             if (!selectElement) return;
+             const originalValue = selectElement.value; // Preserve current selection if possible
+             selectElement.innerHTML = `<option value="">${defaultOptionText}</option>`; // Clear and add default
+             try {
+                 const items = await getAllFromStore(storeName);
+                 items.sort((a, b) => { // Basic sort by text field
+                      const textA = textFieldFn(a);
+                      const textB = textFieldFn(b);
+                      return textA.localeCompare(textB, 'ur');
+                 });
+                 items.forEach(item => {
+                     const option = document.createElement('option');
+                     option.value = item[valueField];
+                     option.textContent = textFieldFn(item);
+                     selectElement.appendChild(option);
+                 });
+                  selectElement.value = originalValue; // Restore selection if it still exists
+             } catch (error) {
+                 logError(`Error loading dropdown ${selectId} from ${storeName}:`, error);
+                 selectElement.innerHTML = `<option value="">لوڈ کرنے میں خرابی</option>`; // Indicate error
+             }
+         }
+         function loadTeachersIntoDropdown(selectId) { populateDropdown(selectId, STORES.teachers, 'id', (t) => t.name, 'استاد منتخب کریں'); }
+         function loadClassesIntoDropdown(selectId) { populateDropdown(selectId, STORES.classes, 'className', (c) => c.className, 'کلاس منتخب کریں'); }
+         function loadStudentsIntoDropdown(selectId) { populateDropdown(selectId, STORES.students, 'id', (s) => `${s.name} (${s.admissionNo || '?'})`, 'طالب علم منتخب کریں'); }
+
+
+        // --- Attendance Module (Basic structure) ---
+        const attStudentClassSelect = safeQS('#attStudentClass');
+        const studentAttendanceListDiv = safeQS('#studentAttendanceList');
+        const teacherAttendanceListDiv = safeQS('#teacherAttendanceList');
+        async function loadStudentsForAttendance() {
+            if (!attStudentClassSelect || !studentAttendanceListDiv) return;
+            const className = attStudentClassSelect.value;
+            studentAttendanceListDiv.innerHTML = '<p>طلباء لوڈ ہو رہے ہیں...</p>';
+            if (!className) { studentAttendanceListDiv.innerHTML = '<p>براہ کرم پہلے کلاس منتخب کریں۔</p>'; return; }
+            try {
+                const students = await getAllFromStore(STORES.students, 'className', className);
+                if (!students || students.length === 0) { studentAttendanceListDiv.innerHTML = '<p>اس کلاس میں کوئی طالب علم موجود نہیں۔</p>'; return; }
+                let studentHtml = '<table style="font-size:0.9em;"><thead><tr><th>نام</th><th>حاضری</th></tr></thead><tbody>';
+                students.forEach(student => { studentHtml += `<tr><td>${student.name} (${student.admissionNo})</td><td><input type="radio" name="att_status_${student.id}" value="P" checked> P <input type="radio" name="att_status_${student.id}" value="A"> A <input type="radio" name="att_status_${student.id}" value="L"> L</td></tr>`; });
+                studentHtml += '</tbody></table>';
+                studentAttendanceListDiv.innerHTML = studentHtml;
+            } catch (error) { logError("Error loading students for attendance:", error); studentAttendanceListDiv.innerHTML = '<p>طلباء لوڈ کرنے میں خرابی۔</p>'; }
+        }
+        async function loadTeachersForAttendance() {
+             if (!teacherAttendanceListDiv) return;
+             teacherAttendanceListDiv.innerHTML = '<p>اساتذہ لوڈ ہو رہے ہیں...</p>';
+             try {
+                 const teachers = await getAllFromStore(STORES.teachers);
+                 if (!teachers || teachers.length === 0) { teacherAttendanceListDiv.innerHTML = '<p>کوئی استاد موجود نہیں۔</p>'; return; }
+                 let teacherHtml = '<table style="font-size:0.9em;"><thead><tr><th>نام</th><th>حاضری</th></tr></thead><tbody>';
+                 teachers.forEach(teacher => { teacherHtml += `<tr><td>${teacher.name}</td><td><input type="radio" name="att_status_teacher_${teacher.id}" value="P" checked> P <input type="radio" name="att_status_teacher_${teacher.id}" value="A"> A <input type="radio" name="att_status_teacher_${teacher.id}" value="L"> L</td></tr>`; });
+                 teacherHtml += '</tbody></table>';
+                 teacherAttendanceListDiv.innerHTML = teacherHtml;
+             } catch (error) { logError("Error loading teachers for attendance:", error); teacherAttendanceListDiv.innerHTML = '<p>اساتذہ لوڈ کرنے میں خرابی۔</p>'; }
+        }
+        function printAttendanceRegister() { alert("پرنٹ ایبل حاضری رجسٹر کا فیچر ابھی زیر تکمیل ہے۔"); }
+        // Add event listeners for attendance forms here...
+
+
+        // --- Results Module (Basic structure) ---
+        const resultForm = safeQS('#resultForm');
+        function printResultCard() { alert("پرنٹ ایبل رزلٹ کارڈ کا فیچر ابھی زیر تکمیل ہے۔"); }
+        // Add event listener for result form submission here...
+
+
+        // --- Fees Module ---
+        const feePaymentForm = safeQS('#feePaymentForm');
+        const feeStudentSelect = safeQS('#feeStudent');
+        const feeBalanceSpan = safeQS('#feeBalance');
+        const feeAmountPaidInput = safeQS('#feeAmountPaid');
+        const feeDiscountInput = safeQS('#feeDiscount');
+        const feePaymentDateInput = safeQS('#feePaymentDate');
+        const feePaymentMethodSelect = safeQS('#feePaymentMethod');
+        const feeRemarksInput = safeQS('#feeRemarks');
+        const studentFeeHistoryTableBody = safeQS('#studentFeeHistoryTable tbody');
+        const printReceiptBtn = safeQS('#printReceiptBtn');
+
+        if(feePaymentForm) {
+             feePaymentForm.addEventListener('submit', async (event) => {
+                 event.preventDefault();
+                 const studentId = parseInt(feeStudentSelect.value);
+                 if (!studentId || isNaN(studentId)) { alert("براہ کرم ایک طالب علم منتخب کریں۔"); return; }
+                 const feeData = {
+                     studentId: studentId, date: feePaymentDateInput.value,
+                     amountPaid: parseFloat(feeAmountPaidInput.value) || 0, discount: parseFloat(feeDiscountInput.value) || 0,
+                     method: feePaymentMethodSelect.value, remarks: feeRemarksInput.value.trim()
+                 };
+                 if (feeData.amountPaid <= 0 && feeData.discount <= 0) { alert("براہ کرم ادا شدہ رقم یا رعایت درج کریں۔"); return; }
+                 try {
+                     const addedFeeId = await addToStore(STORES.fees, feeData);
+                     lastPrintedFeeId = addedFeeId;
+                     alert('فیس کی ادائیگی کامیابی سے محفوظ ہو گئی۔');
+                     if(feePaymentForm) feePaymentForm.reset(); // Reset only payment fields? Maybe just amount/discount/remarks
+                     if(feeAmountPaidInput) feeAmountPaidInput.value = '';
+                     if(feeDiscountInput) feeDiscountInput.value = '0';
+                     if(feeRemarksInput) feeRemarksInput.value = '';
+                     if(feePaymentDateInput) feePaymentDateInput.valueAsDate = new Date(); // Reset date
+                     loadStudentFeeDetails(); // Refresh history for selected student
+                     if(printReceiptBtn) printReceiptBtn.disabled = false;
+                 } catch (error) { logError("Error saving fee payment:", error); alert('فیس کی ادائیگی محفوظ کرنے میں خرابی: ' + error?.message); }
+             });
+         }
+        async function loadStudentFeeDetails() {
+             if (!feeStudentSelect || !studentFeeHistoryTableBody || !feeBalanceSpan) return;
+             const studentId = parseInt(feeStudentSelect.value);
+             studentFeeHistoryTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لوڈ ہو رہا ہے...</td></tr>';
+             feeBalanceSpan.textContent = '---';
+             if(printReceiptBtn) printReceiptBtn.disabled = true;
+             lastPrintedFeeId = null;
+
+             if (!studentId || isNaN(studentId)) { studentFeeHistoryTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">براہ کرم اوپر سے طالب علم منتخب کریں۔</td></tr>'; return; }
+
+             try {
+                 const feeRecords = await getAllFromStore(STORES.fees, 'studentId', studentId);
+                 studentFeeHistoryTableBody.innerHTML = ''; // Clear
+                 if (!feeRecords || feeRecords.length === 0) { studentFeeHistoryTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اس طالب علم کا کوئی فیس ریکارڈ موجود نہیں۔</td></tr>'; feeBalanceSpan.textContent = '0'; return; }
+
+                 feeRecords.sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date ascending
+
+                 let totalPaid = 0, totalDiscount = 0;
+                 feeRecords.forEach(record => {
+                     totalPaid += record.amountPaid;
+                     totalDiscount += record.discount;
+                     const row = studentFeeHistoryTableBody.insertRow();
+                     row.innerHTML = `
+                         <td>${record.date}</td><td>${record.remarks || '-'}</td><td>${record.amountPaid}</td>
+                         <td>${record.discount}</td><td>${record.method}</td>
+                         <td><button onclick="deleteFeeRecord(${record.id})">حذف</button> <button onclick="prepareAndPrintReceipt(${record.id})">رسید پرنٹ</button></td>`;
+                 });
+                 feeBalanceSpan.textContent = `کل ادائیگی: ${totalPaid}, کل رعایت: ${totalDiscount}`;
+
+             } catch (error) { logError("Error loading student fee details:", error); studentFeeHistoryTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">فیس ریکارڈ لوڈ کرنے میں خرابی۔</td></tr>'; }
+         }
+        async function deleteFeeRecord(id) {
+              if (confirm("کیا آپ واقعی اس فیس ریکارڈ کو حذف کرنا چاہتے ہیں؟")) {
+                  try { await deleteFromStore(STORES.fees, id); alert("فیس ریکارڈ کامیابی سے حذف ہو گیا۔"); loadStudentFeeDetails(); }
+                  catch (error) { logError("Error deleting fee record:", error); alert("فیس ریکارڈ حذف کرنے میں خرابی: " + error?.message); }
+              }
+          }
+        async function prepareAndPrintReceipt(feeId) { lastPrintedFeeId = feeId; if(printReceiptBtn) printReceiptBtn.disabled = false; printFeeReceipt(); }
+        async function printFeeReceipt() {
+             if (!lastPrintedFeeId) { alert("پرنٹ کرنے کے لیے کوئی حالیہ یا منتخب رسید نہیں ہے۔"); return; }
+             const receiptPrintDiv = safeQS('#feeReceiptPrint');
+             const receiptHeaderDiv = safeQS('#receiptHeader', receiptPrintDiv); // Search within receipt div
+             if(!receiptPrintDiv || !receiptHeaderDiv) { alert("پرنٹ ایریا نہیں مل سکا۔"); return;}
+
+             try {
+                 const feeRecord = await getFromStore(STORES.fees, lastPrintedFeeId);
+                 if (!feeRecord) { alert("رسید کا ڈیٹا نہیں مل سکا۔ ID: " + lastPrintedFeeId); return; }
+                 const student = await getFromStore(STORES.students, feeRecord.studentId);
+                 const settings = await getSettings(); // Use cached getter
+
+                 // Populate Header
+                 receiptHeaderDiv.innerHTML = ''; // Clear previous
+                 if(settings.logo) { receiptHeaderDiv.innerHTML += `<img src="${settings.logo}" alt="لوگو" style="max-width: 80px; max-height: 80px; display: block; margin: 0 auto 10px auto; object-fit: contain;">`; }
+                 receiptHeaderDiv.innerHTML += `<h3 style="border:none; margin:0; padding:0; text-align:center;">${settings.name || ''}</h3><p style="margin:2px 0; text-align:center;">${settings.address || ''}</p><p style="margin:2px 0; text-align:center;">${settings.phone || ''}</p><hr>`;
+
+                 // Populate Details
+                 safeQS('#receiptDate', receiptPrintDiv).textContent = `تاریخ اجرا: ${new Date().toLocaleDateString('ur-PK')}`;
+                 safeQS('#receiptStudentName', receiptPrintDiv).textContent = student ? student.name : 'N/A';
+                 safeQS('#receiptFatherName', receiptPrintDiv).textContent = student ? student.fatherName : 'N/A';
+                 safeQS('#receiptClassName', receiptPrintDiv).textContent = student ? student.className : 'N/A';
+                 safeQS('#receiptAdmissionNo', receiptPrintDiv).textContent = student ? student.admissionNo : 'N/A';
+                 safeQS('#receiptPaymentDate', receiptPrintDiv).textContent = feeRecord.date;
+                 safeQS('#receiptRemarks', receiptPrintDiv).textContent = feeRecord.remarks || '-';
+                 safeQS('#receiptAmountPaid', receiptPrintDiv).textContent = feeRecord.amountPaid;
+                 safeQS('#receiptDiscount', receiptPrintDiv).textContent = feeRecord.discount;
+                 safeQS('#receiptMethod', receiptPrintDiv).textContent = feeRecord.method;
+
+                  logInfo("Receipt populated. Initiating print...");
+                  // Use a slight delay to ensure DOM updates before printing
+                  setTimeout(() => { window.print(); }, 100);
+
+             } catch (error) { logError("Error preparing fee receipt:", error); alert("رسید تیار کرنے میں خرابی: " + error?.message); }
+         }
+
+
+        // --- Finance Module ---
+        const financeForm = safeQS('#financeForm');
+        const financeTypeSelect = safeQS('#financeType');
+        const financeTeacherGroup = safeQS('#financeTeacherGroup');
+        const financeTeacherSelect = safeQS('#financeTeacher');
+        const financeDescriptionInput = safeQS('#financeDescription');
+        const financeAmountInput = safeQS('#financeAmount');
+        const financeDateInput = safeQS('#financeDate');
+        const financialsTableBody = safeQS('#financialsTable tbody');
+
+        function toggleFinanceTeacher() {
+            if (!financeTypeSelect || !financeTeacherGroup || !financeTeacherSelect) return;
+            if (financeTypeSelect.value === 'Salary') {
+                financeTeacherGroup.style.display = 'flex'; financeTeacherSelect.required = true;
+            } else {
+                financeTeacherGroup.style.display = 'none'; financeTeacherSelect.required = false; financeTeacherSelect.value = '';
+            }
+        }
+        function resetFinanceForm() { if(financeForm) financeForm.reset(); if(financeDateInput) financeDateInput.valueAsDate = new Date(); toggleFinanceTeacher(); }
+
+        if(financeForm) {
+             financeForm.addEventListener('submit', async (event) => {
+                 event.preventDefault();
+                 const financeData = {
+                     type: financeTypeSelect.value, description: financeDescriptionInput.value,
+                     amount: parseFloat(financeAmountInput.value) || 0, date: financeDateInput.value,
+                     teacherId: financeTypeSelect.value === 'Salary' ? parseInt(financeTeacherSelect.value) : null
+                 };
+                 if (financeData.type === 'Salary' && (!financeData.teacherId || isNaN(financeData.teacherId))) { alert("برائے مہربانی تنخواہ کے لیے استاد منتخب کریں۔"); return; }
+                 if (financeData.amount <= 0) { alert("براہ کرم درست رقم درج کریں۔"); return; }
+                 try { await addToStore(STORES.financials, financeData); alert('مالیاتی ریکارڈ کامیابی سے محفوظ ہو گیا۔'); resetFinanceForm(); loadFinancials(); }
+                 catch (error) { logError("Error saving financial record:", error); alert('مالیاتی ریکارڈ محفوظ کرنے میں خرابی: ' + error?.message); }
+             });
+        }
+        async function loadFinancials() {
+             if (!financialsTableBody) return;
+             financialsTableBody.innerHTML = '<tr><td colspan="6">لوڈ ہو رہا ہے...</td></tr>';
+             try {
+                 const records = await getAllFromStore(STORES.financials);
+                 financialsTableBody.innerHTML = '';
+                 if(records.length === 0) { financialsTableBody.innerHTML = '<tr><td colspan="6">کوئی مالی ریکارڈ موجود نہیں۔</td></tr>'; return; }
+                 records.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort desc
+
+                 for (const record of records) {
+                     const teacherName = record.type === 'Salary' ? await getTeacherName(record.teacherId) : '---';
+                     const row = financialsTableBody.insertRow();
+                     row.innerHTML = `<td>${record.date}</td><td>${record.type}</td><td>${record.description}</td><td>${teacherName}</td><td>${record.amount}</td><td><button onclick="deleteFinancialRecord(${record.id})">حذف</button></td>`;
+                 }
+             } catch (error) { logError("Error loading financials:", error); financialsTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">مالی ریکارڈ لوڈ کرنے میں خرابی۔</td></tr>'; }
+         }
+        async function deleteFinancialRecord(id) {
+              if (confirm("کیا آپ واقعی اس مالیاتی ریکارڈ کو حذف کرنا چاہتے ہیں؟")) {
+                  try { await deleteFromStore(STORES.financials, id); alert("مالیاتی ریکارڈ کامیابی سے حذف ہو گیا۔"); loadFinancials(); }
+                  catch (error) { logError("Error deleting financial record:", error); alert("مالیاتی ریکارڈ حذف کرنے میں خرابی: " + error?.message); }
+              }
+          }
+        function generateFinancialReport() { openTab(null, 'reports'); if(safeQS('#reportType')) safeQS('#reportType').value = 'finance_summary'; showReportFilters(); generateReport(); }
+
+
+        // --- Reports Module ---
+        const reportTypeSelect = safeQS('#reportType');
+        const filterClassSelect = safeQS('#filterClass');
+        const filterStudentSelect = safeQS('#filterStudent');
+        const filterTeacherSelect = safeQS('#filterTeacher');
+        const filterStartDateInput = safeQS('#filterStartDate');
+        const filterEndDateInput = safeQS('#filterEndDate');
+        const reportOutputDiv = safeQS('#reportOutput');
+
+        function showReportFilters() {
+             const reportType = reportTypeSelect ? reportTypeSelect.value : '';
+             const filters = { // Map report types to required filters
+                  students: ['filterClass'],
+                  teachers: [],
+                  fees: ['filterClass', 'filterStudent', 'filterStartDate', 'filterEndDate'],
+                  attendance_student: ['filterClass', 'filterStartDate', 'filterEndDate'], // Needs implementation
+                  attendance_teacher: ['filterTeacher', 'filterStartDate', 'filterEndDate'], // Needs implementation
+                  results: ['filterClass', 'filterStudent', 'filterStartDate', 'filterEndDate'], // Needs implementation
+                  finance_summary: ['filterTeacher', 'filterStartDate', 'filterEndDate'],
+                  finance_detailed: ['filterTeacher', 'filterStartDate', 'filterEndDate']
+             };
+             const requiredFilters = filters[reportType] || [];
+             document.querySelectorAll('.report-filters label, .report-filters select, .report-filters input').forEach(el => {
+                 const filterId = el.id || el.getAttribute('for');
+                 if (filterId && filterId !== 'reportType') {
+                      const isRequired = requiredFilters.includes(filterId);
+                      el.style.display = isRequired ? 'inline-block' : 'none';
+                      // Also hide label if element is hidden
+                      if(el.tagName !== 'LABEL') {
+                           const label = safeQS(`label[for="${filterId}"]`);
+                           if(label) label.style.display = isRequired ? 'inline-block' : 'none';
+                      }
+                 }
+             });
+         }
+        async function generateReport() {
+             if(!reportOutputDiv || !reportTypeSelect) return;
+             const reportType = reportTypeSelect.value;
+             const filterClass = filterClassSelect.value; const filterStudentId = filterStudentSelect.value; const filterTeacherId = filterTeacherSelect.value;
+             const startDate = filterStartDateInput.value; const endDate = filterEndDateInput.value;
+             reportOutputDiv.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
+             if (!reportType) { reportOutputDiv.innerHTML = '<p>براہ کرم رپورٹ کی قسم منتخب کریں۔</p>'; return; }
+
+             try {
+                 let data = [], headers = [], title = '', footer = '';
+                 const dateFilter = (recDate) => { /* ... date filtering logic ... */
+                    if (!startDate && !endDate) return true;
+                    if (!recDate) return false; // Handle records with missing dates
+                    try {
+                        const recordDate = new Date(recDate);
+                        if (isNaN(recordDate)) return false; // Handle invalid dates
+                        if (startDate && recordDate < new Date(startDate)) return false;
+                        if (endDate) {
+                            const end = new Date(endDate);
+                            end.setHours(23, 59, 59, 999); // Include the whole end day
+                            if (recordDate > end) return false;
+                        }
+                        return true;
+                     } catch(e) { return false; } // Catch potential date parsing errors
+                 };
+
+                 switch (reportType) {
+                     case 'students':
+                         title = 'طلباء کی رپورٹ'; headers = ['داخلہ نمبر', 'نام', 'والد کا نام', 'کلاس', 'داخلہ تاریخ', 'رابطہ'];
+                         const students = await getAllFromStore(STORES.students);
+                         data = students.filter(s => !filterClass || s.className === filterClass).map(s => [s.admissionNo, s.name, s.fatherName, s.className, s.admissionDate, s.phone || '']);
+                         break;
+                     case 'teachers':
+                         title = 'اساتذہ کی رپورٹ'; headers = ['نام', 'مضامین', 'موبائل نمبر', 'طے شدہ تنخواہ', 'تقرری تاریخ'];
+                         const teachers = await getAllFromStore(STORES.teachers);
+                         data = teachers.map(t => [t.name, t.subjects || '', t.mobile, t.salary || '', t.appointmentDate]);
+                         break;
+                     case 'fees':
+                         title = 'فیس ادائیگی رپورٹ'; headers = ['تاریخ', 'طالب علم', 'کلاس', 'نوٹس', 'ادا شدہ', 'رعایت', 'طریقہ'];
+                         const [feeRecords, allStudentsForFees] = await Promise.all([getAllFromStore(STORES.fees), getAllFromStore(STORES.students)]);
+                         const studentMapForFees = new Map(allStudentsForFees.map(s => [s.id, { name: s.name, fatherName: s.fatherName, className: s.className, admissionNo: s.admissionNo }]));
+                         const filteredFeeRecords = feeRecords.filter(rec => {
+                             const studentInfo = studentMapForFees.get(rec.studentId); if (!studentInfo) return false;
+                             if (filterStudentId && rec.studentId !== parseInt(filterStudentId)) return false;
+                             if (filterClass && studentInfo.className !== filterClass) return false;
+                             return dateFilter(rec.date);
+                         });
+                         data = filteredFeeRecords.map(rec => { const sInfo = studentMapForFees.get(rec.studentId); return [rec.date, `${sInfo.name} (${sInfo.admissionNo})`, sInfo.className, rec.remarks || '-', rec.amountPaid, rec.discount, rec.method]; });
+                         break;
+                     case 'finance_detailed':
+                         title = 'تفصیلی مالیاتی رپورٹ'; headers = ['تاریخ', 'قسم', 'تفصیل', 'استاد', 'رقم'];
+                         const financeRecords = await getAllFromStore(STORES.financials);
+                         const filteredFinance = financeRecords.filter(rec => {
+                             if (filterTeacherId && rec.type === 'Salary' && rec.teacherId !== parseInt(filterTeacherId)) return false;
+                             if (filterTeacherId && rec.type !== 'Salary') return false;
+                             return dateFilter(rec.date);
+                         });
+                         data = []; for(const rec of filteredFinance) { const tName = rec.type === 'Salary' ? await getTeacherName(rec.teacherId) : '---'; data.push([rec.date, rec.type, rec.description, tName, rec.amount]); }
+                         break;
+                     case 'finance_summary':
+                         title = 'مالیاتی رپورٹ (خلاصہ)'; headers = ['قسم', 'کل رقم'];
+                         const allFinanceRecords = await getAllFromStore(STORES.financials);
+                         const filteredFinanceForSummary = allFinanceRecords.filter(rec => { if (filterTeacherId && rec.type === 'Salary' && rec.teacherId !== parseInt(filterTeacherId)) return false; if (filterTeacherId && rec.type !== 'Salary') return false; return dateFilter(rec.date); });
+                         const summary = { Income: 0, Expense: 0, Donation: 0, Salary: 0 };
+                         filteredFinanceForSummary.forEach(rec => { if (summary.hasOwnProperty(rec.type)) { summary[rec.type] += rec.amount; }});
+                         data = Object.entries(summary).map(([type, amount]) => [type, amount.toFixed(2)]);
+                         const totalIncome = summary.Income + summary.Donation; const totalExpense = summary.Expense + summary.Salary; const netTotal = totalIncome - totalExpense;
+                         footer = `<hr style="margin-top:15px;"><p><strong>کل آمدن:</strong> ${totalIncome.toFixed(2)}</p><p><strong>کل خرچ:</strong> ${totalExpense.toFixed(2)}</p><p><strong>کل بچت/خسارہ:</strong> ${netTotal.toFixed(2)}</p>`;
+                         break;
+                     default: reportOutputDiv.innerHTML = '<p>یہ رپورٹ فی الحال دستیاب نہیں۔</p>'; return;
+                 }
+
+                 let tableHtml = `<h3>${title}</h3>`;
+                 if (filterClass) tableHtml += `<p style="font-size:0.9em;"><strong>کلاس:</strong> ${filterClass}</p>`;
+                 if (filterStudentId) tableHtml += `<p style="font-size:0.9em;"><strong>طالب علم:</strong> ${safeQS('#filterStudent option:checked')?.textContent || filterStudentId}</p>`;
+                 if (filterTeacherId) tableHtml += `<p style="font-size:0.9em;"><strong>استاد:</strong> ${safeQS('#filterTeacher option:checked')?.textContent || filterTeacherId}</p>`;
+                 if (startDate) tableHtml += `<p style="font-size:0.9em;"><strong>از:</strong> ${startDate}</p>`;
+                 if (endDate) tableHtml += `<p style="font-size:0.9em;"><strong>تا:</strong> ${endDate}</p>`;
+                 tableHtml += '<hr style="margin-bottom: 10px;">';
+
+                 tableHtml += '<table class="report-table"><thead><tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+                 if (data.length > 0) { data.forEach(row => { tableHtml += '<tr>' + row.map(cell => `<td>${cell === null || cell === undefined ? '' : cell}</td>`).join('') + '</tr>'; }); }
+                 else { tableHtml += `<tr><td colspan="${headers.length}" style="text-align:center;">فلٹرز کے مطابق کوئی ڈیٹا دستیاب نہیں۔</td></tr>`; }
+                 tableHtml += '</tbody></table>' + footer;
+                 reportOutputDiv.innerHTML = tableHtml;
+
+             } catch (error) { logError("Error generating report:", error); reportOutputDiv.innerHTML = `<p style='color:red;'>رپورٹ بنانے میں خرابی: ${error?.message}</p>`; }
+         }
+         function printReport() {
+            if(reportOutputDiv && reportOutputDiv.innerHTML.includes('<table')) {
+                 logInfo("Printing report...");
+                setTimeout(() => { window.print(); }, 100); // Delay for render
+            } else {
+                alert("پرنٹ کرنے کے لیے کوئی رپورٹ تیار نہیں۔ براہ کرم پہلے 'رپورٹ بنائیں'۔");
+            }
+         }
+
+
+        // --- Data Management ---
+        async function backupData() { /* ... existing code, add try/catch ... */
+             if (!db) { alert("ڈیٹا بیس منسلک نہیں ہے۔"); return; }
+             if (!confirm("کیا آپ تمام ڈیٹا کا بیک اپ بنانا چاہتے ہیں؟")) { return; }
+             logInfo("Starting data backup...");
+             const exportData = {}; const storeNames = Object.values(STORES); let promises = [];
+             try {
+                 const transaction = db.transaction(storeNames, 'readonly');
+                  transaction.onerror = event => { logError("Backup transaction error:", event.target.error); alert("بیک اپ بنانے میں خرابی: ٹرانزیکشن ایرر"); };
+                 storeNames.forEach(storeName => {
+                     promises.push(new Promise((resolve, reject) => {
+                         try {
+                             const store = transaction.objectStore(storeName); const request = store.getAll();
+                             request.onsuccess = event => { exportData[storeName] = event.target.result; resolve(); };
+                             request.onerror = event => { logError(`Error reading ${storeName} for backup:`, event.target.error); reject(`Error reading ${storeName}`); };
+                          } catch(e) { reject(`Error accessing store ${storeName}: ${e.message}`); }
+                     }));
+                 });
+                 await Promise.all(promises);
+                 const jsonString = JSON.stringify(exportData, null, 2); const blob = new Blob([jsonString], { type: 'application/json' });
+                 const url = URL.createObjectURL(blob); const a = document.createElement('a'); const timestamp = new Date().toISOString().slice(0, 10);
+                 a.href = url; a.download = `madrasah_backup_${timestamp}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+                 logInfo("Data backup successful."); alert("ڈیٹا بیک اپ کامیابی سے ڈاؤنلوڈ ہو گیا۔");
+             } catch (error) { logError("Error during backup process:", error); alert("بیک اپ بنانے میں خرابی: " + error?.message); }
+         }
+        function importData() { /* ... existing code, add try/catch around JSON.parse and transaction logic ... */
+            const fileInput = safeQS('#importFile'); if(!fileInput) return;
+            const file = fileInput.files[0]; if (!file) { alert("براہ کرم پہلے بیک اپ فائل منتخب کریں۔"); return; }
+            if (!confirm("احتیاط! ڈیٹا امپورٹ کرنے سے موجودہ تمام معلومات حذف ہو جائیں گی۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟")) { return; }
+            logInfo("Starting data import...");
+             const reader = new FileReader();
+             reader.onload = async (event) => {
+                 let transaction; // Define transaction variable outside try
+                 try {
+                     const importObject = JSON.parse(event.target.result);
+                     if (!db) { throw new Error("ڈیٹا بیس منسلک نہیں ہے۔ امپورٹ ممکن نہیں۔"); }
+                     const storeNames = Object.keys(importObject).filter(key => db.objectStoreNames.contains(key));
+                     if (storeNames.length === 0) { throw new Error("فائل میں کوئی درست ڈیٹا اسٹور نہیں ملا۔"); }
+
+                     transaction = db.transaction(storeNames, 'readwrite'); // Assign here
+                     let promises = [];
+                     transaction.onerror = txEvent => { logError("Import transaction error:", txEvent.target.error); alert(`امپورٹ میں خرابی: ${txEvent.target.error?.message}. ڈیٹا جزوی طور پر امپورٹ ہو سکتا ہے۔`); };
+                     transaction.oncomplete = () => { logInfo("Data import transaction complete."); alert("ڈیٹا کامیابی سے امپورٹ ہو گیا۔ براہ کرم صفحہ ریفریش کریں یا متعلقہ ٹیبز پر جا کر ڈیٹا دیکھیں۔"); loadInitialData(); }; // Reload data after import
+
+                     storeNames.forEach(storeName => {
+                         promises.push(new Promise((resolveStore, rejectStore) => {
+                             try {
+                                 const store = transaction.objectStore(storeName); const clearRequest = store.clear();
+                                 clearRequest.onsuccess = () => {
+                                     logInfo(`Store ${storeName} cleared.`); const dataToImport = importObject[storeName];
+                                     if (!Array.isArray(dataToImport)) { logInfo(`Data for ${storeName} is not an array, skipping items.`); resolveStore(); return; }
+                                     if (dataToImport.length === 0) { resolveStore(); return; } // Resolve if empty
+                                     let importCount = 0; let errorCount = 0;
+                                     dataToImport.forEach(item => {
+                                         try { // Add try around individual item add
+                                             if (store.autoIncrement && store.keyPath && item.hasOwnProperty(store.keyPath)) { delete item[store.keyPath]; }
+                                             const addRequest = store.add(item);
+                                             addRequest.onsuccess = () => { importCount++; if (importCount + errorCount === dataToImport.length) resolveStore(); }; // Resolve when all processed
+                                             addRequest.onerror = (errEvent) => { errorCount++; logError(`Skipping item in ${storeName} due to add error:`, { error: errEvent.target.error, item: item }); if (importCount + errorCount === dataToImport.length) resolveStore(); }; // Still resolve store promise even if some items failed
+                                         } catch (itemAddError) { errorCount++; logError(`Critical error adding item to ${storeName}:`, {error: itemAddError, item: item}); if(importCount + errorCount === dataToImport.length) resolveStore(); }
+                                     });
+                                 };
+                                 clearRequest.onerror = (clearEvent) => rejectStore(new Error(`Error clearing store ${storeName}: ${clearEvent.target.error?.message}`));
+                             } catch(storeAccessError) { rejectStore(storeAccessError); }
+                         }));
+                     });
+                     await Promise.all(promises); // Wait for all store operations to be initiated
+
+                 } catch (e) {
+                     logError("Error during import process:", e); alert("امپورٹ فائل پڑھنے یا پارس کرنے میں خرابی: " + e.message);
+                     if (transaction && transaction.abort) { transaction.abort(); logInfo("Import transaction aborted due to error.");} // Abort transaction on error
+                 } finally { if(fileInput) fileInput.value = ''; }
+             };
+             reader.onerror = () => { logError("File reading error"); alert("فائل پڑھنے میں خرابی۔"); if(fileInput) fileInput.value = ''; };
+             reader.readAsText(file);
+        }
+        async function clearAllData() { /* ... existing code, add try/catch ... */
+             if (!db) { alert("ڈیٹا بیس منسلک نہیں ہے۔"); return; }
+             if (!confirm("انتہائی احتیاط! کیا آپ واقعی اس ایپلیکیشن کا تمام ڈیٹا مستقل طور پر حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں کیا جا سکتا۔")) { return; }
+             logInfo("Clearing all data...");
+             const storeNames = Array.from(db.objectStoreNames); if (storeNames.length === 0) { alert("کوئی ڈیٹا اسٹور موجود نہیں۔"); return; }
+             try {
+                 const transaction = db.transaction(storeNames, 'readwrite'); let promises = [];
+                 transaction.onerror = event => { logError("Clear data transaction error:", event.target.error); alert("ڈیٹا صاف کرنے میں خرابی: " + event.target.error?.message); };
+                 transaction.oncomplete = () => { logInfo("All data cleared."); alert("تمام ڈیٹا کامیابی سے حذف کر دیا گیا۔"); location.reload(); };
+                 storeNames.forEach(storeName => {
+                     promises.push(new Promise((resolve, reject) => {
+                         try {
+                             const store = transaction.objectStore(storeName); const request = store.clear();
+                             request.onsuccess = () => { logInfo(`Store ${storeName} cleared.`); resolve(); };
+                             request.onerror = event => reject(new Error(`Error clearing store ${storeName}: ${event.target.error?.message}`));
+                          } catch(e) { reject(e); }
+                     }));
+                 });
+                 await Promise.all(promises);
+             } catch (error) { logError("Error initiating clear data transaction:", error); alert("ڈیٹا صاف کرنے میں خرابی: " + error?.message); }
+         }
+
+
+        // --- Initial Load ---
+        async function loadInitialData() {
+            logInfo("Starting initial data loading sequence...");
+            try {
+                 if (!db) { throw new Error("DB not available for initial load."); }
+                 await loadSettings(); // Load settings first
+                 await Promise.all([ // Load concurrently where possible
+                      loadTeachers(),
+                      loadClasses(),
+                      loadStudents()
+                 ]);
+                 await Promise.all([ // Load dropdowns that depend on previous loads
+                     loadStudentsIntoDropdown('feeStudent'),
+                     loadStudentsIntoDropdown('resultStudent'),
+                     loadStudentsIntoDropdown('filterStudent'),
+                     loadTeachersIntoDropdown('filterTeacher'), // Ensure teacher dropdowns populated for reports
+                     loadClassesIntoDropdown('filterClass'), // Ensure class dropdowns populated for reports
+                     loadFinancials() // Load finance table
+                 ]);
+
+                 // Set today's date in date fields if they are empty
+                 const today = new Date().toISOString().split('T')[0];
+                 ['admissionDate', 'appointmentDate', 'attDate', 'attTeacherDate', 'resultDate', 'feePaymentDate', 'financeDate', 'filterStartDate', 'filterEndDate'].forEach(id => {
+                      const element = safeQS(`#${id}`);
+                      // Set date only if element exists and is empty
+                      if (element && !element.value) { element.value = today; }
+                 });
+                 // Initial UI states
+                 toggleFinanceTeacher();
+                 if(printReceiptBtn) printReceiptBtn.disabled = true;
+                  logInfo("Initial data loading UI updates complete.");
+             } catch(error) {
+                  logError("Error during initial data load functions:", error);
+                  alert("ابتدائی ڈیٹا لوڈ کرنے میں خرابی: " + error?.message + "\nکچھ فیچرز کام نہیں کر سکتے۔");
+                   // Rethrow or handle as needed - prevents promise from resolving successfully in initDB's call
+                  throw error;
+             }
+         }
+
+        // --- Global Error Handling ---
+         window.addEventListener('error', function(event) {
+             logError('Unhandled global error:', { message: event.message, filename: event.filename, lineno: event.lineno, colno: event.colno, error: event.error });
+         });
+         window.addEventListener('unhandledrejection', function(event) {
+            logError('Unhandled promise rejection:', event.reason);
+         });
+
+
+        // --- DOM Ready ---
+        document.addEventListener('DOMContentLoaded', () => {
+             logInfo('DOM fully loaded and parsed. Initializing DB...');
+             // Add listener to the parent container for delegated events if needed later
+             // e.g., document.querySelector('.container').addEventListener('click', function(event) { ... });
+
+            initDB().then(database => {
+                 logInfo("DB initialization promise resolved.");
+                 // DB is ready, most loading already happened in initDB onsuccess
+                 // Activate the default tab visually just in case
+                  openTab(null, 'settings'); // Activate settings tab
+             }).catch(err => {
+                 logError("DB Initialization failed:", err);
+                 alert("ڈیٹا بیس شروع کرنے میں شدید ناکامی۔ ایپ کام نہیں کرے گی۔ براہ کرم کنسول چیک کریں یا ایڈمنسٹریٹر سے رابطہ کریں۔\n" + err?.message);
+                 // Disable parts of the UI?
+                 document.querySelectorAll('button, input, select, textarea').forEach(el => el.disabled = true);
+                 safeQS('.tabs').innerHTML = '<p style="color:red; padding:10px;">ڈیٹا بیس لوڈ نہیں ہو سکا!</p>';
+             });
+         });
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Load required libraries
+    try {
+        // Load jsPDF, autoTable and html2canvas libraries
+        const scripts = [
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
+        ];
+
+        for (const src of scripts) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            document.head.appendChild(script);
+            await new Promise((resolve, reject) => {
+                script.onload = resolve;
+                script.onerror = () => reject(new Error(`Failed to load ${src}`));
+            });
+        }
+
+        console.log('All libraries loaded successfully');
+    } catch (error) {
+        console.error('Error loading libraries:', error);
+        return;
+    }
+
+    // Function to check if table or its parent (e.g., popup) is visible
+    function isTableVisible(table) {
+        const rect = table.getBoundingClientRect();
+        let parent = table;
+        while (parent && parent !== document.body) {
+            const style = window.getComputedStyle(parent);
+            if (style.display === 'none' || style.visibility === 'hidden') {
+                return false;
+            }
+            parent = parent.parentElement;
+        }
+        return (
+            table.offsetParent !== null &&
+            rect.top < window.innerHeight &&
+            rect.bottom > 0 &&
+            rect.left < window.innerWidth &&
+            rect.right > 0
+        );
+    }
+
+    // Function to get parent z-index for popups
+    function getParentZIndex(table) {
+        let parent = table;
+        while (parent && parent !== document.body) {
+            const zIndex = window.getComputedStyle(parent).zIndex;
+            if (zIndex && zIndex !== 'auto') {
+                return parseInt(zIndex) + 1;
+            }
+            parent = parent.parentElement;
+        }
+        return 10;
+    }
+
+    // Function to add export icon to tables
+    function addExportIconToTables() {
+        const tables = document.querySelectorAll('table');
+        tables.forEach(table => {
+            if (!table.dataset.pdfIconAdded) {
+                // Create icon container
+                const iconContainer = document.createElement('div');
+                iconContainer.className = 'pdf-export-container';
+                iconContainer.style.position = 'absolute';
+                iconContainer.style.pointerEvents = 'none';
+
+                // Create icon
+                const icon = document.createElement('span');
+                icon.className = 'pdf-export-icon';
+                icon.style.display = 'inline-block';
+                icon.style.cursor = 'pointer';
+                icon.style.pointerEvents = 'auto';
+                icon.style.fontSize = '14px';
+                icon.style.background = '#ffffff';
+                icon.style.border = '1px solid #ccc';
+                icon.style.borderRadius = '50%';
+                icon.style.padding = '4px';
+                icon.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                icon.style.transition = 'transform 0.2s';
+                icon.innerHTML = '📄';
+                icon.title = 'Export to PDF';
+
+                // Hover effect
+                icon.addEventListener('mouseenter', () => {
+                    icon.style.transform = 'scale(1.2)';
+                });
+                icon.addEventListener('mouseleave', () => {
+                    icon.style.transform = 'scale(1)';
+                });
+
+                // Position icon and set z-index
+                const updateIconPosition = () => {
+                    if (isTableVisible(table)) {
+                        const tablePos = table.getBoundingClientRect();
+                        iconContainer.style.left = `${tablePos.left + window.scrollX - 20}px`;
+                        iconContainer.style.top = `${tablePos.top + window.scrollY - 20}px`;
+                        iconContainer.style.zIndex = getParentZIndex(table);
+                        iconContainer.style.display = 'block';
+                    } else {
+                        iconContainer.style.display = 'none';
+                    }
+                };
+
+                // Add click event for PDF export
+                icon.addEventListener('click', async () => {
+                    try {
+                        if (!window.jspdf || !window.jspdf.jsPDF || !window.html2canvas) {
+                            alert('Required libraries not loaded. Please try again.');
+                            return;
+                        }
+
+                        const { jsPDF } = window.jspdf;
+                        
+                        // Create loading indicator
+                        const loadingEl = document.createElement('div');
+                        loadingEl.style.position = 'fixed';
+                        loadingEl.style.top = '50%';
+                        loadingEl.style.left = '50%';
+                        loadingEl.style.transform = 'translate(-50%, -50%)';
+                        loadingEl.style.padding = '15px 20px';
+                        loadingEl.style.background = 'rgba(0,0,0,0.7)';
+                        loadingEl.style.color = 'white';
+                        loadingEl.style.borderRadius = '5px';
+                        loadingEl.style.zIndex = '9999';
+                        loadingEl.textContent = 'Generating PDF...';
+                        document.body.appendChild(loadingEl);
+
+                        // Create a clone of the table to avoid modifying the original
+                        const tableClone = table.cloneNode(true);
+                        
+                        // Apply styles for better rendering
+                        tableClone.style.width = table.offsetWidth + 'px';
+                        tableClone.style.fontFamily = 'Arial, sans-serif';
+                        tableClone.style.borderCollapse = 'collapse';
+                        tableClone.style.direction = 'rtl'; // For RTL support
+                        
+                        // Style all cells
+                        tableClone.querySelectorAll('th, td').forEach(cell => {
+                            cell.style.border = '1px solid #ddd';
+                            cell.style.padding = '8px';
+                            cell.style.textAlign = 'right'; // For RTL languages
+                        });
+                        
+                        // Style header cells
+                        tableClone.querySelectorAll('th').forEach(th => {
+                            th.style.backgroundColor = '#f2f2f2';
+                            th.style.fontWeight = 'bold';
+                        });
+
+                        // Create container for the cloned table
+                        const container = document.createElement('div');
+                        container.style.position = 'absolute';
+                        container.style.left = '-9999px';
+                        container.style.top = '-9999px';
+                        container.style.direction = 'rtl'; // Set RTL direction
+                        container.appendChild(tableClone);
+                        document.body.appendChild(container);
+
+                        // Get title from caption or create default
+                        let title = '';
+                        const caption = table.querySelector('caption');
+                        if (caption) {
+                            title = caption.textContent.trim();
+                        } else {
+                            title = 'Table Export';
+                        }
+
+                        // Add title to container
+                        const titleEl = document.createElement('h2');
+                        titleEl.textContent = title;
+                        titleEl.style.textAlign = 'center';
+                        titleEl.style.margin = '10px 0';
+                        titleEl.style.fontFamily = 'Arial, sans-serif';
+                        container.insertBefore(titleEl, tableClone);
+                        
+                        // Wait for a small timeout to ensure rendering
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        // Use html2canvas to capture the table as an image
+                        const canvas = await html2canvas(container, {
+                            scale: 2, // Higher scale for better quality
+                            useCORS: true,
+                            logging: false,
+                            allowTaint: true,
+                            backgroundColor: '#ffffff'
+                        });
+                        
+                        // Create PDF with appropriate dimensions
+                        const imgData = canvas.toDataURL('image/png');
+                        const imgWidth = 210; // A4 width in mm
+                        const pageHeight = 297; // A4 height in mm
+                        const imgHeight = canvas.height * imgWidth / canvas.width;
+                        const doc = new jsPDF('p', 'mm', 'a4');
+                        
+                        let position = 0;
+                        
+                        // Add image to PDF, handling pagination if needed
+                        if (imgHeight < pageHeight) {
+                            // If image fits on one page
+                            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        } else {
+                            // If image needs multiple pages
+                            let heightLeft = imgHeight;
+                            let page = 1;
+                            
+                            while (heightLeft > 0) {
+                                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
+                                heightLeft -= pageHeight;
+                                position -= pageHeight;
+                                
+                                if (heightLeft > 0) {
+                                    doc.addPage();
+                                    page++;
+                                }
+                            }
+                        }
+                        
+                        // Clean up
+                        document.body.removeChild(container);
+                        document.body.removeChild(loadingEl);
+                        
+                        // Save PDF
+                        const filename = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.pdf`;
+                        doc.save(filename);
+                        
+                    } catch (error) {
+                        console.error('Error generating PDF:', error);
+                        // Remove loading indicator if exists
+                        const loadingEl = document.querySelector('div[style*="Generating PDF"]');
+                        if (loadingEl) document.body.removeChild(loadingEl);
+                        alert('Failed to export PDF. Check console for details.');
+                    }
+                });
+
+                // Append icon to container and container to body
+                iconContainer.appendChild(icon);
+                document.body.appendChild(iconContainer);
+
+                // Mark table as processed
+                table.dataset.pdfIconAdded = 'true';
+
+                // Update position initially
+                updateIconPosition();
+
+                // Observe table visibility and position changes
+                const mutationObserver = new MutationObserver(updateIconPosition);
+                mutationObserver.observe(table, { attributes: true, attributeFilter: ['style', 'class'] });
+
+                // Observe table size/position changes
+                const resizeObserver = new ResizeObserver(updateIconPosition);
+                resizeObserver.observe(table);
+
+                // Update on scroll and resize
+                window.addEventListener('scroll', updateIconPosition);
+                window.addEventListener('resize', updateIconPosition);
+            }
+        });
+    }
+
+    // Initial run
+    try {
+        addExportIconToTables();
+    } catch (error) {
+        console.error('Error in initial table processing:', error);
+    }
+
+    // Watch for dynamically added tables (including popups) with debouncing
+    let timeout;
+    const observer = new MutationObserver(() => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            try {
+                addExportIconToTables();
+            } catch (error) {
+                console.error('Error in dynamic table processing:', error);
+            }
+        }, 1000);
+    });
+
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+});
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

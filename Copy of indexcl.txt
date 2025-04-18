@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام انتظام مدرسہ</title>
+    <style>
+        @font-face {
+            font-family: 'Jameel Noori Nastaleeq';
+            src: url('data:application/font-woff2;base64,d09GMgABAAAAAAPAAA0AAAAAJTwAAANoAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GYACCahEICnwFATYCJANICyYABCAFhDIHgRMbGikRxX6UJDVB9n9KIG+IIeq3e2BAjGY7DcJiJgWiSMG0sXlK7TrKuJdFSVMPvVcW/y//7v9ymTbOZzMNQYIhhJXq7bP7vZ/ZnLpMIkSbRCKR5EGNRomQxEJoibzs1v0tBr5k+YRoQdMQlVJ3xQ9DyhCSTUhDJCHVhVRVqZRY4v8cM92eQBPIA9xBECiRKIkSOeooWK91Qywa1RxNCkmipKQ02v//f865BcgL5JW85vsX3vsH+Ae4mNOfF6SAvygsRVmGNKstQ0T8v4NlOdK0CVPjFNI4MmRIhNEgB07P/ztYGhMYHgsYHoamTRCkrBAE0QSoCjR90gSxsGsIFAHFVqATIABkshQFBXKCQ6CQIVbZavXZlTFUfXpT2v3bi/tvr/a//+nu6wt9rFJwYYjy7HJRVWT14J0xVC54qsrwdB+qqsjwdO0dmOxDdUVGp/pQXZHR6T50dEGGxXlUJ/n0xChq6nz2xCg6WO1DdUXmpvrQoWq/1CrFtV5dBiYeqKvIwOQDdRUZmHqgj+w/MIqaRRmdGkXHpvvQoWo+eGcUHavmM3eOomMVfLr5wNSoLrjqwcTEqHrgyMPXxzNkSMrQJMkIaYgmjQuGjJAc/u8Y8vIWCRoSbW+VKFHcXSRCXFwiDGnfD0wmQSI0DkpKGhI9PT29vZAQExODk3ANGXJwZFy3o7NTrwSDxpD+3QkIUcIkOZsEQdOmSvX7F4Yaw74MjHh5GTGM0IiHh7+/v5eXp6enEcPwtGPYlxHTPAaGeXh4enj5+Xt5QWPYl2FfRnwZ8WXEl8HYIS+EpqbGjeFfRnyhvf6M+DLsy7C3t5eXl5e3t7e395eRLwOGDRgyoMgmBhqjMcIYMWz48O/DvgwbBo3RGI3QCP0/DIaQJg39fCuOIejnRx6KeEPhkHx6KAkpL8mPzEYdAvoHUABQk6t1oi2ABoDLi/aQAAD+3vEa6vFHgvotKCCQpwD4Xx89kGRjvKhh4I+u63hWLgL6/3m8Bd67H7p1xB9fDPoRAID+HwBnx5QdHY98Ov3/sO2/5c9bON4N5cW8XWX+r7Ljf6/7UQbAF78MBB3AHMw6AIiS6EkAIuKWQUQ8yoAgeUUC51MtUITcWoEi5NEndcFG3pPX0nEZrM27yVuAEHSj/QNEFKIZ6jdE1C/QgXI8SLQ97kUAHrxJhJrXCshTAT9rlXIWPo7m6W2SXNYfizzdxAz8JLt/STacH7JPr5/nsjTNsyQZc6cSYwxqXX9IhvLmx9r5YOPdSs5TjGlSuN+RN9HfQKutX86CgWBsxKtPIvG+3+qIFgUb6tWnuRxqCjGIXuZORdFwBrVufkiG8uaHRsS0sfFufbGcosWYJoX7XXULlV2WWq3+j3PBQLC+2qv3bUziPXdaW9FFQdvGdTU1LtSU+FDWN7DqI5XKvapR1vr2Sn5WMzU7wA==');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+            background-color: #f9f7f1;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px double #000;
+            padding-bottom: 15px;
+        }
+
+        h1, h2, h3 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            background-color: #f9f7f1;
+            color: #333;
+            border: 1px solid #333;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-button:hover {
+            background-color: #ebe6d9;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f9f7f1;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-bottom: 1px dashed #999;
+            background-color: transparent;
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-bottom: 1px solid #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .btn {
+            background-color: #f9f7f1;
+            color: #333;
+            border: 1px solid #333;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #ebe6d9;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+        }
+
+        .register-style {
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+            background-color: #fff;
+            border: none;
+            border-bottom: 1px dashed #999;
+            width: 100%;
+        }
+
+        .register-header {
+            text-align: center;
+            border-bottom: double 3px #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .register-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .register-table th {
+            border-bottom: 2px solid #000;
+            padding: 8px;
+        }
+
+        .register-table td {
+            border-bottom: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        .logo-preview {
+            max-width: 150px;
+            max-height: 150px;
+            margin: 10px auto;
+            display: block;
+        }
+
+        .stamp-preview {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .attendance-cell {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .receipt {
+            border: 1px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .receipt-body {
+            margin-bottom: 15px;
+        }
+
+        .receipt-footer {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+        }
+
+        .signature-area {
+            min-height: 60px;
+            width: 150px;
+            border-top: 1px dashed #000;
+            margin-top: 10px;
+        }
+
+        .stamp-area {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            opacity: 0.7;
+        }
+
+        .id-card {
+            width: 350px;
+            height: 200px;
+            border: 1px solid #000;
+            padding: 15px;
+            margin: 0 auto;
+            position: relative;
+            background-color: #fff;
+        }
+
+        .id-card-header {
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .id-card-body {
+            display: flex;
+        }
+
+        .id-card-photo {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #000;
+            margin-left: 10px;
+        }
+
+        .id-card-info {
+            flex: 1;
+        }
+
+        .id-card-footer {
+            position: absolute;
+            bottom: 10px;
+            width: calc(100% - 30px);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 0;
+                border: none;
+            }
+
+            .nav, .btn, .no-print {
+                display: none !important;
+            }
+
+            .page {
+                display: block !important;
+            }
+
+            .print-only {
+                display: block;
+            }
+
+            .card {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="madrasaNameHeader">نظام انتظام مدرسہ</h1>
+            <p id="madrasaAddressHeader"></p>
+        </header>
+        
+        <div class="nav">
+            <button class="nav-button" data-page="dashboard-page">ڈیش بورڈ</button>
+            <button class="nav-button" data-page="student-page">طلبہ</button>
+            <button class="nav-button" data-page="teacher-page">اساتذہ</button>
+            <button class="nav-button" data-page="class-page">کلاسز</button>
+            <button class="nav-button" data-page="attendance-page">حاضری</button>
+            <button class="nav-button" data-page="exam-page">امتحانات</button>
+            <button class="nav-button" data-page="fee-page">فیس</button>
+            <button class="nav-button" data-page="salary-page">تنخواہ</button>
+            <button class="nav-button" data-page="ledger-page">کھاتہ</button>
+            <button class="nav-button" data-page="report-page">رپورٹس</button>
+            <button class="nav-button" data-page="settings-page">ترتیبات</button>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div class="page" id="dashboard-page">
+            <h2>ڈیش بورڈ</h2>
+            <div class="form-row">
+                <div class="card" style="flex: 1">
+                    <h3>طالب علم کی کل تعداد</h3>
+                    <p id="totalStudents" style="text-align: center; font-size: 24px;">0</p>
+                </div>
+                <div class="card" style="flex: 1">
+                    <h3>اساتذہ کی کل تعداد</h3>
+                    <p id="totalTeachers" style="text-align: center; font-size: 24px;">0</p>
+                </div>
+                <div class="card" style="flex: 1">
+                    <h3>کلاسز کی کل تعداد</h3>
+                    <p id="totalClasses" style="text-align: center; font-size: 24px;">0</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="card" style="flex: 1">
+                    <h3>آج کی فیس وصولی</h3>
+                    <p id="todayFeeCollection" style="text-align: center; font-size: 24px;">0 روپے</p>
+                </div>
+                <div class="card" style="flex: 1">
+                    <h3>ماہانہ فیس وصولی</h3>
+                    <p id="monthlyFeeCollection" style="text-align: center; font-size: 24px;">0 روپے</p>
+                </div>
+                <div class="card" style="flex: 1">
+                    <h3>سالانہ فیس وصولی</h3>
+                    <p id="yearlyFeeCollection" style="text-align: center; font-size: 24px;">0 روپے</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="card" style="flex: 1">
+                    <h3>آج کی حاضری</h3>
+                    <p id="todayAttendance" style="text-align: center; font-size: 24px;">0%</p>
+                </div>
+                <div class="card" style="flex: 1">
+                    <h3>فیس بقایا</h3>
+                    <p id="pendingFees" style="text-align: center; font-size: 24px;">0 روپے</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Page -->
+        <div class="page" id="student-page">
+            <h2>طلبہ</h2>
+            <div class="form-row">
+                <button class="btn" id="addStudentBtn">نیا طالب علم داخل کریں</button>
+                <div class="search-box">
+                    <input type="text" class="form-control" id="studentSearchInput" placeholder="طالب علم کا نام یا رول نمبر">
+                </div>
+            </div>
+            <div class="filters">
+                <select class="form-control" id="studentClassFilter">
+                    <option value="">تمام کلاسز</option>
+                </select>
+                <select class="form-control" id="studentStatusFilter">
+                    <option value="active">فعال طلبہ</option>
+                    <option value="inactive">غیر فعال طلبہ</option>
+                    <option value="all">تمام طلبہ</option>
+                </select>
+            </div>
+            <table class="register-table" id="studentTable">
+                <thead>
+                    <tr>
+                        <th>داخلہ نمبر</th>
+                        <th>نام</th>
+                        <th>والد کا نام</th>
+                        <th>کلاس</th>
+                        <th>رابطہ</th>
+                        <th>حیثیت</th>
+                        <th>آپشنز</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Student Form Dialog -->
+        <div class="page" id="student-form-page">
+            <h2 id="studentFormTitle">نیا طالب علم درج کریں</h2>
+            <form id="studentForm">
+                <input type="hidden" id="studentId">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="studentName">طالب علم کا نام</label>
+                        <input type="text" class="form-control" id="studentName" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="fatherName">والد کا نام</label>
+                        <input type="text" class="form-control" id="fatherName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="dateOfBirth">تاریخ پیدائش</label>
+                        <input type="date" class="form-control" id="dateOfBirth">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="admissionNumber">داخلہ نمبر</label>
+                        <input type="text" class="form-control" id="admissionNumber" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="studentClass">کلاس</label>
+                        <select class="form-control" id="studentClass" required></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="contactNumber">رابطہ نمبر</label>
+                        <input type="text" class="form-control" id="contactNumber">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="studentAddress">پتہ</label>
+                    <textarea class="form-control" id="studentAddress" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="studentStatus">حیثیت</label>
+                    <select class="form-control" id="studentStatus">
+                        <option value="active">فعال</option>
+                        <option value="inactive">غیر فعال</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">محفوظ کریں</button>
+                    <button type="button" class="btn" id="cancelStudentForm">منسوخ کریں</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Student ID Card Page -->
+        <div class="page" id="student-id-card-page">
+            <h2>شناختی کارڈ</h2>
+            <div class="id-card">
+                <div class="id-card-header">
+                    <h3 id="idCardMadrasaName">مدرسہ کا نام</h3>
+                    <p id="idCardMadrasaAddress">مدرسہ کا پتہ</p>
+                </div>
+                <div class="id-card-body">
+                    <div class="id-card-photo"></div>
+                    <div class="id-card-info">
+                        <p><strong>نام:</strong> <span id="idCardStudentName"></span></p>
+                        <p><strong>والد کا نام:</strong> <span id="idCardFatherName"></span></p>
+                        <p><strong>داخلہ نمبر:</strong> <span id="idCardAdmissionNumber"></span></p>
+                        <p><strong>کلاس:</strong> <span id="idCardClass"></span></p>
+                    </div>
+                </div>
+                <div class="id-card-footer">
+                    <div>
+                        <p><strong>تاریخ اجراء:</strong> <span id="idCardIssueDate"></span></p>
+                    </div>
+                    <div class="signature-area">
+                        <p>دستخط پرنسپل</p>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="printIdCardBtn">پرنٹ کریں</button>
+                <button class="btn" id="backFromIdCardBtn">واپس جائیں</button>
+            </div>
+        </div>
+
+        <!-- Teacher Page -->
+        <div class="page" id="teacher-page">
+            <h2>اساتذہ</h2>
+            <div class="form-row">
+                <button class="btn" id="addTeacherBtn">نئے استاد کا اندراج کریں</button>
+                <div class="search-box">
+                    <input type="text" class="form-control" id="teacherSearchInput" placeholder="استاد کا نام یا آئی ڈی">
+                </div>
+            </div>
+            <table class="register-table" id="teacherTable">
+                <thead>
+                    <tr>
+                        <th>آئی ڈی</th>
+                        <th>نام</th>
+                        <th>مضامین</th>
+                        <th>رابطہ</th>
+                        <th>تنخواہ کی قسم</th>
+                        <th>تاریخ بھرتی</th>
+                        <th>آپشنز</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Teacher Form Dialog -->
+        <div class="page" id="teacher-form-page">
+            <h2 id="teacherFormTitle">نئے استاد کا اندراج کریں</h2>
+            <form id="teacherForm">
+                <input type="hidden" id="teacherId">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="teacherName">استاد کا نام</label>
+                        <input type="text" class="form-control" id="teacherName" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="teacherSubjects">مضامین</label>
+                        <input type="text" class="form-control" id="teacherSubjects">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="teacherPhone">رابطہ نمبر</label>
+                        <input type="text" class="form-control" id="teacherPhone">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="teacherSalaryType">تنخواہ کی قسم</label>
+                        <select class="form-control" id="teacherSalaryType">
+                            <option value="fixed">مقررہ</option>
+                            <option value="hourly">فی گھنٹہ</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="teacherSalaryAmount">تنخواہ کی رقم</label>
+                        <input type="number" class="form-control" id="teacherSalaryAmount" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="joiningDate">تاریخ بھرتی</label>
+                        <input type="date" class="form-control" id="joiningDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="teacherAddress">پتہ</label>
+                    <textarea class="form-control" id="teacherAddress" rows="3"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">محفوظ کریں</button>
+                    <button type="button" class="btn" id="cancelTeacherForm">منسوخ کریں</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Class Page -->
+        <div class="page" id="class-page">
+            <h2>کلاسز اور مضامین</h2>
+            <div class="form-row">
+                <button class="btn" id="addClassBtn">نئی کلاس شامل کریں</button>
+            </div>
+            <table class="register-table" id="classTable">
+                <thead>
+                    <tr>
+                        <th>کلاس کا نام</th>
+                        <th>مضامین</th>
+                        <th>ماہانہ فیس</th>
+                        <th>آپشنز</th>
+                    </tr>
+                </thead>
+                <tbody id="classTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Class Form Dialog -->
+        <div class="page" id="class-form-page">
+            <h2 id="classFormTitle">نئی کلاس شامل کریں</h2>
+            <form id="classForm">
+                <input type="hidden" id="classId">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="className">کلاس کا نام</label>
+                        <input type="text" class="form-control" id="className" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="classFee">ماہانہ فیس</label>
+                        <input type="number" class="form-control" id="classFee" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>مضامین</label>
+                    <div id="subjectsContainer">
+                        <div class="form-row subject-row">
+                            <div class="form-group" style="flex: 3;">
+                                <input type="text" class="form-control subject-name" placeholder="مضمون کا نام" required>
+                            </div>
+                            <div class="form-group" style="flex: 3;">
+                                <select class="form-control subject-teacher">
+                                    <option value="">استاد منتخب کریں</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <button type="button" class="btn remove-subject">-</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn" id="addSubjectBtn">+ مضمون شامل کریں</button>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">محفوظ کریں</button>
+                    <button type="button" class="btn" id="cancelClassForm">منسوخ کریں</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Attendance Page -->
+        <div class="page" id="attendance-page">
+            <h2>حاضری سسٹم</h2>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="attendanceType">حاضری کی قسم</label>
+                    <select class="form-control" id="attendanceType">
+                        <option value="student">طلبہ کی حاضری</option>
+                        <option value="teacher">اساتذہ کی حاضری</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="attendanceClass">کلاس</label>
+                    <select class="form-control" id="attendanceClass"></select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="attendanceDate">تاریخ</label>
+                    <input type="date" class="form-control" id="attendanceDate">
+                </div>
+            </div>
+            <div class="card">
+                <h3 id="attendanceTitle">طلبہ کی حاضری</h3>
+                <table class="register-table" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>حاضری</th>
+                            <th>تبصرہ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody"></tbody>
+                </table>
+                <div class="btn-group">
+                    <button class="btn" id="saveAttendanceBtn">حاضری محفوظ کریں</button>
+                    <button class="btn" id="printAttendanceBtn">حاضری پرنٹ کریں</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>حاضری کا خلاصہ</h3>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="summaryMonth">مہینہ</label>
+                        <select class="form-control" id="summaryMonth"></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="summaryYear">سال</label>
+                        <select class="form-control" id="summaryYear"></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="summaryClass">کلاس</label>
+                        <select class="form-control" id="summaryClass"></select>
+                    </div>
+                </div>
+                <div id="attendanceSummary" class="register-style"></div>
+                <div class="btn-group">
+                    <button class="btn" id="printSummaryBtn">خلاصہ پرنٹ کریں</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Page -->
+        <div class="page" id="exam-page">
+            <h2>امتحانات اور نتائج</h2>
+            <div class="form-row">
+                <button class="btn" id="createExamBtn">نیا امتحان بنائیں</button>
+            </div>
+            <div class="card">
+                <h3>امتحانات کی فہرست</h3>
+                <table class="register-table" id="examTable">
+                    <thead>
+                        <tr>
+                            <th>امتحان کا نام</th>
+                            <th>کلاس</th>
+                            <th>شروع ہونے کی تاریخ</th>
+                            <th>اختتام کی تاریخ</th>
+                            <th>آپشنز</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Exam Form Dialog -->
+        <div class="page" id="exam-form-page">
+            <h2 id="examFormTitle">نیا امتحان بنائیں</h2>
+            <form id="examForm">
+                <input type="hidden" id="examId">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="examName">امتحان کا نام</label>
+                        <input type="text" class="form-control" id="examName" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="examClass">کلاس</label>
+                        <select class="form-control" id="examClass" required></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="examStartDate">شروع ہونے کی تاریخ</label>
+                        <input type="date" class="form-control" id="examStartDate" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="examEndDate">اختتام کی تاریخ</label>
+                        <input type="date" class="form-control" id="examEndDate" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>امتحانی مضامین</label>
+                    <div id="examSubjectsContainer"></div>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">محفوظ کریں</button>
+                    <button type="button" class="btn" id="cancelExamForm">منسوخ کریں</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Marks Entry Page -->
+        <div class="page" id="marks-entry-page">
+            <h2>نمبرات داخل کریں</h2>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="marksExamId">امتحان</label>
+                    <select class="form-control" id="marksExamId" disabled></select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="marksSubjectId">مضمون</label>
+                    <select class="form-control" id="marksSubjectId"></select>
+                </div>
+            </div>
+            <table class="register-table" id="marksTable">
+                <thead>
+                    <tr>
+                        <th>طالب علم کا نام</th>
+                        <th>داخلہ نمبر</th>
+                        <th>کل نمبر</th>
+                        <th>حاصل کردہ نمبر</th>
+                    </tr>
+                </thead>
+                <tbody id="marksTableBody"></tbody>
+            </table>
+            <div class="btn-group">
+                <button class="btn" id="saveMarksBtn">نمبرات محفوظ کریں</button>
+                <button class="btn" id="backFromMarksBtn">واپس جائیں</button>
+            </div>
+        </div>
+
+        <!-- Result Card Page -->
+        <div class="page" id="result-card-page">
+            <h2>نتیجہ کارڈ</h2>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="resultExamId">امتحان</label>
+                    <select class="form-control" id="resultExamId"></select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="resultStudentId">طالب علم</label>
+                    <select class="form-control" id="resultStudentId"></select>
+                </div>
+            </div>
+            <div class="card" id="resultCard">
+                <div class="register-header">
+                    <h3 id="resultMadrasaName">مدرسہ کا نام</h3>
+                    <p id="resultMadrasaAddress">مدرسہ کا پتہ</p>
+                    <h3>نتیجہ کارڈ</h3>
+                </div>
+                <div class="form-row">
+                    <div style="flex: 1;">
+                        <p><strong>طالب علم کا نام:</strong> <span id="resultStudentName"></span></p>
+                        <p><strong>والد کا نام:</strong> <span id="resultFatherName"></span></p>
+                    </div>
+                    <div style="flex: 1;">
+                        <p><strong>کلاس:</strong> <span id="resultClassName"></span></p>
+                        <p><strong>داخلہ نمبر:</strong> <span id="resultAdmissionNumber"></span></p>
+                    </div>
+                    <div style="flex: 1;">
+                        <p><strong>امتحان:</strong> <span id="resultExamName"></span></p>
+                        <p><strong>تاریخ:</strong> <span id="resultDate"></span></p>
+                    </div>
+                </div>
+                <table class="register-table" id="resultTable">
+                    <thead>
+                        <tr>
+                            <th>مضمون</th>
+                            <th>کل نمبر</th>
+                            <th>حاصل کردہ نمبر</th>
+                            <th>فیصد</th>
+                            <th>گریڈ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultTableBody"></tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="1">مجموعی نتیجہ</th>
+                            <th id="resultTotalMarks"></th>
+                            <th id="resultObtainedMarks"></th>
+                            <th id="resultPercentage"></th>
+                            <th id="resultGrade"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="form-row" style="margin-top: 30px;">
+                    <div style="flex: 1; text-align: center;">
+                        <div class="signature-area">
+                            <p>کلاس ٹیچر</p>
+                        </div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div class="stamp-area" id="resultStampArea"></div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div class="signature-area">
+                            <p>پرنسپل</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="printResultBtn">نتیجہ پرنٹ کریں</button>
+                <button class="btn" id="backFromResultBtn">واپس جائیں</button>
+            </div>
+        </div>
+
+        <!-- Fee Page -->
+        <div class="page" id="fee-page">
+            <h2>فیس مینجمنٹ</h2>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <button class="btn" id="generateFeesBtn">ماہانہ فیس بنائیں</button>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <button class="btn" id="collectFeesBtn">فیس وصول کریں</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>فیس کے رجسٹر</h3>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feeMonth">مہینہ</label>
+                        <select class="form-control" id="feeMonth"></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feeYear">سال</label>
+                        <select class="form-control" id="feeYear"></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feeClass">کلاس</label>
+                        <select class="form-control" id="feeClass"></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feeStatus">حیثیت</label>
+                        <select class="form-control" id="feeStatus">
+                            <option value="all">تمام</option>
+                            <option value="paid">ادا شدہ</option>
+                            <option value="unpaid">غیر ادا شدہ</option>
+                            <option value="partial">جزوی ادا شدہ</option>
+                        </select>
+                    </div>
+                </div>
+                <table class="register-table" id="feeTable">
+                    <thead>
+                        <tr>
+                            <th>داخلہ نمبر</th>
+                            <th>طالب علم کا نام</th>
+                            <th>کلاس</th>
+                            <th>مہینہ/سال</th>
+                            <th>فیس</th>
+                            <th>ادا شدہ</th>
+                            <th>بقایا</th>
+                            <th>حیثیت</th>
+                            <th>آپشنز</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feeTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Fee Collection Form -->
+        <div class="page" id="fee-collection-page">
+            <h2>فیس وصولی</h2>
+            <form id="feeCollectionForm">
+                <input type="hidden" id="feeId">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feeStudentId">طالب علم</label>
+                        <select class="form-control" id="feeStudentId" required></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feeDueDate">تاریخ</label>
+                        <input type="date" class="form-control" id="feeDueDate" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feeAmount">فیس کی رقم</label>
+                        <input type="number" class="form-control" id="feeAmount" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feeDiscount">رعایت</label>
+                        <input type="number" class="form-control" id="feeDiscount" value="0">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="feePaid">ادا شدہ رقم</label>
+                        <input type="number" class="form-control" id="feePaid" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="feeRemarks">تبصرہ</label>
+                    <textarea class="form-control" id="feeRemarks" rows="2"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">فیس محفوظ کریں</button>
+                    <button type="button" class="btn" id="printReceiptBtn">رسید پرنٹ کریں</button>
+                    <button type="button" class="btn" id="cancelFeeForm">منسوخ کریں</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Fee Receipt Page -->
+        <div class="page" id="fee-receipt-page">
+            <h2>فیس رسید</h2>
+            <div class="receipt" id="feeReceipt">
+                <div class="receipt-header">
+                    <h3 id="receiptMadrasaName">مدرسہ کا نام</h3>
+                    <p id="receiptMadrasaAddress">مدرسہ کا پتہ</p>
+                    <h3>فیس رسید</h3>
+                </div>
+                <div class="receipt-body">
+                    <div class="form-row">
+                        <div style="flex: 1;">
+                            <p><strong>رسید نمبر:</strong> <span id="receiptNumber"></span></p>
+                            <p><strong>طالب علم کا نام:</strong> <span id="receiptStudentName"></span></p>
+                            <p><strong>والد کا نام:</strong> <span id="receiptFatherName"></span></p>
+                        </div>
+                        <div style="flex: 1;">
+                            <p><strong>کلاس:</strong> <span id="receiptClassName"></span></p>
+                            <p><strong>داخلہ نمبر:</strong> <span id="receiptAdmissionNumber"></span></p>
+                            <p><strong>تاریخ:</strong> <span id="receiptDate"></span></p>
+                        </div>
+                    </div>
+                    <table class="register-table">
+                        <tr>
+                            <th>تفصیل</th>
+                            <th>رقم</th>
+                        </tr>
+                        <tr>
+                            <td id="receiptDescription">ماہانہ فیس</td>
+                            <td id="receiptAmount">0</td>
+                        </tr>
+                        <tr>
+                            <td>رعایت</td>
+                            <td id="receiptDiscount">0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>کل رقم</strong></td>
+                            <td><strong id="receiptTotal">0</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ادا شدہ رقم</strong></td>
+                            <td><strong id="receiptPaid">0</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>بقایا رقم</strong></td>
+                            <td><strong id="receiptBalance">0</strong></td>
+                        </tr>
+                    </table>
+                    <p><strong>تبصرہ:</strong> <span id="receiptRemarks"></span></p>
+                </div>
+                <div class="receipt-footer">
+                    <div class="signature-area">
+                        <p>طالب علم کے دستخط</p>
+                    </div>
+                    <div class="stamp-area" id="receiptStampArea"></div>
+                    <div class="signature-area">
+                        <p>کیشیئر کے دستخط</p>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="printFeeReceiptBtn">رسید پرنٹ کریں</button>
+                <button class="btn" id="backFromReceiptBtn">واپس جائیں</button>
+            </div>
+        </div>
+
+        <!-- Salary Page -->
+        <div class="page" id="salary-page">
+            <h2>تنخواہ مینجمنٹ</h2>
+            <div class="form-row">
+                <button class="btn" id="paySalaryBtn">تنخواہ ادا کریں</button>
+            </div>
+            <div class="card">
+                <h3>تنخواہ رجسٹر</h3>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="salaryMonth">مہینہ</label>
+                        <select class="form-control" id="salaryMonth"></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="salaryYear">سال</label>
+                        <select class="form-control" id="salaryYear"></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="salaryStatus">حیثیت</label>
+                        <select class="form-control" id="salaryStatus">
+                            <option value="all">تمام</option>
+                            <option value="paid">ادا شدہ</option>
+                            <option value="unpaid">غیر ادا شدہ</option>
+                        </select>
+                    </div>
+                </div>
+                <table class="register-table" id="salaryTable">
+                    <thead>
+                        <tr>
+                            <th>آئی ڈی</th>
+                            <th>استاد کا نام</th>
+                            <th>مہینہ/سال</th>
+                            <th>بنیادی تنخواہ</th>
+                            <th>بونس</th>
+                            <th>کٹوتی</th>
+                            <th>کل رقم</th>
+                            <th>حیثیت</th>
+                            <th>آپشنز</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salaryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Salary Payment Form -->
+        <div class="page" id="salary-payment-page">
+            <h2>تنخواہ کی ادائیگی</h2>
+            <form id="salaryPaymentForm">
+                <input type="hidden" id="salaryId">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="salaryTeacherId">استاد</label>
+                        <select class="form-control" id="salaryTeacherId" required></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="salaryDueDate">تاریخ</label>
+                        <input type="date" class="form-control" id="salaryDueDate" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="salaryBasic">بنیادی تنخواہ</label>
+                        <input type="number" class="form-control" id="salaryBasic" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="salaryBonus">بونس</label>
+                        <input type="number" class="form-control" id="salaryBonus" value="0">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="salaryDeduction">کٹوتی</label>
+                        <input type="number" class="form-control" id="salaryDeduction" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="salaryRemarks">تبصرہ</label>
+                    <textarea class="form-control" id="salaryRemarks" rows="2"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">تنخواہ محفوظ کریں</button>
+                    <button type="button" class="btn" id="printSalarySlipBtn">سلپ پرنٹ کریں</button>
+                    <button type="button" class="btn" id="cancelSalaryForm">منسوخ کریں</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Salary Slip Page -->
+        <div class="page" id="salary-slip-page">
+            <h2>تنخواہ سلپ</h2>
+            <div class="receipt" id="salarySlip">
+                <div class="receipt-header">
+                    <h3 id="slipMadrasaName">مدرسہ کا نام</h3>
+                    <p id="slipMadrasaAddress">مدرسہ کا پتہ</p>
+                    <h3>تنخواہ سلپ</h3>
+                </div>
+                <div class="receipt-body">
+                    <div class="form-row">
+                        <div style="flex: 1;">
+                            <p><strong>سلپ نمبر:</strong> <span id="slipNumber"></span></p>
+                            <p><strong>استاد کا نام:</strong> <span id="slipTeacherName"></span></p>
+                        </div>
+                        <div style="flex: 1;">
+                            <p><strong>آئی ڈی:</strong> <span id="slipTeacherId"></span></p>
+                            <p><strong>تاریخ:</strong> <span id="slipDate"></span></p>
+                        </div>
+                    </div>
+                    <table class="register-table">
+                        <tr>
+                            <th>تفصیل</th>
+                            <th>رقم</th>
+                        </tr>
+                        <tr>
+                            <td>بنیادی تنخواہ</td>
+                            <td id="slipBasic">0</td>
+                        </tr>
+                        <tr>
+                            <td>بونس</td>
+                            <td id="slipBonus">0</td>
+                        </tr>
+                        <tr>
+                            <td>کٹوتی</td>
+                            <td id="slipDeduction">0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>کل رقم</strong></td>
+                            <td><strong id="slipTotal">0</strong></td>
+                        </tr>
+                    </table>
+                    <p><strong>تبصرہ:</strong> <span id="slipRemarks"></span></p>
+                </div>
+                <div class="receipt-footer">
+                    <div class="signature-area">
+                        <p>استاد کے دستخط</p>
+                    </div>
+                    <div class="stamp-area" id="slipStampArea"></div>
+                    <div class="signature-area">
+                        <p>پرنسپل کے دستخط</p>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="printSalarySlipBtn2">سلپ پرنٹ کریں</button>
+                <button class="btn" id="backFromSlipBtn">واپس جائیں</button>
+            </div>
+        </div>
+
+        <!-- Ledger Page -->
+        <div class="page" id="ledger-page">
+            <h2>کھاتہ سسٹم</h2>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="ledgerType">کھاتہ کی قسم</label>
+                    <select class="form-control" id="ledgerType">
+                        <option value="student">طالب علم کا کھاتہ</option>
+                        <option value="teacher">استاد کا کھاتہ</option>
+                        <option value="madrasa">مدرسہ کا کھاتہ</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="ledgerId">منتخب کریں</label>
+                    <select class="form-control" id="ledgerId"></select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <button class="btn" id="addLedgerEntryBtn">نیا اندراج کریں</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3 id="ledgerTitle">کھاتہ کی تفصیلات</h3>
+                <table class="register-table" id="ledgerTable">
+                    <thead>
+                        <tr>
+                            <th>تاریخ</th>
+                            <th>تفصیل</th>
+                            <th>جمع</th>
+                            <th>نام</th>
+                            <th>بیلنس</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerTableBody"></tbody>
+                </table>
+                <div class="btn-group">
+                    <button class="btn" id="printLedgerBtn">کھاتہ پرنٹ کریں</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ledger Entry Form -->
+        <div class="page" id="ledger-entry-page">
+            <h2>نیا کھاتہ اندراج</h2>
+            <form id="ledgerEntryForm">
+                <input type="
