@@ -5771,16 +5771,29 @@ function initializeMobileNav() {
     mobileMenu.className = 'mobile-menu';
     mobileMenu.id = 'mobileMenu';
 
-    // Add buttons to mobile menu
-    navButtons.forEach(btn => {
-        const button = document.createElement('button');
-        button.textContent = btn.text;
-        button.onclick = () => {
-            showModule(btn.module);
-            toggleMobileMenu();
-        };
-        mobileMenu.appendChild(button);
-    });
+    // Function to populate mobile menu
+    function populateMobileMenu() {
+        mobileMenu.innerHTML = ''; // Clear existing buttons
+        navButtons.forEach(btn => {
+            const button = document.createElement('button');
+            button.textContent = btn.text;
+            button.onclick = () => showModule(btn.module); // Only call showModule
+            mobileMenu.appendChild(button);
+        });
+        // Check for dynamically added desktop buttons
+        const desktopButtons = Array.from(navDesktop.querySelectorAll('button'));
+        desktopButtons.forEach(desktopBtn => {
+            if (!navButtons.some(b => b.text === desktopBtn.textContent)) {
+                const button = document.createElement('button');
+                button.textContent = desktopBtn.textContent;
+                button.onclick = () => desktopBtn.click(); // Trigger desktop button
+                mobileMenu.appendChild(button);
+            }
+        });
+    }
+
+    // Initial population of mobile menu
+    populateMobileMenu();
 
     navMobile.appendChild(hamburger);
     navMobile.appendChild(mobileMenu);
@@ -5847,10 +5860,10 @@ function initializeMobileNav() {
                 padding: 10px;
             }
             .nav-desktop {
-                display: none;
+                display: none !important;
             }
             .nav-mobile {
-                display: block;
+                display: block !important;
             }
         }
         .mobile-menu.active {
@@ -5858,6 +5871,15 @@ function initializeMobileNav() {
         }
     `;
     document.head.appendChild(style);
+
+    // Watch for dynamically added buttons in desktop nav
+    const observer = new MutationObserver(() => {
+        populateMobileMenu();
+    });
+    observer.observe(navDesktop, { childList: true });
+
+    // Force style reapplication on load
+    window.dispatchEvent(new Event('resize'));
 }
 
 // Function to toggle mobile menu
@@ -5868,7 +5890,7 @@ function toggleMobileMenu() {
     }
 }
 
-// Override showModule to handle active states
+// Override showModule to handle active states and ensure menu collapse
 const originalShowModule = window.showModule || function() {};
 window.showModule = function(moduleId) {
     originalShowModule(moduleId);
@@ -5899,17 +5921,17 @@ window.showModule = function(moduleId) {
         }
     });
 
-    // Close mobile menu if open
+    // Force close mobile menu
     const mobileMenu = document.getElementById('mobileMenu');
     if (mobileMenu && mobileMenu.classList.contains('active')) {
         mobileMenu.classList.remove('active');
     }
 };
 
-// Initialize navigation after DOM is fully loaded and other scripts
+// Initialize navigation after DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Delay to ensure Cloudflare or other scripts complete
-    setTimeout(initializeMobileNav, 100);
+    // Delay to ensure all scripts (e.g., Cloudflare) complete
+    setTimeout(initializeMobileNav, 200);
 });
 </script>
 	
