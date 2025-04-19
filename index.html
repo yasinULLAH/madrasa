@@ -3634,7 +3634,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   icon.title = "Save Offline Copy";
   Object.assign(icon.style, {
     position: "fixed",
-    top: "10px",
+    top: "5px",
     left: "10px",
     fontSize: "24px",
     cursor: "pointer",
@@ -4895,7 +4895,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
 document.addEventListener('DOMContentLoaded', () => {
     // Ensure XLSX library is included
     if (!window.XLSX) {
@@ -4905,12 +4904,31 @@ document.addEventListener('DOMContentLoaded', () => {
         document.head.appendChild(script);
     }
 
-    // Add Export Data button to navigation
-    const nav = document.querySelector('nav');
-    const exportButton = document.createElement('button');
-    exportButton.textContent = 'ڈیٹا ایکسپورٹ';
-    exportButton.setAttribute('onclick', "showModule('exportData')");
-    nav.appendChild(exportButton);
+    // Add sticky Excel icon to top-right corner
+    const excelIcon = document.createElement('div');
+    excelIcon.id = 'excelExportIcon';
+    excelIcon.style.cssText = `
+        position: fixed;
+        top: 5px;
+        right: 20px;
+        z-index: 1000;
+        cursor: pointer;
+        background-color: #28a745;
+        border-radius: 50%;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    `;
+excelIcon.innerHTML = `
+<svg width="24" height="24" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" fill="none"/>
+  <path d="M48 32H160l48 48v144a16 16 0 0 1-16 16H48a16 16 0 0 1-16-16V48a16 16 0 0 1 16-16z" fill="#217346"/>
+  <polygon points="160 32 160 80 208 80" fill="#1E6F42"/>
+  <path d="M88 104h16l16 24 16-24h16l-24 32 24 32h-16l-16-24-16 24H88l24-32-24-32z" fill="#fff"/>
+</svg>
+`;
+
+    excelIcon.setAttribute('onclick', "showModule('exportData')");
+    document.body.appendChild(excelIcon);
 
     // Create Export Data module HTML
     const container = document.querySelector('.container');
@@ -4921,7 +4939,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <h2>ڈیٹا ایکسپورٹ</h2>
         <p>براہ کرم ایکسپورٹ کرنے کے لیے ڈیٹا کی قسم منتخب کریں۔</p>
         <div class="form-grid">
-            <button onclick="exportAllToOneFile()">سب ایک فائل ایکسپورٹ</button>
+            <button onclick="exportAllToOneFile()">سب ایک فائل میں ایکسپورٹ کریں</button>
             <button onclick="exportAllData('students')">طلباء ایکسپورٹ کریں</button>
             <button onclick="exportAllData('teachers')">اساتذہ ایکسپورٹ کریں</button>
             <button onclick="exportAllData('classes')">کلاسیں ایکسپورٹ کریں</button>
