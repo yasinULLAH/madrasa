@@ -1,0 +1,240 @@
+async function addSampleData() {
+    try {
+        // Check for required functions and database
+        if (!db || !window.addData || !window.clearStore) {
+            let attempts = 0;
+            const maxAttempts = 5;
+            while (!db && attempts < maxAttempts) {
+                console.log(`Waiting for database to initialize... Attempt ${attempts + 1}`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                attempts++;
+            }
+            if (!db) {
+                throw new Error("Database not initialized after waiting. Ensure db is set in your app.");
+            }
+            if (!window.addData) {
+                throw new Error("window.addData is not defined. Ensure it’s included in your app’s JavaScript.");
+            }
+            if (!window.clearStore) {
+                throw new Error("window.clearStore is not defined. Ensure it’s included in your app’s JavaScript.");
+            }
+        }
+
+        // Helper to generate random date within a range
+        function randomDate(start, end) {
+            const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            return date.toISOString().split('T')[0];
+        }
+
+        // Clear existing data (optional, comment out to append)
+        const stores = ['students', 'teachers', 'classes', 'fees', 'feeStructures', 'attendance', 'results', 'timetable', 'expenses', 'settings'];
+        for (const store of stores) {
+            try {
+                await window.clearStore(store);
+            } catch (err) {
+                console.warn(`Failed to clear store ${store}: ${err.message}`);
+            }
+        }
+
+        // 1. Add Teachers (12)
+        const teacherData = [
+            { name: "محمد احمد", subjects: "قرآن, عربی", contact: "03001234561", salary: 20000, appointmentDate: "2024-01-01", qualification: "عالم" },
+            { name: "عبداللہ خان", subjects: "حدیث, فقہ", contact: "03001234562", salary: 22000, appointmentDate: "2024-01-02", qualification: "مفتی" },
+            { name: "فاطمہ بی بی", subjects: "تجوید, عربی", contact: "03001234563", salary: 18000, appointmentDate: "2024-01-03", qualification: "حافظہ" },
+            { name: "علی رضا", subjects: "سیرت, تاریخ", contact: "03001234564", salary: 21000, appointmentDate: "2024-01-04", qualification: "عالم" },
+            { name: "زینب بیگم", subjects: "قرآن, اخلاقیات", contact: "03001234565", salary: 19000, appointmentDate: "2024-01-05", qualification: "حافظہ" },
+            { name: "یوسف محمود", subjects: "فقہ, حدیث", contact: "03001234566", salary: 23000, appointmentDate: "2024-01-06", qualification: "مفتی" },
+            { name: "خالد حسین", subjects: "عربی, تفسیر", contact: "03001234567", salary: 20000, appointmentDate: "2024-01-07", qualification: "عالم" },
+            { name: "صفیہ نور", subjects: "تجوید, سیرت", contact: "03001234568", salary: 18500, appointmentDate: "2024-01-08", qualification: "حافظہ" },
+            { name: "حسن علی", subjects: "تاریخ, اخلاقیات", contact: "03001234569", salary: 21500, appointmentDate: "2024-01-09", qualification: "عالم" },
+            { name: "مریم گل", subjects: "قرآن, عربی", contact: "03001234570", salary: 19500, appointmentDate: "2024-01-10", qualification: "حافظہ" },
+            { name: "اسامہ بن یاسر", subjects: "حدیث, تفسیر", contact: "03001234571", salary: 22500, appointmentDate: "2024-01-11", qualification: "مفتی" },
+            { name: "عائشہ صدیقہ", subjects: "تجوید, فقہ", contact: "03001234572", salary: 19000, appointmentDate: "2024-01-12", qualification: "حافظہ" }
+        ];
+        const teacherIds = [];
+        for (const teacher of teacherData) {
+            const id = await window.addData('teachers', teacher);
+            teacherIds.push(id);
+        }
+
+        // 2. Add Classes (12) - Changed subjects to array
+        const classData = [
+            { name: "ناظرہ 1", teacherId: teacherIds[0], subjects: ["قرآن", "تجوید"] },
+            { name: "ناظرہ 2", teacherId: teacherIds[1], subjects: ["قرآن", "عربی"] },
+            { name: "حفظ 1", teacherId: teacherIds[2], subjects: ["حفظ", "تجوید"] },
+            { name: "حفظ 2", teacherId: teacherIds[3], subjects: ["حفظ", "تفسیر"] },
+            { name: "عربی 1", teacherId: teacherIds[4], subjects: ["عربی", "فقہ"] },
+            { name: "عربی 2", teacherId: teacherIds[5], subjects: ["عربی", "حدیث"] },
+            { name: "تفسیر 1", teacherId: teacherIds[6], subjects: ["تفسیر", "سیرت"] },
+            { name: "تفسیر 2", teacherId: teacherIds[7], subjects: ["تفسیر", "اخلاقیات"] },
+            { name: "فقہ 1", teacherId: teacherIds[8], subjects: ["فقہ", "حدیث"] },
+            { name: "فقہ 2", teacherId: teacherIds[9], subjects: ["فقہ", "عربی"] },
+            { name: "سیرت 1", teacherId: teacherIds[10], subjects: ["سیرت", "تاریخ"] },
+            { name: "سیرت 2", teacherId: teacherIds[11], subjects: ["سیرت", "اخلاقیات"] }
+        ];
+        const classIds = [];
+        for (const cls of classData) {
+            const id = await window.addData('classes', cls);
+            classIds.push(id);
+        }
+
+        // 3. Add Students (12)
+        const studentData = [
+            { admissionNo: "S001", name: "احمد خان", fatherName: "محمد خان", classId: classIds[0], admissionDate: "2024-02-01", contact: "03111234561", address: "کراچی" },
+            { admissionNo: "S002", name: "عبدالرحمن", fatherName: "عبداللہ", classId: classIds[1], admissionDate: "2024-02-02", contact: "03111234562", address: "لاہور" },
+            { admissionNo: "S003", name: "حفصہ بی بی", fatherName: "احمد علی", classId: classIds[2], admissionDate: "2024-02-03", contact: "03111234563", address: "اسلام آباد" },
+            { admissionNo: "S004", name: "بلال صدیقی", fatherName: "یوسف صدیقی", classId: classIds[3], admissionDate: "2024-02-04", contact: "03111234564", address: "پشاور" },
+            { admissionNo: "S005", name: "مریم نور", fatherName: "خالد نور", classId: classIds[4], admissionDate: "2024-02-05", contact: "03111234565", address: "کوئٹہ" },
+            { admissionNo: "S006", name: "زید بن حارث", fatherName: "حارث خان", classId: classIds[5], admissionDate: "2024-02-06", contact: "03111234566", address: "فیصل آباد" },
+            { admissionNo: "S007", name: "عائشہ گل", fatherName: "محمود گل", classId: classIds[6], admissionDate: "2024-02-07", contact: "03111234567", address: "ملتان" },
+            { admissionNo: "S008", name: "عمر فاروق", fatherName: "فاروق احمد", classId: classIds[7], admissionDate: "2024-02-08", contact: "03111234568", address: "راولپنڈی" },
+            { admissionNo: "S009", name: "فاطمہ زہرا", fatherName: "علی رضا", classId: classIds[8], admissionDate: "2024-02-09", contact: "03111234569", address: "سیالکوٹ" },
+            { admissionNo: "S010", name: "اسامہ بن زید", fatherName: "زید خان", classId: classIds[9], admissionDate: "2024-02-10", contact: "03111234570", address: "گجرانوالہ" },
+            { admissionNo: "S011", name: "خدیجہ بی بی", fatherName: "حسن علی", classId: classIds[10], admissionDate: "2024-02-11", contact: "03111234571", address: "حیدرآباد" },
+            { admissionNo: "S012", name: "صہیب رومی", fatherName: "عبدالرحمن", classId: classIds[11], admissionDate: "2024-02-12", contact: "03111234572", address: "لاہور" }
+        ];
+        const studentIds = [];
+        for (const student of studentData) {
+            const id = await window.addData('students', student);
+            studentIds.push(id);
+        }
+
+        // 4. Add Fee Structures (12)
+        const feeStructureData = [
+            { classId: classIds[0], feeType: "ٹیوشن فیس", amount: 5000 },
+            { classId: classIds[0], feeType: "داخلہ فیس", amount: 2000 },
+            { classId: classIds[1], feeType: "ٹیوشن فیس", amount: 5500 },
+            { classId: classIds[1], feeType: "داخلہ فیس", amount: 2200 },
+            { classId: classIds[2], feeType: "ٹیوشن فیس", amount: 6000 },
+            { classId: classIds[2], feeType: "داخلہ فیس", amount: 2500 },
+            { classId: classIds[3], feeType: "ٹیوشن فیس", amount: 6500 },
+            { classId: classIds[3], feeType: "داخلہ فیس", amount: 2700 },
+            { classId: classIds[4], feeType: "ٹیوشن فیس", amount: 7000 },
+            { classId: classIds[4], feeType: "داخلہ فیس", amount: 3000 },
+            { classId: classIds[5], feeType: "ٹیوشن فیس", amount: 7500 },
+            { classId: classIds[5], feeType: "داخلہ فیس", amount: 3200 }
+        ];
+        for (const feeStructure of feeStructureData) {
+            await window.addData('feeStructures', feeStructure);
+        }
+
+        // 5. Add Fees (12)
+        const feeData = [
+            { studentId: studentIds[0], date: "2024-03-01", feeType: "ٹیوشن فیس", paidAmount: 5000, discount: 0, method: "Cash", notes: "ماہانہ فیس" },
+            { studentId: studentIds[1], date: "2024-03-02", feeType: "داخلہ فیس", paidAmount: 2200, discount: 200, method: "Bank", notes: "نئے داخلہ" },
+            { studentId: studentIds[2], date: "2024-03-03", feeType: "ٹیوشن فیس", paidAmount: 6000, discount: 0, method: "Cash", notes: "" },
+            { studentId: studentIds[3], date: "2024-03-04", feeType: "داخلہ فیس", paidAmount: 2700, discount: 0, method: "Cheque", notes: "داخلہ" },
+            { studentId: studentIds[4], date: "2024-03-05", feeType: "ٹیوشن فیس", paidAmount: 7000, discount: 500, method: "Cash", notes: "رعایت" },
+            { studentId: studentIds[5], date: "2024-03-06", feeType: "داخلہ فیس", paidAmount: 3200, discount: 0, method: "Bank", notes: "" },
+            { studentId: studentIds[6], date: "2024-03-07", feeType: "ٹیوشن فیس", paidAmount: 6500, discount: 0, method: "Cash", notes: "ماہانہ" },
+            { studentId: studentIds[7], date: "2024-03-08", feeType: "داخلہ فیس", paidAmount: 2500, discount: 0, method: "Cheque", notes: "" },
+            { studentId: studentIds[8], date: "2024-03-09", feeType: "ٹیوشن فیس", paidAmount: 7000, discount: 0, method: "Cash", notes: "" },
+            { studentId: studentIds[9], date: "2024-03-10", feeType: "داخلہ فیس", paidAmount: 3000, discount: 0, method: "Bank", notes: "داخلہ" },
+            { studentId: studentIds[10], date: "2024-03-11", feeType: "ٹیوشن فیس", paidAmount: 7500, discount: 0, method: "Cash", notes: "" },
+            { studentId: studentIds[11], date: "2024-03-12", feeType: "داخلہ فیس", paidAmount: 3200, discount: 0, method: "Cash", notes: "" }
+        ];
+        for (const fee of feeData) {
+            await window.addData('fees', fee);
+        }
+
+        // 6. Add Attendance (12)
+        const attendanceData = [
+            { date: "2024-04-01", classId: classIds[0], studentId: studentIds[0], status: "Present" },
+            { date: "2024-04-01", classId: classIds[1], studentId: studentIds[1], status: "Absent" },
+            { date: "2024-04-01", classId: classIds[2], studentId: studentIds[2], status: "Present" },
+            { date: "2024-04-01", classId: classIds[3], studentId: studentIds[3], status: "Present" },
+            { date: "2024-04-02", classId: classIds[4], studentId: studentIds[4], status: "Absent" },
+            { date: "2024-04-02", classId: classIds[5], studentId: studentIds[5], status: "Present" },
+            { date: "2024-04-02", classId: classIds[6], studentId: studentIds[6], status: "Present" },
+            { date: "2024-04-02", classId: classIds[7], studentId: studentIds[7], status: "Absent" },
+            { date: "2024-04-03", classId: classIds[8], studentId: studentIds[8], status: "Present" },
+            { date: "2024-04-03", classId: classIds[9], studentId: studentIds[9], status: "Present" },
+            { date: "2024-04-03", classId: classIds[10], studentId: studentIds[10], status: "Absent" },
+            { date: "2024-04-03", classId: classIds[11], studentId: studentIds[11], status: "Present" }
+        ];
+        for (const att of attendanceData) {
+            await window.addData('attendance', att);
+        }
+
+        // 7. Add Results (12)
+        const resultData = [
+            { examName: "Mid Term", classId: classIds[0], subject: "قرآن", studentId: studentIds[0], date: "2024-05-01", totalMarks: 100, obtainedMarks: 85 },
+            { examName: "Mid Term", classId: classIds[1], subject: "عربی", studentId: studentIds[1], date: "2024-05-01", totalMarks: 100, obtainedMarks: 78 },
+            { examName: "Mid Term", classId: classIds[2], subject: "حفظ", studentId: studentIds[2], date: "2024-05-01", totalMarks: 100, obtainedMarks: 92 },
+            { examName: "Mid Term", classId: classIds[3], subject: "تفسیر", studentId: studentIds[3], date: "2024-05-01", totalMarks: 100, obtainedMarks: 80 },
+            { examName: "Final Term", classId: classIds[4], subject: "عربی", studentId: studentIds[4], date: "2024-06-01", totalMarks: 100, obtainedMarks: 88 },
+            { examName: "Final Term", classId: classIds[5], subject: "حدیث", studentId: studentIds[5], date: "2024-06-01", totalMarks: 100, obtainedMarks: 75 },
+            { examName: "Final Term", classId: classIds[6], subject: "تفسیر", studentId: studentIds[6], date: "2024-06-01", totalMarks: 100, obtainedMarks: 90 },
+            { examName: "Final Term", classId: classIds[7], subject: "اخلاقیات", studentId: studentIds[7], date: "2024-06-01", totalMarks: 100, obtainedMarks: 82 },
+            { examName: "Mid Term", classId: classIds[8], subject: "فقہ", studentId: studentIds[8], date: "2024-05-01", totalMarks: 100, obtainedMarks: 87 },
+            { examName: "Mid Term", classId: classIds[9], subject: "عربی", studentId: studentIds[9], date: "2024-05-01", totalMarks: 100, obtainedMarks: 79 },
+            { examName: "Final Term", classId: classIds[10], subject: "سیرت", studentId: studentIds[10], date: "2024-06-01", totalMarks: 100, obtainedMarks: 91 },
+            { examName: "Final Term", classId: classIds[11], subject: "اخلاقیات", studentId: studentIds[11], date: "2024-06-01", totalMarks: 100, obtainedMarks: 84 }
+        ];
+        for (const result of resultData) {
+            await window.addData('results', result);
+        }
+
+        // 8. Add Timetable (12)
+        const timetableData = [
+            { classId: classIds[0], day: "پیر", period: "1", subject: "قرآن", teacherId: teacherIds[0] },
+            { classId: classIds[0], day: "پیر", period: "2", subject: "تجوید", teacherId: teacherIds[2] },
+            { classId: classIds[1], day: "منگل", period: "1", subject: "عربی", teacherId: teacherIds[4] },
+            { classId: classIds[1], day: "منگل", period: "2", subject: "قرآن", teacherId: teacherIds[0] },
+            { classId: classIds[2], day: "بدھ", period: "1", subject: "حفظ", teacherId: teacherIds[2] },
+            { classId: classIds[2], day: "بدھ", period: "2", subject: "تجوید", teacherId: teacherIds[7] },
+            { classId: classIds[3], day: "جمعرات", period: "1", subject: "تفسیر", teacherId: teacherIds[6] },
+            { classId: classIds[3], day: "جمعرات", period: "2", subject: "سیرت", teacherId: teacherIds[10] },
+            { classId: classIds[4], day: "جمعہ", period: "1", subject: "عربی", teacherId: teacherIds[4] },
+            { classId: classIds[4], day: "جمعہ", period: "2", subject: "فقہ", teacherId: teacherIds[8] },
+            { classId: classIds[5], day: "پیر", period: "1", subject: "حدیث", teacherId: teacherIds[5] },
+            { classId: classIds[5], day: "پیر", period: "2", subject: "عربی", teacherId: teacherIds[9] }
+        ];
+        for (const tt of timetableData) {
+            await window.addData('timetable', tt);
+        }
+
+        // 9. Add Expenses (12)
+        const expenseData = [
+            { date: "2024-07-01", type: "تنخواہ", description: "اساتذہ کی تنخواہ", paidTo: "محمد احمد", amount: 20000 },
+            { date: "2024-07-02", type: "بجلی بل", description: "مدرسہ کا بجلی بل", paidTo: "K-Electric", amount: 5000 },
+            { date: "2024-07-03", type: "اسٹیشنری", description: "کاپیاں اور قلم", paidTo: "اسٹیشنری شاپ", amount: 2000 },
+            { date: "2024-07-04", type: "مرمت", description: "کلاس روم کی مرمت", paidTo: "کنٹریکٹر", amount: 10000 },
+            { date: "2024-07-05", type: "تنخواہ", description: "اساتذہ کی تنخواہ", paidTo: "فاطمہ بی بی", amount: 18000 },
+            { date: "2024-07-06", type: "پانی بل", description: "مدرسہ کا پانی بل", paidTo: "واٹر بورڈ", amount: 3000 },
+            { date: "2024-07-07", type: "کتابیں", description: "نصابی کتابیں", paidTo: "کتاب دکان", amount: 4000 },
+            { date: "2024-07-08", type: "تنخواہ", description: "اساتذہ کی تنخواہ", paidTo: "علی رضا", amount: 21000 },
+            { date: "2024-07-09", type: "سفر خرچ", description: "اساتذہ کا سفر", paidTo: "ٹرانسپورٹ", amount: 1500 },
+            { date: "2024-07-10", type: "مرمت", description: "چھت کی مرمت", paidTo: "کنٹریکٹر", amount: 12000 },
+            { date: "2024-07-11", type: "تنخواہ", description: "اساتذہ کی تنخواہ", paidTo: "زینب بیگم", amount: 19000 },
+            { date: "2024-07-12", type: "اسٹیشنری", description: "بورڈ مارکر", paidTo: "اسٹیشنری شاپ", amount: 1000 }
+        ];
+        for (const expense of expenseData) {
+            await window.addData('expenses', expense);
+        }
+
+        // 10. Add Settings (12)
+        const settingsData = [
+            { key: "schoolName", value: "مدرسہ نور الایمان" },
+            { key: "address", value: "کراچی، پاکستان" },
+            { key: "contact", value: "021-12345678" },
+            { key: "principal", value: "مولانا عبداللہ" },
+            { key: "established", value: "2000" },
+            { key: "logo", value: "logo.png" },
+            { key: "motto", value: "علم و ایمان" },
+            { key: "email", value: "info@nooruleiman.com" },
+            { key: "website", value: "www.nooruleiman.com" },
+            { key: "session", value: "2024-2025" },
+            { key: "language", value: "اردو" },
+            { key: "timezone", value: "PKT" }
+        ];
+        for (const setting of settingsData) {
+            await window.addData('settings', setting);
+        }
+
+        console.log("Sample data added successfully for all stores!");
+    } catch (error) {
+        console.error("Error adding sample data:", error.message);
+    }
+}
+addSampleData()
