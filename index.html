@@ -4893,6 +4893,278 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 });
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Ensure XLSX library is included
+    if (!window.XLSX) {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        script.async = false;
+        document.head.appendChild(script);
+    }
+
+    // Add Export Data button to navigation
+    const nav = document.querySelector('nav');
+    const exportButton = document.createElement('button');
+    exportButton.textContent = 'ڈیٹا ایکسپورٹ';
+    exportButton.setAttribute('onclick', "showModule('exportData')");
+    nav.appendChild(exportButton);
+
+    // Create Export Data module HTML
+    const container = document.querySelector('.container');
+    const exportModule = document.createElement('div');
+    exportModule.id = 'exportData';
+    exportModule.className = 'module';
+    exportModule.innerHTML = `
+        <h2>ڈیٹا ایکسپورٹ</h2>
+        <p>براہ کرم ایکسپورٹ کرنے کے لیے ڈیٹا کی قسم منتخب کریں۔</p>
+        <div class="form-grid">
+            <button onclick="exportAllToOneFile()">سب ایک فائل ایکسپورٹ</button>
+            <button onclick="exportAllData('students')">طلباء ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('teachers')">اساتذہ ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('classes')">کلاسیں ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('fees')">فیس ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('feeStructures')">فیس اسٹرکچر ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('attendance')">حاضری ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('results')">نتائج ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('timetable')">ٹائم ٹیبل ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('expenses')">اخراجات ایکسپورٹ کریں</button>
+            <button onclick="exportAllData('settings')">سیٹنگز ایکسپورٹ کریں</button>
+        </div>
+        <h3>منتخب ڈیٹا ایکسپورٹ</h3>
+        <div class="form-grid">
+            <div>
+                <label for="exportStoreSelect">ڈیٹا کی قسم</label>
+                <select id="exportStoreSelect" onchange="loadExportTable()">
+                    <option value="">-- منتخب کریں --</option>
+                    <option value="students">طلباء</option>
+                    <option value="teachers">اساتذہ</option>
+                    <option value="classes">کلاسیں</option>
+                    <option value="fees">فیس</option>
+                    <option value="feeStructures">فیس اسٹرکچر</option>
+                    <option value="attendance">حاضری</option>
+                    <option value="results">نتائج</option>
+                    <option value="timetable">ٹائم ٹیبل</option>
+                    <option value="expenses">اخراجات</option>
+                    <option value="settings">سیٹنگز</option>
+                </select>
+            </div>
+        </div>
+        <div id="exportTableContainer" style="display: none;">
+            <button onclick="exportSelectedData()">منتخب ڈیٹا ایکسپورٹ کریں</button>
+            <table id="exportTable">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    `;
+    container.appendChild(exportModule);
+
+    // Store configurations for export
+    const storeConfigs = {
+        students: {
+            headers: ['داخلہ نمبر', 'نام', 'والد کا نام', 'کلاس', 'داخلہ تاریخ', 'رابطہ نمبر', 'پتہ'],
+            fields: ['admissionNo', 'name', 'fatherName', async (row) => await getClassName(row.classId), 'admissionDate', 'contact', 'address']
+        },
+        teachers: {
+            headers: ['نام', 'مضامین', 'موبائل نمبر', 'تنخواہ', 'تقرری تاریخ', 'قابلیت'],
+            fields: ['name', 'subjects', 'contact', 'salary', 'appointmentDate', 'qualification']
+        },
+        classes: {
+            headers: ['کلاس کا نام', 'استاد', 'مضامین'],
+            fields: ['name', async (row) => await getTeacherName(row.teacherId), 'subjects']
+        },
+        fees: {
+            headers: ['طالب علم', 'تاریخ', 'فیس کی قسم', 'ادا شدہ رقم', 'رعایت', 'طریقہ', 'نوٹس'],
+            fields: [async (row) => await getStudentName(row.studentId), 'date', 'feeType', 'paidAmount', 'discount', 'method', 'notes']
+        },
+        feeStructures: {
+            headers: ['کلاس', 'فیس کی قسم', 'رقم'],
+            fields: [async (row) => await getClassName(row.classId), 'feeType', 'amount']
+        },
+        attendance: {
+            headers: ['تاریخ', 'کلاس', 'طالب علم', 'حالت'],
+            fields: ['date', async (row) => await getClassName(row.classId), async (row) => await getStudentName(row.studentId), 'status']
+        },
+        results: {
+            headers: ['امتحان', 'کلاس', 'طالب علم', 'مضمون', 'تاریخ', 'کل نمبر', 'حاصل کردہ نمبر'],
+            fields: ['examName', async (row) => await getClassName(row.classId), async (row) => await getStudentName(row.studentId), 'subject', 'date', 'totalMarks', 'obtainedMarks']
+        },
+        timetable: {
+            headers: ['کلاس', 'دن', 'پیریڈ', 'مضمون', 'استاد'],
+            fields: [async (row) => await getClassName(row.classId), 'day', 'period', 'subject', async (row) => await getTeacherName(row.teacherId)]
+        },
+        expenses: {
+            headers: ['تاریخ', 'قسم', 'تفصیل', 'ادا کیا گیا', 'رقم'],
+            fields: ['date', 'type', 'description', 'paidTo', 'amount']
+        },
+        settings: {
+            headers: ['کلید', 'قدر'],
+            fields: ['key', 'value']
+        }
+    };
+
+    // Export all data for a single store
+    window.exportAllData = async function(storeName) {
+        try {
+            const data = await getAll(storeName);
+            if (data.length === 0) {
+                alert('کوئی ڈیٹا نہیں ملا۔');
+                return;
+            }
+            const config = storeConfigs[storeName];
+            const headers = config.headers;
+            const rows = [];
+            for (const row of data) {
+                const rowData = [];
+                for (const field of config.fields) {
+                    rowData.push(typeof field === 'function' ? await field(row) : row[field] || '');
+                }
+                rows.push(rowData);
+            }
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            XLSX.utils.book_append_sheet(wb, ws, storeName);
+            XLSX.writeFile(wb, `${storeName}_${Date.now()}.xlsx`);
+        } catch (error) {
+            console.error(`Error exporting ${storeName}:`, error);
+            alert('ایکسپورٹ میں خرابی: ' + error.message);
+        }
+    };
+
+    // Export all stores to one Excel file with multiple sheets
+    window.exportAllToOneFile = async function() {
+        try {
+            const wb = XLSX.utils.book_new();
+            const storeNames = Object.keys(storeConfigs);
+
+            for (const storeName of storeNames) {
+                const data = await getAll(storeName);
+                const config = storeConfigs[storeName];
+                const headers = config.headers;
+                const rows = [];
+
+                for (const row of data) {
+                    const rowData = [];
+                    for (const field of config.fields) {
+                        rowData.push(typeof field === 'function' ? await field(row) : row[field] || '');
+                    }
+                    rows.push(rowData);
+                }
+
+                // Only add sheet if data exists
+                if (rows.length > 0) {
+                    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+                    XLSX.utils.book_append_sheet(wb, ws, storeName);
+                }
+            }
+
+            if (Object.keys(wb.Sheets).length === 0) {
+                alert('ایکسپورٹ کے لیے کوئی ڈیٹا نہیں ملا۔');
+                return;
+            }
+
+            XLSX.writeFile(wb, `all_data_${Date.now()}.xlsx`);
+        } catch (error) {
+            console.error('Error exporting all data:', error);
+            alert('تمام ڈیٹا ایکسپورٹ کرنے میں خرابی: ' + error.message);
+        }
+    };
+
+    // Load table for selectable export
+    window.loadExportTable = async function() {
+        const storeName = document.getElementById('exportStoreSelect').value;
+        const tableContainer = document.getElementById('exportTableContainer');
+        const table = document.getElementById('exportTable');
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+
+        tableContainer.style.display = storeName ? 'block' : 'none';
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
+
+        if (!storeName) return;
+
+        try {
+            const data = await getAll(storeName);
+            const config = storeConfigs[storeName];
+
+            // Create header row with checkbox
+            const headerRow = thead.insertRow();
+            headerRow.insertCell().innerHTML = '<input type="checkbox" class="select-all">';
+            config.headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+
+            // Populate table
+            data.forEach(row => {
+                const tr = tbody.insertRow();
+                tr.dataset.id = row.id || JSON.stringify(row); // Use id or JSON for unique key
+                tr.insertCell().innerHTML = '<input type="checkbox" class="row-select">';
+                config.fields.forEach(async (field, index) => {
+                    const td = tr.insertCell();
+                    td.textContent = typeof field === 'function' ? await field(row) : row[field] || '';
+                });
+            });
+
+            // Select all checkbox functionality
+            const selectAll = thead.querySelector('.select-all');
+            selectAll.addEventListener('change', () => {
+                tbody.querySelectorAll('.row-select').forEach(cb => cb.checked = selectAll.checked);
+            });
+        } catch (error) {
+            console.error(`Error loading table for ${storeName}:`, error);
+            tbody.innerHTML = '<tr><td colspan="' + (storeConfigs[storeName].headers.length + 1) + '">ڈیٹا لوڈ کرنے میں خرابی۔</td></tr>';
+        }
+    };
+
+    // Export selected data
+    window.exportSelectedData = async function() {
+        const storeName = document.getElementById('exportStoreSelect').value;
+        const tbody = document.getElementById('exportTable').querySelector('tbody');
+        const selectedRows = Array.from(tbody.querySelectorAll('tr input.row-select:checked')).map(cb => cb.parentNode.parentNode);
+        
+        if (selectedRows.length === 0) {
+            alert('براہ کرم کم از کم ایک ریکارڈ منتخب کریں۔');
+            return;
+        }
+
+        try {
+            const config = storeConfigs[storeName];
+            const headers = config.headers;
+            const rows = [];
+            for (const row of selectedRows) {
+                const rowData = [];
+                const cells = row.querySelectorAll('td');
+                for (let i = 1; i < cells.length; i++) { // Skip checkbox cell
+                    rowData.push(cells[i].textContent);
+                }
+                rows.push(rowData);
+            }
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            XLSX.utils.book_append_sheet(wb, ws, storeName);
+            XLSX.writeFile(wb, `${storeName}_selected_${Date.now()}.xlsx`);
+        } catch (error) {
+            console.error(`Error exporting selected ${storeName}:`, error);
+            alert('منتخب ڈیٹا ایکسپورٹ کرنے میں خرابی: ' + error.message);
+        }
+    };
+
+    // Update showModule to include exportData
+    const originalShowModule = window.showModule || function() {};
+    window.showModule = function(moduleId) {
+        originalShowModule(moduleId);
+        if (moduleId === 'exportData') {
+            document.getElementById('exportStoreSelect').value = '';
+            document.getElementById('exportTableContainer').style.display = 'none';
+        }
+    };
+});
 </script>
 	
 	
