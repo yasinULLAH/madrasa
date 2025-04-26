@@ -1,0 +1,308 @@
+[2025-04-26 10:42:20] Database connection established
+[2025-04-26 10:42:20] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:42:20] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: [1]
+[2025-04-26 10:42:20] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:42:20] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:42:20] Attendance data: []
+[2025-04-26 10:42:20] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":""},"2":{"n":"asdf","st":""}}
+[2025-04-26 10:42:34] Database connection established
+[2025-04-26 10:42:34] Main POST processing started
+[2025-04-26 10:42:34] Transaction started for action=mark_att
+[2025-04-26 10:42:34] POST handler for mark_att: raw_data={"act":"mark_att","dt":"2025-04-26","cl_id_filter":"1","1":"H","2":"H"}
+[2025-04-26 10:42:34] Processed attendance data for dt=2025-04-26: {"1":"H","2":"H"}
+[2025-04-26 10:42:34] Valid attendance data for dt=2025-04-26: {"1":"H","2":"H"}
+[2025-04-26 10:42:34] mark_att called: dt=2025-04-26, atts={"1":"H","2":"H"}
+[2025-04-26 10:42:34] Processing attendance: st_id=1, status=H
+[2025-04-26 10:42:34] Inserted attendance: st_id=1, dt=2025-04-26, st=H
+[2025-04-26 10:42:34] Processing attendance: st_id=2, status=H
+[2025-04-26 10:42:34] Inserted attendance: st_id=2, dt=2025-04-26, st=H
+[2025-04-26 10:42:34] Attendance records for dt=2025-04-26: count=2, records=[{"id":1,"st_id":1,"dt":"2025-04-26","st":"H"},{"id":2,"st_id":2,"dt":"2025-04-26","st":"H"}]
+[2025-04-26 10:42:34] Attendance marked successfully for dt=2025-04-26
+[2025-04-26 10:42:34] Post-mark check for dt=2025-04-26: [{"id":1,"st_id":1,"dt":"2025-04-26","st":"H"},{"id":2,"st_id":2,"dt":"2025-04-26","st":"H"}]
+[2025-04-26 10:42:34] Redirecting to ?pg=att&dt=2025-04-26&cl_id=1
+[2025-04-26 10:42:34] Transaction committed for action=mark_att
+[2025-04-26 10:42:34] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:42:34] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: [1]
+[2025-04-26 10:42:34] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:42:34] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:42:34] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 10:42:34] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:42:34] Database connection established
+[2025-04-26 10:42:34] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:42:34] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:42:34] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:42:34] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:42:34] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 10:42:34] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:42:48] Database connection established
+[2025-04-26 10:42:48] Main POST processing started
+[2025-04-26 10:42:48] Transaction started for action=mark_att
+[2025-04-26 10:42:48] POST handler for mark_att: raw_data={"act":"mark_att","dt":"2025-04-26","cl_id_filter":"1","1":"H","2":"H"}
+[2025-04-26 10:42:48] Processed attendance data for dt=2025-04-26: {"1":"H","2":"H"}
+[2025-04-26 10:42:48] Valid attendance data for dt=2025-04-26: {"1":"H","2":"H"}
+[2025-04-26 10:42:48] mark_att called: dt=2025-04-26, atts={"1":"H","2":"H"}
+[2025-04-26 10:42:48] Processing attendance: st_id=1, status=H
+[2025-04-26 10:42:48] Inserted attendance: st_id=1, dt=2025-04-26, st=H
+[2025-04-26 10:42:48] Processing attendance: st_id=2, status=H
+[2025-04-26 10:42:48] Inserted attendance: st_id=2, dt=2025-04-26, st=H
+[2025-04-26 10:42:48] Attendance records for dt=2025-04-26: count=2, records=[{"id":3,"st_id":1,"dt":"2025-04-26","st":"H"},{"id":4,"st_id":2,"dt":"2025-04-26","st":"H"}]
+[2025-04-26 10:42:48] Attendance marked successfully for dt=2025-04-26
+[2025-04-26 10:42:48] Post-mark check for dt=2025-04-26: [{"id":3,"st_id":1,"dt":"2025-04-26","st":"H"},{"id":4,"st_id":2,"dt":"2025-04-26","st":"H"}]
+[2025-04-26 10:42:48] Redirecting to ?pg=att&dt=2025-04-26&cl_id=1
+[2025-04-26 10:42:48] Transaction committed for action=mark_att
+[2025-04-26 10:42:48] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:42:48] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:42:48] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:42:48] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:42:48] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 10:42:48] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:42:48] Database connection established
+[2025-04-26 10:42:48] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:42:48] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:42:48] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:42:48] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:42:48] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 10:42:48] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:42:54] Database connection established
+[2025-04-26 10:42:54] get_att_for_dt called: dt=2025-04-25, cl_id=1
+[2025-04-26 10:42:54] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:42:54] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:42:54] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-25",1,2]
+[2025-04-26 10:42:54] Attendance data: []
+[2025-04-26 10:42:54] Final attendance data for dt=2025-04-25: {"1":{"n":"Yasin","st":""},"2":{"n":"asdf","st":""}}
+[2025-04-26 10:42:58] Database connection established
+[2025-04-26 10:42:58] Main POST processing started
+[2025-04-26 10:42:58] Transaction started for action=mark_att
+[2025-04-26 10:42:58] POST handler for mark_att: raw_data={"act":"mark_att","dt":"2025-04-25","cl_id_filter":"1","1":"G","2":"H"}
+[2025-04-26 10:42:58] Processed attendance data for dt=2025-04-25: {"1":"G","2":"H"}
+[2025-04-26 10:42:58] Valid attendance data for dt=2025-04-25: {"1":"G","2":"H"}
+[2025-04-26 10:42:58] mark_att called: dt=2025-04-25, atts={"1":"G","2":"H"}
+[2025-04-26 10:42:58] Processing attendance: st_id=1, status=G
+[2025-04-26 10:42:58] Inserted attendance: st_id=1, dt=2025-04-25, st=G
+[2025-04-26 10:42:58] Processing attendance: st_id=2, status=H
+[2025-04-26 10:42:58] Inserted attendance: st_id=2, dt=2025-04-25, st=H
+[2025-04-26 10:42:58] Attendance records for dt=2025-04-25: count=2, records=[{"id":5,"st_id":1,"dt":"2025-04-25","st":"G"},{"id":6,"st_id":2,"dt":"2025-04-25","st":"H"}]
+[2025-04-26 10:42:58] Attendance marked successfully for dt=2025-04-25
+[2025-04-26 10:42:58] Post-mark check for dt=2025-04-25: [{"id":5,"st_id":1,"dt":"2025-04-25","st":"G"},{"id":6,"st_id":2,"dt":"2025-04-25","st":"H"}]
+[2025-04-26 10:42:58] Redirecting to ?pg=att&dt=2025-04-25&cl_id=1
+[2025-04-26 10:42:58] Transaction committed for action=mark_att
+[2025-04-26 10:42:58] get_att_for_dt called: dt=2025-04-25, cl_id=1
+[2025-04-26 10:42:58] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:42:58] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:42:58] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-25",1,2]
+[2025-04-26 10:42:58] Attendance data: {"1":"G","2":"H"}
+[2025-04-26 10:42:58] Final attendance data for dt=2025-04-25: {"1":{"n":"Yasin","st":"G"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:42:58] Database connection established
+[2025-04-26 10:42:58] get_att_for_dt called: dt=2025-04-25, cl_id=1
+[2025-04-26 10:42:58] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:42:58] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:42:58] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-25",1,2]
+[2025-04-26 10:42:58] Attendance data: {"1":"G","2":"H"}
+[2025-04-26 10:42:58] Final attendance data for dt=2025-04-25: {"1":{"n":"Yasin","st":"G"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:43:02] Database connection established
+[2025-04-26 10:43:02] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:43:02] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:43:02] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:43:02] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:43:02] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 10:43:02] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:43:06] Database connection established
+[2025-04-26 10:43:06] get_att_for_dt called: dt=2025-04-25, cl_id=1
+[2025-04-26 10:43:06] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:43:06] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:43:06] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-25",1,2]
+[2025-04-26 10:43:06] Attendance data: {"1":"G","2":"H"}
+[2025-04-26 10:43:06] Final attendance data for dt=2025-04-25: {"1":{"n":"Yasin","st":"G"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:43:08] Database connection established
+[2025-04-26 10:50:34] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:50:34] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: [1]
+[2025-04-26 10:50:34] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:50:35] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:50:35] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 10:50:35] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:50:43] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:50:43] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:50:43] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:50:43] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:50:43] Attendance data: []
+[2025-04-26 10:50:43] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":""},"2":{"n":"asdf","st":""}}
+[2025-04-26 10:50:46] Main POST processing started
+[2025-04-26 10:50:46] Transaction started for action=mark_att
+[2025-04-26 10:50:46] Transaction committed for action=mark_att
+[2025-04-26 10:50:46] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:50:46] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:50:46] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:50:46] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:50:46] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:50:46] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:50:46] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:50:46] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:50:46] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:50:46] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:50:46] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:50:46] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:52:19] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:52:19] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:52:19] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:52:19] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:52:19] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:52:19] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:52:27] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:52:27] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:52:27] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:52:27] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:52:27] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 10:52:27] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:57:36] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 10:57:36] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:57:36] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:57:36] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 10:57:36] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 10:57:36] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 10:57:40] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:57:40] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:57:40] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:57:40] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:57:40] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:57:40] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:59:18] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:59:18] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:59:18] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:59:18] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:59:18] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:59:18] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:59:20] Main POST processing started
+[2025-04-26 10:59:20] Transaction started for action=mark_att
+[2025-04-26 10:59:20] Transaction committed for action=mark_att
+[2025-04-26 10:59:20] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:59:20] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:59:20] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:59:20] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:59:20] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:59:20] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:59:20] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:59:20] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:59:20] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:59:20] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:59:20] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:59:20] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:59:53] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:59:53] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:59:53] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:59:53] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:59:53] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:59:53] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:59:56] Main POST processing started
+[2025-04-26 10:59:56] Transaction started for action=mark_att
+[2025-04-26 10:59:56] Transaction committed for action=mark_att
+[2025-04-26 10:59:56] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:59:56] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:59:56] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:59:56] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:59:56] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:59:56] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:59:56] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:59:56] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:59:56] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:59:56] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:59:56] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:59:56] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 10:59:58] get_att_for_dt called: dt=2025-04-19, cl_id=1
+[2025-04-26 10:59:58] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 10:59:58] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 10:59:58] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-19",1,2]
+[2025-04-26 10:59:58] Attendance data: {"1":"H","2":"G"}
+[2025-04-26 10:59:58] Final attendance data for dt=2025-04-19: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"G"}}
+[2025-04-26 11:00:01] get_att_for_dt called: dt=2025-04-11, cl_id=1
+[2025-04-26 11:00:01] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:00:01] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:00:01] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-11",1,2]
+[2025-04-26 11:00:01] Attendance data: []
+[2025-04-26 11:00:01] Final attendance data for dt=2025-04-11: {"1":{"n":"Yasin","st":""},"2":{"n":"asdf","st":""}}
+[2025-04-26 11:00:03] Main POST processing started
+[2025-04-26 11:00:03] Transaction started for action=mark_att
+[2025-04-26 11:00:03] Transaction committed for action=mark_att
+[2025-04-26 11:00:03] get_att_for_dt called: dt=2025-04-11, cl_id=1
+[2025-04-26 11:00:03] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:00:03] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:00:03] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-11",1,2]
+[2025-04-26 11:00:03] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:00:03] Final attendance data for dt=2025-04-11: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:00:03] get_att_for_dt called: dt=2025-04-11, cl_id=1
+[2025-04-26 11:00:03] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:00:03] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:00:03] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-11",1,2]
+[2025-04-26 11:00:03] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:00:03] Final attendance data for dt=2025-04-11: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:01:12] get_att_for_dt called: dt=2025-04-11, cl_id=1
+[2025-04-26 11:01:12] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:01:12] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:01:12] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-11",1,2]
+[2025-04-26 11:01:12] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:01:12] Final attendance data for dt=2025-04-11: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:01:13] Main POST processing started
+[2025-04-26 11:01:13] Transaction started for action=mark_att
+[2025-04-26 11:01:13] Transaction committed for action=mark_att
+[2025-04-26 11:01:13] get_att_for_dt called: dt=2025-04-11, cl_id=1
+[2025-04-26 11:01:13] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:01:13] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:01:13] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-11",1,2]
+[2025-04-26 11:01:13] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:01:13] Final attendance data for dt=2025-04-11: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:01:13] get_att_for_dt called: dt=2025-04-11, cl_id=1
+[2025-04-26 11:01:13] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:01:13] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:01:13] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-11",1,2]
+[2025-04-26 11:01:13] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:01:13] Final attendance data for dt=2025-04-11: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:01:17] get_att_for_dt called: dt=2025-04-04, cl_id=1
+[2025-04-26 11:01:17] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:01:17] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:01:17] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-04",1,2]
+[2025-04-26 11:01:17] Attendance data: []
+[2025-04-26 11:01:17] Final attendance data for dt=2025-04-04: {"1":{"n":"Yasin","st":""},"2":{"n":"asdf","st":""}}
+[2025-04-26 11:01:19] Main POST processing started
+[2025-04-26 11:01:19] Transaction started for action=mark_att
+[2025-04-26 11:01:19] Transaction committed for action=mark_att
+[2025-04-26 11:01:19] get_att_for_dt called: dt=2025-04-04, cl_id=1
+[2025-04-26 11:01:19] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:01:19] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:01:19] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-04",1,2]
+[2025-04-26 11:01:19] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:01:19] Final attendance data for dt=2025-04-04: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:01:19] get_att_for_dt called: dt=2025-04-04, cl_id=1
+[2025-04-26 11:01:19] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:01:19] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:01:19] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-04",1,2]
+[2025-04-26 11:01:19] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:01:19] Final attendance data for dt=2025-04-04: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:02:49] Main POST processing started
+[2025-04-26 11:02:49] Transaction started for action=upd_st
+[2025-04-26 11:02:49] Transaction committed for action=upd_st
+[2025-04-26 11:02:59] get_att_for_dt called: dt=2025-04-26, cl_id=1
+[2025-04-26 11:02:59] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: [1]
+[2025-04-26 11:02:59] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:02:59] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-26",1,2]
+[2025-04-26 11:02:59] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:02:59] Final attendance data for dt=2025-04-26: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:03:04] get_att_for_dt called: dt=2025-04-17, cl_id=1
+[2025-04-26 11:03:04] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:03:04] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:03:04] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-17",1,2]
+[2025-04-26 11:03:04] Attendance data: []
+[2025-04-26 11:03:04] Final attendance data for dt=2025-04-17: {"1":{"n":"Yasin","st":""},"2":{"n":"asdf","st":""}}
+[2025-04-26 11:03:08] Main POST processing started
+[2025-04-26 11:03:08] Transaction started for action=mark_att
+[2025-04-26 11:03:08] Transaction committed for action=mark_att
+[2025-04-26 11:03:08] get_att_for_dt called: dt=2025-04-17, cl_id=1
+[2025-04-26 11:03:08] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:03:08] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:03:08] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-17",1,2]
+[2025-04-26 11:03:08] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:03:08] Final attendance data for dt=2025-04-17: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}
+[2025-04-26 11:03:08] get_att_for_dt called: dt=2025-04-17, cl_id=1
+[2025-04-26 11:03:08] Student query: SELECT id, n FROM st WHERE cl_id = ? ORDER BY n, params: ["1"]
+[2025-04-26 11:03:08] Students fetched: {"1":"Yasin","2":"asdf"}
+[2025-04-26 11:03:08] Attendance query: SELECT st_id, st FROM att WHERE dt = ? AND st_id IN (?,?), params: ["2025-04-17",1,2]
+[2025-04-26 11:03:08] Attendance data: {"1":"H","2":"H"}
+[2025-04-26 11:03:08] Final attendance data for dt=2025-04-17: {"1":{"n":"Yasin","st":"H"},"2":{"n":"asdf","st":"H"}}

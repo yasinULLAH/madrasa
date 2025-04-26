@@ -1,0 +1,3750 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دینی مدرسہ انتظامیہ ایپ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            direction: rtl;
+            text-align: right;
+        }
+        .nav-link { text-align: right; }
+        .modal-header, .modal-body, .modal-footer { text-align: right; }
+        .modal-title { float: right; margin-left: auto; }
+        .btn-close { margin-left: 0; margin-right: auto; }
+        .form-label { text-align: right; display: block; width: 100%; }
+        .form-check-label { padding-right: 1.5em; }
+        .form-check-input { float: right; margin-left: 0.5em; margin-right: -1.5em;}
+        .table { text-align: right; }
+        th, td { vertical-align: middle; }
+        .section { display: none; }
+        .active-section { display: block; }
+        #sLgo img { max-height: 50px; max-width: 100px; }
+        #cFldLst .input-group { margin-bottom: 0.5rem; }
+        .attTbl td, .attTbl th { text-align: center;}
+        .attTbl input[type="checkbox"] { transform: scale(1.2); margin: 0 auto; display: block;}
+        .toast-container { z-index: 1100; } /* Ensure toast is above modals */
+		.dropdown-menu-end[data-bs-popper] {
+    right: -98px;
+    left: auto;
+}
+   </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" id="aTtl">دینی مدرسہ انتظامیہ ایپ</a>
+             <div id="sLgo" class="me-3"></div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nbc" aria-controls="nbc" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="nbc">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                     <li class="nav-item"><a class="nav-link active" href="#" data-s="dsh">ڈیش بورڈ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-s="stds">طلباء</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-s="tchs">اساتذہ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-s="clss">کلاسیں</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-s="att">حاضری</a></li>
+                    <li class="nav-item dropdown">
+                       <a class="nav-link dropdown-toggle" href="#" id="fncdd" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                         مالیات
+                       </a>
+                       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="fncdd">
+                         <li><a class="dropdown-item" href="#" data-s="fes">طلباء فیس</a></li>
+                         <li><a class="dropdown-item" href="#" data-s="slrs">اساتذہ تنخواہ</a></li>
+                         <li><a class="dropdown-item" href="#" data-s="inv">انوینٹری</a></li>
+                         <li><a class="dropdown-item" href="#" data-s="exp">آمدنی/اخراجات</a></li>
+                       </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-s="rpts">رپورٹس</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="tldd" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          ٹولز
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="tldd">
+                          <li><a class="dropdown-item" href="#" data-s="stgs">ترتیبات</a></li>
+                          <li><a class="dropdown-item" href="#" id="bkBtn">ڈیٹا بیک اپ</a></li>
+                          <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#rMd">ڈیٹا بحال کریں</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Dashboard -->
+        <div id="dsh" class="section active-section">
+            <h2>ڈیش بورڈ</h2>
+            <div class="row">
+                 <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">کل طلباء</h5>
+                            <p class="card-text fs-4" id="dSCo">0</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <h5 class="card-title">کل اساتذہ</h5>
+                            <p class="card-text fs-4" id="dTCo">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <h5 class="card-title">کل کلاسیں</h5>
+                            <p class="card-text fs-4" id="dCCo">0</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-secondary">
+                        <div class="card-body">
+                            <h5 class="card-title">آج کی حاضری</h5>
+                            <p class="card-text fs-4" id="dACo">- / -</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="mt-4">
+                 <h4>فوری رسائی</h4>
+                 <button class="btn btn-success m-1" onclick="shSctn('stds'); shSFrm()">نیا طالب علم شامل کریں</button>
+                 <button class="btn btn-info m-1" onclick="shSctn('tchs'); shTFrm()">نیا استاد شامل کریں</button>
+                 <button class="btn btn-warning m-1" onclick="shSctn('clss'); shCFrm()">نئی کلاس بنائیں</button>
+                 <button class="btn btn-primary m-1" onclick="shSctn('att')">حاضری لگائیں</button>
+            </div>
+        </div>
+
+        <!-- Students -->
+        <div id="stds" class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>طلباء کا انتظام</h2>
+                <button class="btn btn-success" onclick="shSFrm()">نیا طالب علم</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>والد کا نام</th>
+                            <th>عمر</th>
+                            <th>کلاس</th>
+                            <th>داخلہ تاریخ</th>
+                            <th>رابطہ</th>
+                            <th>پتہ</th>
+                            <th id="sCTHdr"></th> <!-- Dynamic Custom Fields Header -->
+                            <th>اعمال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sLst"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Teachers -->
+        <div id="tchs" class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>اساتذہ کا انتظام</h2>
+                <button class="btn btn-success" onclick="shTFrm()">نیا استاد</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>رابطہ</th>
+                            <th>پتہ</th>
+                            <th>شمولیت کی تاریخ</th>
+                            <th id="tCTHdr"></th> <!-- Dynamic Custom Fields Header -->
+                            <th>اعمال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tLst"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Classes -->
+        <div id="clss" class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>کلاسوں کا انتظام</h2>
+                <button class="btn btn-success" onclick="shCFrm()">نئی کلاس</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>کلاس کا نام</th>
+                            <th>استاد</th>
+                            <th>طلباء کی تعداد</th>
+                            <th>اعمال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cLst"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Attendance -->
+        <div id="att" class="section">
+             <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>حاضری</h2>
+                 <div>
+                    <input type="date" id="aDt" class="form-control d-inline-block w-auto me-2">
+                    <select id="aCls" class="form-select d-inline-block w-auto me-2"></select>
+                    <button class="btn btn-primary" onclick="ldA()">حاضری لوڈ کریں</button>
+                </div>
+            </div>
+             <div class="table-responsive">
+                <table class="table table-bordered attTbl">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>طالب علم کا نام</th>
+                            <th>حاضر</th>
+                            <th>غیر حاضر</th>
+                         </tr>
+                    </thead>
+                    <tbody id="aLst"></tbody>
+                </table>
+                <button class="btn btn-success mt-3" onclick="svA()">حاضری محفوظ کریں</button>
+            </div>
+        </div>
+
+        <!-- Fees -->
+        <div id="fes" class="section">
+             <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>طلباء کی فیس</h2>
+                <div>
+                     <button class="btn btn-info me-2" onclick="shFeStrFrm()">فیس اسٹرکچر</button>
+                     <button class="btn btn-success" onclick="shFePyFrm()">فیس وصولی</button>
+                </div>
+            </div>
+            <h4>فیس ریکارڈ</h4>
+             <div class="row mb-3">
+                 <div class="col-md-4">
+                    <label for="fFltrCls" class="form-label">کلاس فلٹر</label>
+                    <select id="fFltrCls" class="form-select" onchange="ldFRecs()">
+                        <option value="">تمام کلاسیں</option>
+                    </select>
+                </div>
+                 <div class="col-md-4">
+                    <label for="fFltrMnth" class="form-label">مہینہ فلٹر</label>
+                    <input type="month" id="fFltrMnth" class="form-control" onchange="ldFRecs()">
+                </div>
+             </div>
+             <div class="table-responsive">
+                 <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>طالب علم</th>
+                            <th>کلاس</th>
+                            <th>مہینہ/سال</th>
+                            <th>کل فیس</th>
+                            <th>وصول شدہ</th>
+                            <th>بقایا</th>
+                            <th>حالت</th>
+                            <th>تاریخ وصولی</th>
+                            <th>اعمال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fLst"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Salaries -->
+        <div id="slrs" class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>اساتذہ کی تنخواہ</h2>
+                <button class="btn btn-success" onclick="shSlPyFrm()">تنخواہ ادا کریں</button>
+            </div>
+             <h4>تنخواہ ریکارڈ</h4>
+             <div class="row mb-3">
+                 <div class="col-md-4">
+                     <label for="slFltrMnth" class="form-label">مہینہ فلٹر</label>
+                    <input type="month" id="slFltrMnth" class="form-control" onchange="ldSlRecs()">
+                </div>
+             </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>استاد</th>
+                            <th>مہینہ/سال</th>
+                            <th>کل تنخواہ</th>
+                            <th>ادا شدہ رقم</th>
+                            <th>تاریخ ادائیگی</th>
+                            <th>حالت</th>
+                            <th>اعمال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slLst"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Inventory -->
+        <div id="inv" class="section">
+             <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>انوینٹری</h2>
+                <button class="btn btn-success" onclick="shInvFrm()">نیا آئٹم</button>
+            </div>
+             <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>آئٹم کا نام</th>
+                            <th>تفصیل</th>
+                            <th>مقدار</th>
+                            <th>شامل کرنے کی تاریخ</th>
+                            <th>اعمال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="iLst"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Expenses/Income -->
+        <div id="exp" class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>آمدنی اور اخراجات</h2>
+                <button class="btn btn-success" onclick="shExpFrm()">نیا اندراج</button>
+            </div>
+             <div class="row mb-3">
+                 <div class="col-md-3">
+                     <label for="eFltrTyp" class="form-label">قسم</label>
+                    <select id="eFltrTyp" class="form-select" onchange="ldExps()">
+                        <option value="">سب</option>
+                        <option value="income">آمدنی</option>
+                        <option value="expense">خرچہ</option>
+                    </select>
+                </div>
+                 <div class="col-md-3">
+                    <label for="eFltrDtS" class="form-label">شروع تاریخ</label>
+                    <input type="date" id="eFltrDtS" class="form-control" onchange="ldExps()">
+                </div>
+                 <div class="col-md-3">
+                    <label for="eFltrDtE" class="form-label">اختتام تاریخ</label>
+                    <input type="date" id="eFltrDtE" class="form-control" onchange="ldExps()">
+                </div>
+                 <div class="col-md-3 d-flex align-items-end">
+                     <button class="btn btn-secondary" onclick="clrEFltr()">فلٹر صاف کریں</button>
+                </div>
+            </div>
+             <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>تاریخ</th>
+                            <th>قسم</th>
+                            <th>تفصیل</th>
+                            <th>رقم</th>
+                            <th>اعمال</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eLst"></tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                <h5>خلاصہ: کل آمدنی: <span id="tInc" class="text-success">0</span> | کل اخراجات: <span id="tExp" class="text-danger">0</span> | بیلنس: <span id="tBal">0</span></h5>
+            </div>
+        </div>
+
+
+        <!-- Reports -->
+        <div id="rpts" class="section">
+            <h2>رپورٹس</h2>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">طلباء کی رپورٹ</h5>
+                            <p class="card-text">تمام طلباء کی فہرست بمع تفصیلات۔</p>
+                            <button class="btn btn-primary" onclick="gnRpt('stds')">رپورٹ دیکھیں</button>
+                             <button class="btn btn-secondary" onclick="exCSV('stds')">CSV ایکسپورٹ</button>
+                            <button class="btn btn-info" onclick="prRpt('stds')">پرنٹ</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                     <div class="card">
+                         <div class="card-body">
+                            <h5 class="card-title">اساتذہ کی رپورٹ</h5>
+                             <p class="card-text">تمام اساتذہ کی فہرست بمع تفصیلات۔</p>
+                             <button class="btn btn-primary" onclick="gnRpt('tchs')">رپورٹ دیکھیں</button>
+                             <button class="btn btn-secondary" onclick="exCSV('tchs')">CSV ایکسپورٹ</button>
+                            <button class="btn btn-info" onclick="prRpt('tchs')">پرنٹ</button>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-6 mb-3">
+                     <div class="card">
+                         <div class="card-body">
+                            <h5 class="card-title">کلاس کی رپورٹ</h5>
+                             <p class="card-text">کلاسوں کی فہرست بمع استاد اور طلباء کی تعداد۔</p>
+                             <button class="btn btn-primary" onclick="gnRpt('clss')">رپورٹ دیکھیں</button>
+                             <button class="btn btn-secondary" onclick="exCSV('clss')">CSV ایکسپورٹ</button>
+                            <button class="btn btn-info" onclick="prRpt('clss')">پرنٹ</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">حاضری کی رپورٹ</h5>
+                             <p class="card-text">مخصوص تاریخ یا مدت کی حاضری کی رپورٹ۔</p>
+                            <div class="input-group mb-2">
+                                <label for="rACls" class="input-group-text">کلاس</label>
+                                <select id="rACls" class="form-select"></select>
+                             </div>
+                             <div class="input-group mb-2">
+                                <label for="rADtS" class="input-group-text">شروع تاریخ</label>
+                                <input type="date" id="rADtS" class="form-control">
+                             </div>
+                             <div class="input-group mb-3">
+                                <label for="rADtE" class="input-group-text">اختتام تاریخ</label>
+                                <input type="date" id="rADtE" class="form-control">
+                            </div>
+                             <button class="btn btn-primary" onclick="gnARpt()">رپورٹ دیکھیں</button>
+                             <button class="btn btn-secondary" onclick="exCARpt()">CSV ایکسپورٹ</button>
+                             <button class="btn btn-info" onclick="prCARpt()">پرنٹ</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">فیس کی رپورٹ</h5>
+                             <p class="card-text">فیس کی وصولی اور بقایاجات کی رپورٹ۔</p>
+                             <div class="input-group mb-2">
+                                <label for="rFCls" class="input-group-text">کلاس</label>
+                                <select id="rFCls" class="form-select"> <option value="">تمام کلاسیں</option></select>
+                             </div>
+                             <div class="input-group mb-3">
+                                <label for="rFMnt" class="input-group-text">مہینہ</label>
+                                <input type="month" id="rFMnt" class="form-control">
+                            </div>
+                            <button class="btn btn-primary" onclick="gnFRpt()">رپورٹ دیکھیں</button>
+                             <button class="btn btn-secondary" onclick="exCFRpt()">CSV ایکسپورٹ</button>
+                            <button class="btn btn-info" onclick="prCFRpt()">پرنٹ</button>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                             <h5 class="card-title">تنخواہ کی رپورٹ</h5>
+                             <p class="card-text">اساتذہ کی تنخواہوں کی ادائیگی کی رپورٹ۔</p>
+                            <div class="input-group mb-3">
+                                <label for="rSMnt" class="input-group-text">مہینہ</label>
+                                <input type="month" id="rSMnt" class="form-control">
+                            </div>
+                            <button class="btn btn-primary" onclick="gnSRpt()">رپورٹ دیکھیں</button>
+                             <button class="btn btn-secondary" onclick="exCSRpt()">CSV ایکسپورٹ</button>
+                             <button class="btn btn-info" onclick="prCSRpt()">پرنٹ</button>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                             <h5 class="card-title">آمدنی/اخراجات کی رپورٹ</h5>
+                             <p class="card-text">مخصوص مدت کے لیے آمدنی اور اخراجات کا خلاصہ۔</p>
+                            <div class="input-group mb-2">
+                                <label for="rEDtS" class="input-group-text">شروع تاریخ</label>
+                                <input type="date" id="rEDtS" class="form-control">
+                             </div>
+                             <div class="input-group mb-3">
+                                <label for="rEDtE" class="input-group-text">اختتام تاریخ</label>
+                                <input type="date" id="rEDtE" class="form-control">
+                            </div>
+                            <button class="btn btn-primary" onclick="gnERpt()">رپورٹ دیکھیں</button>
+                             <button class="btn btn-secondary" onclick="exCERpt()">CSV ایکسپورٹ</button>
+                             <button class="btn btn-info" onclick="prCERpt()">پرنٹ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="rCnt" class="mt-4 table-responsive"></div>
+             <div id="rPrntArea" style="display:none;"></div>
+        </div>
+
+        <!-- Settings -->
+        <div id="stgs" class="section">
+            <h2>ترتیبات</h2>
+            <form id="stgFrm">
+                <div class="mb-3">
+                    <label for="stgNm" class="form-label">مدرسہ کا نام</label>
+                    <input type="text" class="form-control" id="stgNm">
+                </div>
+                <div class="mb-3">
+                    <label for="stgAdr" class="form-label">پتہ</label>
+                    <textarea class="form-control" id="stgAdr" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="stgPhn" class="form-label">فون نمبر</label>
+                    <input type="text" class="form-control" id="stgPhn">
+                </div>
+                <div class="mb-3">
+                    <label for="stgLgo" class="form-label">لوگو</label>
+                    <input type="file" class="form-control" id="stgLgo" accept="image/*">
+                     <div id="cLgoPrv" class="mt-2"></div>
+                 </div>
+                 <div class="mb-3">
+                     <h4>طلباء کے لیے اضافی فیلڈز</h4>
+                     <div id="sCFdLst"></div>
+                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="adSCFld()">نیا فیلڈ شامل کریں</button>
+                 </div>
+                 <div class="mb-3">
+                    <h4>اساتذہ کے لیے اضافی فیلڈز</h4>
+                     <div id="tCFdLst"></div>
+                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="adTCFld()">نیا فیلڈ شامل کریں</button>
+                </div>
+
+                <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Student Modal -->
+    <div class="modal fade" id="sMd" tabindex="-1" aria-labelledby="sMdLbl" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="sFrm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sMdLbl">طالب علم فارم</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="sId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="sNm" class="form-label">نام <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="sNm" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sFNm" class="form-label">والد کا نام <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="sFNm" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sAg" class="form-label">عمر</label>
+                                <input type="number" class="form-control" id="sAg">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sCls" class="form-label">کلاس <span class="text-danger">*</span></label>
+                                <select class="form-select" id="sCls" required></select>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="sADt" class="form-label">داخلہ تاریخ <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="sADt" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sCnt" class="form-label">رابطہ نمبر</label>
+                                <input type="text" class="form-control" id="sCnt">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="sAdr" class="form-label">پتہ</label>
+                                <textarea class="form-control" id="sAdr" rows="2"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <h5>اضافی معلومات</h5>
+                                <div id="sCFldsCnt"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                        <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Modal -->
+    <div class="modal fade" id="tMd" tabindex="-1" aria-labelledby="tMdLbl" aria-hidden="true">
+         <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="tFrm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tMdLbl">استاد فارم</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="tId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tNm" class="form-label">نام <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="tNm" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tCnt" class="form-label">رابطہ نمبر</label>
+                                <input type="text" class="form-control" id="tCnt">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tJDt" class="form-label">شمولیت کی تاریخ <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="tJDt" required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="tAdr" class="form-label">پتہ</label>
+                                <textarea class="form-control" id="tAdr" rows="2"></textarea>
+                            </div>
+                             <div class="col-12">
+                                <h5>اضافی معلومات</h5>
+                                <div id="tCFldsCnt"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                        <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Class Modal -->
+    <div class="modal fade" id="cMd" tabindex="-1" aria-labelledby="cMdLbl" aria-hidden="true">
+         <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="cFrm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cMdLbl">کلاس فارم</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="cId">
+                        <div class="mb-3">
+                            <label for="cNm" class="form-label">کلاس کا نام <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="cNm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cTch" class="form-label">استاد منتخب کریں</label>
+                            <select class="form-select" id="cTch"></select>
+                        </div>
+                         <div class="mb-3">
+                            <label class="form-label">طلباء منتخب کریں</label>
+                             <div id="cStdLst" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+                                <!-- Student checkboxes will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                        <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!-- Fee Structure Modal -->
+    <div class="modal fade" id="fStrMd" tabindex="-1" aria-labelledby="fStrMdLbl" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="fStrFrm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="fStrMdLbl">فیس اسٹرکچر</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                         <p>ہر کلاس کے لیے ماہانہ فیس مقرر کریں۔</p>
+                         <div id="fStrLst">
+                            <!-- Fee structure inputs will be populated here -->
+                         </div>
+                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                        <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fee Payment Modal -->
+    <div class="modal fade" id="fPyMd" tabindex="-1" aria-labelledby="fPyMdLbl" aria-hidden="true">
+         <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="fPyFrm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="fPyMdLbl">فیس وصولی فارم</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="fPyId">
+                         <div class="mb-3">
+                            <label for="fPyStd" class="form-label">طالب علم <span class="text-danger">*</span></label>
+                            <select class="form-select" id="fPyStd" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fPyMnt" class="form-label">مہینہ/سال <span class="text-danger">*</span></label>
+                            <input type="month" class="form-control" id="fPyMnt" required>
+                        </div>
+                         <div class="mb-3">
+                             <label for="fPyAmtT" class="form-label">کل فیس</label>
+                             <input type="number" class="form-control" id="fPyAmtT" readonly>
+                        </div>
+                         <div class="mb-3">
+                            <label for="fPyAmtR" class="form-label">وصول شدہ رقم <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="fPyAmtR" required>
+                        </div>
+                         <div class="mb-3">
+                             <label for="fPyDt" class="form-label">وصولی کی تاریخ <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="fPyDt" required>
+                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                        <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!-- Salary Payment Modal -->
+    <div class="modal fade" id="slPyMd" tabindex="-1" aria-labelledby="slPyMdLbl" aria-hidden="true">
+         <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="slPyFrm">
+                    <div class="modal-header">
+                         <h5 class="modal-title" id="slPyMdLbl">تنخواہ ادائیگی فارم</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                     </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="slPyId">
+                         <div class="mb-3">
+                            <label for="slPyTch" class="form-label">استاد <span class="text-danger">*</span></label>
+                            <select class="form-select" id="slPyTch" required></select>
+                        </div>
+                         <div class="mb-3">
+                            <label for="slPyMnt" class="form-label">مہینہ/سال <span class="text-danger">*</span></label>
+                            <input type="month" class="form-control" id="slPyMnt" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="slPyAmtT" class="form-label">کل تنخواہ <span class="text-danger">*</span></label>
+                             <input type="number" class="form-control" id="slPyAmtT" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="slPyAmtP" class="form-label">ادا شدہ رقم <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="slPyAmtP" required>
+                         </div>
+                         <div class="mb-3">
+                             <label for="slPyDt" class="form-label">ادائیگی کی تاریخ <span class="text-danger">*</span></label>
+                             <input type="date" class="form-control" id="slPyDt" required>
+                         </div>
+                    </div>
+                    <div class="modal-footer">
+                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                         <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!-- Inventory Modal -->
+    <div class="modal fade" id="iMd" tabindex="-1" aria-labelledby="iMdLbl" aria-hidden="true">
+         <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="iFrm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="iMdLbl">انوینٹری فارم</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="iId">
+                        <div class="mb-3">
+                            <label for="iNm" class="form-label">آئٹم کا نام <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="iNm" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="iDsc" class="form-label">تفصیل</label>
+                            <textarea class="form-control" id="iDsc" rows="2"></textarea>
+                         </div>
+                        <div class="mb-3">
+                            <label for="iQty" class="form-label">مقدار <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="iQty" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="iDt" class="form-label">شامل کرنے کی تاریخ <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="iDt" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                        <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expense/Income Modal -->
+    <div class="modal fade" id="eMd" tabindex="-1" aria-labelledby="eMdLbl" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="eFrm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="eMdLbl">آمدنی/خرچہ فارم</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="eId">
+                        <div class="mb-3">
+                            <label for="eDt" class="form-label">تاریخ <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="eDt" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="eTyp" class="form-label">قسم <span class="text-danger">*</span></label>
+                            <select class="form-select" id="eTyp" required>
+                                <option value="income">آمدنی</option>
+                                <option value="expense">خرچہ</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eDsc" class="form-label">تفصیل <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="eDsc" rows="2" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eAmt" class="form-label">رقم <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="eAmt" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                        <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!-- Restore Modal -->
+     <div class="modal fade" id="rMd" tabindex="-1" aria-labelledby="rMdLbl" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rMdLbl">ڈیٹا بحال کریں</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-danger"><strong>انتباہ:</strong> موجودہ تمام ڈیٹا حذف ہو جائے گا اور بیک اپ فائل سے ڈیٹا بحال کر دیا جائے گا۔</p>
+                    <div class="mb-3">
+                        <label for="rFl" class="form-label">بیک اپ فائل منتخب کریں (.json)</label>
+                        <input class="form-control" type="file" id="rFl" accept=".json">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
+                    <button type="button" class="btn btn-danger" onclick="rstD()">بحال کریں</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 start-0 p-3">
+        <div id="nTst" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                 <strong class="me-auto" id="tHdr">اطلاع</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+             </div>
+            <div class="toast-body" id="tBdy">
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        const dbN = 'mmsDB';
+        const dbV = 10; // Increment version if schema changes
+        let db;
+        let sMd, tMd, cMd, fStrMd, fPyMd, slPyMd, iMd, eMd, rMd, nTst; // Modals & Toast
+        let sCFlds = []; // Student Custom Fields
+        let tCFlds = []; // Teacher Custom Fields
+
+        // --- IndexedDB Initialization ---
+        const r = indexedDB.open(dbN, dbV);
+
+        r.onerror = (e) => console.error("Database error:", e.target.error);
+        r.onsuccess = (e) => {
+            db = e.target.result;
+            console.log("Database opened successfully");
+            initApp(); // Initialize the app after DB is ready
+        };
+        r.onupgradeneeded = (e) => {
+            db = e.target.result;
+            console.log("Upgrading database...");
+            const oS = ['stds', 'tchs', 'clss', 'att', 'fees', 'slrs', 'inv', 'exps', 'stgs'];
+            oS.forEach(s => {
+                if (!db.objectStoreNames.contains(s)) {
+                    const str = db.createObjectStore(s, { keyPath: 'id', autoIncrement: true });
+                    if (s === 'stds') {
+                        str.createIndex('nm', 'nm', { unique: false });
+                        str.createIndex('clsId', 'clsId', { unique: false });
+                    }
+                    if (s === 'tchs') {
+                        str.createIndex('nm', 'nm', { unique: false });
+                    }
+                    if (s === 'clss') {
+                        str.createIndex('nm', 'nm', { unique: true });
+                    }
+                    if (s === 'att') {
+                        str.createIndex('dtClsStd', ['dt', 'clsId', 'stdId'], { unique: true });
+                        str.createIndex('dt', 'dt', { unique: false });
+                        str.createIndex('clsId', 'clsId', { unique: false });
+                    }
+                     if (s === 'fees') {
+                         str.createIndex('stdMnt', ['stdId', 'mnt'], { unique: true });
+                         str.createIndex('clsId', 'clsId', { unique: false });
+                         str.createIndex('mnt', 'mnt', { unique: false });
+                    }
+                     if (s === 'slrs') {
+                         str.createIndex('tchMnt', ['tchId', 'mnt'], { unique: true });
+                         str.createIndex('mnt', 'mnt', { unique: false });
+                    }
+                    if (s === 'exps') {
+                         str.createIndex('dt', 'dt', { unique: false });
+                         str.createIndex('typ', 'typ', { unique: false });
+                    }
+                    if (s === 'stgs') {
+                        // Settings store usually has only one record or key-value pairs
+                        // For simplicity, using autoIncrement and updating record with id=1
+                    }
+                } else {
+                    const tx = e.target.transaction;
+                    const str = tx.objectStore(s);
+                     // Add/update indices if needed for existing stores
+                     if (s === 'att' && !str.indexNames.contains('dtClsStd')) {
+                         str.createIndex('dtClsStd', ['dt', 'clsId', 'stdId'], { unique: true });
+                     }
+                     if (s === 'att' && !str.indexNames.contains('dt')) {
+                         str.createIndex('dt', 'dt', { unique: false });
+                     }
+                     if (s === 'att' && !str.indexNames.contains('clsId')) {
+                        str.createIndex('clsId', 'clsId', { unique: false });
+                     }
+                      if (s === 'fees' && !str.indexNames.contains('stdMnt')) {
+                         str.createIndex('stdMnt', ['stdId', 'mnt'], { unique: true });
+                     }
+                      if (s === 'fees' && !str.indexNames.contains('clsId')) {
+                        str.createIndex('clsId', 'clsId', { unique: false });
+                    }
+                     if (s === 'fees' && !str.indexNames.contains('mnt')) {
+                        str.createIndex('mnt', 'mnt', { unique: false });
+                     }
+                     if (s === 'slrs' && !str.indexNames.contains('tchMnt')) {
+                         str.createIndex('tchMnt', ['tchId', 'mnt'], { unique: true });
+                     }
+                     if (s === 'slrs' && !str.indexNames.contains('mnt')) {
+                        str.createIndex('mnt', 'mnt', { unique: false });
+                     }
+                     if (s === 'exps' && !str.indexNames.contains('dt')) {
+                         str.createIndex('dt', 'dt', { unique: false });
+                     }
+                     if (s === 'exps' && !str.indexNames.contains('typ')) {
+                         str.createIndex('typ', 'typ', { unique: false });
+                     }
+                     if (s === 'stds' && !str.indexNames.contains('clsId')) {
+                         str.createIndex('clsId', 'clsId', { unique: false });
+                     }
+
+                }
+            });
+            console.log("Database upgrade complete.");
+        };
+
+        // --- Helper Functions ---
+        const gE = (id) => document.getElementById(id);
+        const qS = (sel) => document.querySelector(sel);
+        const qSA = (sel) => document.querySelectorAll(sel);
+
+        function shTst(msg, hdr = 'اطلاع', cls = 'bg-success text-white') {
+            const tH = gE('tHdr');
+            const tB = gE('tBdy');
+            tH.textContent = hdr;
+            tB.textContent = msg;
+            nTst.className = `toast ${cls}`; // Reset classes and add new ones
+            const t = new bootstrap.Toast(nTst);
+            t.show();
+        }
+
+        function gOS(sN, m = 'readonly') {
+             if (!db) {
+                 console.error("Database not initialized yet.");
+                 shTst("ڈیٹا بیس تیار نہیں ہے۔", "خرابی", "bg-danger text-white");
+                 return null;
+            }
+             try {
+                const tx = db.transaction(sN, m);
+                 tx.onerror = (e) => console.error(`Transaction Error on ${sN}:`, e.target.error);
+                 return tx.objectStore(sN);
+             } catch (error) {
+                 console.error(`Error getting object store ${sN}:`, error);
+                 shTst(`اسٹور ${sN} تک رسائی میں خرابی۔`, "خرابی", "bg-danger text-white");
+                return null;
+            }
+        }
+
+         async function dbAdd(sN, d) {
+            return new Promise((resolve, reject) => {
+                 const s = gOS(sN, 'readwrite');
+                 if (!s) return reject(`Store ${sN} not found`);
+                 const req = s.add(d);
+                req.onsuccess = (e) => resolve(e.target.result); // Returns the new key
+                 req.onerror = (e) => {
+                     console.error(`Add Error (${sN}):`, e.target.error);
+                     let errMsg = "ڈیٹا شامل کرنے میں خرابی۔";
+                     if (e.target.error.name === 'ConstraintError') {
+                         errMsg = `ڈیٹا پہلے سے موجود ہے (${sN})۔`;
+                    }
+                     shTst(errMsg, "خرابی", "bg-danger text-white");
+                     reject(e.target.error);
+                };
+             });
+        }
+
+        async function dbPut(sN, d) {
+            return new Promise((resolve, reject) => {
+                const s = gOS(sN, 'readwrite');
+                if (!s) return reject(`Store ${sN} not found`);
+                const req = s.put(d); // Add or Update
+                req.onsuccess = (e) => resolve(e.target.result); // Returns the key
+                req.onerror = (e) => {
+                    console.error(`Put Error (${sN}):`, e.target.error);
+                    shTst("ڈیٹا محفوظ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                    reject(e.target.error);
+                };
+            });
+        }
+
+        async function dbDel(sN, k) {
+             return new Promise((resolve, reject) => {
+                 const s = gOS(sN, 'readwrite');
+                 if (!s) return reject(`Store ${sN} not found`);
+                 const req = s.delete(k);
+                 req.onsuccess = () => resolve();
+                 req.onerror = (e) => {
+                    console.error(`Delete Error (${sN}):`, e.target.error);
+                    shTst("ڈیٹا حذف کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                    reject(e.target.error);
+                 };
+             });
+         }
+
+        async function dbGet(sN, k) {
+             return new Promise((resolve, reject) => {
+                 const s = gOS(sN);
+                 if (!s) return reject(`Store ${sN} not found`);
+                 const req = s.get(k);
+                 req.onsuccess = (e) => resolve(e.target.result);
+                 req.onerror = (e) => reject(e.target.error);
+             });
+         }
+
+        async function dbGetAll(sN, idx = null, qry = null) {
+            return new Promise((resolve, reject) => {
+                 const s = gOS(sN);
+                 if (!s) return reject(`Store ${sN} not found`);
+                 let req;
+                 if (idx && qry !== null) {
+                    req = s.index(idx).getAll(qry);
+                 } else {
+                    req = s.getAll();
+                 }
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => {
+                     console.error(`GetAll Error (${sN}, index: ${idx}, query: ${qry}):`, e.target.error);
+                     shTst(`ڈیٹا ${sN} لوڈ کرنے میں خرابی۔`, "خرابی", "bg-danger text-white");
+                     reject(e.target.error);
+                };
+            });
+        }
+
+        async function dbCount(sN) {
+            return new Promise((resolve, reject) => {
+                const s = gOS(sN);
+                if (!s) return reject(`Store ${sN} not found`);
+                const req = s.count();
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+         async function dbClear(sN) {
+            return new Promise((resolve, reject) => {
+                const s = gOS(sN, 'readwrite');
+                 if (!s) return reject(`Store ${sN} not found`);
+                 const req = s.clear();
+                 req.onsuccess = () => resolve();
+                 req.onerror = (e) => reject(e.target.error);
+             });
+         }
+
+
+        // --- App Initialization ---
+        async function initApp() {
+            // Initialize Modals
+            sMd = new bootstrap.Modal(gE('sMd'));
+            tMd = new bootstrap.Modal(gE('tMd'));
+            cMd = new bootstrap.Modal(gE('cMd'));
+            fStrMd = new bootstrap.Modal(gE('fStrMd'));
+            fPyMd = new bootstrap.Modal(gE('fPyMd'));
+            slPyMd = new bootstrap.Modal(gE('slPyMd'));
+            iMd = new bootstrap.Modal(gE('iMd'));
+            eMd = new bootstrap.Modal(gE('eMd'));
+            rMd = new bootstrap.Modal(gE('rMd'));
+            nTst = gE('nTst');
+
+            // Load Settings First
+            await ldStgs();
+
+            // Setup Navigation
+            qSA('.nav-link[data-s]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    shSctn(link.getAttribute('data-s'));
+                    qSA('.nav-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    // Close navbar collapse on mobile after click
+                    const nbCol = gE('nbc');
+                    if (nbCol.classList.contains('show')) {
+                        const toggler = qS('.navbar-toggler');
+                        if (toggler) {
+                             toggler.click();
+                        }
+                    }
+                });
+            });
+
+            // Setup Form Submissions
+            gE('sFrm').addEventListener('submit', svS);
+            gE('tFrm').addEventListener('submit', svT);
+            gE('cFrm').addEventListener('submit', svC);
+            gE('stgFrm').addEventListener('submit', svStgs);
+            gE('fStrFrm').addEventListener('submit', svFStr);
+            gE('fPyFrm').addEventListener('submit', svFPy);
+            gE('slPyFrm').addEventListener('submit', svSlPy);
+             gE('iFrm').addEventListener('submit', svInv);
+             gE('eFrm').addEventListener('submit', svExp);
+
+             // Setup Backup Button
+             gE('bkBtn').addEventListener('click', bkD);
+
+             // Set default dates
+             const today = new Date().toISOString().split('T')[0];
+             gE('aDt').value = today;
+             gE('fPyDt').value = today;
+             gE('slPyDt').value = today;
+             gE('iDt').value = today;
+             gE('eDt').value = today;
+
+             // Initial data load for the default section (Dashboard)
+             shSctn('dsh'); // Show dashboard by default
+         }
+
+         function shSctn(sId) {
+            qSA('.section').forEach(s => s.classList.remove('active-section'));
+            const s = gE(sId);
+             if (s) {
+                s.classList.add('active-section');
+                 // Load data relevant to the section
+                 switch (sId) {
+                     case 'dsh': ldDsh(); break;
+                     case 'stds': ldS(); break;
+                     case 'tchs': ldT(); break;
+                     case 'clss': ldC(); break;
+                     case 'att': ppAttSel(); ldA(); break; // Populate selects before loading
+                     case 'fes': ppFClsSel(); ldFRecs(); break;
+                     case 'slrs': ldSlRecs(); break;
+                     case 'inv': ldInv(); break;
+                     case 'exp': ldExps(); break;
+                     case 'rpts': ppRptSel(); break;
+                     case 'stgs': ldStgsFrm(); break; // Load settings into form
+                 }
+            }
+         }
+
+        // --- Settings ---
+        async function ldStgs() {
+            try {
+                let s = await dbGet('stgs', 1);
+                if (!s) {
+                    // Initialize default settings if none exist
+                    s = { id: 1, nm: 'میرے مدرسہ کا نام', adr: '', phn: '', lgo: null, sCFlds: [], tCFlds: [] };
+                    await dbPut('stgs', s);
+                }
+                gE('aTtl').textContent = s.nm || 'دینی مدرسہ انتظامیہ ایپ';
+                const lgoDiv = gE('sLgo');
+                if (s.lgo) {
+                    lgoDiv.innerHTML = `<img src="${s.lgo}" alt="Logo">`;
+                 } else {
+                    lgoDiv.innerHTML = '';
+                }
+                sCFlds = s.sCFlds || [];
+                tCFlds = s.tCFlds || [];
+             } catch (err) {
+                console.error("Error loading settings:", err);
+                shTst("ترتیبات لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+            }
+        }
+
+        function ldStgsFrm() {
+            dbGet('stgs', 1).then(s => {
+                if (s) {
+                    gE('stgNm').value = s.nm || '';
+                    gE('stgAdr').value = s.adr || '';
+                    gE('stgPhn').value = s.phn || '';
+                    const lgoPrv = gE('cLgoPrv');
+                     if (s.lgo) {
+                        lgoPrv.innerHTML = `<img src="${s.lgo}" alt="Current Logo" style="max-height: 60px; max-width: 150px;"><button type="button" class="btn btn-sm btn-danger ms-2" onclick="rmLgo()">لوگو ہٹائیں</button>`;
+                     } else {
+                        lgoPrv.innerHTML = 'کوئی لوگو منتخب نہیں ہے۔';
+                    }
+                    // Load custom fields
+                    rnCFldUI('s', sCFlds);
+                    rnCFldUI('t', tCFlds);
+                }
+            });
+        }
+
+         function rnCFldUI(typ, flds) {
+             const lstId = typ === 's' ? 'sCFdLst' : 'tCFdLst';
+             const lst = gE(lstId);
+             lst.innerHTML = '';
+             flds.forEach((fld, idx) => {
+                 const div = document.createElement('div');
+                 div.className = 'input-group mb-2';
+                 div.innerHTML = `
+                    <input type="text" class="form-control form-control-sm" value="${fld}" data-idx="${idx}" placeholder="فیلڈ کا نام (اردو)">
+                    <button class="btn btn-sm btn-outline-danger" type="button" onclick="rmCFld('${typ}', ${idx})">حذف کریں</button>
+                `;
+                 lst.appendChild(div);
+             });
+         }
+
+         function adCFld(typ) {
+             const flds = typ === 's' ? sCFlds : tCFlds;
+             flds.push(''); // Add an empty field
+             rnCFldUI(typ, flds);
+         }
+         window.adSCFld = () => adCFld('s'); // Expose globally
+         window.adTCFld = () => adCFld('t'); // Expose globally
+
+
+         function rmCFld(typ, idx) {
+             if (typ === 's') {
+                sCFlds.splice(idx, 1);
+                 rnCFldUI('s', sCFlds);
+             } else {
+                tCFlds.splice(idx, 1);
+                rnCFldUI('t', tCFlds);
+            }
+         }
+         window.rmCFld = rmCFld; // Expose globally
+
+        async function svStgs(e) {
+             e.preventDefault();
+             const nm = gE('stgNm').value;
+             const adr = gE('stgAdr').value;
+             const phn = gE('stgPhn').value;
+             const lgoFl = gE('stgLgo').files[0];
+
+             // Save custom fields
+             const updSC = [];
+             qSA('#sCFdLst input').forEach(inp => { if (inp.value.trim()) updSC.push(inp.value.trim()); });
+             sCFlds = updSC;
+
+             const updTC = [];
+             qSA('#tCFdLst input').forEach(inp => { if (inp.value.trim()) updTC.push(inp.value.trim()); });
+             tCFlds = updTC;
+
+
+             try {
+                 const currentSettings = await dbGet('stgs', 1) || { id: 1 };
+                 let lgoData = currentSettings.lgo; // Keep existing logo by default
+
+                 if (lgoFl) {
+                    lgoData = await rdFlAsB64(lgoFl);
+                 }
+
+                 const s = {
+                    id: 1,
+                    nm: nm,
+                    adr: adr,
+                    phn: phn,
+                    lgo: lgoData,
+                     sCFlds: sCFlds,
+                     tCFlds: tCFlds
+                };
+
+                 await dbPut('stgs', s);
+                 await ldStgs(); // Reload settings to update UI
+                 ldStgsFrm(); // Reload form view
+                 shTst("ترتیبات کامیابی سے محفوظ ہو گئیں۔");
+             } catch (err) {
+                 console.error("Error saving settings:", err);
+                 shTst("ترتیبات محفوظ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+             }
+         }
+
+        async function rmLgo() {
+             try {
+                 const s = await dbGet('stgs', 1);
+                 if (s) {
+                     s.lgo = null;
+                     await dbPut('stgs', s);
+                     await ldStgs();
+                     ldStgsFrm();
+                     shTst("لوگو کامیابی سے ہٹا دیا گیا۔");
+                 }
+             } catch (err) {
+                 console.error("Error removing logo:", err);
+                 shTst("لوگو ہٹانے میں خرابی۔", "خرابی", "bg-danger text-white");
+            }
+        }
+         window.rmLgo = rmLgo; // Expose globally
+
+        function rdFlAsB64(f) {
+             return new Promise((resolve, reject) => {
+                 const rdr = new FileReader();
+                 rdr.onload = () => resolve(rdr.result);
+                 rdr.onerror = error => reject(error);
+                 rdr.readAsDataURL(f);
+             });
+         }
+
+        // --- Student Management ---
+        async function ldS() {
+             try {
+                 const stds = await dbGetAll('stds');
+                 const clss = await dbGetAll('clss');
+                 const clsMap = new Map(clss.map(c => [c.id, c.nm]));
+                 const lst = gE('sLst');
+                 lst.innerHTML = '';
+                 const cTHdr = gE('sCTHdr');
+                 cTHdr.innerHTML = sCFlds.map(f => `<th>${f}</th>`).join(''); // Dynamic headers
+
+                 for (const s of stds) {
+                     const tr = document.createElement('tr');
+                     const cFldTDs = sCFlds.map(fld => `<td>${s.cFlds && s.cFlds[fld] ? s.cFlds[fld] : '-'}</td>`).join('');
+                     tr.innerHTML = `
+                        <td>${s.nm}</td>
+                        <td>${s.fNm}</td>
+                        <td>${s.ag || '-'}</td>
+                        <td>${clsMap.get(s.clsId) || 'N/A'}</td>
+                        <td>${s.aDt ? new Date(s.aDt).toLocaleDateString('ur-PK') : '-'}</td>
+                        <td>${s.cnt || '-'}</td>
+                        <td>${s.adr || '-'}</td>
+                        ${cFldTDs}
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="edS(${s.id})">ترمیم</button>
+                            <button class="btn btn-sm btn-danger" onclick="delS(${s.id})">حذف کریں</button>
+                         </td>
+                    `;
+                    lst.appendChild(tr);
+                }
+            } catch (error) {
+                console.error("Error loading students:", error);
+            }
+         }
+
+        async function shSFrm(id = null) {
+            gE('sFrm').reset();
+            gE('sId').value = '';
+            gE('sMdLbl').textContent = 'نیا طالب علم شامل کریں';
+            await ppClsSel('sCls'); // Populate class dropdown
+
+             // Populate dynamic custom fields
+             const cFldsCnt = gE('sCFldsCnt');
+             cFldsCnt.innerHTML = '';
+             sCFlds.forEach(fld => {
+                 const div = document.createElement('div');
+                 div.className = 'mb-3';
+                 div.innerHTML = `
+                    <label for="sCF_${fld}" class="form-label">${fld}</label>
+                    <input type="text" class="form-control" id="sCF_${fld}" data-fname="${fld}">
+                `;
+                 cFldsCnt.appendChild(div);
+             });
+
+
+             if (id) {
+                 gE('sMdLbl').textContent = 'طالب علم کی معلومات میں ترمیم کریں';
+                 try {
+                     const s = await dbGet('stds', id);
+                     if (s) {
+                         gE('sId').value = s.id;
+                         gE('sNm').value = s.nm;
+                         gE('sFNm').value = s.fNm;
+                         gE('sAg').value = s.ag || '';
+                         gE('sCls').value = s.clsId || '';
+                         gE('sADt').value = s.aDt || '';
+                         gE('sCnt').value = s.cnt || '';
+                         gE('sAdr').value = s.adr || '';
+
+                         // Populate custom fields data
+                         if (s.cFlds) {
+                             sCFlds.forEach(fld => {
+                                 const inp = gE(`sCF_${fld}`);
+                                 if (inp) inp.value = s.cFlds[fld] || '';
+                             });
+                         }
+                    }
+                 } catch (error) {
+                     console.error("Error fetching student for edit:", error);
+                     shTst("طالب علم کا ڈیٹا لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                     return; // Don't show modal if error
+                }
+             } else {
+                 // Set default admission date for new student
+                 gE('sADt').value = new Date().toISOString().split('T')[0];
+            }
+            sMd.show();
+        }
+        window.shSFrm = shSFrm; // Expose globally
+
+         async function svS(e) {
+            e.preventDefault();
+            const id = parseInt(gE('sId').value) || null;
+            const clsIdVal = gE('sCls').value;
+
+             // Custom fields data
+             const cFldsData = {};
+             qSA('#sCFldsCnt input').forEach(inp => {
+                 const fldName = inp.dataset.fname;
+                 if (fldName) {
+                     cFldsData[fldName] = inp.value.trim();
+                 }
+             });
+
+            const sD = {
+                nm: gE('sNm').value.trim(),
+                fNm: gE('sFNm').value.trim(),
+                ag: parseInt(gE('sAg').value) || null,
+                clsId: clsIdVal ? parseInt(clsIdVal) : null,
+                aDt: gE('sADt').value,
+                cnt: gE('sCnt').value.trim(),
+                adr: gE('sAdr').value.trim(),
+                cFlds: cFldsData // Add custom fields object
+            };
+
+            if (!sD.nm || !sD.fNm || !sD.clsId || !sD.aDt) {
+                shTst("براہ کرم تمام لازمی (*) فیلڈز پُر کریں۔", "انتباہ", "bg-warning text-dark");
+                return;
+            }
+
+            try {
+                if (id) {
+                    sD.id = id;
+                    await dbPut('stds', sD);
+                    shTst("طالب علم کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں۔");
+                } else {
+                    await dbAdd('stds', sD);
+                    shTst("نیا طالب علم کامیابی سے شامل ہو گیا۔");
+                }
+                sMd.hide();
+                await ldS(); // Reload student list
+                await ldDsh(); // Update dashboard count
+             } catch (error) {
+                // Error message shown by dbAdd/dbPut
+            }
+        }
+
+        async function edS(id) {
+            await shSFrm(id);
+         }
+         window.edS = edS; // Expose globally
+
+        async function delS(id) {
+             if (confirm("کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟ متعلقہ فیس اور حاضری کا ریکارڈ بھی حذف ہو جائے گا۔")) {
+                 try {
+                     // Optional: Delete related records first (attendance, fees)
+                     const attRecs = await dbGetAll('att', 'stdId', id); // Assuming index on stdId
+                     for (const rec of attRecs) { await dbDel('att', rec.id); }
+
+                     const feeRecs = await dbGetAll('fees', 'stdId', id); // Assuming index on stdId
+                     for (const rec of feeRecs) { await dbDel('fees', rec.id); }
+
+                     await dbDel('stds', id);
+                     shTst("طالب علم کامیابی سے حذف کر دیا گیا۔");
+                     await ldS(); // Reload student list
+                     await ldDsh(); // Update dashboard count
+                } catch (error) {
+                    console.error("Error deleting student:", error);
+                     shTst("طالب علم کو حذف کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                }
+            }
+        }
+         window.delS = delS; // Expose globally
+
+        // --- Teacher Management ---
+        async function ldT() {
+            try {
+                const tchs = await dbGetAll('tchs');
+                const lst = gE('tLst');
+                lst.innerHTML = '';
+                const cTHdr = gE('tCTHdr');
+                cTHdr.innerHTML = tCFlds.map(f => `<th>${f}</th>`).join(''); // Dynamic headers
+
+                for (const t of tchs) {
+                    const tr = document.createElement('tr');
+                    const cFldTDs = tCFlds.map(fld => `<td>${t.cFlds && t.cFlds[fld] ? t.cFlds[fld] : '-'}</td>`).join('');
+                    tr.innerHTML = `
+                        <td>${t.nm}</td>
+                        <td>${t.cnt || '-'}</td>
+                        <td>${t.adr || '-'}</td>
+                        <td>${t.jDt ? new Date(t.jDt).toLocaleDateString('ur-PK') : '-'}</td>
+                         ${cFldTDs}
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="edT(${t.id})">ترمیم</button>
+                            <button class="btn btn-sm btn-danger" onclick="delT(${t.id})">حذف کریں</button>
+                        </td>
+                    `;
+                    lst.appendChild(tr);
+                }
+            } catch (error) {
+                console.error("Error loading teachers:", error);
+            }
+        }
+
+        async function shTFrm(id = null) {
+            gE('tFrm').reset();
+            gE('tId').value = '';
+            gE('tMdLbl').textContent = 'نیا استاد شامل کریں';
+
+            // Populate dynamic custom fields
+             const cFldsCnt = gE('tCFldsCnt');
+             cFldsCnt.innerHTML = '';
+             tCFlds.forEach(fld => {
+                 const div = document.createElement('div');
+                 div.className = 'mb-3';
+                 div.innerHTML = `
+                    <label for="tCF_${fld}" class="form-label">${fld}</label>
+                    <input type="text" class="form-control" id="tCF_${fld}" data-fname="${fld}">
+                `;
+                 cFldsCnt.appendChild(div);
+             });
+
+            if (id) {
+                gE('tMdLbl').textContent = 'استاد کی معلومات میں ترمیم کریں';
+                try {
+                    const t = await dbGet('tchs', id);
+                    if (t) {
+                        gE('tId').value = t.id;
+                        gE('tNm').value = t.nm;
+                        gE('tCnt').value = t.cnt || '';
+                        gE('tAdr').value = t.adr || '';
+                        gE('tJDt').value = t.jDt || '';
+
+                        // Populate custom fields data
+                         if (t.cFlds) {
+                             tCFlds.forEach(fld => {
+                                 const inp = gE(`tCF_${fld}`);
+                                 if (inp) inp.value = t.cFlds[fld] || '';
+                             });
+                         }
+                    }
+                } catch (error) {
+                    console.error("Error fetching teacher for edit:", error);
+                    shTst("استاد کا ڈیٹا لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                    return;
+                 }
+             } else {
+                 // Set default joining date for new teacher
+                 gE('tJDt').value = new Date().toISOString().split('T')[0];
+            }
+            tMd.show();
+        }
+         window.shTFrm = shTFrm; // Expose globally
+
+        async function svT(e) {
+            e.preventDefault();
+            const id = parseInt(gE('tId').value) || null;
+
+            // Custom fields data
+            const cFldsData = {};
+            qSA('#tCFldsCnt input').forEach(inp => {
+                 const fldName = inp.dataset.fname;
+                 if (fldName) {
+                     cFldsData[fldName] = inp.value.trim();
+                 }
+            });
+
+            const tD = {
+                nm: gE('tNm').value.trim(),
+                cnt: gE('tCnt').value.trim(),
+                adr: gE('tAdr').value.trim(),
+                jDt: gE('tJDt').value,
+                cFlds: cFldsData // Add custom fields object
+            };
+
+            if (!tD.nm || !tD.jDt) {
+                shTst("براہ کرم تمام لازمی (*) فیلڈز پُر کریں۔", "انتباہ", "bg-warning text-dark");
+                return;
+            }
+
+            try {
+                if (id) {
+                    tD.id = id;
+                    await dbPut('tchs', tD);
+                    shTst("استاد کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں۔");
+                } else {
+                    await dbAdd('tchs', tD);
+                    shTst("نیا استاد کامیابی سے شامل ہو گیا۔");
+                }
+                tMd.hide();
+                await ldT(); // Reload teacher list
+                await ldDsh(); // Update dashboard count
+                await ldC(); // Reload class list as teacher assignments might change display
+             } catch (error) {
+                // Error message shown by dbAdd/dbPut
+            }
+        }
+
+        async function edT(id) {
+             await shTFrm(id);
+        }
+         window.edT = edT; // Expose globally
+
+        async function delT(id) {
+            if (confirm("کیا آپ واقعی اس استاد کو حذف کرنا چاہتے ہیں؟ متعلقہ کلاس اسائنمنٹس اور تنخواہ کا ریکارڈ بھی متاثر ہو سکتا ہے۔")) {
+                try {
+                    // Optional: Handle related data (e.g., unassign from classes, delete salary records)
+                    const clss = await dbGetAll('clss');
+                    for (const c of clss) {
+                        if (c.tchId === id) {
+                            c.tchId = null; // Unassign teacher
+                            await dbPut('clss', c);
+                         }
+                    }
+                     // Consider deleting salary records for this teacher or warn user
+                     const slryRecs = await dbGetAll('slrs', 'tchId', id); // Assuming index
+                     if (slryRecs.length > 0) {
+                         if (!confirm("اس استاد کے تنخواہ کے ریکارڈ بھی موجود ہیں۔ کیا آپ انہیں بھی حذف کرنا چاہتے ہیں؟")) {
+                            // Optionally stop deletion or proceed only with teacher deletion
+                         } else {
+                             for (const rec of slryRecs) { await dbDel('slrs', rec.id); }
+                         }
+                     }
+
+                    await dbDel('tchs', id);
+                    shTst("استاد کامیابی سے حذف کر دیا گیا۔");
+                    await ldT(); // Reload teacher list
+                    await ldC(); // Reload class list
+                    await ldDsh(); // Update dashboard count
+                 } catch (error) {
+                    console.error("Error deleting teacher:", error);
+                    shTst("استاد کو حذف کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                }
+            }
+        }
+        window.delT = delT; // Expose globally
+
+
+        // --- Class Management ---
+        async function ldC() {
+            try {
+                const clss = await dbGetAll('clss');
+                const tchs = await dbGetAll('tchs');
+                 const stds = await dbGetAll('stds'); // Needed for student count
+                const tchMap = new Map(tchs.map(t => [t.id, t.nm]));
+                const lst = gE('cLst');
+                lst.innerHTML = '';
+
+                for (const c of clss) {
+                     // Count students in this class
+                     const sCount = stds.filter(s => s.clsId === c.id).length;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${c.nm}</td>
+                        <td>${c.tchId ? tchMap.get(c.tchId) || 'N/A' : 'کوئی نہیں'}</td>
+                        <td>${sCount}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="edC(${c.id})">ترمیم/طلباء</button>
+                            <button class="btn btn-sm btn-danger" onclick="delC(${c.id})">حذف کریں</button>
+                        </td>
+                    `;
+                    lst.appendChild(tr);
+                 }
+             } catch (error) {
+                 console.error("Error loading classes:", error);
+            }
+        }
+
+        async function shCFrm(id = null) {
+            gE('cFrm').reset();
+            gE('cId').value = '';
+            gE('cMdLbl').textContent = 'نئی کلاس بنائیں';
+            await ppTchSel('cTch'); // Populate teacher dropdown
+            await ppStdChk('cStdLst'); // Populate student checkboxes
+
+            if (id) {
+                gE('cMdLbl').textContent = 'کلاس میں ترمیم کریں';
+                try {
+                    const c = await dbGet('clss', id);
+                    if (c) {
+                        gE('cId').value = c.id;
+                        gE('cNm').value = c.nm;
+                        gE('cTch').value = c.tchId || '';
+
+                        // Check students belonging to this class
+                        const stdsInCls = await dbGetAll('stds', 'clsId', id);
+                        const stdIds = new Set(stdsInCls.map(s => s.id));
+                         qSA('#cStdLst input[type="checkbox"]').forEach(chk => {
+                            const stdId = parseInt(chk.value);
+                            chk.checked = stdIds.has(stdId);
+                        });
+                     }
+                 } catch (error) {
+                    console.error("Error fetching class for edit:", error);
+                    shTst("کلاس کا ڈیٹا لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                    return;
+                }
+             }
+             cMd.show();
+        }
+        window.shCFrm = shCFrm; // Expose globally
+
+        async function svC(e) {
+            e.preventDefault();
+            const id = parseInt(gE('cId').value) || null;
+            const tchIdVal = gE('cTch').value;
+             const selStdIds = new Set();
+             qSA('#cStdLst input[type="checkbox"]:checked').forEach(chk => {
+                 selStdIds.add(parseInt(chk.value));
+            });
+
+            const cD = {
+                nm: gE('cNm').value.trim(),
+                tchId: tchIdVal ? parseInt(tchIdVal) : null
+            };
+
+            if (!cD.nm) {
+                shTst("براہ کرم کلاس کا نام درج کریں۔", "انتباہ", "bg-warning text-dark");
+                return;
+            }
+
+            try {
+                let clsId;
+                if (id) {
+                    cD.id = id;
+                    clsId = await dbPut('clss', cD);
+                    shTst("کلاس کامیابی سے اپ ڈیٹ ہو گئی۔");
+                 } else {
+                    clsId = await dbAdd('clss', cD);
+                    shTst("نئی کلاس کامیابی سے بنائی گئی۔");
+                }
+
+                 // Update student records - Assign/Unassign Class
+                 const allStds = await dbGetAll('stds');
+                 const updatePromises = [];
+
+                 for (const std of allStds) {
+                     const stdShouldBeInClass = selStdIds.has(std.id);
+                     const stdIsInClass = std.clsId === clsId;
+                     const stdWasInDifferentClass = std.clsId !== null && std.clsId !== clsId;
+
+                     if (stdShouldBeInClass && !stdIsInClass) {
+                         // Assign student to this class
+                         std.clsId = clsId;
+                         updatePromises.push(dbPut('stds', std));
+                     } else if (!stdShouldBeInClass && stdIsInClass) {
+                         // Unassign student from this class
+                         std.clsId = null; // Or assign to a default 'Unassigned' class if needed
+                         updatePromises.push(dbPut('stds', std));
+                     }
+                 }
+
+                 await Promise.all(updatePromises);
+
+
+                 cMd.hide();
+                 await ldC(); // Reload class list
+                 await ldS(); // Reload student list as class assignments changed
+                 await ldDsh(); // Update dashboard count
+             } catch (error) {
+                 if (error.name === 'ConstraintError') {
+                    shTst("اس نام کی کلاس پہلے سے موجود ہے۔", "خرابی", "bg-danger text-white");
+                }
+                // Other errors handled by dbAdd/dbPut
+            }
+        }
+
+        async function edC(id) {
+             await shCFrm(id);
+        }
+         window.edC = edC; // Expose globally
+
+        async function delC(id) {
+            if (confirm("کیا آپ واقعی اس کلاس کو حذف کرنا چاہتے ہیں؟ اس کلاس کے تمام طلباء کو 'غیر تفویض شدہ' کر دیا جائے گا اور متعلقہ حاضری اور فیس کا ریکارڈ بھی حذف ہو جائے گا۔")) {
+                try {
+                     // Unassign students from this class
+                    const stdsInCls = await dbGetAll('stds', 'clsId', id);
+                     for (const std of stdsInCls) {
+                         std.clsId = null; // Unassign
+                         await dbPut('stds', std);
+                     }
+
+                    // Delete related attendance records
+                    const attRecs = await dbGetAll('att', 'clsId', id);
+                     for (const rec of attRecs) { await dbDel('att', rec.id); }
+
+                    // Delete related fee records (consider implications)
+                     const feeRecs = await dbGetAll('fees', 'clsId', id);
+                     for (const rec of feeRecs) { await dbDel('fees', rec.id); }
+
+                     await dbDel('clss', id);
+                     shTst("کلاس کامیابی سے حذف کر دی گئی۔");
+                     await ldC(); // Reload class list
+                     await ldS(); // Reload student list
+                     await ldDsh(); // Update dashboard count
+                 } catch (error) {
+                    console.error("Error deleting class:", error);
+                     shTst("کلاس کو حذف کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                 }
+            }
+        }
+        window.delC = delC; // Expose globally
+
+
+         // --- Populate Selects ---
+         async function ppClsSel(selId, addAllOpt = false) {
+             const sel = gE(selId);
+             sel.innerHTML = addAllOpt ? '<option value="">تمام کلاسیں</option>' : ''; // Clear existing options, add 'All' if needed
+             try {
+                 const clss = await dbGetAll('clss');
+                 clss.sort((a, b) => a.nm.localeCompare(b.nm, 'ur')); // Sort classes alphabetically
+                 clss.forEach(c => {
+                     const opt = document.createElement('option');
+                     opt.value = c.id;
+                     opt.textContent = c.nm;
+                     sel.appendChild(opt);
+                 });
+             } catch (error) {
+                 console.error(`Error populating class select ${selId}:`, error);
+            }
+         }
+
+        async function ppTchSel(selId) {
+            const sel = gE(selId);
+            sel.innerHTML = '<option value="">کوئی استاد منتخب نہیں</option>'; // Clear existing options
+            try {
+                const tchs = await dbGetAll('tchs');
+                tchs.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                 tchs.forEach(t => {
+                     const opt = document.createElement('option');
+                     opt.value = t.id;
+                     opt.textContent = t.nm;
+                     sel.appendChild(opt);
+                });
+            } catch (error) {
+                console.error("Error populating teacher select:", error);
+            }
+        }
+
+        async function ppStdSel(selId, clsId = null) {
+             const sel = gE(selId);
+             sel.innerHTML = '<option value="">طالب علم منتخب کریں</option>'; // Clear existing options
+             try {
+                 let stds;
+                 if (clsId) {
+                     stds = await dbGetAll('stds', 'clsId', parseInt(clsId));
+                 } else {
+                     stds = await dbGetAll('stds');
+                 }
+                 stds.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                 stds.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = s.nm;
+                    sel.appendChild(opt);
+                 });
+             } catch (error) {
+                console.error("Error populating student select:", error);
+            }
+         }
+
+         async function ppStdChk(cntId) {
+             const cnt = gE(cntId);
+             cnt.innerHTML = ''; // Clear existing checkboxes
+             try {
+                 const stds = await dbGetAll('stds');
+                 // Optional: Filter out students already assigned to *another* class if needed?
+                 // For now, show all students.
+                 stds.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                 if (stds.length === 0) {
+                     cnt.innerHTML = '<p>کوئی طالب علم موجود نہیں۔</p>';
+                     return;
+                 }
+                 stds.forEach(s => {
+                     const div = document.createElement('div');
+                     div.className = 'form-check';
+                     div.innerHTML = `
+                        <input class="form-check-input" type="checkbox" value="${s.id}" id="stdChk_${s.id}">
+                        <label class="form-check-label" for="stdChk_${s.id}">
+                            ${s.nm}
+                        </label>
+                    `;
+                     cnt.appendChild(div);
+                 });
+             } catch (error) {
+                 console.error("Error populating student checkboxes:", error);
+                 cnt.innerHTML = '<p>طلباء کو لوڈ کرنے میں خرابی۔</p>';
+            }
+        }
+
+        // --- Attendance ---
+        async function ppAttSel() {
+             await ppClsSel('aCls');
+        }
+
+        async function ldA() {
+             const dt = gE('aDt').value;
+             const clsId = parseInt(gE('aCls').value);
+             const lst = gE('aLst');
+             lst.innerHTML = ''; // Clear previous list
+
+             if (!dt || !clsId) {
+                 lst.innerHTML = '<tr><td colspan="4">براہ کرم تاریخ اور کلاس منتخب کریں۔</td></tr>';
+                 return;
+            }
+
+             try {
+                // Get students of the selected class
+                 const stds = await dbGetAll('stds', 'clsId', clsId);
+                 if (stds.length === 0) {
+                    lst.innerHTML = '<tr><td colspan="4">اس کلاس میں کوئی طالب علم نہیں۔</td></tr>';
+                    return;
+                 }
+
+                 // Get existing attendance records for this date and class
+                 const attRecs = await dbGetAll('att', 'dt', dt);
+                 const attMap = new Map();
+                 attRecs.filter(r => r.clsId === clsId).forEach(r => {
+                     attMap.set(r.stdId, r.st); // st = status ('P' or 'A')
+                 });
+
+                 stds.sort((a, b) => a.nm.localeCompare(b.nm, 'ur')).forEach((s, index) => {
+                     const st = attMap.get(s.id);
+                     const isP = st === 'P';
+                     const isA = st === 'A';
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${s.nm}</td>
+                        <td><input class="form-check-input" type="checkbox" value="P" data-sid="${s.id}" ${isP ? 'checked' : ''} onchange="hAttChk(this)"></td>
+                        <td><input class="form-check-input" type="checkbox" value="A" data-sid="${s.id}" ${isA ? 'checked' : ''} onchange="hAttChk(this)"></td>
+                    `;
+                     lst.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error("Error loading attendance:", error);
+                lst.innerHTML = '<tr><td colspan="4">حاضری لوڈ کرنے میں خرابی۔</td></tr>';
+            }
+        }
+        window.ldA = ldA; // Expose globally
+
+         function hAttChk(chk) {
+             const sid = chk.dataset.sid;
+             const val = chk.value; // 'P' or 'A'
+             const row = chk.closest('tr');
+             const otherChk = val === 'P' ? row.querySelector('input[value="A"]') : row.querySelector('input[value="P"]');
+
+             if (chk.checked) {
+                 otherChk.checked = false; // Uncheck the other status
+             }
+         }
+         window.hAttChk = hAttChk; // Expose globally
+
+
+         async function svA() {
+             const dt = gE('aDt').value;
+             const clsId = parseInt(gE('aCls').value);
+             const chks = qSA('#aLst input[type="checkbox"]:checked');
+
+             if (!dt || !clsId) {
+                 shTst("براہ کرم تاریخ اور کلاس منتخب کریں۔", "انتباہ", "bg-warning text-dark");
+                 return;
+            }
+
+             const attData = new Map(); // stdId -> status ('P' or 'A')
+             chks.forEach(chk => {
+                 attData.set(parseInt(chk.dataset.sid), chk.value);
+             });
+
+             // Get all students in the class to ensure records are created/updated even if unchecked (marked absent implicitly if not 'P')
+             const stds = await dbGetAll('stds', 'clsId', clsId);
+             if(stds.length === 0) {
+                 shTst("اس کلاس میں کوئی طالب علم نہیں، حاضری محفوظ نہیں کی جا سکتی۔", "انتباہ", "bg-warning text-dark");
+                 return;
+             }
+
+             try {
+                 const tx = db.transaction('att', 'readwrite');
+                 const store = tx.objectStore('att');
+                 const promises = [];
+
+                 // Get existing records for the day and class to update/delete
+                 const idx = store.index('dtClsStd');
+                 const range = IDBKeyRange.bound([dt, clsId, 0], [dt, clsId, Infinity]); // Range for date and class
+                 const cur = idx.openCursor(range);
+
+                 const existingKeys = new Set();
+                 await new Promise((resolve, reject) => {
+                     cur.onsuccess = (e) => {
+                         const cursor = e.target.result;
+                         if(cursor) {
+                             existingKeys.add(cursor.value.stdId); // Track existing student records for the day/class
+                             // If student still exists and status needs update OR student is no longer in the map (unchecked)
+                             if (stds.some(s => s.id === cursor.value.stdId)) {
+                                 const newStatus = attData.get(cursor.value.stdId);
+                                 if (newStatus && newStatus !== cursor.value.st) {
+                                     const updatedRecord = { ...cursor.value, st: newStatus };
+                                     promises.push(new Promise((res, rej) => {
+                                         const req = cursor.update(updatedRecord);
+                                         req.onsuccess = res;
+                                         req.onerror = rej;
+                                     }));
+                                 } else if (!newStatus) { // If student was marked but now unchecked (implying absent)
+                                     const updatedRecord = { ...cursor.value, st: 'A' }; // Or delete if absent means no record? Let's mark 'A'
+                                     promises.push(new Promise((res, rej) => {
+                                         const req = cursor.update(updatedRecord);
+                                         req.onsuccess = res;
+                                         req.onerror = rej;
+                                     }));
+                                 }
+                             } else {
+                                 // Student might have been removed from class, delete their old attendance? Or keep? Let's keep for history.
+                                 // If deletion is required: promises.push(new Promise((res, rej) => { cursor.delete().onsuccess = res; ... }));
+                             }
+                             cursor.continue();
+                         } else {
+                             resolve(); // Cursor finished
+                         }
+                     };
+                     cur.onerror = (e) => reject(e.target.error);
+                 });
+
+                 // Add new records for students who didn't have one
+                 for (const std of stds) {
+                     if (!existingKeys.has(std.id)) {
+                         const status = attData.get(std.id) || 'A'; // Default to Absent if not checked Present
+                         const newRecord = { dt: dt, clsId: clsId, stdId: std.id, st: status };
+                         promises.push(dbAdd('att', newRecord).catch(e => { /* Ignore constraint errors if added concurrently */ }));
+                     }
+                 }
+
+
+                 await Promise.all(promises);
+                 await tx.complete; // Ensure transaction completes
+
+                 shTst("حاضری کامیابی سے محفوظ ہو گئی۔");
+                 await ldDsh(); // Update dashboard
+             } catch (error) {
+                 console.error("Error saving attendance:", error);
+                 shTst("حاضری محفوظ کرنے میں خرابی۔ ConstraintError کا مطلب ہو سکتا ہے کہ ڈیٹا پہلے سے موجود ہے۔", "خرابی", "bg-danger text-white");
+            }
+        }
+        window.svA = svA; // Expose globally
+
+        // --- Fee Management ---
+        async function shFeStrFrm() {
+             const lst = gE('fStrLst');
+             lst.innerHTML = '';
+             try {
+                 const clss = await dbGetAll('clss');
+                 const stgs = await dbGet('stgs', 1) || {};
+                 const fStr = stgs.fStr || {}; // { classId: amount }
+
+                 if (clss.length === 0) {
+                     lst.innerHTML = '<p>فیس اسٹرکچر سیٹ کرنے کے لیے پہلے کلاسیں بنائیں۔</p>';
+                 } else {
+                     clss.sort((a, b) => a.nm.localeCompare(b.nm, 'ur')).forEach(c => {
+                        const div = document.createElement('div');
+                        div.className = 'input-group mb-2';
+                        div.innerHTML = `
+                            <span class="input-group-text" style="width: 150px;">${c.nm}</span>
+                            <input type="number" class="form-control" placeholder="ماہانہ فیس" data-cid="${c.id}" value="${fStr[c.id] || ''}">
+                         `;
+                        lst.appendChild(div);
+                    });
+                 }
+                 fStrMd.show();
+             } catch (error) {
+                 console.error("Error loading fee structure form:", error);
+                 shTst("فیس اسٹرکچر فارم لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+            }
+         }
+         window.shFeStrFrm = shFeStrFrm; // Expose globally
+
+         async function svFStr(e) {
+             e.preventDefault();
+             const fStrData = {};
+             qSA('#fStrLst input').forEach(inp => {
+                 const cid = inp.dataset.cid;
+                 const amt = parseInt(inp.value);
+                 if (cid && amt > 0) {
+                     fStrData[cid] = amt;
+                 }
+             });
+
+             try {
+                 const s = await dbGet('stgs', 1) || { id: 1 };
+                 s.fStr = fStrData;
+                 await dbPut('stgs', s);
+                 fStrMd.hide();
+                 shTst("فیس اسٹرکچر کامیابی سے محفوظ ہو گیا۔");
+             } catch (error) {
+                 console.error("Error saving fee structure:", error);
+                 shTst("فیس اسٹرکچر محفوظ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+            }
+         }
+
+         async function shFePyFrm(id = null) {
+             gE('fPyFrm').reset();
+             gE('fPyId').value = '';
+             gE('fPyMdLbl').textContent = 'نئی فیس وصولی';
+             gE('fPyDt').value = new Date().toISOString().split('T')[0]; // Default date
+             gE('fPyAmtT').value = ''; // Clear total fee amount
+
+             await ppStdSel('fPyStd'); // Populate all students initially
+
+             // Add listener to fetch fee amount when student/month changes
+             gE('fPyStd').onchange = updTFee;
+             gE('fPyMnt').onchange = updTFee;
+
+
+             if (id) {
+                 gE('fPyMdLbl').textContent = 'فیس وصولی میں ترمیم کریں';
+                 try {
+                     const rec = await dbGet('fees', id);
+                     if (rec) {
+                         gE('fPyId').value = rec.id;
+                         gE('fPyStd').value = rec.stdId;
+                         gE('fPyMnt').value = rec.mnt;
+                         gE('fPyAmtR').value = rec.amtR;
+                         gE('fPyDt').value = rec.pDt;
+                         await updTFee(); // Update total fee display
+                    }
+                 } catch (error) {
+                    console.error("Error fetching fee record for edit:", error);
+                    shTst("فیس ریکارڈ لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                    return;
+                }
+            }
+            fPyMd.show();
+        }
+        window.shFePyFrm = shFePyFrm; // Expose globally
+
+        async function updTFee() {
+            const stdId = parseInt(gE('fPyStd').value);
+            const mnt = gE('fPyMnt').value; // YYYY-MM
+            const amtTInp = gE('fPyAmtT');
+            amtTInp.value = ''; // Clear previous
+
+            if (!stdId || !mnt) return;
+
+             try {
+                 const std = await dbGet('stds', stdId);
+                 if (!std || !std.clsId) return; // Student not found or not assigned to a class
+
+                 const stgs = await dbGet('stgs', 1);
+                 const fStr = stgs?.fStr || {};
+                 const clsFee = fStr[std.clsId];
+
+                 if (clsFee) {
+                     amtTInp.value = clsFee;
+                 } else {
+                     amtTInp.value = '0'; // Or indicate structure not set
+                     shTst("اس طالب علم کی کلاس کے لیے فیس اسٹرکچر مقرر نہیں ہے۔", "انتباہ", "bg-warning text-dark");
+                 }
+             } catch (error) {
+                console.error("Error fetching total fee:", error);
+            }
+        }
+
+
+        async function svFPy(e) {
+            e.preventDefault();
+            const id = parseInt(gE('fPyId').value) || null;
+            const stdId = parseInt(gE('fPyStd').value);
+            const mnt = gE('fPyMnt').value;
+            const amtR = parseInt(gE('fPyAmtR').value);
+            const pDt = gE('fPyDt').value;
+
+            if (!stdId || !mnt || isNaN(amtR) || !pDt) {
+                shTst("براہ کرم تمام لازمی (*) فیلڈز درست طریقے سے پُر کریں۔", "انتباہ", "bg-warning text-dark");
+                return;
+            }
+
+            try {
+                 // Fetch student and class info to store along with fee record for easier reporting
+                 const std = await dbGet('stds', stdId);
+                 if (!std) {
+                     shTst("منتخب طالب علم نہیں ملا۔", "خرابی", "bg-danger text-white");
+                     return;
+                 }
+                 const clsId = std.clsId; // Get class ID from student record
+
+                 // Fetch total fee for the class
+                 const stgs = await dbGet('stgs', 1);
+                 const fStr = stgs?.fStr || {};
+                 const amtT = fStr[clsId] || 0; // Total fee for the class
+
+                 const feeData = {
+                    stdId: stdId,
+                    clsId: clsId, // Store class ID
+                    mnt: mnt,
+                    amtT: amtT,
+                    amtR: amtR,
+                    pDt: pDt
+                 };
+
+                 if (id) {
+                    feeData.id = id;
+                     await dbPut('fees', feeData);
+                     shTst("فیس ریکارڈ کامیابی سے اپ ڈیٹ ہو گیا۔");
+                 } else {
+                     // Check if record for this student & month already exists before adding
+                     const existing = await dbGetAll('fees', 'stdMnt', [stdId, mnt]);
+                     if(existing.length > 0) {
+                         // Record exists, update it instead of adding a new one?
+                         // Or show error? Let's show an error/ask for confirmation.
+                         shTst("اس طالب علم کے لیے اس مہینے کا فیس ریکارڈ پہلے سے موجود ہے۔ ترمیم کرنے کے لیے فہرست سے منتخب کریں۔", "انتباہ", "bg-warning text-dark");
+                         return; // Prevent adding duplicate
+                         // Alternatively, update: feeData.id = existing[0].id; await dbPut('fees', feeData);
+                     } else {
+                         await dbAdd('fees', feeData);
+                         shTst("فیس وصولی کامیابی سے محفوظ ہو گئی۔");
+                     }
+                 }
+                 fPyMd.hide();
+                 await ldFRecs(); // Reload fee records list
+             } catch (error) {
+                 console.error("Error saving fee payment:", error);
+                 if (error.name === 'ConstraintError') {
+                    shTst("اس طالب علم کے لیے اس مہینے کا فیس ریکارڈ پہلے سے موجود ہے۔", "خرابی", "bg-danger text-white");
+                 } else {
+                     shTst("فیس وصولی محفوظ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                }
+            }
+        }
+
+        async function ppFClsSel() {
+             await ppClsSel('fFltrCls', true); // Add 'All Classes' option
+        }
+
+        async function ldFRecs() {
+            const lst = gE('fLst');
+            lst.innerHTML = '<tr><td colspan="9">لوڈ ہو رہا ہے...</td></tr>';
+             const fltrCls = gE('fFltrCls').value;
+             const fltrMnt = gE('fFltrMnth').value; // YYYY-MM
+
+            try {
+                let fees = await dbGetAll('fees');
+                 const stds = await dbGetAll('stds');
+                 const clss = await dbGetAll('clss');
+                 const stdMap = new Map(stds.map(s => [s.id, s.nm]));
+                 const clsMap = new Map(clss.map(c => [c.id, c.nm]));
+
+
+                 // Apply filters
+                 if (fltrCls) {
+                     fees = fees.filter(f => f.clsId === parseInt(fltrCls));
+                 }
+                 if (fltrMnt) {
+                     fees = fees.filter(f => f.mnt === fltrMnt);
+                 }
+
+                lst.innerHTML = ''; // Clear loading message
+
+                 if (fees.length === 0) {
+                    lst.innerHTML = '<tr><td colspan="9">کوئی فیس ریکارڈ نہیں ملا۔</td></tr>';
+                    return;
+                 }
+
+                 fees.sort((a, b) => (b.mnt + stdMap.get(b.stdId)).localeCompare(a.mnt + stdMap.get(a.stdId))); // Sort by month desc, then student name
+
+                 fees.forEach(f => {
+                     const bal = (f.amtT || 0) - (f.amtR || 0);
+                     const sts = bal <= 0 ? '<span class="badge bg-success">ادا شدہ</span>' : `<span class="badge bg-danger">بقایا (${bal})</span>`;
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `
+                        <td>${stdMap.get(f.stdId) || 'N/A'}</td>
+                        <td>${clsMap.get(f.clsId) || 'N/A'}</td>
+                        <td>${f.mnt}</td>
+                        <td>${f.amtT || 0}</td>
+                        <td>${f.amtR || 0}</td>
+                        <td>${bal > 0 ? bal : 0}</td>
+                        <td>${sts}</td>
+                        <td>${f.pDt ? new Date(f.pDt).toLocaleDateString('ur-PK') : '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="edFPy(${f.id})">ترمیم</button>
+                            <button class="btn btn-sm btn-danger" onclick="delFPy(${f.id})">حذف کریں</button>
+                        </td>
+                    `;
+                    lst.appendChild(tr);
+                 });
+
+             } catch (error) {
+                 console.error("Error loading fee records:", error);
+                 lst.innerHTML = '<tr><td colspan="9">فیس ریکارڈ لوڈ کرنے میں خرابی۔</td></tr>';
+            }
+        }
+        window.ldFRecs = ldFRecs; // Expose globally
+
+         async function edFPy(id) {
+            await shFePyFrm(id);
+        }
+        window.edFPy = edFPy; // Expose globally
+
+        async function delFPy(id) {
+            if (confirm("کیا آپ واقعی اس فیس ریکارڈ کو حذف کرنا چاہتے ہیں؟")) {
+                try {
+                    await dbDel('fees', id);
+                    shTst("فیس ریکارڈ کامیابی سے حذف کر دیا گیا۔");
+                    await ldFRecs(); // Reload list
+                } catch (error) {
+                    console.error("Error deleting fee record:", error);
+                    shTst("فیس ریکارڈ حذف کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                }
+            }
+        }
+        window.delFPy = delFPy; // Expose globally
+
+         // --- Salary Management ---
+         async function shSlPyFrm(id = null) {
+             gE('slPyFrm').reset();
+             gE('slPyId').value = '';
+             gE('slPyMdLbl').textContent = 'نئی تنخواہ ادائیگی';
+             gE('slPyDt').value = new Date().toISOString().split('T')[0]; // Default date
+
+             await ppTchSel('slPyTch'); // Populate teacher select
+
+             if (id) {
+                 gE('slPyMdLbl').textContent = 'تنخواہ ریکارڈ میں ترمیم کریں';
+                 try {
+                     const rec = await dbGet('slrs', id);
+                     if (rec) {
+                         gE('slPyId').value = rec.id;
+                         gE('slPyTch').value = rec.tchId;
+                         gE('slPyMnt').value = rec.mnt;
+                         gE('slPyAmtT').value = rec.amtT;
+                         gE('slPyAmtP').value = rec.amtP;
+                         gE('slPyDt').value = rec.pDt;
+                     }
+                 } catch (error) {
+                     console.error("Error fetching salary record for edit:", error);
+                     shTst("تنخواہ ریکارڈ لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                    return;
+                 }
+             }
+             slPyMd.show();
+         }
+         window.shSlPyFrm = shSlPyFrm; // Expose globally
+
+         async function svSlPy(e) {
+             e.preventDefault();
+             const id = parseInt(gE('slPyId').value) || null;
+             const tchId = parseInt(gE('slPyTch').value);
+             const mnt = gE('slPyMnt').value;
+             const amtT = parseInt(gE('slPyAmtT').value); // Total salary defined here
+             const amtP = parseInt(gE('slPyAmtP').value); // Amount paid
+             const pDt = gE('slPyDt').value;
+
+             if (!tchId || !mnt || isNaN(amtT) || isNaN(amtP) || !pDt) {
+                 shTst("براہ کرم تمام لازمی (*) فیلڈز درست طریقے سے پُر کریں۔", "انتباہ", "bg-warning text-dark");
+                 return;
+             }
+
+             try {
+                 const slryData = {
+                    tchId: tchId,
+                    mnt: mnt,
+                    amtT: amtT,
+                    amtP: amtP,
+                    pDt: pDt
+                 };
+
+                 if (id) {
+                     slryData.id = id;
+                     await dbPut('slrs', slryData);
+                     shTst("تنخواہ ریکارڈ کامیابی سے اپ ڈیٹ ہو گیا۔");
+                 } else {
+                     // Check if record for this teacher & month already exists
+                     const existing = await dbGetAll('slrs', 'tchMnt', [tchId, mnt]);
+                     if (existing.length > 0) {
+                         shTst("اس استاد کے لیے اس مہینے کا تنخواہ ریکارڈ پہلے سے موجود ہے۔ ترمیم کرنے کے لیے فہرست سے منتخب کریں۔", "انتباہ", "bg-warning text-dark");
+                         return; // Prevent adding duplicate
+                     } else {
+                         await dbAdd('slrs', slryData);
+                         shTst("تنخواہ ادائیگی کامیابی سے محفوظ ہو گئی۔");
+                     }
+                 }
+                 slPyMd.hide();
+                 await ldSlRecs(); // Reload salary records list
+             } catch (error) {
+                 console.error("Error saving salary payment:", error);
+                 if (error.name === 'ConstraintError') {
+                     shTst("اس استاد کے لیے اس مہینے کا تنخواہ ریکارڈ پہلے سے موجود ہے۔", "خرابی", "bg-danger text-white");
+                 } else {
+                     shTst("تنخواہ ادائیگی محفوظ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                }
+            }
+         }
+
+         async function ldSlRecs() {
+             const lst = gE('slLst');
+             lst.innerHTML = '<tr><td colspan="7">لوڈ ہو رہا ہے...</td></tr>';
+             const fltrMnt = gE('slFltrMnth').value; // YYYY-MM
+
+             try {
+                 let slrs = await dbGetAll('slrs');
+                 const tchs = await dbGetAll('tchs');
+                 const tchMap = new Map(tchs.map(t => [t.id, t.nm]));
+
+                 // Apply filters
+                 if (fltrMnt) {
+                     slrs = slrs.filter(s => s.mnt === fltrMnt);
+                 }
+
+                 lst.innerHTML = ''; // Clear loading message
+
+                 if (slrs.length === 0) {
+                     lst.innerHTML = '<tr><td colspan="7">کوئی تنخواہ ریکارڈ نہیں ملا۔</td></tr>';
+                     return;
+                 }
+
+                 slrs.sort((a, b) => (b.mnt + tchMap.get(b.tchId)).localeCompare(a.mnt + tchMap.get(a.tchId))); // Sort by month desc, then teacher name
+
+                 slrs.forEach(s => {
+                     const bal = (s.amtT || 0) - (s.amtP || 0);
+                     const sts = bal <= 0 ? '<span class="badge bg-success">ادا شدہ</span>' : `<span class="badge bg-danger">بقایا (${bal})</span>`;
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `
+                        <td>${tchMap.get(s.tchId) || 'N/A'}</td>
+                        <td>${s.mnt}</td>
+                        <td>${s.amtT || 0}</td>
+                        <td>${s.amtP || 0}</td>
+                        <td>${s.pDt ? new Date(s.pDt).toLocaleDateString('ur-PK') : '-'}</td>
+                        <td>${sts}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="edSlPy(${s.id})">ترمیم</button>
+                            <button class="btn btn-sm btn-danger" onclick="delSlPy(${s.id})">حذف کریں</button>
+                        </td>
+                    `;
+                     lst.appendChild(tr);
+                 });
+
+             } catch (error) {
+                 console.error("Error loading salary records:", error);
+                 lst.innerHTML = '<tr><td colspan="7">تنخواہ ریکارڈ لوڈ کرنے میں خرابی۔</td></tr>';
+            }
+         }
+         window.ldSlRecs = ldSlRecs; // Expose globally
+
+         async function edSlPy(id) {
+             await shSlPyFrm(id);
+         }
+         window.edSlPy = edSlPy; // Expose globally
+
+         async function delSlPy(id) {
+             if (confirm("کیا آپ واقعی اس تنخواہ ریکارڈ کو حذف کرنا چاہتے ہیں؟")) {
+                 try {
+                     await dbDel('slrs', id);
+                     shTst("تنخواہ ریکارڈ کامیابی سے حذف کر دیا گیا۔");
+                     await ldSlRecs(); // Reload list
+                 } catch (error) {
+                     console.error("Error deleting salary record:", error);
+                     shTst("تنخواہ ریکارڈ حذف کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                 }
+             }
+         }
+         window.delSlPy = delSlPy; // Expose globally
+
+
+        // --- Inventory Management ---
+        async function ldInv() {
+            const lst = gE('iLst');
+            lst.innerHTML = '<tr><td colspan="5">لوڈ ہو رہا ہے...</td></tr>';
+            try {
+                const invs = await dbGetAll('inv');
+                lst.innerHTML = '';
+                if (invs.length === 0) {
+                    lst.innerHTML = '<tr><td colspan="5">انوینٹری میں کوئی آئٹم موجود نہیں۔</td></tr>';
+                    return;
+                }
+                invs.sort((a, b) => new Date(b.dt) - new Date(a.dt)); // Sort by date added desc
+                invs.forEach(i => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${i.nm}</td>
+                        <td>${i.dsc || '-'}</td>
+                        <td>${i.qty}</td>
+                        <td>${i.dt ? new Date(i.dt).toLocaleDateString('ur-PK') : '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="edInv(${i.id})">ترمیم</button>
+                            <button class="btn btn-sm btn-danger" onclick="delInv(${i.id})">حذف کریں</button>
+                        </td>
+                    `;
+                    lst.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error loading inventory:", error);
+                lst.innerHTML = '<tr><td colspan="5">انوینٹری لوڈ کرنے میں خرابی۔</td></tr>';
+            }
+        }
+
+        function shInvFrm(id = null) {
+            gE('iFrm').reset();
+            gE('iId').value = '';
+            gE('iMdLbl').textContent = 'نیا انوینٹری آئٹم';
+            gE('iDt').value = new Date().toISOString().split('T')[0]; // Default date
+
+            if (id) {
+                gE('iMdLbl').textContent = 'انوینٹری آئٹم میں ترمیم کریں';
+                dbGet('inv', id).then(i => {
+                    if (i) {
+                        gE('iId').value = i.id;
+                        gE('iNm').value = i.nm;
+                        gE('iDsc').value = i.dsc || '';
+                        gE('iQty').value = i.qty;
+                        gE('iDt').value = i.dt;
+                    }
+                }).catch(error => {
+                    console.error("Error fetching inventory item for edit:", error);
+                    shTst("انوینٹری آئٹم لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                });
+            }
+            iMd.show();
+        }
+        window.shInvFrm = shInvFrm; // Expose globally
+
+        async function svInv(e) {
+            e.preventDefault();
+            const id = parseInt(gE('iId').value) || null;
+            const invData = {
+                nm: gE('iNm').value.trim(),
+                dsc: gE('iDsc').value.trim(),
+                qty: parseInt(gE('iQty').value),
+                dt: gE('iDt').value
+            };
+
+            if (!invData.nm || isNaN(invData.qty) || !invData.dt) {
+                shTst("براہ کرم تمام لازمی (*) فیلڈز درست طریقے سے پُر کریں۔", "انتباہ", "bg-warning text-dark");
+                return;
+            }
+
+            try {
+                if (id) {
+                    invData.id = id;
+                    await dbPut('inv', invData);
+                    shTst("انوینٹری آئٹم کامیابی سے اپ ڈیٹ ہو گیا۔");
+                } else {
+                    await dbAdd('inv', invData);
+                    shTst("نیا انوینٹری آئٹم کامیابی سے شامل ہو گیا۔");
+                }
+                iMd.hide();
+                await ldInv(); // Reload inventory list
+            } catch (error) {
+                console.error("Error saving inventory item:", error);
+                shTst("انوینٹری آئٹم محفوظ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+            }
+        }
+
+        async function edInv(id) {
+            shInvFrm(id);
+        }
+        window.edInv = edInv; // Expose globally
+
+        async function delInv(id) {
+            if (confirm("کیا آپ واقعی اس انوینٹری آئٹم کو حذف کرنا چاہتے ہیں؟")) {
+                try {
+                    await dbDel('inv', id);
+                    shTst("انوینٹری آئٹم کامیابی سے حذف کر دیا گیا۔");
+                    await ldInv(); // Reload list
+                } catch (error) {
+                    console.error("Error deleting inventory item:", error);
+                    shTst("انوینٹری آئٹم حذف کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                }
+            }
+        }
+        window.delInv = delInv; // Expose globally
+
+
+        // --- Expense/Income Management ---
+        async function ldExps() {
+            const lst = gE('eLst');
+            const tIncEl = gE('tInc');
+            const tExpEl = gE('tExp');
+            const tBalEl = gE('tBal');
+            lst.innerHTML = '<tr><td colspan="5">لوڈ ہو رہا ہے...</td></tr>';
+            tIncEl.textContent = '0';
+            tExpEl.textContent = '0';
+            tBalEl.textContent = '0';
+
+            const fltrTyp = gE('eFltrTyp').value;
+            const fltrDtS = gE('eFltrDtS').value;
+            const fltrDtE = gE('eFltrDtE').value;
+
+            try {
+                let exps = await dbGetAll('exps');
+                let totalIncome = 0;
+                let totalExpense = 0;
+
+                // Apply filters
+                 if (fltrTyp) {
+                    exps = exps.filter(e => e.typ === fltrTyp);
+                 }
+                 if (fltrDtS) {
+                    exps = exps.filter(e => e.dt >= fltrDtS);
+                 }
+                 if (fltrDtE) {
+                    exps = exps.filter(e => e.dt <= fltrDtE);
+                 }
+
+
+                 lst.innerHTML = '';
+                 if (exps.length === 0) {
+                     lst.innerHTML = '<tr><td colspan="5">کوئی آمدنی/اخراجات کا ریکارڈ نہیں ملا۔</td></tr>';
+                     return;
+                 }
+
+                 exps.sort((a, b) => new Date(b.dt) - new Date(a.dt)); // Sort by date desc
+
+                 exps.forEach(e => {
+                     const tr = document.createElement('tr');
+                     const typText = e.typ === 'income' ? 'آمدنی' : 'خرچہ';
+                     const amtCls = e.typ === 'income' ? 'text-success' : 'text-danger';
+
+                     tr.innerHTML = `
+                        <td>${e.dt ? new Date(e.dt).toLocaleDateString('ur-PK') : '-'}</td>
+                        <td>${typText}</td>
+                        <td>${e.dsc}</td>
+                        <td class="${amtCls}">${e.amt}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="edExp(${e.id})">ترمیم</button>
+                            <button class="btn btn-sm btn-danger" onclick="delExp(${e.id})">حذف کریں</button>
+                        </td>
+                    `;
+                     lst.appendChild(tr);
+
+                     // Calculate totals (using only the filtered data)
+                     if (e.typ === 'income') {
+                         totalIncome += e.amt;
+                     } else {
+                         totalExpense += e.amt;
+                     }
+                 });
+
+                 tIncEl.textContent = totalIncome.toLocaleString('ur-PK');
+                 tExpEl.textContent = totalExpense.toLocaleString('ur-PK');
+                 tBalEl.textContent = (totalIncome - totalExpense).toLocaleString('ur-PK');
+
+            } catch (error) {
+                console.error("Error loading expenses/income:", error);
+                lst.innerHTML = '<tr><td colspan="5">آمدنی/اخراجات لوڈ کرنے میں خرابی۔</td></tr>';
+            }
+        }
+         window.ldExps = ldExps; // Expose globally
+
+        function clrEFltr() {
+            gE('eFltrTyp').value = '';
+            gE('eFltrDtS').value = '';
+            gE('eFltrDtE').value = '';
+            ldExps();
+        }
+        window.clrEFltr = clrEFltr; // Expose globally
+
+        function shExpFrm(id = null) {
+            gE('eFrm').reset();
+            gE('eId').value = '';
+            gE('eMdLbl').textContent = 'نیا آمدنی/خرچہ اندراج';
+            gE('eDt').value = new Date().toISOString().split('T')[0]; // Default date
+
+            if (id) {
+                gE('eMdLbl').textContent = 'آمدنی/خرچہ اندراج میں ترمیم';
+                dbGet('exps', id).then(e => {
+                    if (e) {
+                        gE('eId').value = e.id;
+                        gE('eDt').value = e.dt;
+                        gE('eTyp').value = e.typ;
+                        gE('eDsc').value = e.dsc;
+                        gE('eAmt').value = e.amt;
+                    }
+                }).catch(error => {
+                    console.error("Error fetching expense/income item for edit:", error);
+                    shTst("آمدنی/خرچہ لوڈ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                 });
+             }
+             eMd.show();
+         }
+         window.shExpFrm = shExpFrm; // Expose globally
+
+         async function svExp(e) {
+             e.preventDefault();
+             const id = parseInt(gE('eId').value) || null;
+             const expData = {
+                 dt: gE('eDt').value,
+                 typ: gE('eTyp').value,
+                 dsc: gE('eDsc').value.trim(),
+                 amt: parseInt(gE('eAmt').value)
+             };
+
+             if (!expData.dt || !expData.typ || !expData.dsc || isNaN(expData.amt) || expData.amt <= 0) {
+                 shTst("براہ کرم تمام لازمی (*) فیلڈز درست طریقے سے پُر کریں اور رقم مثبت ہو۔", "انتباہ", "bg-warning text-dark");
+                 return;
+             }
+
+             try {
+                 if (id) {
+                     expData.id = id;
+                     await dbPut('exps', expData);
+                     shTst("آمدنی/خرچہ اندراج کامیابی سے اپ ڈیٹ ہو گیا۔");
+                 } else {
+                     await dbAdd('exps', expData);
+                     shTst("نیا آمدنی/خرچہ اندراج کامیابی سے شامل ہو گیا۔");
+                 }
+                 eMd.hide();
+                 await ldExps(); // Reload expense/income list
+             } catch (error) {
+                 console.error("Error saving expense/income:", error);
+                 shTst("آمدنی/خرچہ اندراج محفوظ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+            }
+        }
+
+        async function edExp(id) {
+            shExpFrm(id);
+        }
+        window.edExp = edExp; // Expose globally
+
+        async function delExp(id) {
+            if (confirm("کیا آپ واقعی اس آمدنی/خرچہ اندراج کو حذف کرنا چاہتے ہیں؟")) {
+                try {
+                    await dbDel('exps', id);
+                    shTst("اندراج کامیابی سے حذف کر دیا گیا۔");
+                    await ldExps(); // Reload list
+                } catch (error) {
+                    console.error("Error deleting expense/income:", error);
+                    shTst("اندراج حذف کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                }
+            }
+                }
+        window.delExp = delExp; // Expose globally
+
+
+        // --- Dashboard ---
+        async function ldDsh() {
+            try {
+                const sCnt = await dbCount('stds');
+                const tCnt = await dbCount('tchs');
+                const cCnt = await dbCount('clss');
+
+                // Attendance Count (Today's Present vs Total Today)
+                const today = new Date().toISOString().split('T')[0];
+                const attRecsToday = await dbGetAll('att', 'dt', today);
+                const presentToday = attRecsToday.filter(r => r.st === 'P').length;
+                // Total students requires knowing which classes had attendance taken today
+                const classesAttendedToday = new Set(attRecsToday.map(r => r.clsId));
+                let totalStudentsInAttendedClasses = 0;
+                if (classesAttendedToday.size > 0) {
+                    const stds = await dbGetAll('stds');
+                    totalStudentsInAttendedClasses = stds.filter(s => s.clsId && classesAttendedToday.has(s.clsId)).length;
+                }
+                const attStr = totalStudentsInAttendedClasses > 0 ? `${presentToday} / ${totalStudentsInAttendedClasses}` : '- / -';
+
+
+                gE('dSCo').textContent = sCnt;
+                gE('dTCo').textContent = tCnt;
+                gE('dCCo').textContent = cCnt;
+                gE('dACo').textContent = attStr;
+
+            } catch (error) {
+                console.error("Error loading dashboard data:", error);
+                gE('dSCo').textContent = 'Error';
+                gE('dTCo').textContent = 'Error';
+                gE('dCCo').textContent = 'Error';
+                gE('dACo').textContent = 'Error';
+            }
+        }
+
+
+        // --- Reports ---
+        async function ppRptSel() {
+            // Populate class dropdowns used in report filters
+            await ppClsSel('rACls'); // Attendance report class filter
+            await ppClsSel('rFCls', true); // Fee report class filter (with 'All Classes')
+        }
+
+        function crTbl(hdrs, dataRows, tblId = 'rptTbl', cls = 'table table-striped table-bordered table-sm') {
+            if (!dataRows || dataRows.length === 0) {
+                return '<p>اس معیار کے مطابق کوئی ڈیٹا نہیں ملا۔</p>';
+            }
+            let tblHTML = `<table class="${cls}" id="${tblId}"><thead><tr>`;
+            hdrs.forEach(h => tblHTML += `<th>${h}</th>`);
+            tblHTML += '</tr></thead><tbody>';
+            dataRows.forEach(row => {
+                tblHTML += '<tr>';
+                row.forEach(cell => tblHTML += `<td>${cell === null || cell === undefined ? '-' : cell}</td>`);
+                tblHTML += '</tr>';
+            });
+            tblHTML += '</tbody></table>';
+            return tblHTML;
+        }
+
+        async function gnRpt(typ) {
+            const rCnt = gE('rCnt');
+            const rPrntArea = gE('rPrntArea');
+            rCnt.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
+            rPrntArea.innerHTML = ''; // Clear previous print area
+
+            try {
+                let hdrs = [];
+                let dataRows = [];
+                let data;
+                let ttl = '';
+
+                const stgs = await dbGet('stgs', 1) || {};
+                const sCFldsRpt = stgs.sCFlds || []; // Use settings custom fields for reports
+                const tCFldsRpt = stgs.tCFlds || [];
+
+                if (typ === 'stds') {
+                    ttl = 'طلباء کی رپورٹ';
+                    data = await dbGetAll('stds');
+                    const clss = await dbGetAll('clss');
+                    const clsMap = new Map(clss.map(c => [c.id, c.nm]));
+                    hdrs = ['نام', 'والد کا نام', 'عمر', 'کلاس', 'داخلہ تاریخ', 'رابطہ', 'پتہ', ...sCFldsRpt];
+                    data.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                    dataRows = data.map(s => [
+                        s.nm,
+                        s.fNm,
+                        s.ag,
+                        clsMap.get(s.clsId) || '-',
+                        s.aDt ? new Date(s.aDt).toLocaleDateString('ur-PK') : '-',
+                        s.cnt,
+                        s.adr,
+                        ...sCFldsRpt.map(fld => s.cFlds && s.cFlds[fld] ? s.cFlds[fld] : '-') // Map custom fields data
+                    ]);
+                } else if (typ === 'tchs') {
+                    ttl = 'اساتذہ کی رپورٹ';
+                    data = await dbGetAll('tchs');
+                    hdrs = ['نام', 'رابطہ', 'پتہ', 'شمولیت کی تاریخ', ...tCFldsRpt];
+                    data.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                    dataRows = data.map(t => [
+                        t.nm,
+                        t.cnt,
+                        t.adr,
+                        t.jDt ? new Date(t.jDt).toLocaleDateString('ur-PK') : '-',
+                        ...tCFldsRpt.map(fld => t.cFlds && t.cFlds[fld] ? t.cFlds[fld] : '-') // Map custom fields data
+                    ]);
+                } else if (typ === 'clss') {
+                    ttl = 'کلاس کی رپورٹ';
+                    data = await dbGetAll('clss');
+                    const tchs = await dbGetAll('tchs');
+                    const stds = await dbGetAll('stds');
+                    const tchMap = new Map(tchs.map(t => [t.id, t.nm]));
+                    hdrs = ['کلاس کا نام', 'استاد', 'طلباء کی تعداد'];
+                    data.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                    dataRows = data.map(c => [
+                        c.nm,
+                        c.tchId ? tchMap.get(c.tchId) || '-' : 'کوئی نہیں',
+                        stds.filter(s => s.clsId === c.id).length // Count students
+                    ]);
+                }
+
+                const tblHTML = crTbl(hdrs, dataRows);
+                rCnt.innerHTML = `<h3>${ttl}</h3>${tblHTML}`;
+                rPrntArea.innerHTML = `<h1>${stgs.nm || 'مدرسہ'}</h1><h2>${ttl}</h2><p>تاریخ: ${new Date().toLocaleDateString('ur-PK')}</p>${tblHTML}`; // For printing
+
+            } catch (error) {
+                console.error(`Error generating ${typ} report:`, error);
+                rCnt.innerHTML = `<p>${typ} رپورٹ بنانے میں خرابی۔</p>`;
+            }
+        }
+        window.gnRpt = gnRpt; // Expose globally
+
+        async function gnARpt() {
+            const rCnt = gE('rCnt');
+            const rPrntArea = gE('rPrntArea');
+            const clsId = parseInt(gE('rACls').value);
+            const dtS = gE('rADtS').value;
+            const dtE = gE('rADtE').value;
+            rCnt.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
+            rPrntArea.innerHTML = '';
+
+            if (!clsId || !dtS || !dtE) {
+                rCnt.innerHTML = '<p>براہ کرم کلاس، شروع اور اختتام تاریخ منتخب کریں۔</p>';
+                return;
+            }
+             if (dtS > dtE) {
+                rCnt.innerHTML = '<p>شروع کی تاریخ اختتام کی تاریخ سے زیادہ نہیں ہو سکتی۔</p>';
+                return;
+             }
+
+            try {
+                const stgs = await dbGet('stgs', 1) || {};
+                const clss = await dbGetAll('clss');
+                const stds = await dbGetAll('stds');
+                const clsMap = new Map(clss.map(c => [c.id, c.nm]));
+                const stdMap = new Map(stds.filter(s => s.clsId === clsId).map(s => [s.id, s.nm]));
+                const clsNm = clsMap.get(clsId) || `کلاس ${clsId}`;
+                const ttl = `حاضری رپورٹ برائے ${clsNm} (${dtS} تا ${dtE})`;
+
+                // Fetch all attendance records within the date range
+                const tx = db.transaction('att', 'readonly');
+                const store = tx.objectStore('att');
+                const idx = store.index('dt'); // Use date index for range query
+                const range = IDBKeyRange.bound(dtS, dtE);
+                const req = idx.getAll(range);
+
+                const allAttRecs = await new Promise((resolve, reject) => {
+                    req.onsuccess = (e) => resolve(e.target.result);
+                    req.onerror = (e) => reject(e.target.error);
+                });
+
+                 // Filter for the selected class and create a structure for the report
+                 // { studentId: { name: '...', dates: { 'YYYY-MM-DD': 'P/A', ... } } }
+                 const reportData = {};
+                 const dateHeaders = [];
+                 const currentDate = new Date(dtS);
+                 const endDate = new Date(dtE);
+
+                 while (currentDate <= endDate) {
+                    dateHeaders.push(currentDate.toISOString().split('T')[0]);
+                    currentDate.setDate(currentDate.getDate() + 1);
+                 }
+
+                 // Initialize reportData with students of the class
+                 stds.filter(s => s.clsId === clsId)
+                    .sort((a,b) => a.nm.localeCompare(b.nm, 'ur'))
+                    .forEach(s => {
+                     reportData[s.id] = { name: s.nm, present: 0, absent: 0, dates: {} };
+                     dateHeaders.forEach(dt => reportData[s.id].dates[dt] = '-'); // Default to '-'
+                 });
+
+                 // Populate attendance data
+                 allAttRecs.filter(r => r.clsId === clsId && reportData[r.stdId]).forEach(r => {
+                     if (reportData[r.stdId].dates[r.dt] !== undefined) {
+                        reportData[r.stdId].dates[r.dt] = r.st === 'P' ? 'ح' : 'غ'; // Present/Absent in Urdu
+                         if (r.st === 'P') reportData[r.stdId].present++;
+                         else reportData[r.stdId].absent++;
+                     }
+                 });
+
+                // Prepare table headers and rows
+                const hdrs = ['طالب علم', ...dateHeaders, 'کل حاضر', 'کل غیر حاضر'];
+                 const dataRows = Object.values(reportData).map(sData => [
+                    sData.name,
+                    ...dateHeaders.map(dt => sData.dates[dt]),
+                    sData.present,
+                    sData.absent
+                ]);
+
+                const tblHTML = crTbl(hdrs, dataRows);
+                rCnt.innerHTML = `<h3>${ttl}</h3>${tblHTML}`;
+                rPrntArea.innerHTML = `<h1>${stgs.nm || 'مدرسہ'}</h1><h2>${ttl}</h2>${tblHTML}`;
+
+            } catch (error) {
+                console.error("Error generating attendance report:", error);
+                rCnt.innerHTML = '<p>حاضری رپورٹ بنانے میں خرابی۔</p>';
+            }
+        }
+        window.gnARpt = gnARpt; // Expose globally
+
+
+         async function gnFRpt() {
+            const rCnt = gE('rCnt');
+            const rPrntArea = gE('rPrntArea');
+            const clsId = gE('rFCls').value ? parseInt(gE('rFCls').value) : null;
+            const mnt = gE('rFMnt').value; // YYYY-MM
+            rCnt.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
+            rPrntArea.innerHTML = '';
+
+            if (!mnt) {
+                rCnt.innerHTML = '<p>براہ کرم مہینہ منتخب کریں۔</p>';
+                return;
+            }
+
+            try {
+                const stgs = await dbGet('stgs', 1) || {};
+                const clss = await dbGetAll('clss');
+                const stds = await dbGetAll('stds');
+                const clsMap = new Map(clss.map(c => [c.id, c.nm]));
+                const stdMap = new Map(stds.map(s => [s.id, { nm: s.nm, clsId: s.clsId }]));
+
+                const clsNm = clsId ? clsMap.get(clsId) : 'تمام کلاسیں';
+                const ttl = `فیس رپورٹ برائے ${clsNm} (${mnt})`;
+
+                // Fetch fee records for the specific month
+                let feeRecs = await dbGetAll('fees', 'mnt', mnt);
+
+                // Filter by class if selected
+                if (clsId) {
+                    feeRecs = feeRecs.filter(f => f.clsId === clsId);
+                }
+
+                const hdrs = ['طالب علم', 'کلاس', 'مہینہ/سال', 'کل فیس', 'وصول شدہ', 'بقایا', 'حالت', 'تاریخ وصولی'];
+                let dataRows = [];
+                 let totalReceived = 0;
+                 let totalDue = 0;
+                 let totalBalance = 0;
+
+                feeRecs.sort((a, b) => (stdMap.get(a.stdId)?.nm || '').localeCompare(stdMap.get(b.stdId)?.nm || '', 'ur')); // Sort by student name
+
+                feeRecs.forEach(f => {
+                     const bal = (f.amtT || 0) - (f.amtR || 0);
+                     const sts = bal <= 0 ? 'ادا شدہ' : `بقایا (${bal})`;
+                     dataRows.push([
+                        stdMap.get(f.stdId)?.nm || `ID: ${f.stdId}`,
+                        clsMap.get(f.clsId) || '-',
+                        f.mnt,
+                        f.amtT || 0,
+                        f.amtR || 0,
+                        bal > 0 ? bal : 0,
+                        sts,
+                        f.pDt ? new Date(f.pDt).toLocaleDateString('ur-PK') : '-'
+                    ]);
+                     totalDue += (f.amtT || 0);
+                     totalReceived += (f.amtR || 0);
+                     totalBalance += (bal > 0 ? bal : 0);
+                 });
+
+                 // Add summary row
+                 dataRows.push(['کل میزان:', '', '', totalDue, totalReceived, totalBalance, '', '']);
+
+
+                const tblHTML = crTbl(hdrs, dataRows);
+                 rCnt.innerHTML = `<h3>${ttl}</h3>${tblHTML}`;
+                 rPrntArea.innerHTML = `<h1>${stgs.nm || 'مدرسہ'}</h1><h2>${ttl}</h2>${tblHTML}`;
+
+            } catch (error) {
+                console.error("Error generating fee report:", error);
+                rCnt.innerHTML = '<p>فیس رپورٹ بنانے میں خرابی۔</p>';
+            }
+        }
+        window.gnFRpt = gnFRpt; // Expose globally
+
+        async function gnSRpt() {
+             const rCnt = gE('rCnt');
+             const rPrntArea = gE('rPrntArea');
+             const mnt = gE('rSMnt').value; // YYYY-MM
+             rCnt.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
+             rPrntArea.innerHTML = '';
+
+            if (!mnt) {
+                rCnt.innerHTML = '<p>براہ کرم مہینہ منتخب کریں۔</p>';
+                return;
+            }
+
+            try {
+                const stgs = await dbGet('stgs', 1) || {};
+                const tchs = await dbGetAll('tchs');
+                const tchMap = new Map(tchs.map(t => [t.id, t.nm]));
+                const ttl = `تنخواہ رپورٹ برائے (${mnt})`;
+
+                // Fetch salary records for the specific month
+                let slryRecs = await dbGetAll('slrs', 'mnt', mnt);
+
+                const hdrs = ['استاد', 'مہینہ/سال', 'کل تنخواہ', 'ادا شدہ رقم', 'بقایا', 'تاریخ ادائیگی', 'حالت'];
+                 let dataRows = [];
+                 let totalSalary = 0;
+                 let totalPaid = 0;
+                 let totalSalBalance = 0;
+
+
+                slryRecs.sort((a, b) => (tchMap.get(a.tchId) || '').localeCompare(tchMap.get(b.tchId) || '', 'ur')); // Sort by teacher name
+
+                 slryRecs.forEach(s => {
+                     const bal = (s.amtT || 0) - (s.amtP || 0);
+                     const sts = bal <= 0 ? 'ادا شدہ' : `بقایا (${bal})`;
+                     dataRows.push([
+                         tchMap.get(s.tchId) || `ID: ${s.tchId}`,
+                         s.mnt,
+                         s.amtT || 0,
+                         s.amtP || 0,
+                         bal > 0 ? bal : 0,
+                         s.pDt ? new Date(s.pDt).toLocaleDateString('ur-PK') : '-',
+                         sts
+                     ]);
+                     totalSalary += (s.amtT || 0);
+                     totalPaid += (s.amtP || 0);
+                     totalSalBalance += (bal > 0 ? bal : 0);
+                 });
+
+                  // Add summary row
+                 dataRows.push(['کل میزان:', '', totalSalary, totalPaid, totalSalBalance, '', '']);
+
+                const tblHTML = crTbl(hdrs, dataRows);
+                 rCnt.innerHTML = `<h3>${ttl}</h3>${tblHTML}`;
+                 rPrntArea.innerHTML = `<h1>${stgs.nm || 'مدرسہ'}</h1><h2>${ttl}</h2>${tblHTML}`;
+
+            } catch (error) {
+                console.error("Error generating salary report:", error);
+                rCnt.innerHTML = '<p>تنخواہ رپورٹ بنانے میں خرابی۔</p>';
+            }
+        }
+        window.gnSRpt = gnSRpt; // Expose globally
+
+
+         async function gnERpt() {
+             const rCnt = gE('rCnt');
+             const rPrntArea = gE('rPrntArea');
+             const dtS = gE('rEDtS').value;
+             const dtE = gE('rEDtE').value;
+             rCnt.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
+             rPrntArea.innerHTML = '';
+
+            if (!dtS || !dtE) {
+                rCnt.innerHTML = '<p>براہ کرم شروع اور اختتام تاریخ منتخب کریں۔</p>';
+                return;
+            }
+            if (dtS > dtE) {
+                rCnt.innerHTML = '<p>شروع کی تاریخ اختتام کی تاریخ سے زیادہ نہیں ہو سکتی۔</p>';
+                return;
+            }
+
+            try {
+                const stgs = await dbGet('stgs', 1) || {};
+                const ttl = `آمدنی/اخراجات رپورٹ (${dtS} تا ${dtE})`;
+
+                // Fetch records within the date range
+                const tx = db.transaction('exps', 'readonly');
+                const store = tx.objectStore('exps');
+                const idx = store.index('dt');
+                const range = IDBKeyRange.bound(dtS, dtE);
+                const req = idx.getAll(range);
+
+                const expRecs = await new Promise((resolve, reject) => {
+                    req.onsuccess = (e) => resolve(e.target.result);
+                    req.onerror = (e) => reject(e.target.error);
+                });
+
+
+                const hdrs = ['تاریخ', 'قسم', 'تفصیل', 'آمدنی', 'خرچہ'];
+                let dataRows = [];
+                let totalIncome = 0;
+                let totalExpense = 0;
+
+                 expRecs.sort((a, b) => new Date(a.dt) - new Date(b.dt)); // Sort by date asc
+
+                expRecs.forEach(e => {
+                    const isIncome = e.typ === 'income';
+                     dataRows.push([
+                        e.dt ? new Date(e.dt).toLocaleDateString('ur-PK') : '-',
+                         isIncome ? 'آمدنی' : 'خرچہ',
+                         e.dsc,
+                         isIncome ? e.amt : 0,
+                         !isIncome ? e.amt : 0
+                    ]);
+                     if (isIncome) {
+                        totalIncome += e.amt;
+                    } else {
+                        totalExpense += e.amt;
+                    }
+                 });
+
+                 // Add summary row
+                 const balance = totalIncome - totalExpense;
+                 dataRows.push(['کل میزان:', '', '', totalIncome, totalExpense]);
+                 dataRows.push(['بیلنس:', '', '', '', balance]);
+
+
+                 const tblHTML = crTbl(hdrs, dataRows);
+                 rCnt.innerHTML = `<h3>${ttl}</h3>${tblHTML}`;
+                 rPrntArea.innerHTML = `<h1>${stgs.nm || 'مدرسہ'}</h1><h2>${ttl}</h2>${tblHTML}`;
+
+             } catch (error) {
+                 console.error("Error generating expense/income report:", error);
+                 rCnt.innerHTML = '<p>آمدنی/اخراجات رپورٹ بنانے میں خرابی۔</p>';
+            }
+        }
+        window.gnERpt = gnERpt; // Expose globally
+
+
+        // --- CSV Export ---
+         function dnCSV(csvContent, fileName) {
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+             const link = document.createElement("a");
+             const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+         function arrToCSV(hdrs, dataRows) {
+             const csvRows = [];
+             // Add headers
+             csvRows.push(hdrs.map(h => `"${h.replace(/"/g, '""')}"`).join(',')); // Escape quotes
+             // Add data rows
+             dataRows.forEach(row => {
+                csvRows.push(row.map(cell => {
+                    const cellStr = (cell === null || cell === undefined) ? '' : String(cell);
+                    return `"${cellStr.replace(/"/g, '""')}"`; // Escape quotes
+                 }).join(','));
+             });
+            return csvRows.join('\r\n');
+        }
+
+         async function exCSV(typ) {
+            try {
+                let hdrs = [];
+                let dataRows = [];
+                let data;
+                let fileName = `${typ}_report_${new Date().toISOString().split('T')[0]}.csv`;
+
+                const stgs = await dbGet('stgs', 1) || {};
+                const sCFldsRpt = stgs.sCFlds || [];
+                const tCFldsRpt = stgs.tCFlds || [];
+
+
+                 if (typ === 'stds') {
+                     data = await dbGetAll('stds');
+                     const clss = await dbGetAll('clss');
+                     const clsMap = new Map(clss.map(c => [c.id, c.nm]));
+                     hdrs = ['نام', 'والد کا نام', 'عمر', 'کلاس', 'داخلہ تاریخ', 'رابطہ', 'پتہ', ...sCFldsRpt];
+                     data.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                     dataRows = data.map(s => [s.nm, s.fNm, s.ag, clsMap.get(s.clsId) || '-', s.aDt, s.cnt, s.adr, ...sCFldsRpt.map(fld => s.cFlds && s.cFlds[fld] ? s.cFlds[fld] : '-')]);
+                 } else if (typ === 'tchs') {
+                     data = await dbGetAll('tchs');
+                     hdrs = ['نام', 'رابطہ', 'پتہ', 'شمولیت کی تاریخ', ...tCFldsRpt];
+                     data.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                     dataRows = data.map(t => [t.nm, t.cnt, t.adr, t.jDt, ...tCFldsRpt.map(fld => t.cFlds && t.cFlds[fld] ? t.cFlds[fld] : '-')]);
+                 } else if (typ === 'clss') {
+                     data = await dbGetAll('clss');
+                     const tchs = await dbGetAll('tchs');
+                     const stds = await dbGetAll('stds');
+                     const tchMap = new Map(tchs.map(t => [t.id, t.nm]));
+                     hdrs = ['کلاس کا نام', 'استاد', 'طلباء کی تعداد'];
+                     data.sort((a, b) => a.nm.localeCompare(b.nm, 'ur'));
+                     dataRows = data.map(c => [c.nm, c.tchId ? tchMap.get(c.tchId) || '-' : 'کوئی نہیں', stds.filter(s => s.clsId === c.id).length]);
+                 } else {
+                     shTst("نامعلوم رپورٹ کی قسم برائے CSV۔", "انتباہ", "bg-warning text-dark");
+                     return;
+                 }
+
+                if (dataRows.length === 0) {
+                    shTst("CSV بنانے کے لیے کوئی ڈیٹا نہیں۔", "انتباہ", "bg-warning text-dark");
+                    return;
+                }
+
+                const csv = arrToCSV(hdrs, dataRows);
+                dnCSV(csv, fileName);
+                shTst("CSV فائل کامیابی سے ڈاؤن لوڈ ہو گئی۔");
+
+            } catch (error) {
+                console.error(`Error exporting ${typ} CSV:`, error);
+                shTst(`${typ} CSV ایکسپورٹ کرنے میں خرابی۔`, "خرابی", "bg-danger text-white");
+            }
+         }
+         window.exCSV = exCSV; // Expose globally
+
+         async function exCARpt() { // Export Custom Attendance Report
+            const clsId = parseInt(gE('rACls').value);
+            const dtS = gE('rADtS').value;
+            const dtE = gE('rADtE').value;
+
+            if (!clsId || !dtS || !dtE || dtS > dtE) {
+                 shTst("برائے مہربانی درست کلاس اور تاریخ کی حد منتخب کریں۔", "انتباہ", "bg-warning text-dark");
+                 return;
+            }
+
+            try {
+                const clss = await dbGetAll('clss');
+                const stds = await dbGetAll('stds');
+                 const clsMap = new Map(clss.map(c => [c.id, c.nm]));
+                 const clsNm = clsMap.get(clsId) || `Class_${clsId}`;
+                const fileName = `Attendance_${clsNm}_${dtS}_to_${dtE}.csv`;
+
+                // Fetch and process data (similar to gnARpt)
+                 const tx = db.transaction('att', 'readonly');
+                 const store = tx.objectStore('att');
+                 const idx = store.index('dt');
+                 const range = IDBKeyRange.bound(dtS, dtE);
+                 const req = idx.getAll(range);
+                 const allAttRecs = await new Promise((resolve, reject) => { req.onsuccess = (e) => resolve(e.target.result); req.onerror = (e) => reject(e.target.error); });
+
+                 const reportData = {};
+                 const dateHeaders = [];
+                 const currentDate = new Date(dtS);
+                 const endDate = new Date(dtE);
+                 while (currentDate <= endDate) { dateHeaders.push(currentDate.toISOString().split('T')[0]); currentDate.setDate(currentDate.getDate() + 1); }
+
+                 stds.filter(s => s.clsId === clsId).sort((a,b) => a.nm.localeCompare(b.nm, 'ur')).forEach(s => {
+                     reportData[s.id] = { name: s.nm, present: 0, absent: 0, dates: {} };
+                     dateHeaders.forEach(dt => reportData[s.id].dates[dt] = ''); // Default to blank for CSV
+                 });
+
+                 allAttRecs.filter(r => r.clsId === clsId && reportData[r.stdId]).forEach(r => {
+                     if (reportData[r.stdId].dates[r.dt] !== undefined) {
+                         reportData[r.stdId].dates[r.dt] = r.st; // 'P' or 'A'
+                         if (r.st === 'P') reportData[r.stdId].present++; else reportData[r.stdId].absent++;
+                     }
+                 });
+
+                 const hdrs = ['Student', ...dateHeaders, 'Total Present', 'Total Absent'];
+                 const dataRows = Object.values(reportData).map(sData => [ sData.name, ...dateHeaders.map(dt => sData.dates[dt]), sData.present, sData.absent ]);
+
+                if (dataRows.length === 0) { shTst("CSV بنانے کے لیے کوئی ڈیٹا نہیں۔", "انتباہ", "bg-warning text-dark"); return; }
+                 const csv = arrToCSV(hdrs, dataRows);
+                 dnCSV(csv, fileName);
+                 shTst("حاضری CSV کامیابی سے ڈاؤن لوڈ ہو گئی۔");
+
+            } catch (error) {
+                console.error("Error exporting Attendance CSV:", error);
+                shTst("حاضری CSV ایکسپورٹ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+            }
+         }
+         window.exCARpt = exCARpt; // Expose globally
+
+         async function exCFRpt() { // Export Custom Fee Report
+             const clsId = gE('rFCls').value ? parseInt(gE('rFCls').value) : null;
+             const mnt = gE('rFMnt').value; // YYYY-MM
+
+             if (!mnt) { shTst("برائے مہربانی مہینہ منتخب کریں۔", "انتباہ", "bg-warning text-dark"); return; }
+
+             try {
+                 const clss = await dbGetAll('clss');
+                 const stds = await dbGetAll('stds');
+                 const clsMap = new Map(clss.map(c => [c.id, c.nm]));
+                 const stdMap = new Map(stds.map(s => [s.id, { nm: s.nm, clsId: s.clsId }]));
+                 const clsNm = clsId ? clsMap.get(clsId) : 'AllClasses';
+                 const fileName = `Fees_${clsNm}_${mnt}.csv`;
+
+                 let feeRecs = await dbGetAll('fees', 'mnt', mnt);
+                 if (clsId) { feeRecs = feeRecs.filter(f => f.clsId === clsId); }
+
+                 const hdrs = ['Student', 'Class', 'MonthYear', 'Total Fee', 'Received', 'Balance', 'Status', 'PaymentDate'];
+                 let dataRows = [];
+                 let totalReceived = 0, totalDue = 0, totalBalance = 0;
+
+                 feeRecs.sort((a, b) => (stdMap.get(a.stdId)?.nm || '').localeCompare(stdMap.get(b.stdId)?.nm || '', 'ur'));
+
+                 feeRecs.forEach(f => {
+                     const bal = (f.amtT || 0) - (f.amtR || 0);
+                     const sts = bal <= 0 ? 'Paid' : `Due (${bal})`;
+                     dataRows.push([ stdMap.get(f.stdId)?.nm || `ID: ${f.stdId}`, clsMap.get(f.clsId) || '-', f.mnt, f.amtT || 0, f.amtR || 0, bal > 0 ? bal : 0, sts, f.pDt ]);
+                     totalDue += (f.amtT || 0); totalReceived += (f.amtR || 0); totalBalance += (bal > 0 ? bal : 0);
+                 });
+                 dataRows.push(['TOTALS:', '', '', totalDue, totalReceived, totalBalance, '', '']);
+
+
+                 if (dataRows.length <= 1) { shTst("CSV بنانے کے لیے کوئی ڈیٹا نہیں۔", "انتباہ", "bg-warning text-dark"); return; }
+                 const csv = arrToCSV(hdrs, dataRows);
+                 dnCSV(csv, fileName);
+                 shTst("فیس CSV کامیابی سے ڈاؤن لوڈ ہو گئی۔");
+
+             } catch (error) {
+                 console.error("Error exporting Fee CSV:", error);
+                 shTst("فیس CSV ایکسپورٹ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+             }
+         }
+         window.exCFRpt = exCFRpt; // Expose globally
+
+         async function exCSRpt() { // Export Custom Salary Report
+             const mnt = gE('rSMnt').value; // YYYY-MM
+             if (!mnt) { shTst("برائے مہربانی مہینہ منتخب کریں۔", "انتباہ", "bg-warning text-dark"); return; }
+
+             try {
+                 const tchs = await dbGetAll('tchs');
+                 const tchMap = new Map(tchs.map(t => [t.id, t.nm]));
+                 const fileName = `Salaries_${mnt}.csv`;
+
+                 let slryRecs = await dbGetAll('slrs', 'mnt', mnt);
+
+                 const hdrs = ['Teacher', 'MonthYear', 'Total Salary', 'Paid Amount', 'Balance', 'PaymentDate', 'Status'];
+                 let dataRows = [];
+                 let totalSalary = 0, totalPaid = 0, totalSalBalance = 0;
+
+                 slryRecs.sort((a, b) => (tchMap.get(a.tchId) || '').localeCompare(tchMap.get(b.tchId) || '', 'ur'));
+
+                 slryRecs.forEach(s => {
+                     const bal = (s.amtT || 0) - (s.amtP || 0);
+                     const sts = bal <= 0 ? 'Paid' : `Due (${bal})`;
+                     dataRows.push([ tchMap.get(s.tchId) || `ID: ${s.tchId}`, s.mnt, s.amtT || 0, s.amtP || 0, bal > 0 ? bal : 0, s.pDt, sts ]);
+                     totalSalary += (s.amtT || 0); totalPaid += (s.amtP || 0); totalSalBalance += (bal > 0 ? bal : 0);
+                 });
+                 dataRows.push(['TOTALS:', '', totalSalary, totalPaid, totalSalBalance, '', '']);
+
+                 if (dataRows.length <= 1) { shTst("CSV بنانے کے لیے کوئی ڈیٹا نہیں۔", "انتباہ", "bg-warning text-dark"); return; }
+                 const csv = arrToCSV(hdrs, dataRows);
+                 dnCSV(csv, fileName);
+                 shTst("تنخواہ CSV کامیابی سے ڈاؤن لوڈ ہو گئی۔");
+
+             } catch (error) {
+                 console.error("Error exporting Salary CSV:", error);
+                 shTst("تنخواہ CSV ایکسپورٹ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+             }
+         }
+         window.exCSRpt = exCSRpt; // Expose globally
+
+
+         async function exCERpt() { // Export Custom Expense/Income Report
+            const dtS = gE('rEDtS').value;
+            const dtE = gE('rEDtE').value;
+            if (!dtS || !dtE || dtS > dtE) { shTst("برائے مہربانی درست تاریخ کی حد منتخب کریں۔", "انتباہ", "bg-warning text-dark"); return; }
+
+            try {
+                 const fileName = `IncomeExpense_${dtS}_to_${dtE}.csv`;
+                 const tx = db.transaction('exps', 'readonly');
+                 const store = tx.objectStore('exps');
+                 const idx = store.index('dt');
+                 const range = IDBKeyRange.bound(dtS, dtE);
+                 const req = idx.getAll(range);
+                 const expRecs = await new Promise((resolve, reject) => { req.onsuccess = (e) => resolve(e.target.result); req.onerror = (e) => reject(e.target.error); });
+
+                 const hdrs = ['Date', 'Type', 'Description', 'Income', 'Expense'];
+                 let dataRows = [];
+                 let totalIncome = 0, totalExpense = 0;
+
+                 expRecs.sort((a, b) => new Date(a.dt) - new Date(b.dt));
+
+                 expRecs.forEach(e => {
+                     const isIncome = e.typ === 'income';
+                     dataRows.push([ e.dt, e.typ, e.dsc, isIncome ? e.amt : '', !isIncome ? e.amt : '' ]);
+                     if (isIncome) totalIncome += e.amt; else totalExpense += e.amt;
+                 });
+                 const balance = totalIncome - totalExpense;
+                 dataRows.push(['TOTALS:', '', '', totalIncome, totalExpense]);
+                 dataRows.push(['BALANCE:', '', '', '', balance]);
+
+                 if (dataRows.length <= 2) { shTst("CSV بنانے کے لیے کوئی ڈیٹا نہیں۔", "انتباہ", "bg-warning text-dark"); return; }
+                 const csv = arrToCSV(hdrs, dataRows);
+                 dnCSV(csv, fileName);
+                 shTst("آمدنی/اخراجات CSV کامیابی سے ڈاؤن لوڈ ہو گئی۔");
+
+            } catch (error) {
+                 console.error("Error exporting Expense/Income CSV:", error);
+                 shTst("آمدنی/اخراجات CSV ایکسپورٹ کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+             }
+         }
+         window.exCERpt = exCERpt; // Expose globally
+
+
+        // --- Printing ---
+         function prElm(elemId) {
+            const elem = gE(elemId);
+             if (!elem || !elem.innerHTML.trim()) {
+                 shTst("پرنٹ کرنے کے لیے کچھ نہیں ہے۔", "انتباہ", "bg-warning text-dark");
+                 return;
+            }
+
+            const WinPrint = window.open('', '', 'left=50,top=50,width=800,height=600,toolbar=0,scrollbars=1,status=0');
+             // Basic styling for print
+             WinPrint.document.write(`
+                <!DOCTYPE html>
+                <html lang="ur" dir="rtl">
+                <head>
+                  <title>پرنٹ</title>
+                  <meta charset="UTF-8">
+                  <style>
+                    body { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; text-align: right; padding: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                    th, td { border: 1px solid #ccc; padding: 6px; text-align: right; vertical-align: middle; font-size: 0.9em; }
+                    th { background-color: #f2f2f2; font-weight: bold; }
+                    h1, h2, h3 { text-align: center; margin-bottom: 5px;}
+                    p { text-align: center; margin-bottom: 15px; font-size: 0.9em;}
+                    @media print {
+                        button { display: none; } /* Hide buttons in print view */
+                        body { padding: 5px; }
+                    }
+                  </style>
+                </head>
+                <body>
+                  <button onclick="window.print();">صفحہ پرنٹ کریں</button>
+                  <button onclick="window.close();">بند کریں</button>
+                  ${elem.innerHTML}
+                </body>
+                </html>
+            `);
+             WinPrint.document.close();
+             WinPrint.focus();
+            // WinPrint.print(); // Optionally trigger print immediately
+            // WinPrint.close(); // Optionally close after print
+        }
+
+         function prRpt(typ) {
+            // Generate the report content first if not already generated or if parameters changed
+            // For simple reports, we assume gnRpt was called just before clicking print.
+             const rptContent = gE('rPrntArea').innerHTML;
+             if (!rptContent || !rptContent.includes('<table')) {
+                shTst("براہ کرم پہلے 'رپورٹ دیکھیں' پر کلک کریں۔", "انتباہ", "bg-warning text-dark");
+                 return;
+             }
+             prElm('rPrntArea');
+         }
+         window.prRpt = prRpt; // Expose globally
+
+         function prCARpt() { // Print Custom Attendance Report
+             const rptContent = gE('rPrntArea').innerHTML;
+             if (!rptContent || !rptContent.includes('<table')) {
+                 shTst("براہ کرم پہلے حاضری 'رپورٹ دیکھیں' پر کلک کریں۔", "انتباہ", "bg-warning text-dark");
+                 return;
+             }
+             prElm('rPrntArea');
+         }
+         window.prCARpt = prCARpt; // Expose globally
+
+        function prCFRpt() { // Print Custom Fee Report
+            const rptContent = gE('rPrntArea').innerHTML;
+            if (!rptContent || !rptContent.includes('<table')) {
+                shTst("براہ کرم پہلے فیس 'رپورٹ دیکھیں' پر کلک کریں۔", "انتباہ", "bg-warning text-dark");
+                return;
+            }
+            prElm('rPrntArea');
+         }
+        window.prCFRpt = prCFRpt; // Expose globally
+
+        function prCSRpt() { // Print Custom Salary Report
+            const rptContent = gE('rPrntArea').innerHTML;
+            if (!rptContent || !rptContent.includes('<table')) {
+                 shTst("براہ کرم پہلے تنخواہ 'رپورٹ دیکھیں' پر کلک کریں۔", "انتباہ", "bg-warning text-dark");
+                 return;
+             }
+            prElm('rPrntArea');
+        }
+         window.prCSRpt = prCSRpt; // Expose globally
+
+        function prCERpt() { // Print Custom Expense/Income Report
+             const rptContent = gE('rPrntArea').innerHTML;
+             if (!rptContent || !rptContent.includes('<table')) {
+                 shTst("براہ کرم پہلے آمدنی/اخراجات 'رپورٹ دیکھیں' پر کلک کریں۔", "انتباہ", "bg-warning text-dark");
+                 return;
+             }
+             prElm('rPrntArea');
+         }
+        window.prCERpt = prCERpt; // Expose globally
+
+
+        // --- Backup & Restore ---
+        async function bkD() {
+            shTst("بیک اپ تیار کیا جا رہا ہے...", "اطلاع", "bg-info text-white");
+            try {
+                 const oSNms = ['stds', 'tchs', 'clss', 'att', 'fees', 'slrs', 'inv', 'exps', 'stgs'];
+                 const bkData = {};
+                for (const sN of oSNms) {
+                    bkData[sN] = await dbGetAll(sN);
+                 }
+
+                 const jsonStr = JSON.stringify(bkData, null, 2); // Pretty print JSON
+                 const blob = new Blob([jsonStr], { type: 'application/json' });
+                 const link = document.createElement('a');
+                 const url = URL.createObjectURL(blob);
+                 const dtStr = new Date().toISOString().replace(/[:.]/g, '-');
+                 link.href = url;
+                 link.download = `mms_backup_${dtStr}.json`;
+                 document.body.appendChild(link);
+                 link.click();
+                 document.body.removeChild(link);
+                 URL.revokeObjectURL(url);
+                 shTst("ڈیٹا بیک اپ کامیابی سے ڈاؤن لوڈ ہو گیا۔");
+             } catch (error) {
+                 console.error("Error creating backup:", error);
+                 shTst("بیک اپ بنانے میں خرابی۔", "خرابی", "bg-danger text-white");
+             }
+        }
+        window.bkD = bkD; // Expose globally
+
+
+        async function rstD() {
+             const flInp = gE('rFl');
+             const fl = flInp.files[0];
+
+             if (!fl) {
+                 shTst("براہ کرم بحال کرنے کے لیے بیک اپ فائل منتخب کریں۔", "انتباہ", "bg-warning text-dark");
+                 return;
+             }
+            if (!confirm("انتباہ: تمام موجودہ ڈیٹا حذف ہو جائے گا اور منتخب فائل سے بحال کیا جائے گا۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟")) {
+                return;
+            }
+
+            shTst("ڈیٹا بحال کیا جا رہا ہے...", "اطلاع", "bg-info text-white");
+             rMd.hide(); // Hide restore modal during process
+
+             try {
+                 const rdr = new FileReader();
+                 rdr.onload = async (e) => {
+                    try {
+                        const bkData = JSON.parse(e.target.result);
+                         const oSNms = ['stds', 'tchs', 'clss', 'att', 'fees', 'slrs', 'inv', 'exps', 'stgs'];
+
+                         // --- CRITICAL: Clear existing data ---
+                         const clrPromises = oSNms.map(sN => dbClear(sN));
+                         await Promise.all(clrPromises);
+                         shTst("موجودہ ڈیٹا صاف کر دیا گیا۔ بحالی جاری ہے...", "اطلاع", "bg-info text-white");
+
+                         // --- Restore data ---
+                         for (const sN of oSNms) {
+                             if (bkData[sN] && Array.isArray(bkData[sN])) {
+                                 const s = gOS(sN, 'readwrite');
+                                 if (s) {
+                                     const addPromises = bkData[sN].map(itm => {
+                                         // Remove potentially invalid 'id' if store uses autoIncrement
+                                         // However, keeping IDs might be necessary for relationships.
+                                         // Let's assume IDs from backup are valid or store doesn't use autoIncrement strictly.
+                                         // If using autoIncrement, need careful handling or remapping IDs.
+                                         // For simplicity here, we assume IDs are kept or the schema handles it.
+                                         // A safer approach might clear and ADD without ID, letting DB assign new ones, but breaks relations.
+                                         // Let's try PUT which works for both adding and updating (useful if IDs are present)
+                                         return new Promise((res, rej) => {
+                                             const req = s.put(itm); // Use PUT instead of ADD
+                                             req.onsuccess = res;
+                                             req.onerror = (err) => { console.warn(`Restore error in ${sN}:`, err.target.error, 'Item:', itm); rej(err.target.error); }; // Log error but continue if possible
+                                         });
+                                     });
+                                     await Promise.allSettled(addPromises); // Use allSettled to continue even if some items fail
+                                 }
+                             }
+                         }
+
+                        shTst("ڈیٹا کامیابی سے بحال ہو گیا۔ براہ کرم ایپ کو تازہ کریں۔", "کامیابی", "bg-success text-white");
+                         // Force reload or prompt user? Reload is safer.
+                         setTimeout(() => window.location.reload(), 2000); // Reload after 2 secs
+
+                    } catch (parseError) {
+                        console.error("Error parsing backup file:", parseError);
+                        shTst("بیک اپ فائل پڑھنے میں خرابی۔ کیا یہ درست JSON فائل ہے؟", "خرابی", "bg-danger text-white");
+                     }
+                 };
+                 rdr.onerror = (e) => {
+                    console.error("Error reading file:", e);
+                    shTst("فائل پڑھنے میں خرابی۔", "خرابی", "bg-danger text-white");
+                 };
+                 rdr.readAsText(fl);
+
+             } catch (error) {
+                 console.error("Error during restore process:", error);
+                 shTst("ڈیٹا بحال کرنے میں خرابی۔", "خرابی", "bg-danger text-white");
+             } finally {
+                flInp.value = ''; // Clear file input
+             }
+        }
+        window.rstD = rstD; // Expose globally
+
+
+        // --- SHORT NAME ALIASES (Mandatory Instruction) ---
+        const g1 = gE; // getElementById
+        const q1 = qS; // querySelector
+        const qA = qSA; // querySelectorAll
+        const sT = shTst; // showToast
+        const gO = gOS; // getObjectStore
+        const dA = dbAdd;
+        const dP = dbPut;
+        const dD = dbDel;
+        const dG = dbGet;
+        const dGA = dbGetAll;
+        const dC = dbCount;
+        const dCL = dbClear;
+        const sS = shSctn; // showSection
+        const lS = ldStgs; // loadSettings
+        const lSF = ldStgsFrm; // loadSettingsForm
+        const rCFU = rnCFldUI; // renderCustomFieldUI
+        const aCF = adCFld; // addCustomField
+        window.aSCF = () => aCF('s'); // addStudentCustomField
+        window.aTCF = () => aCF('t'); // addTeacherCustomField
+        const rmCF = rmCFld; window.rmCF = rmCF; // removeCustomField
+        const svSg = svStgs; // saveSettings
+        const rmLg = rmLgo; window.rmLg = rmLg; // removeLogo
+        const rFB6 = rdFlAsB64; // readFileAsBase64
+        const lSt = ldS; // loadStudents
+        const sSF = shSFrm; window.sSF = sSF; // showStudentForm
+        const svSt = svS; // saveStudent
+        const edSt = edS; window.edSt = edSt; // editStudent
+        const delSt = delS; window.delSt = delSt; // deleteStudent
+        const lTe = ldT; // loadTeachers
+        const sTF = shTFrm; window.sTF = sTF; // showTeacherForm
+        const svTe = svT; // saveTeacher
+        const edTe = edT; window.edTe = edT; // editTeacher
+        const delTe = delT; window.delTe = delTe; // deleteTeacher
+        const lCl = ldC; // loadClasses
+        const sCF = shCFrm; window.sCF = sCF; // showClassForm
+        const svCl = svC; // saveClass
+        const edCl = edC; window.edCl = edC; // editClass
+        const delCl = delC; window.delCl = delCl; // deleteClass
+        const pCS = ppClsSel; // populateClassSelect
+        const pTS = ppTchSel; // populateTeacherSelect
+        const pSS = ppStdSel; // populateStudentSelect
+        const pSC = ppStdChk; // populateStudentCheckboxes
+        const pAS = ppAttSel; // populateAttendanceSelects
+        const lAt = ldA; window.lAt = lAt; // loadAttendance
+        const hAC = hAttChk; window.hAC = hAC; // handleAttendanceCheck
+        const svAt = svA; window.svAt = svAt; // saveAttendance
+        const sFStrF = shFeStrFrm; window.sFStrF = sFStrF; // showFeeStructureForm
+        //const svFStr = svFStr; // saveFeeStructure (already short, keep as is)
+        const sFPF = shFePyFrm; window.sFPF = sFPF; // showFeePaymentForm
+        const uTF = updTFee; // updateTotalFee
+        const svFP = svFPy; // saveFeePayment
+        const pFCS = ppFClsSel; // populateFeeClassSelect
+        const lFR = ldFRecs; window.lFR = lFR; // loadFeeRecords
+        const edFP = edFPy; window.edFP = edFP; // editFeePayment
+        const delFP = delFPy; window.delFP = delFP; // deleteFeePayment
+        const sSPF = shSlPyFrm; window.sSPF = sSPF; // showSalaryPaymentForm
+        const svSP = svSlPy; // saveSalaryPayment
+        const lSR = ldSlRecs; window.lSR = lSR; // loadSalaryRecords
+        const edSP = edSlPy; window.edSP = edSP; // editSalaryPayment
+        const delSP = delSlPy; window.delSP = delSP; // deleteSalaryPayment
+        const lI = ldInv; // loadInventory
+        const sIF = shInvFrm; window.sIF = sIF; // showInventoryForm
+        const svI = svInv; // saveInventory
+        const edI = edInv; window.edI = edI; // editInventory
+        const delI = delInv; window.delI = delI; // deleteInventory
+        const lE = ldExps; window.lE = lE; // loadExpenses
+        const cEF = clrEFltr; window.cEF = cEF; // clearExpenseFilters
+        const sEF = shExpFrm; window.sEF = sEF; // showExpenseForm
+        const svE = svExp; // saveExpense
+        const edE = edExp; window.edE = edE; // editExpense
+        const delE = delExp; window.delE = delE; // deleteExpense
+        const lD = ldDsh; // loadDashboard
+        const pRS = ppRptSel; // populateReportSelects
+        const cT = crTbl; // createTable
+        const gR = gnRpt; window.gR = gR; // generateReport
+        const gAR = gnARpt; window.gAR = gAR; // generateAttendanceReport
+        const gFR = gnFRpt; window.gFR = gFR; // generateFeeReport
+        const gSR = gnSRpt; window.gSR = gSR; // generateSalaryReport
+        const gER = gnERpt; window.gER = gER; // generateExpenseReport
+        //const dC = dnCSV; // downloadCSV
+        const aTC = arrToCSV; // arrayToCSV
+        const eC = exCSV; window.eC = eC; // exportCSV
+        const eCAR = exCARpt; window.eCAR = eCAR; // exportCustomAttendanceReport
+        const eCFR = exCFRpt; window.eCFR = eCFR; // exportCustomFeeReport
+        const eCSR = exCSRpt; window.eCSR = eCSR; // exportCustomSalaryReport
+        const eCER = exCERpt; window.eCER = eCER; // exportCustomExpenseReport
+        const pE = prElm; // printElement
+        const pR = prRpt; window.pR = pR; // printReport
+        const pCAR = prCARpt; window.pCAR = pCAR; // printCustomAttendanceReport
+        const pCFR = prCFRpt; window.pCFR = pCFR; // printCustomFeeReport
+        const pCSR = prCSRpt; window.pCSR = pCSR; // printCustomSalaryReport
+        const pCER = prCERpt; window.pCER = pCER; // printCustomExpenseReport
+        const bD = bkD; window.bD = bD; // backupData
+        const rD = rstD; window.rD = rD; // restoreData
+
+
+    </script>
+	
+	
+	
+	</body>
+</html>
+
+		
