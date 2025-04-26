@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المدرسة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* Apply Urdu font globally, with Inter as fallback */
+        body {
+            font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif;
+            background-color: #f7fafc; /* Light gray background */
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Sidebar transition */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        /* Class to hide sidebar off-screen */
+        .sidebar-hidden {
+            transform: translateX(100%); /* Move sidebar off-screen to the right for RTL */
+        }
+         @media (min-width: 768px) { /* md breakpoint */
+             .sidebar-hidden {
+                 transform: translateX(0); /* Keep sidebar visible on larger screens */
+             }
+             #main-content {
+                 margin-right: 16rem; /* Adjust main content margin when sidebar is visible */
+             }
+             #sidebar.sidebar-hidden + #main-content {
+                 margin-right: 0; /* No margin when sidebar forced hidden (not typical on md+) */
+             }
+         }
+
+        /* Loading Spinner Styles */
+        #loading-spinner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px; /* Adjust for RTL if needed */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            min-width: 250px;
+            text-align: center;
+        }
+        .notification.show {
+            opacity: 1;
+        }
+        .notification.success {
+            background-color: #4caf50; /* Green */
+        }
+        .notification.error {
+            background-color: #f44336; /* Red */
+        }
+
+        /* Ensure table headers are sticky */
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #e2e8f0; /* gray-200 */
+            z-index: 10;
+        }
+
+        /* RTL adjustments */
+        .text-right { text-align: right; }
+        .text-left { text-align: left; }
+        .mr-2 { margin-left: 0.5rem; margin-right: 0; } /* Swap margin for RTL */
+        .ml-2 { margin-right: 0.5rem; margin-left: 0; } /* Swap margin for RTL */
+        .pr-4 { padding-left: 1rem; padding-right: 0; }
+        .pl-4 { padding-right: 1rem; padding-left: 0; }
+        /* Add more RTL adjustments as needed */
+
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="loading-spinner" class="hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="notification-area"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        <aside id="sidebar" class="fixed inset-y-0 right-0 z-30 w-64 bg-gray-800 text-white p-4 overflow-y-auto md:translate-x-0 sidebar-hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-center">نظام المدرسة</h2>
+            <nav>
+                <ul>
+                    <li class="mb-3">
+                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="dashboard">
+                            <i class="fas fa-tachometer-alt mr-2"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="students">
+                            <i class="fas fa-user-graduate mr-2"></i> طلباء
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="teachers">
+                            <i class="fas fa-chalkboard-teacher mr-2"></i> اساتذہ
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="classes">
+                            <i class="fas fa-school mr-2"></i> کلاسیں
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="attendance">
+                            <i class="fas fa-user-check mr-2"></i> حاضری
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="fees">
+                            <i class="fas fa-money-bill-wave mr-2"></i> فیس
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main id="main-content" class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 transition-all duration-300 ease-in-out">
+            <header class="flex justify-between items-center mb-6">
+                <button id="menu-toggle" class="text-gray-700 md:hidden">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <h1 id="page-title" class="text-2xl font-semibold text-gray-800">لوحة التحكم</h1>
+                <div></div>
+            </header>
+
+            <div id="content-area">
+                <section id="dashboard" class="content-section">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-600 mb-1">کل طلباء</h3>
+                                <p id="student-count" class="text-3xl font-bold text-blue-600">0</p>
+                            </div>
+                            <i class="fas fa-user-graduate text-4xl text-blue-400"></i>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-600 mb-1">کل اساتذہ</h3>
+                                <p id="teacher-count" class="text-3xl font-bold text-green-600">0</p>
+                            </div>
+                            <i class="fas fa-chalkboard-teacher text-4xl text-green-400"></i>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                             <div>
+                                <h3 class="text-lg font-semibold text-gray-600 mb-1">کل کلاسیں</h3>
+                                <p id="class-count" class="text-3xl font-bold text-purple-600">0</p>
+                            </div>
+                            <i class="fas fa-school text-4xl text-purple-400"></i>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="students" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">طلباء کا انتظام</h2>
+                        <button id="add-student-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                            <i class="fas fa-plus mr-2"></i> نیا طالب علم شامل کریں
+                        </button>
+                    </div>
+                     <div class="mb-4">
+                        <input type="text" id="student-search" placeholder="نام یا ID سے تلاش کریں..." class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">نام</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">والد کا نام</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">کلاس</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">رابطہ نمبر</th>
+                                    <th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-table-body" class="text-gray-700">
+                                <tr><td colspan="6" class="text-center py-4">کوئی طلباء نہیں ملے</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="student-form-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40">
+                        <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+                            <form id="student-form" class="space-y-4">
+                                <h3 id="student-form-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">طالب علم شامل کریں/ترمیم کریں</h3>
+                                <input type="hidden" id="student-id">
+                                <div>
+                                    <label for="student-name" class="block text-sm font-medium text-gray-700">نام</label>
+                                    <input type="text" id="student-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="student-father-name" class="block text-sm font-medium text-gray-700">والد کا نام</label>
+                                    <input type="text" id="student-father-name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="student-class" class="block text-sm font-medium text-gray-700">کلاس</label>
+                                    <select id="student-class" required class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                        <option value="">کلاس منتخب کریں</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="student-contact" class="block text-sm font-medium text-gray-700">رابطہ نمبر</label>
+                                    <input type="tel" id="student-contact" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="student-address" class="block text-sm font-medium text-gray-700">پتہ</label>
+                                    <textarea id="student-address" rows="2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                                </div>
+                                <div class="flex justify-end space-x-reverse space-x-2 pt-4">
+                                    <button type="button" id="cancel-student-form" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">منسوخ کریں</button>
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">محفوظ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="teachers" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">اساتذہ کا انتظام</h2>
+                        <button id="add-teacher-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                            <i class="fas fa-plus mr-2"></i> نیا استاد شامل کریں
+                        </button>
+                    </div>
+                     <div class="mb-4">
+                        <input type="text" id="teacher-search" placeholder="نام یا ID سے تلاش کریں..." class="w-full p-2 border border-gray-300 rounded">
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">نام</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">مضمون</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">رابطہ نمبر</th>
+                                    <th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacher-table-body" class="text-gray-700">
+                                <tr><td colspan="5" class="text-center py-4">کوئی اساتذہ نہیں ملے</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="teacher-form-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40">
+                         <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+                            <form id="teacher-form" class="space-y-4">
+                                <h3 id="teacher-form-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">استاد شامل کریں/ترمیم کریں</h3>
+                                <input type="hidden" id="teacher-id">
+                                <div>
+                                    <label for="teacher-name" class="block text-sm font-medium text-gray-700">نام</label>
+                                    <input type="text" id="teacher-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="teacher-subject" class="block text-sm font-medium text-gray-700">مضمون</label>
+                                    <input type="text" id="teacher-subject" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="teacher-contact" class="block text-sm font-medium text-gray-700">رابطہ نمبر</label>
+                                    <input type="tel" id="teacher-contact" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="teacher-address" class="block text-sm font-medium text-gray-700">پتہ</label>
+                                    <textarea id="teacher-address" rows="2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                                </div>
+                                <div class="flex justify-end space-x-reverse space-x-2 pt-4">
+                                    <button type="button" id="cancel-teacher-form" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">منسوخ کریں</button>
+                                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">محفوظ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="classes" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
+                     <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">کلاسوں کا انتظام</h2>
+                        <button id="add-class-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                            <i class="fas fa-plus mr-2"></i> نئی کلاس شامل کریں
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">کلاس کا نام</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">استاد</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">طلباء کی تعداد</th>
+                                    <th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
+                                </tr>
+                            </thead>
+                            <tbody id="class-table-body" class="text-gray-700">
+                                <tr><td colspan="5" class="text-center py-4">کوئی کلاسیں نہیں ملیں</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                     <div id="class-form-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40">
+                         <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+                            <form id="class-form" class="space-y-4">
+                                <h3 id="class-form-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">کلاس شامل کریں/ترمیم کریں</h3>
+                                <input type="hidden" id="class-id">
+                                <div>
+                                    <label for="class-name" class="block text-sm font-medium text-gray-700">کلاس کا نام</label>
+                                    <input type="text" id="class-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="class-teacher" class="block text-sm font-medium text-gray-700">استاد منتخب کریں</label>
+                                    <select id="class-teacher" required class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                        <option value="">استاد منتخب کریں</option>
+                                        </select>
+                                </div>
+                                <div class="flex justify-end space-x-reverse space-x-2 pt-4">
+                                    <button type="button" id="cancel-class-form" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">منسوخ کریں</button>
+                                    <button type="submit" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">محفوظ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="attendance" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">حاضری کا انتظام</h2>
+                     <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="attendance-class-select" class="block text-sm font-medium text-gray-700">کلاس منتخب کریں</label>
+                            <select id="attendance-class-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">کلاس منتخب کریں</option>
+                                </select>
+                        </div>
+                         <div>
+                            <label for="attendance-date" class="block text-sm font-medium text-gray-700">تاریخ</label>
+                            <input type="date" id="attendance-date" value="" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                    <div id="attendance-student-list" class="mt-4">
+                        <p class="text-gray-500">حاضری لینے کے لیے کلاس اور تاریخ منتخب کریں۔</p>
+                    </div>
+                     <div class="mt-6 flex justify-end">
+                         <button id="save-attendance-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded hidden">حاضری محفوظ کریں</button>
+                     </div>
+                </section>
+
+                <section id="fees" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">فیس کا انتظام</h2>
+                     <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                         <div>
+                             <label for="fee-student-select" class="block text-sm font-medium text-gray-700">طالب علم منتخب کریں</label>
+                             <select id="fee-student-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                 <option value="">طالب علم منتخب کریں</option>
+                                 </select>
+                         </div>
+                         <div>
+                             <label for="fee-amount" class="block text-sm font-medium text-gray-700">رقم</label>
+                             <input type="number" id="fee-amount" placeholder="رقم درج کریں" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                         </div>
+                         <div>
+                             <label for="fee-date" class="block text-sm font-medium text-gray-700">تاریخ</label>
+                             <input type="date" id="fee-date" value="" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                         </div>
+                     </div>
+                     <div class="flex justify-end mb-6">
+                         <button id="add-fee-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                             <i class="fas fa-plus mr-2"></i> فیس شامل کریں
+                         </button>
+                     </div>
+                     <h3 class="text-lg font-semibold mb-2">فیس کی تاریخ</h3>
+                      <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">طالب علم ID</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">طالب علم کا نام</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">رقم</th>
+                                    <th class="py-3 px-4 text-right font-semibold text-sm">تاریخ</th>
+                                    <th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fee-table-body" class="text-gray-700">
+                                <tr><td colspan="5" class="text-center py-4">کوئی فیس ریکارڈ نہیں ملا</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Constants ---
+        const DB_NAME = 'MadrasaDB';
+        const DB_VERSION = 1;
+        const STORES = {
+            STUDENTS: 'students',
+            TEACHERS: 'teachers',
+            CLASSES: 'classes',
+            ATTENDANCE: 'attendance',
+            FEES: 'fees'
+        };
+
+        // --- UI Elements ---
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menu-toggle');
+        const mainContent = document.getElementById('main-content');
+        const contentSections = document.querySelectorAll('.content-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pageTitle = document.getElementById('page-title');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const notificationArea = document.getElementById('notification-area');
+
+        // Dashboard elements
+        const studentCountEl = document.getElementById('student-count');
+        const teacherCountEl = document.getElementById('teacher-count');
+        const classCountEl = document.getElementById('class-count');
+
+        // Student elements
+        const addStudentBtn = document.getElementById('add-student-btn');
+        const studentFormModal = document.getElementById('student-form-modal');
+        const studentForm = document.getElementById('student-form');
+        const cancelStudentFormBtn = document.getElementById('cancel-student-form');
+        const studentTableBody = document.getElementById('student-table-body');
+        const studentSearchInput = document.getElementById('student-search');
+        const studentClassSelect = document.getElementById('student-class'); // In the form
+        const studentFormTitle = document.getElementById('student-form-title');
+
+        // Teacher elements
+        const addTeacherBtn = document.getElementById('add-teacher-btn');
+        const teacherFormModal = document.getElementById('teacher-form-modal');
+        const teacherForm = document.getElementById('teacher-form');
+        const cancelTeacherFormBtn = document.getElementById('cancel-teacher-form');
+        const teacherTableBody = document.getElementById('teacher-table-body');
+        const teacherSearchInput = document.getElementById('teacher-search');
+        const teacherFormTitle = document.getElementById('teacher-form-title');
+
+        // Class elements
+        const addClassBtn = document.getElementById('add-class-btn');
+        const classFormModal = document.getElementById('class-form-modal');
+        const classForm = document.getElementById('class-form');
+        const cancelClassFormBtn = document.getElementById('cancel-class-form');
+        const classTableBody = document.getElementById('class-table-body');
+        const classTeacherSelect = document.getElementById('class-teacher'); // In the form
+        const classFormTitle = document.getElementById('class-form-title');
+
+        // Attendance elements
+        const attendanceClassSelect = document.getElementById('attendance-class-select');
+        const attendanceDateInput = document.getElementById('attendance-date');
+        const attendanceStudentListDiv = document.getElementById('attendance-student-list');
+        const saveAttendanceBtn = document.getElementById('save-attendance-btn');
+
+        // Fees elements
+        const feeStudentSelect = document.getElementById('fee-student-select');
+        const feeAmountInput = document.getElementById('fee-amount');
+        const feeDateInput = document.getElementById('fee-date');
+        const addFeeBtn = document.getElementById('add-fee-btn');
+        const feeTableBody = document.getElementById('fee-table-body');
+
+
+        let db; // IndexedDB database instance
+
+        // --- Utility Functions ---
+
+        /**
+         * Generates a simple unique ID.
+         * @returns {string} A unique ID string.
+         */
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        }
+
+        /**
+         * Shows the loading spinner.
+         */
+        function showLoading() {
+            loadingSpinner.classList.remove('hidden');
+        }
+
+        /**
+         * Hides the loading spinner.
+         */
+        function hideLoading() {
+            loadingSpinner.classList.add('hidden');
+        }
+
+        /**
+         * Shows a notification message.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'success' or 'error'.
+         */
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notificationArea.appendChild(notification);
+
+            // Trigger reflow to enable transition
+            void notification.offsetWidth;
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500); // Wait for fade out transition
+            }, 3000); // Display for 3 seconds
+        }
+
+        /**
+         * Sets the current date in a date input field.
+         * @param {HTMLInputElement} dateInput - The date input element.
+         */
+        function setCurrentDate(dateInput) {
+             if (dateInput) {
+                const today = new Date();
+                // Format date as YYYY-MM-DD for the input type="date"
+                const year = today.getFullYear();
+                const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+                const day = today.getDate().toString().padStart(2, '0');
+                dateInput.value = `${year}-${month}-${day}`;
+            }
+        }
+
+        // --- IndexedDB Functions ---
+
+        /**
+         * Opens the IndexedDB database.
+         * @returns {Promise<IDBDatabase>} A promise that resolves with the DB instance.
+         */
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                if (db) {
+                    resolve(db);
+                    return;
+                }
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = (event) => {
+                    console.error("Database error:", event.target.error);
+                    reject("Database error: " + event.target.error);
+                };
+
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log("Database opened successfully");
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    console.log("Database upgrade needed");
+                    const tempDb = event.target.result;
+                    if (!tempDb.objectStoreNames.contains(STORES.STUDENTS)) {
+                        tempDb.createObjectStore(STORES.STUDENTS, { keyPath: 'id' });
+                        console.log(`Object store created: ${STORES.STUDENTS}`);
+                    }
+                    if (!tempDb.objectStoreNames.contains(STORES.TEACHERS)) {
+                        tempDb.createObjectStore(STORES.TEACHERS, { keyPath: 'id' });
+                         console.log(`Object store created: ${STORES.TEACHERS}`);
+                    }
+                    if (!tempDb.objectStoreNames.contains(STORES.CLASSES)) {
+                        const classStore = tempDb.createObjectStore(STORES.CLASSES, { keyPath: 'id' });
+                        // Add index for teacherId if needed later for lookups
+                        // classStore.createIndex('teacherId', 'teacherId', { unique: false });
+                         console.log(`Object store created: ${STORES.CLASSES}`);
+                    }
+                    if (!tempDb.objectStoreNames.contains(STORES.ATTENDANCE)) {
+                        // Use composite key [classId, date, studentId] or a generated ID
+                        const attendanceStore = tempDb.createObjectStore(STORES.ATTENDANCE, { keyPath: 'id' });
+                        attendanceStore.createIndex('classDate', ['classId', 'date'], { unique: false });
+                         console.log(`Object store created: ${STORES.ATTENDANCE}`);
+                    }
+                    if (!tempDb.objectStoreNames.contains(STORES.FEES)) {
+                        const feeStore = tempDb.createObjectStore(STORES.FEES, { keyPath: 'id' });
+                        feeStore.createIndex('studentId', 'studentId', { unique: false });
+                         console.log(`Object store created: ${STORES.FEES}`);
+                    }
+                };
+            });
+        }
+
+        /**
+         * Adds a record to a specified store.
+         * @param {string} storeName - The name of the object store.
+         * @param {object} record - The record to add.
+         * @returns {Promise<void>}
+         */
+        function addRecord(storeName, record) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const db = await openDB();
+                    const transaction = db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.add(record);
+
+                    request.onsuccess = () => resolve();
+                    request.onerror = (event) => reject("Error adding record: " + event.target.error);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        /**
+         * Gets a record by its ID from a specified store.
+         * @param {string} storeName - The name of the object store.
+         * @param {string} id - The ID of the record to get.
+         * @returns {Promise<object|null>} The record object or null if not found.
+         */
+        function getRecord(storeName, id) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const db = await openDB();
+                    const transaction = db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.get(id);
+
+                    request.onsuccess = (event) => resolve(event.target.result || null);
+                    request.onerror = (event) => reject("Error getting record: " + event.target.error);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        /**
+         * Gets all records from a specified store.
+         * @param {string} storeName - The name of the object store.
+         * @returns {Promise<Array<object>>} An array of records.
+         */
+        function getAllRecords(storeName) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const db = await openDB();
+                    const transaction = db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.getAll();
+
+                    request.onsuccess = (event) => resolve(event.target.result || []);
+                    request.onerror = (event) => reject("Error getting all records: " + event.target.error);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+         /**
+         * Updates a record in a specified store.
+         * @param {string} storeName - The name of the object store.
+         * @param {object} record - The updated record (must include the key).
+         * @returns {Promise<void>}
+         */
+        function updateRecord(storeName, record) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const db = await openDB();
+                    const transaction = db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.put(record); // put() updates or inserts
+
+                    request.onsuccess = () => resolve();
+                    request.onerror = (event) => reject("Error updating record: " + event.target.error);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        /**
+         * Deletes a record by its ID from a specified store.
+         * @param {string} storeName - The name of the object store.
+         * @param {string} id - The ID of the record to delete.
+         * @returns {Promise<void>}
+         */
+        function deleteRecord(storeName, id) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const db = await openDB();
+                    const transaction = db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.delete(id);
+
+                    request.onsuccess = () => resolve();
+                    request.onerror = (event) => reject("Error deleting record: " + event.target.error);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+         /**
+         * Gets records based on an index value.
+         * @param {string} storeName - The name of the object store.
+         * @param {string} indexName - The name of the index.
+         * @param {any} value - The value to query the index with.
+         * @returns {Promise<Array<object>>} An array of matching records.
+         */
+        function getRecordsByIndex(storeName, indexName, value) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const db = await openDB();
+                    const transaction = db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const index = store.index(indexName);
+                    const request = index.getAll(value); // Use getAll for potentially multiple matches
+
+                    request.onsuccess = (event) => resolve(event.target.result || []);
+                    request.onerror = (event) => reject(`Error getting records by index ${indexName}: ${event.target.error}`);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+
+        // --- UI Rendering and Event Handlers ---
+
+        /**
+         * Switches the visible content section.
+         * @param {string} targetId - The ID of the section to show.
+         */
+        function showSection(targetId) {
+            contentSections.forEach(section => {
+                if (section.id === targetId) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+            // Update page title
+            const targetLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
+            pageTitle.textContent = targetLink ? targetLink.textContent.trim() : 'لوحة التحكم';
+
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth < 768) { // Tailwind's 'md' breakpoint
+                 sidebar.classList.add('sidebar-hidden');
+            }
+        }
+
+        /**
+         * Populates a select dropdown with options.
+         * @param {HTMLSelectElement} selectElement - The select element to populate.
+         * @param {Array<object>} data - Array of objects for options.
+         * @param {string} valueField - The property name for the option value.
+         * @param {string} textField - The property name for the option text.
+         * @param {string} [placeholder='Select...'] - Placeholder text.
+         */
+        function populateSelect(selectElement, data, valueField, textField, placeholder = 'منتخب کریں...') {
+            selectElement.innerHTML = `<option value="">${placeholder}</option>`; // Clear existing options and add placeholder
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item[valueField];
+                option.textContent = item[textField];
+                selectElement.appendChild(option);
+            });
+        }
+
+        // --- Dashboard Logic ---
+        async function updateDashboard() {
+            showLoading();
+            try {
+                const students = await getAllRecords(STORES.STUDENTS);
+                const teachers = await getAllRecords(STORES.TEACHERS);
+                const classes = await getAllRecords(STORES.CLASSES);
+                // Add fee calculation later if needed
+
+                studentCountEl.textContent = students.length;
+                teacherCountEl.textContent = teachers.length;
+                classCountEl.textContent = classes.length;
+            } catch (error) {
+                console.error("Error updating dashboard:", error);
+                showNotification("ڈیش بورڈ کو اپ ڈیٹ کرنے میں خرابی۔", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // --- Student Logic ---
+        async function loadStudents(searchTerm = '') {
+            showLoading();
+            try {
+                let students = await getAllRecords(STORES.STUDENTS);
+                const classes = await getAllRecords(STORES.CLASSES); // Get classes for display name
+
+                 // Create a map for quick class lookup
+                const classMap = classes.reduce((map, cls) => {
+                    map[cls.id] = cls.name;
+                    return map;
+                }, {});
+
+
+                if (searchTerm) {
+                    const lowerSearchTerm = searchTerm.toLowerCase();
+                    students = students.filter(s =>
+                        s.name.toLowerCase().includes(lowerSearchTerm) ||
+                        s.id.toLowerCase().includes(lowerSearchTerm)
+                    );
+                }
+
+                studentTableBody.innerHTML = ''; // Clear existing rows
+                if (students.length === 0) {
+                    studentTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4">کوئی طلباء نہیں ملے</td></tr>`;
+                } else {
+                    students.forEach(student => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="py-2 px-4 border-b">${student.id}</td>
+                            <td class="py-2 px-4 border-b">${student.name}</td>
+                            <td class="py-2 px-4 border-b">${student.fatherName || '-'}</td>
+                            <td class="py-2 px-4 border-b">${classMap[student.classId] || 'تفویض نہیں'}</td>
+                            <td class="py-2 px-4 border-b">${student.contact || '-'}</td>
+                            <td class="py-2 px-4 border-b text-center">
+                                <button class="text-blue-500 hover:text-blue-700 mr-2 edit-student-btn" data-id="${student.id}"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-500 hover:text-red-700 delete-student-btn" data-id="${student.id}"><i class="fas fa-trash"></i></button>
+                            </td>
+                        `;
+                        studentTableBody.appendChild(row);
+                    });
+                }
+                // Add event listeners for new buttons
+                attachStudentActionListeners();
+
+            } catch (error) {
+                console.error("Error loading students:", error);
+                showNotification("طلباء کو لوڈ کرنے میں خرابی۔", "error");
+                 studentTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500">طلباء کو لوڈ کرنے میں خرابی۔</td></tr>`;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function openStudentForm(student = null) {
+            studentForm.reset(); // Clear form
+            document.getElementById('student-id').value = ''; // Clear hidden ID
+            loadClassesIntoSelect(studentClassSelect); // Load classes into select
+
+            if (student) {
+                // Edit mode
+                studentFormTitle.textContent = 'طالب علم میں ترمیم کریں';
+                document.getElementById('student-id').value = student.id;
+                document.getElementById('student-name').value = student.name;
+                document.getElementById('student-father-name').value = student.fatherName || '';
+                document.getElementById('student-class').value = student.classId || '';
+                document.getElementById('student-contact').value = student.contact || '';
+                document.getElementById('student-address').value = student.address || '';
+            } else {
+                // Add mode
+                 studentFormTitle.textContent = 'نیا طالب علم شامل کریں';
+            }
+            studentFormModal.classList.remove('hidden');
+        }
+
+        function closeStudentForm() {
+            studentFormModal.classList.add('hidden');
+            studentForm.reset();
+        }
+
+        async function handleStudentFormSubmit(event) {
+            event.preventDefault();
+            showLoading();
+            const studentId = document.getElementById('student-id').value;
+            const studentData = {
+                id: studentId || generateId(),
+                name: document.getElementById('student-name').value.trim(),
+                fatherName: document.getElementById('student-father-name').value.trim(),
+                classId: document.getElementById('student-class').value,
+                contact: document.getElementById('student-contact').value.trim(),
+                address: document.getElementById('student-address').value.trim(),
+            };
+
+            // Basic validation
+            if (!studentData.name || !studentData.classId) {
+                 hideLoading();
+                showNotification("براہ کرم نام اور کلاس درج کریں۔", "error");
+                return;
+            }
+
+            try {
+                if (studentId) {
+                    // Update existing student
+                    await updateRecord(STORES.STUDENTS, studentData);
+                    showNotification("طالب علم کامیابی سے اپ ڈیٹ ہو گیا۔");
+                } else {
+                    // Add new student
+                    await addRecord(STORES.STUDENTS, studentData);
+                    showNotification("طالب علم کامیابی سے شامل ہو گیا۔");
+                }
+                closeStudentForm();
+                await loadStudents(); // Reload the student list
+                await updateDashboard(); // Update counts
+            } catch (error) {
+                console.error("Error saving student:", error);
+                showNotification("طالب علم کو محفوظ کرنے میں خرابی۔", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+         async function deleteStudent(studentId) {
+             if (!confirm(`کیا آپ واقعی اس طالب علم (ID: ${studentId}) کو حذف کرنا چاہتے ہیں؟`)) {
+                 return;
+             }
+             showLoading();
+             try {
+                 // Optional: Add logic here to check/handle dependencies (e.g., attendance, fees) before deleting
+                 await deleteRecord(STORES.STUDENTS, studentId);
+                 showNotification("طالب علم کامیابی سے حذف ہو گیا۔");
+                 await loadStudents(); // Reload the list
+                 await updateDashboard(); // Update counts
+             } catch (error) {
+                 console.error("Error deleting student:", error);
+                 showNotification("طالب علم کو حذف کرنے میں خرابی۔", "error");
+             } finally {
+                 hideLoading();
+             }
+         }
+
+         function attachStudentActionListeners() {
+             // Edit buttons
+             document.querySelectorAll('.edit-student-btn').forEach(button => {
+                 button.addEventListener('click', async (e) => {
+                     const id = e.currentTarget.getAttribute('data-id');
+                     showLoading();
+                     try {
+                        const student = await getRecord(STORES.STUDENTS, id);
+                        if (student) {
+                            openStudentForm(student);
+                        } else {
+                             showNotification("طالب علم نہیں ملا۔", "error");
+                        }
+                     } catch(error) {
+                         console.error("Error fetching student for edit:", error);
+                         showNotification("ترمیم کے لیے طالب علم کو لانے میں خرابی۔", "error");
+                     } finally {
+                         hideLoading();
+                     }
+                 });
+             });
+
+             // Delete buttons
+             document.querySelectorAll('.delete-student-btn').forEach(button => {
+                 button.addEventListener('click', (e) => {
+                     const id = e.currentTarget.getAttribute('data-id');
+                     deleteStudent(id);
+                 });
+             });
+         }
+
+        // --- Teacher Logic ---
+        async function loadTeachers(searchTerm = '') {
+            showLoading();
+            try {
+                let teachers = await getAllRecords(STORES.TEACHERS);
+
+                if (searchTerm) {
+                    const lowerSearchTerm = searchTerm.toLowerCase();
+                    teachers = teachers.filter(t =>
+                        t.name.toLowerCase().includes(lowerSearchTerm) ||
+                        t.id.toLowerCase().includes(lowerSearchTerm)
+                    );
+                }
+
+                teacherTableBody.innerHTML = ''; // Clear existing rows
+                if (teachers.length === 0) {
+                    teacherTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4">کوئی اساتذہ نہیں ملے</td></tr>`;
+                } else {
+                    teachers.forEach(teacher => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="py-2 px-4 border-b">${teacher.id}</td>
+                            <td class="py-2 px-4 border-b">${teacher.name}</td>
+                            <td class="py-2 px-4 border-b">${teacher.subject || '-'}</td>
+                            <td class="py-2 px-4 border-b">${teacher.contact || '-'}</td>
+                            <td class="py-2 px-4 border-b text-center">
+                                <button class="text-blue-500 hover:text-blue-700 mr-2 edit-teacher-btn" data-id="${teacher.id}"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-500 hover:text-red-700 delete-teacher-btn" data-id="${teacher.id}"><i class="fas fa-trash"></i></button>
+                            </td>
+                        `;
+                        teacherTableBody.appendChild(row);
+                    });
+                }
+                 // Add event listeners for new buttons
+                 attachTeacherActionListeners();
+            } catch (error) {
+                console.error("Error loading teachers:", error);
+                showNotification("اساتذہ کو لوڈ کرنے میں خرابی۔", "error");
+                teacherTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">اساتذہ کو لوڈ کرنے میں خرابی۔</td></tr>`;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function openTeacherForm(teacher = null) {
+            teacherForm.reset();
+            document.getElementById('teacher-id').value = '';
+
+            if (teacher) {
+                // Edit mode
+                 teacherFormTitle.textContent = 'استاد میں ترمیم کریں';
+                document.getElementById('teacher-id').value = teacher.id;
+                document.getElementById('teacher-name').value = teacher.name;
+                document.getElementById('teacher-subject').value = teacher.subject || '';
+                document.getElementById('teacher-contact').value = teacher.contact || '';
+                document.getElementById('teacher-address').value = teacher.address || '';
+            } else {
+                // Add mode
+                 teacherFormTitle.textContent = 'نیا استاد شامل کریں';
+            }
+            teacherFormModal.classList.remove('hidden');
+        }
+
+        function closeTeacherForm() {
+            teacherFormModal.classList.add('hidden');
+            teacherForm.reset();
+        }
+
+        async function handleTeacherFormSubmit(event) {
+            event.preventDefault();
+            showLoading();
+            const teacherId = document.getElementById('teacher-id').value;
+            const teacherData = {
+                id: teacherId || generateId(),
+                name: document.getElementById('teacher-name').value.trim(),
+                subject: document.getElementById('teacher-subject').value.trim(),
+                contact: document.getElementById('teacher-contact').value.trim(),
+                address: document.getElementById('teacher-address').value.trim(),
+            };
+
+             // Basic validation
+            if (!teacherData.name) {
+                 hideLoading();
+                showNotification("براہ کرم استاد کا نام درج کریں۔", "error");
+                return;
+            }
+
+            try {
+                if (teacherId) {
+                    await updateRecord(STORES.TEACHERS, teacherData);
+                    showNotification("استاد کامیابی سے اپ ڈیٹ ہو گیا۔");
+                } else {
+                    await addRecord(STORES.TEACHERS, teacherData);
+                    showNotification("استاد کامیابی سے شامل ہو گیا۔");
+                }
+                closeTeacherForm();
+                await loadTeachers();
+                await updateDashboard();
+            } catch (error) {
+                console.error("Error saving teacher:", error);
+                showNotification("استاد کو محفوظ کرنے میں خرابی۔", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function deleteTeacher(teacherId) {
+             if (!confirm(`کیا آپ واقعی اس استاد (ID: ${teacherId}) کو حذف کرنا چاہتے ہیں؟`)) {
+                 return;
+             }
+             showLoading();
+             try {
+                 // Optional: Check if teacher is assigned to any classes before deleting
+                 const classes = await getAllRecords(STORES.CLASSES);
+                 const isAssigned = classes.some(cls => cls.teacherId === teacherId);
+                 if (isAssigned) {
+                     showNotification("استاد کو حذف نہیں کیا جا سکتا کیونکہ وہ کلاسوں کو تفویض کیا گیا ہے۔", "error");
+                     hideLoading();
+                     return;
+                 }
+
+                 await deleteRecord(STORES.TEACHERS, teacherId);
+                 showNotification("استاد کامیابی سے حذف ہو گیا۔");
+                 await loadTeachers();
+                 await updateDashboard();
+             } catch (error) {
+                 console.error("Error deleting teacher:", error);
+                 showNotification("استاد کو حذف کرنے میں خرابی۔", "error");
+             } finally {
+                 hideLoading();
+             }
+         }
+
+        function attachTeacherActionListeners() {
+             // Edit buttons
+             document.querySelectorAll('.edit-teacher-btn').forEach(button => {
+                 button.addEventListener('click', async (e) => {
+                     const id = e.currentTarget.getAttribute('data-id');
+                     showLoading();
+                     try {
+                        const teacher = await getRecord(STORES.TEACHERS, id);
+                        if (teacher) {
+                            openTeacherForm(teacher);
+                        } else {
+                             showNotification("استاد نہیں ملا۔", "error");
+                        }
+                     } catch(error) {
+                         console.error("Error fetching teacher for edit:", error);
+                         showNotification("ترمیم کے لیے استاد کو لانے میں خرابی۔", "error");
+                     } finally {
+                         hideLoading();
+                     }
+                 });
+             });
+
+             // Delete buttons
+             document.querySelectorAll('.delete-teacher-btn').forEach(button => {
+                 button.addEventListener('click', (e) => {
+                     const id = e.currentTarget.getAttribute('data-id');
+                     deleteTeacher(id);
+                 });
+             });
+         }
+
+        // --- Class Logic ---
+         async function loadClassesIntoSelect(selectElement, placeholder = 'منتخب کریں...') {
+            try {
+                const classes = await getAllRecords(STORES.CLASSES);
+                populateSelect(selectElement, classes, 'id', 'name', placeholder);
+            } catch (error) {
+                console.error("Error loading classes into select:", error);
+                showNotification("کلاسوں کو لوڈ کرنے میں خرابی۔", "error");
+            }
+        }
+
+        async function loadTeachersIntoSelect(selectElement, placeholder = 'استاد منتخب کریں...') {
+             try {
+                const teachers = await getAllRecords(STORES.TEACHERS);
+                populateSelect(selectElement, teachers, 'id', 'name', placeholder);
+            } catch (error) {
+                console.error("Error loading teachers into select:", error);
+                showNotification("اساتذہ کو لوڈ کرنے میں خرابی۔", "error");
+            }
+        }
+
+        async function loadClasses() {
+            showLoading();
+            try {
+                const classes = await getAllRecords(STORES.CLASSES);
+                const teachers = await getAllRecords(STORES.TEACHERS);
+                const students = await getAllRecords(STORES.STUDENTS);
+
+                // Create maps for quick lookups
+                const teacherMap = teachers.reduce((map, teacher) => {
+                    map[teacher.id] = teacher.name;
+                    return map;
+                }, {});
+                 const studentClassCount = students.reduce((count, student) => {
+                    if(student.classId) {
+                        count[student.classId] = (count[student.classId] || 0) + 1;
+                    }
+                    return count;
+                 }, {});
+
+
+                classTableBody.innerHTML = ''; // Clear existing rows
+                if (classes.length === 0) {
+                    classTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4">کوئی کلاسیں نہیں ملیں</td></tr>`;
+                } else {
+                    classes.forEach(cls => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="py-2 px-4 border-b">${cls.id}</td>
+                            <td class="py-2 px-4 border-b">${cls.name}</td>
+                            <td class="py-2 px-4 border-b">${teacherMap[cls.teacherId] || 'تفویض نہیں'}</td>
+                            <td class="py-2 px-4 border-b">${studentClassCount[cls.id] || 0}</td>
+                            <td class="py-2 px-4 border-b text-center">
+                                <button class="text-blue-500 hover:text-blue-700 mr-2 edit-class-btn" data-id="${cls.id}"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-500 hover:text-red-700 delete-class-btn" data-id="${cls.id}"><i class="fas fa-trash"></i></button>
+                                </td>
+                        `;
+                        classTableBody.appendChild(row);
+                    });
+                }
+                 // Add event listeners for new buttons
+                 attachClassActionListeners();
+            } catch (error) {
+                console.error("Error loading classes:", error);
+                showNotification("کلاسوں کو لوڈ کرنے میں خرابی۔", "error");
+                 classTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">کلاسوں کو لوڈ کرنے میں خرابی۔</td></tr>`;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function openClassForm(cls = null) {
+            classForm.reset();
+            document.getElementById('class-id').value = '';
+            loadTeachersIntoSelect(classTeacherSelect); // Populate teacher dropdown
+
+            if (cls) {
+                // Edit mode
+                classFormTitle.textContent = 'کلاس میں ترمیم کریں';
+                document.getElementById('class-id').value = cls.id;
+                document.getElementById('class-name').value = cls.name;
+                document.getElementById('class-teacher').value = cls.teacherId || '';
+            } else {
+                // Add mode
+                classFormTitle.textContent = 'نئی کلاس شامل کریں';
+            }
+            classFormModal.classList.remove('hidden');
+        }
+
+        function closeClassForm() {
+            classFormModal.classList.add('hidden');
+            classForm.reset();
+        }
+
+        async function handleClassFormSubmit(event) {
+            event.preventDefault();
+            showLoading();
+            const classId = document.getElementById('class-id').value;
+            const classData = {
+                id: classId || generateId(),
+                name: document.getElementById('class-name').value.trim(),
+                teacherId: document.getElementById('class-teacher').value,
+                // studentIds: [] // Maybe add student selection later
+            };
+
+            // Basic validation
+            if (!classData.name || !classData.teacherId) {
+                 hideLoading();
+                showNotification("براہ کرم کلاس کا نام اور استاد منتخب کریں۔", "error");
+                return;
+            }
+
+            try {
+                if (classId) {
+                    await updateRecord(STORES.CLASSES, classData);
+                    showNotification("کلاس کامیابی سے اپ ڈیٹ ہو گئی۔");
+                } else {
+                    await addRecord(STORES.CLASSES, classData);
+                    showNotification("کلاس کامیابی سے شامل ہو گئی۔");
+                }
+                closeClassForm();
+                await loadClasses();
+                await updateDashboard();
+                // Reload classes in other relevant dropdowns if needed
+                await loadClassesIntoSelect(studentClassSelect);
+                await loadClassesIntoSelect(attendanceClassSelect, 'کلاس منتخب کریں');
+            } catch (error) {
+                console.error("Error saving class:", error);
+                showNotification("کلاس کو محفوظ کرنے میں خرابی۔", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+         async function deleteClass(classId) {
+             if (!confirm(`کیا آپ واقعی اس کلاس (ID: ${classId}) کو حذف کرنا چاہتے ہیں؟\nنوٹ: اس سے وابستہ طلباء تفویض نہیں ہوں گے۔`)) {
+                 return;
+             }
+             showLoading();
+             try {
+                 // Check if students are assigned to this class
+                 const students = await getAllRecords(STORES.STUDENTS);
+                 const hasStudents = students.some(s => s.classId === classId);
+
+                 if (hasStudents) {
+                     // Optionally, unassign students first or prevent deletion
+                      showNotification("کلاس کو حذف نہیں کیا جا سکتا کیونکہ اس میں طلباء ہیں۔ پہلے طلباء کو دوبارہ تفویض کریں۔", "error");
+                      hideLoading();
+                      return;
+                     // Or proceed with deletion and warn the user / handle unassignment elsewhere
+                 }
+
+                 // Also check attendance/fee records if necessary
+
+                 await deleteRecord(STORES.CLASSES, classId);
+                 showNotification("کلاس کامیابی سے حذف ہو گئی۔");
+                 await loadClasses();
+                 await updateDashboard();
+                 // Reload classes in other relevant dropdowns
+                 await loadClassesIntoSelect(studentClassSelect);
+                 await loadClassesIntoSelect(attendanceClassSelect, 'کلاس منتخب کریں');
+             } catch (error) {
+                 console.error("Error deleting class:", error);
+                 showNotification("کلاس کو حذف کرنے میں خرابی۔", "error");
+             } finally {
+                 hideLoading();
+             }
+         }
+
+        function attachClassActionListeners() {
+             // Edit buttons
+             document.querySelectorAll('.edit-class-btn').forEach(button => {
+                 button.addEventListener('click', async (e) => {
+                     const id = e.currentTarget.getAttribute('data-id');
+                     showLoading();
+                     try {
+                        const cls = await getRecord(STORES.CLASSES, id);
+                        if (cls) {
+                            openClassForm(cls);
+                        } else {
+                             showNotification("کلاس نہیں ملی۔", "error");
+                        }
+                     } catch(error) {
+                         console.error("Error fetching class for edit:", error);
+                         showNotification("ترمیم کے لیے کلاس کو لانے میں خرابی۔", "error");
+                     } finally {
+                         hideLoading();
+                     }
+                 });
+             });
+
+             // Delete buttons
+             document.querySelectorAll('.delete-class-btn').forEach(button => {
+                 button.addEventListener('click', (e) => {
+                     const id = e.currentTarget.getAttribute('data-id');
+                     deleteClass(id);
+                 });
+             });
+         }
+
+
+        // --- Attendance Logic ---
+        async function loadStudentsForAttendance() {
+            const classId = attendanceClassSelect.value;
+            const date = attendanceDateInput.value;
+            attendanceStudentListDiv.innerHTML = ''; // Clear previous list
+            saveAttendanceBtn.classList.add('hidden'); // Hide save button initially
+
+            if (!classId || !date) {
+                 attendanceStudentListDiv.innerHTML = '<p class="text-gray-500">حاضری لینے کے لیے کلاس اور تاریخ منتخب کریں۔</p>';
+                return;
+            }
+
+            showLoading();
+            try {
+                const allStudents = await getAllRecords(STORES.STUDENTS);
+                const studentsInClass = allStudents.filter(s => s.classId === classId);
+                const existingAttendance = await getRecordsByIndex(STORES.ATTENDANCE, 'classDate', [classId, date]);
+
+                // Create a map of existing attendance for quick lookup
+                const attendanceMap = existingAttendance.reduce((map, record) => {
+                    map[record.studentId] = record.status; // 'present' or 'absent'
+                    return map;
+                }, {});
+
+
+                if (studentsInClass.length === 0) {
+                    attendanceStudentListDiv.innerHTML = '<p class="text-gray-500">اس کلاس میں کوئی طلباء نہیں ملے۔</p>';
+                    hideLoading();
+                    return;
+                }
+
+                const listHtml = studentsInClass.map(student => `
+                    <div class="flex justify-between items-center border-b py-2 attendance-row" data-student-id="${student.id}">
+                        <span>${student.name} (ID: ${student.id})</span>
+                        <div class="flex space-x-reverse space-x-2">
+                            <label class="flex items-center space-x-1 space-x-reverse cursor-pointer">
+                                <input type="radio" name="attendance-${student.id}" value="present" class="form-radio text-green-500" ${attendanceMap[student.id] === 'present' ? 'checked' : ''}>
+                                <span>حاضر</span>
+                            </label>
+                            <label class="flex items-center space-x-1 space-x-reverse cursor-pointer">
+                                <input type="radio" name="attendance-${student.id}" value="absent" class="form-radio text-red-500" ${attendanceMap[student.id] === 'absent' ? 'checked' : ''}>
+                                <span>غیر حاضر</span>
+                            </label>
+                             <label class="flex items-center space-x-1 space-x-reverse cursor-pointer">
+                                <input type="radio" name="attendance-${student.id}" value="leave" class="form-radio text-yellow-500" ${attendanceMap[student.id] === 'leave' ? 'checked' : ''}>
+                                <span>رخصت</span>
+                            </label>
+                        </div>
+                    </div>
+                `).join('');
+
+                attendanceStudentListDiv.innerHTML = listHtml;
+                saveAttendanceBtn.classList.remove('hidden'); // Show save button
+
+            } catch (error) {
+                console.error("Error loading students for attendance:", error);
+                showNotification("حاضری کے لیے طلباء کو لوڈ کرنے میں خرابی۔", "error");
+                attendanceStudentListDiv.innerHTML = '<p class="text-red-500">طلباء کو لوڈ کرنے میں خرابی۔</p>';
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function handleSaveAttendance() {
+            const classId = attendanceClassSelect.value;
+            const date = attendanceDateInput.value;
+
+            if (!classId || !date) {
+                showNotification("براہ کرم کلاس اور تاریخ منتخب کریں۔", "error");
+                return;
+            }
+
+            showLoading();
+            const attendanceRows = attendanceStudentListDiv.querySelectorAll('.attendance-row');
+            const attendanceData = [];
+
+            attendanceRows.forEach(row => {
+                const studentId = row.getAttribute('data-student-id');
+                const selectedStatus = row.querySelector(`input[name="attendance-${studentId}"]:checked`);
+                if (selectedStatus) {
+                    attendanceData.push({
+                        // Generate a unique ID for each record, combining class, date, and student ID
+                        // This allows updating if the record already exists for that day.
+                        id: `${classId}-${date}-${studentId}`,
+                        classId: classId,
+                        date: date,
+                        studentId: studentId,
+                        status: selectedStatus.value // 'present', 'absent', 'leave'
+                    });
+                }
+            });
+
+            if (attendanceData.length === 0) {
+                hideLoading();
+                showNotification("کوئی حاضری منتخب نہیں کی گئی۔", "error");
+                return;
+            }
+
+            try {
+                const db = await openDB();
+                const transaction = db.transaction([STORES.ATTENDANCE], 'readwrite');
+                const store = transaction.objectStore(STORES.ATTENDANCE);
+
+                // Use Promise.all to handle multiple put requests
+                await Promise.all(attendanceData.map(record => {
+                    return new Promise((resolve, reject) => {
+                        // put() will add or update based on the key (id)
+                        const request = store.put(record);
+                        request.onsuccess = resolve;
+                        request.onerror = reject;
+                    });
+                }));
+
+                showNotification("حاضری کامیابی سے محفوظ ہو گئی۔");
+                // Optionally clear the list or keep it displayed
+                // loadStudentsForAttendance(); // Reload to show saved state (already done by radio buttons)
+
+            } catch (error) {
+                 console.error("Error saving attendance:", error);
+                 // Need to access the specific error from the event if using raw IndexedDB request.onerror
+                 showNotification(`حاضری کو محفوظ کرنے میں خرابی: ${error}`, "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+
+        // --- Fees Logic ---
+         async function loadStudentsIntoFeeSelect() {
+            try {
+                const students = await getAllRecords(STORES.STUDENTS);
+                populateSelect(feeStudentSelect, students, 'id', 'name', 'طالب علم منتخب کریں...');
+            } catch (error) {
+                console.error("Error loading students into fee select:", error);
+                showNotification("فیس کے لیے طلباء کو لوڈ کرنے میں خرابی۔", "error");
+            }
+        }
+
+        async function loadFeeHistory() {
+             showLoading();
+             try {
+                 const fees = await getAllRecords(STORES.FEES);
+                 const students = await getAllRecords(STORES.STUDENTS);
+
+                 // Create a map for student names
+                 const studentMap = students.reduce((map, student) => {
+                     map[student.id] = student.name;
+                     return map;
+                 }, {});
+
+                 feeTableBody.innerHTML = ''; // Clear existing rows
+                 if (fees.length === 0) {
+                     feeTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4">کوئی فیس ریکارڈ نہیں ملا</td></tr>`;
+                 } else {
+                     // Sort fees by date, most recent first (optional)
+                     fees.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                     fees.forEach(fee => {
+                         const row = document.createElement('tr');
+                         row.innerHTML = `
+                             <td class="py-2 px-4 border-b">${fee.studentId}</td>
+                             <td class="py-2 px-4 border-b">${studentMap[fee.studentId] || 'نامعلوم طالب علم'}</td>
+                             <td class="py-2 px-4 border-b">${fee.amount}</td>
+                             <td class="py-2 px-4 border-b">${fee.date}</td>
+                             <td class="py-2 px-4 border-b text-center">
+                                 <button class="text-red-500 hover:text-red-700 delete-fee-btn" data-id="${fee.id}"><i class="fas fa-trash"></i></button>
+                             </td>
+                         `;
+                         feeTableBody.appendChild(row);
+                     });
+                 }
+                  // Add event listeners for new delete buttons
+                 attachFeeActionListeners();
+             } catch (error) {
+                 console.error("Error loading fee history:", error);
+                 showNotification("فیس کی تاریخ کو لوڈ کرنے میں خرابی۔", "error");
+                 feeTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">فیس کی تاریخ کو لوڈ کرنے میں خرابی۔</td></tr>`;
+             } finally {
+                 hideLoading();
+             }
+         }
+
+        async function handleAddFee() {
+            const studentId = feeStudentSelect.value;
+            const amount = feeAmountInput.value;
+            const date = feeDateInput.value;
+
+            if (!studentId || !amount || !date) {
+                showNotification("براہ کرم طالب علم، رقم اور تاریخ منتخب کریں۔", "error");
+                return;
+            }
+             if (isNaN(amount) || amount <= 0) {
+                 showNotification("براہ کرم درست مثبت رقم درج کریں۔", "error");
+                 return;
+             }
+
+            showLoading();
+            const feeData = {
+                id: generateId(),
+                studentId: studentId,
+                amount: parseFloat(amount),
+                date: date
+            };
+
+            try {
+                await addRecord(STORES.FEES, feeData);
+                showNotification("فیس کامیابی سے شامل ہو گئی۔");
+                // Clear form fields
+                feeStudentSelect.value = '';
+                feeAmountInput.value = '';
+                // feeDateInput.value = ''; // Keep date or reset as needed
+                setCurrentDate(feeDateInput); // Reset to today
+                await loadFeeHistory(); // Reload the history table
+                // Consider updating dashboard if total fees collected is displayed
+            } catch (error) {
+                console.error("Error adding fee:", error);
+                showNotification("فیس شامل کرنے میں خرابی۔", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function deleteFee(feeId) {
+             if (!confirm(`کیا آپ واقعی اس فیس ریکارڈ (ID: ${feeId}) کو حذف کرنا چاہتے ہیں؟`)) {
+                 return;
+             }
+             showLoading();
+             try {
+                 await deleteRecord(STORES.FEES, feeId);
+                 showNotification("فیس ریکارڈ کامیابی سے حذف ہو گیا۔");
+                 await loadFeeHistory(); // Reload the list
+             } catch (error) {
+                 console.error("Error deleting fee record:", error);
+                 showNotification("فیس ریکارڈ کو حذف کرنے میں خرابی۔", "error");
+             } finally {
+                 hideLoading();
+             }
+         }
+
+        function attachFeeActionListeners() {
+             // Delete buttons
+             document.querySelectorAll('.delete-fee-btn').forEach(button => {
+                 button.addEventListener('click', (e) => {
+                     const id = e.currentTarget.getAttribute('data-id');
+                     deleteFee(id);
+                 });
+             });
+         }
+
+
+        // --- Initialization and Event Listeners ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Set default dates
+            setCurrentDate(attendanceDateInput);
+            setCurrentDate(feeDateInput);
+
+            // Sidebar toggle
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('sidebar-hidden');
+                 // Adjust main content margin based on sidebar visibility (for larger screens)
+                 if (window.innerWidth >= 768) { // md breakpoint
+                    if (sidebar.classList.contains('sidebar-hidden')) {
+                        mainContent.style.marginRight = '0';
+                    } else {
+                        mainContent.style.marginRight = '16rem'; // Corresponds to w-64
+                    }
+                }
+            });
+
+             // Close sidebar when clicking outside on mobile
+            mainContent.addEventListener('click', () => {
+                if (window.innerWidth < 768 && !sidebar.classList.contains('sidebar-hidden')) {
+                    sidebar.classList.add('sidebar-hidden');
+                }
+            });
+
+            // Navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.currentTarget.getAttribute('data-target');
+                    showSection(targetId);
+
+                    // Load data for the selected section
+                    switch (targetId) {
+                        case 'dashboard':
+                            updateDashboard();
+                            break;
+                        case 'students':
+                            loadStudents();
+                            loadClassesIntoSelect(studentClassSelect); // Load classes for the form
+                            break;
+                        case 'teachers':
+                            loadTeachers();
+                            break;
+                        case 'classes':
+                            loadClasses();
+                            loadTeachersIntoSelect(classTeacherSelect); // Load teachers for the form
+                            break;
+                        case 'attendance':
+                            loadClassesIntoSelect(attendanceClassSelect, 'کلاس منتخب کریں');
+                            // Attendance list loads on class/date change
+                            attendanceStudentListDiv.innerHTML = '<p class="text-gray-500">حاضری لینے کے لیے کلاس اور تاریخ منتخب کریں۔</p>';
+                            saveAttendanceBtn.classList.add('hidden');
+                            break;
+                        case 'fees':
+                            loadStudentsIntoFeeSelect();
+                            loadFeeHistory();
+                            break;
+                    }
+                });
+            });
+
+            // --- Form Modals ---
+            // Student Form
+            addStudentBtn.addEventListener('click', () => openStudentForm());
+            cancelStudentFormBtn.addEventListener('click', closeStudentForm);
+            studentForm.addEventListener('submit', handleStudentFormSubmit);
+            studentSearchInput.addEventListener('input', (e) => loadStudents(e.target.value)); // Add search listener
+
+            // Teacher Form
+            addTeacherBtn.addEventListener('click', () => openTeacherForm());
+            cancelTeacherFormBtn.addEventListener('click', closeTeacherForm);
+            teacherForm.addEventListener('submit', handleTeacherFormSubmit);
+            teacherSearchInput.addEventListener('input', (e) => loadTeachers(e.target.value)); // Add search listener
+
+
+            // Class Form
+            addClassBtn.addEventListener('click', () => openClassForm());
+            cancelClassFormBtn.addEventListener('click', closeClassForm);
+            classForm.addEventListener('submit', handleClassFormSubmit);
+
+            // Attendance listeners
+            attendanceClassSelect.addEventListener('change', loadStudentsForAttendance);
+            attendanceDateInput.addEventListener('change', loadStudentsForAttendance);
+            saveAttendanceBtn.addEventListener('click', handleSaveAttendance);
+
+            // Fees listeners
+            addFeeBtn.addEventListener('click', handleAddFee);
+
+
+            // --- Initial Load ---
+            try {
+                await openDB(); // Ensure DB is open before initial loads
+                showSection('dashboard'); // Show dashboard first
+                await updateDashboard(); // Load dashboard data
+            } catch (error) {
+                console.error("Initialization error:", error);
+                showNotification("ایپلیکیشن شروع کرنے میں خرابی۔", "error");
+                 // Display a more prominent error on the page if initialization fails badly
+                 mainContent.innerHTML = `<div class="text-center text-red-600 font-bold p-10">ایپلیکیشن شروع کرنے میں خرابی۔ براہ کرم صفحہ ریفریش کریں یا کنسول چیک کریں۔</div>`;
+            }
+        });
+
+    </script>
+
+</body>
+</html>

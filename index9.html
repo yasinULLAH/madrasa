@@ -1,0 +1,3897 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دینی مدرسہ مینجمنٹ سسٹم</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #343a40;
+            color: white;
+        }
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+        }
+        .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            font-weight: bold;
+            background-color: #f1f1f1;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        @font-face {
+            font-family: 'Jameel Noori Nastaleeq';
+            src: url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
+        }
+        .custom-field-container {
+            border: 1px dashed #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .dashboard-stat {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .dashboard-stat h3 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .dashboard-stat p {
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.2);
+        }
+        .bg-success-light {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+        .bg-info-light {
+            background-color: rgba(23, 162, 184, 0.2);
+        }
+        .bg-warning-light {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .attendance-present {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+        .attendance-absent {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+        .attendance-leave {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+        .print-only {
+            display: none;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block;
+            }
+            .container-fluid {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-2 sidebar no-print">
+<div class="d-flex flex-column p-3">
+<a href="#" class="navbar-brand text-white text-center mb-3">
+دینی مدرسہ مینجمنٹ
+</a>
+<hr>
+<ul class="nav nav-pills flex-column mb-auto">
+<li class="nav-item">
+<a href="#" class="nav-link active" data-page="dashboard">
+<i class="bi bi-speedometer2 me-2"></i>
+ڈیش بورڈ
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="students">
+<i class="bi bi-mortarboard me-2"></i>
+طلبا
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="teachers">
+<i class="bi bi-person-workspace me-2"></i>
+اساتذہ
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="classes">
+<i class="bi bi-easel me-2"></i>
+کلاسز
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="attendance">
+<i class="bi bi-calendar-check me-2"></i>
+حاضری
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="fees">
+<i class="bi bi-cash-stack me-2"></i>
+فیس
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="salaries">
+<i class="bi bi-wallet2 me-2"></i>
+تنخواہ
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="inventory">
+<i class="bi bi-box-seam me-2"></i>
+انوینٹری
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="expenses">
+<i class="bi bi-receipt me-2"></i>
+اخراجات
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="reports">
+<i class="bi bi-file-earmark-text me-2"></i>
+رپورٹس
+</a>
+</li>
+<li class="nav-item">
+<a href="#" class="nav-link" data-page="backup">
+<i class="bi bi-cloud-arrow-up me-2"></i>
+بیک اپ اور ریسٹور
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="col-md-10 p-3">
+<div id="content">
+<div id="dashboard" class="page">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<h2>ڈیش بورڈ</h2>
+<div class="text-end">
+<h5 id="current-date"></h5>
+</div>
+</div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card dashboard-stat bg-primary-light">
+                                    <h3 id="total-students">0</h3>
+                                    <p>کل طلبا</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card dashboard-stat bg-success-light">
+                                    <h3 id="total-teachers">0</h3>
+                                    <p>کل اساتذہ</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card dashboard-stat bg-info-light">
+                                    <h3 id="total-classes">0</h3>
+                                    <p>کل کلاسز</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card dashboard-stat bg-warning-light">
+                                    <h3 id="todays-attendance">0%</h3>
+                                    <p>آج کی حاضری</p>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">فیس کی تفصیلات</div>
+                                    <div class="card-body">
+                                        <canvas id="feeChart" width="400" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">حالیہ سرگرمیاں</div>
+                                    <div class="card-body">
+                                        <ul class="list-group" id="recent-activities">
+                                            <li class="list-group-item text-center">کوئی حالیہ سرگرمی نہیں</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="students" class="page" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>طلبا کا انتظام</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                <i class="bi bi-plus-circle"></i> نیا طالب علم
+                            </button>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        طلبا کی فہرست
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" id="studentSearch" placeholder="تلاش کریں...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>نام</th>
+                                                <th>والد کا نام</th>
+                                                <th>عمر</th>
+                                                <th>کلاس</th>
+                                                <th>داخلہ تاریخ</th>
+                                                <th>رابطہ نمبر</th>
+                                                <th>ایکشن</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="studentsList">
+                                            <tr>
+                                                <td colspan="7" class="text-center">کوئی طالب علم نہیں ملا</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="teachers" class="page" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>اساتذہ کا انتظام</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTeacherModal">
+                                <i class="bi bi-plus-circle"></i> نیا استاد
+                            </button>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        اساتذہ کی فہرست
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" id="teacherSearch" placeholder="تلاش کریں...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>نام</th>
+                                                <th>تخصص</th>
+                                                <th>تعلیم</th>
+                                                <th>رابطہ نمبر</th>
+                                                <th>تقرری تاریخ</th>
+                                                <th>تنخواہ</th>
+                                                <th>ایکشن</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="teachersList">
+                                            <tr>
+                                                <td colspan="7" class="text-center">کوئی استاد نہیں ملا</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="classes" class="page" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>کلاسز کا انتظام</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClassModal">
+                                <i class="bi bi-plus-circle"></i> نئی کلاس
+                            </button>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">کلاسز کی فہرست</div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>کلاس کا نام</th>
+                                                <th>استاد</th>
+                                                <th>طلبا کی تعداد</th>
+                                                <th>وقت</th>
+                                                <th>کمرہ نمبر</th>
+                                                <th>ایکشن</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="classesList">
+                                            <tr>
+                                                <td colspan="6" class="text-center">کوئی کلاس نہیں ملی</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="attendance" class="page" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>حاضری</h2>
+                            <div>
+                                <input type="date" id="attendanceDate" class="form-control" value="">
+                            </div>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        حاضری شیٹ
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select id="attendanceClass" class="form-select">
+                                            <option value="">کلاس منتخب کریں</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>نام</th>
+                                                <th>والد کا نام</th>
+                                                <th>حاضری</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="attendanceList">
+                                            <tr>
+                                                <td colspan="3" class="text-center">کلاس منتخب کریں</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3 text-end">
+                                    <button id="saveAttendance" class="btn btn-success">
+                                        <i class="bi bi-save"></i> محفوظ کریں
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="fees" class="page" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>فیس کا انتظام</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFeeModal">
+                                <i class="bi bi-plus-circle"></i> فیس جمع کریں
+                            </button>
+                        </div>
+    
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">فیس سٹرکچر</div>
+                                    <div class="card-body">
+                                        <form id="feeStructureForm">
+                                            <div class="mb-3">
+                                                <label for="classForFee" class="form-label">کلاس</label>
+                                                <select id="classForFee" class="form-select" required>
+                                                    <option value="">کلاس منتخب کریں</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="monthlyFee" class="form-label">ماہانہ فیس</label>
+                                                <input type="number" class="form-control" id="monthlyFee" placeholder="0" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="admissionFee" class="form-label">داخلہ فیس</label>
+                                                <input type="number" class="form-control" id="admissionFee" placeholder="0" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="annualFee" class="form-label">سالانہ فیس</label>
+                                                <input type="number" class="form-control" id="annualFee" placeholder="0" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-save"></i> محفوظ کریں
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">فیس کی تفصیلات</div>
+                                    <div class="card-body">
+                                        <div class="table-container">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>کلاس</th>
+                                                        <th>ماہانہ فیس</th>
+                                                        <th>داخلہ فیس</th>
+                                                        <th>سالانہ فیس</th>
+                                                        <th>ایکشن</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="feeStructureList">
+                                                    <tr>
+                                                        <td colspan="5" class="text-center">کوئی فیس سٹرکچر نہیں ملا</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        فیس ریکارڈ
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select id="feeFilter" class="form-select">
+                                            <option value="all">تمام</option>
+                                            <option value="paid">ادا شدہ</option>
+                                            <option value="pending">باقی</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>طالب علم</th>
+                                                <th>کلاس</th>
+                                                <th>مہینہ</th>
+                                                <th>رقم</th>
+                                                <th>تاریخ</th>
+                                                <th>سٹیٹس</th>
+                                                <th>ایکشن</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="feeRecordsList">
+                                            <tr>
+                                                <td colspan="7" class="text-center">کوئی ریکارڈ نہیں ملا</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="salaries" class="page" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>تنخواہ کا انتظام</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paySalaryModal">
+                                <i class="bi bi-cash"></i> تنخواہ ادا کریں
+                            </button>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        تنخواہ کی تفصیلات
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select id="salaryMonth" class="form-select">
+                                            <option value="">مہینہ منتخب کریں</option>
+                                            <option value="01">جنوری</option>
+                                            <option value="02">فروری</option>
+                                            <option value="03">مارچ</option>
+                                            <option value="04">اپریل</option>
+                                            <option value="05">مئی</option>
+                                            <option value="06">جون</option>
+                                            <option value="07">جولائی</option>
+                                            <option value="08">اگست</option>
+                                            <option value="09">ستمبر</option>
+                                            <option value="10">اکتوبر</option>
+                                            <option value="11">نومبر</option>
+                                            <option value="12">دسمبر</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>استاد</th>
+                                                <th>مہینہ</th>
+                                                <th>تنخواہ</th>
+                                                <th>ادائیگی کی تاریخ</th>
+                                                <th>سٹیٹس</th>
+                                                <th>ایکشن</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="salaryRecordsList">
+                                            <tr>
+                                                <td colspan="6" class="text-center">کوئی ریکارڈ نہیں ملا</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="inventory" class="page" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>انوینٹری مینجمنٹ</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInventoryModal">
+                                <i class="bi bi-plus-circle"></i> آئٹم شامل کریں
+                            </button>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        انوینٹری آئٹمز
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" id="inventorySearch" placeholder="تلاش کریں...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>آئٹم کا نام</th>
+                                                <th>کیٹیگری</th>
+                                                <th>مقدار</th>
+                                                <th>خریداری کی تاریخ</th>
+                                                <th>حالت</th>
+                                                <th>قیمت</th>
+                                                <th>ایکشن</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="inventoryList">
+                                            <tr>
+                                                <td colspan="7" class="text-center">کوئی آئٹم نہیں ملا</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="expenses" class="page" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>اخراجات</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                <i class="bi bi-plus-circle"></i> نیا اخراجات
+                            </button>
+                        </div>
+    
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">اخراجات کا خلاصہ</div>
+                                    <div class="card-body">
+                                        <canvas id="expenseChart" width="400" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">مالی خلاصہ</div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="card bg-success-light p-3 mb-3">
+                                                    <h5>کل آمدن</h5>
+                                                    <h3 id="totalIncome">0 روپے</h3>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card bg-danger-light p-3 mb-3">
+                                                    <h5>کل اخراجات</h5>
+                                                    <h3 id="totalExpense">0 روپے</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card bg-info-light p-3">
+                                            <h5>بیلنس</h5>
+                                            <h3 id="totalBalance">0 روپے</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        اخراجات کی تفصیلات
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select id="expenseFilter" class="form-select">
+                                            <option value="all">تمام</option>
+                                            <option value="utility">یوٹیلیٹی</option>
+                                            <option value="maintenance">مرمت</option>
+                                            <option value="supplies">سامان</option>
+                                            <option value="other">دیگر</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>تاریخ</th>
+                                                <th>کیٹیگری</th>
+                                                <th>تفصیل</th>
+                                                <th>رقم</th>
+                                                <th>ادا کرنے والا</th>
+                                                <th>ایکشن</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="expensesList">
+                                            <tr>
+                                                <td colspan="6" class="text-center">کوئی اخراجات نہیں ملا</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="reports" class="page" style="display: none;">
+                        <h2 class="mb-4">رپورٹس</h2>
+    
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <div class="card">
+                                    <div class="card-header">طلبا رپورٹ</div>
+                                    <div class="card-body">
+                                        <form id="studentReportForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">کلاس</label>
+                                                <select id="studentReportClass" class="form-select">
+                                                    <option value="all">تمام کلاسز</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">عمر</label>
+                                                <div class="d-flex gap-2">
+                                                    <input type="number" class="form-control" id="minAge" placeholder="کم سے کم">
+                                                    <input type="number" class="form-control" id="maxAge" placeholder="زیادہ سے زیادہ">
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="bi bi-file-earmark-text"></i> رپورٹ بنائیں
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card">
+                                    <div class="card-header">فیس رپورٹ</div>
+                                    <div class="card-body">
+                                        <form id="feeReportForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">کلاس</label>
+                                                <select id="feeReportClass" class="form-select">
+                                                    <option value="all">تمام کلاسز</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">مہینہ</label>
+                                                <select id="feeReportMonth" class="form-select">
+                                                    <option value="all">تمام</option>
+                                                    <option value="01">جنوری</option>
+                                                    <option value="02">فروری</option>
+                                                    <option value="03">مارچ</option>
+                                                    <option value="04">اپریل</option>
+                                                    <option value="05">مئی</option>
+                                                    <option value="06">جون</option>
+                                                    <option value="07">جولائی</option>
+                                                    <option value="08">اگست</option>
+                                                    <option value="09">ستمبر</option>
+                                                    <option value="10">اکتوبر</option>
+                                                    <option value="11">نومبر</option>
+                                                    <option value="12">دسمبر</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">سٹیٹس</label>
+                                                <select id="feeReportStatus" class="form-select">
+                                                    <option value="all">تمام</option>
+                                                    <option value="paid">ادا شدہ</option>
+                                                    <option value="pending">باقی</option>
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="bi bi-file-earmark-text"></i> رپورٹ بنائیں
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card">
+                                    <div class="card-header">حاضری رپورٹ</div>
+                                    <div class="card-body">
+                                        <form id="attendanceReportForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">کلاس</label>
+                                                <select id="attendanceReportClass" class="form-select">
+                                                    <option value="all">تمام کلاسز</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">تاریخ کی حد</label>
+                                                <div class="d-flex gap-2">
+                                                    <input type="date" class="form-control" id="startDate">
+                                                    <input type="date" class="form-control" id="endDate">
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="bi bi-file-earmark-text"></i> رپورٹ بنائیں
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>رپورٹ نتائج</span>
+                                    <div>
+                                        <button id="printReport" class="btn btn-outline-secondary me-2">
+                                            <i class="bi bi-printer"></i> پرنٹ
+                                        </button>
+                                        <button id="exportCSV" class="btn btn-outline-primary">
+                                            <i class="bi bi-file-earmark-spreadsheet"></i> CSV برآمد کریں
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="reportResult">
+                                    <p class="text-center">رپورٹ بنانے کے لیے اوپر دی گئی فیلڈز کو پر کریں</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="backup" class="page" style="display: none;">
+                        <h2 class="mb-4">بیک اپ اور ریسٹور</h2>
+    
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">بیک اپ</div>
+                                    <div class="card-body">
+                                        <p>اپنا تمام ڈیٹا بیک اپ کرنے کے لیے نیچے دیا گیا بٹن دبائیں۔ یہ آپ کے کمپیوٹر پر ایک JSON فائل ڈاؤن لوڈ کرے گا۔</p>
+                                        <button id="createBackup" class="btn btn-primary w-100">
+                                            <i class="bi bi-cloud-arrow-down"></i> بیک اپ بنائیں
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">ریسٹور</div>
+                                    <div class="card-body">
+                                        <p>پہلے بنائے گئے بیک اپ سے ڈیٹا واپس لانے کے لیے، نیچے دی گئی فائل کا انتخاب کریں۔</p>
+                                        <div class="mb-3">
+                                            <input class="form-control" type="file" id="backupFile" accept=".json">
+                                        </div>
+                                        <button id="restoreBackup" class="btn btn-warning w-100">
+                                            <i class="bi bi-cloud-arrow-up"></i> ریسٹور کریں
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="card">
+                            <div class="card-header">ڈیٹا مینجمنٹ</div>
+                            <div class="card-body">
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <strong>انتباہ:</strong> نیچے دیا گیا آپشن آپ کا تمام ڈیٹا مٹا دے گا۔ یہ عمل ناقابل واپسی ہے!
+                                </div>
+                                <button id="clearAllData" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> تمام ڈیٹا صاف کریں
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">نیا طالب علم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="studentForm">
+                        <input type="hidden" id="studentId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="studentName" class="form-label">نام</label>
+                                <input type="text" class="form-control" id="studentName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="fatherName" class="form-label">والد کا نام</label>
+                                <input type="text" class="form-control" id="fatherName" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="studentAge" class="form-label">عمر</label>
+                                <input type="number" class="form-control" id="studentAge" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="studentClass" class="form-label">کلاس</label>
+                                <select class="form-select" id="studentClass" required>
+                                    <option value="">کلاس منتخب کریں</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="admissionDate" class="form-label">داخلہ تاریخ</label>
+                                <input type="date" class="form-control" id="admissionDate" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="contactNumber" class="form-label">رابطہ نمبر</label>
+                                <input type="text" class="form-control" id="contactNumber" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="address" class="form-label">پتہ</label>
+                                <input type="text" class="form-control" id="address" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label">اضافی معلومات</label>
+                                <button type="button" id="addCustomField" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-plus-circle"></i> نیا فیلڈ
+                                </button>
+                            </div>
+                            <div id="customFields" class="custom-field-container">
+                                <p class="text-center text-muted">کوئی اضافی فیلڈ نہیں</p>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                            <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Teacher Modal -->
+    <div class="modal fade" id="addTeacherModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">نیا استاد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="teacherForm">
+                        <input type="hidden" id="teacherId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="teacherName" class="form-label">نام</label>
+                                <input type="text" class="form-control" id="teacherName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="specialization" class="form-label">تخصص</label>
+                                <input type="text" class="form-control" id="specialization" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="qualification" class="form-label">تعلیم</label>
+                                <input type="text" class="form-control" id="qualification" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="teacherContact" class="form-label">رابطہ نمبر</label>
+                                <input type="text" class="form-control" id="teacherContact" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="joiningDate" class="form-label">تقرری تاریخ</label>
+                                <input type="date" class="form-control" id="joiningDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="salary" class="form-label">تنخواہ</label>
+                                <input type="number" class="form-control" id="salary" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="teacherAddress" class="form-label">پتہ</label>
+                            <input type="text" class="form-control" id="teacherAddress" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label">اضافی معلومات</label>
+                                <button type="button" id="addTeacherCustomField" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-plus-circle"></i> نیا فیلڈ
+                                </button>
+                            </div>
+                            <div id="teacherCustomFields" class="custom-field-container">
+                                <p class="text-center text-muted">کوئی اضافی فیلڈ نہیں</p>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                            <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Class Modal -->
+    <div class="modal fade" id="addClassModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">نئی کلاس</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="classForm">
+                        <input type="hidden" id="classId">
+                        <div class="mb-3">
+                            <label for="className" class="form-label">کلاس کا نام</label>
+                            <input type="text" class="form-control" id="className" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="classTeacher" class="form-label">استاد</label>
+                            <select class="form-select" id="classTeacher" required>
+                                <option value="">استاد منتخب کریں</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="classTime" class="form-label">وقت</label>
+                                <input type="time" class="form-control" id="classTime" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="roomNumber" class="form-label">کمرہ نمبر</label>
+                                <input type="text" class="form-control" id="roomNumber" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="classDescription" class="form-label">تفصیل</label>
+                            <textarea class="form-control" id="classDescription" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                            <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fee Modal -->
+    <div class="modal fade" id="addFeeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">فیس جمع کریں</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="feeForm">
+                        <input type="hidden" id="feeId">
+                        <div class="mb-3">
+                            <label for="feeStudent" class="form-label">طالب علم</label>
+                            <select class="form-select" id="feeStudent" required>
+                                <option value="">طالب علم منتخب کریں</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feeMonth" class="form-label">مہینہ</label>
+                            <select class="form-select" id="feeMonth" required>
+                                <option value="01">جنوری</option>
+                                <option value="02">فروری</option>
+                                <option value="03">مارچ</option>
+                                <option value="04">اپریل</option>
+                                <option value="05">مئی</option>
+                                <option value="06">جون</option>
+                                <option value="07">جولائی</option>
+                                <option value="08">اگست</option>
+                                <option value="09">ستمبر</option>
+                                <option value="10">اکتوبر</option>
+                                <option value="11">نومبر</option>
+                                <option value="12">دسمبر</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feeAmount" class="form-label">رقم</label>
+                            <input type="number" class="form-control" id="feeAmount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feeDate" class="form-label">تاریخ</label>
+                            <input type="date" class="form-control" id="feeDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feeStatus" class="form-label">سٹیٹس</label>
+                            <select class="form-select" id="feeStatus" required>
+                                <option value="paid">ادا شدہ</option>
+                                <option value="pending">باقی</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feeNotes" class="form-label">نوٹس</label>
+                            <textarea class="form-control" id="feeNotes" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                            <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Salary Modal -->
+    <div class="modal fade" id="paySalaryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تنخواہ ادا کریں</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="salaryForm">
+                        <input type="hidden" id="salaryId">
+                        <div class="mb-3">
+                            <label for="salaryTeacher" class="form-label">استاد</label>
+                            <select class="form-select" id="salaryTeacher" required>
+                                <option value="">استاد منتخب کریں</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salaryMonth" class="form-label">مہینہ</label>
+                            <select class="form-select" id="salaryMonth" required>
+                                <option value="01">جنوری</option>
+                                <option value="02">فروری</option>
+                                <option value="03">مارچ</option>
+                                <option value="04">اپریل</option>
+                                <option value="05">مئی</option>
+                                <option value="06">جون</option>
+                                <option value="07">جولائی</option>
+                                <option value="08">اگست</option>
+                                <option value="09">ستمبر</option>
+                                <option value="10">اکتوبر</option>
+                                <option value="11">نومبر</option>
+                                <option value="12">دسمبر</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salaryAmount" class="form-label">رقم</label>
+                            <input type="number" class="form-control" id="salaryAmount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="paymentDate" class="form-label">ادائیگی کی تاریخ</label>
+                            <input type="date" class="form-control" id="paymentDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salaryStatus" class="form-label">سٹیٹس</label>
+                            <select class="form-select" id="salaryStatus" required>
+                                <option value="paid">ادا شدہ</option>
+                                <option value="pending">باقی</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salaryNotes" class="form-label">نوٹس</label>
+                            <textarea class="form-control" id="salaryNotes" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                            <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Inventory Modal -->
+    <div class="modal fade" id="addInventoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">آئٹم شامل کریں</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="inventoryForm">
+                        <input type="hidden" id="inventoryId">
+                        <div class="mb-3">
+                            <label for="itemName" class="form-label">آئٹم کا نام</label>
+                            <input type="text" class="form-control" id="itemName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="itemCategory" class="form-label">کیٹیگری</label>
+                            <select class="form-select" id="itemCategory" required>
+                                <option value="furniture">فرنیچر</option>
+                                <option value="electronics">الیکٹرانکس</option>
+                                <option value="books">کتابیں</option>
+                                <option value="stationery">سٹیشنری</option>
+<option value="other">دیگر</option>
+</select>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3">
+<label for="quantity" class="form-label">مقدار</label>
+<input type="number" class="form-control" id="quantity" required>
+</div>
+<div class="col-md-6 mb-3">
+<label for="purchaseDate" class="form-label">خریداری کی تاریخ</label>
+<input type="date" class="form-control" id="purchaseDate" required>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3">
+<label for="condition" class="form-label">حالت</label>
+<select class="form-select" id="condition" required>
+<option value="new">نئی</option>
+<option value="good">اچھی</option>
+<option value="average">اوسط</option>
+<option value="poor">خراب</option>
+</select>
+</div>
+<div class="col-md-6 mb-3">
+<label for="price" class="form-label">قیمت</label>
+<input type="number" class="form-control" id="price" required>
+</div>
+</div>
+<div class="mb-3">
+<label for="itemNotes" class="form-label">نوٹس</label>
+<textarea class="form-control" id="itemNotes" rows="3"></textarea>
+</div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                            <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Expense Modal -->
+    <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">نیا اخراجات</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="expenseForm">
+                        <input type="hidden" id="expenseId">
+                        <div class="mb-3">
+                            <label for="expenseDate" class="form-label">تاریخ</label>
+                            <input type="date" class="form-control" id="expenseDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expenseCategory" class="form-label">کیٹیگری</label>
+                            <select class="form-select" id="expenseCategory" required>
+                                <option value="utility">یوٹیلیٹی</option>
+                                <option value="maintenance">مرمت</option>
+                                <option value="supplies">سامان</option>
+                                <option value="other">دیگر</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expenseDescription" class="form-label">تفصیل</label>
+                            <textarea class="form-control" id="expenseDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expenseAmount" class="form-label">رقم</label>
+                            <input type="number" class="form-control" id="expenseAmount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="paidBy" class="form-label">ادا کرنے والا</label>
+                            <input type="text" class="form-control" id="paidBy" required>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                            <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let db;
+        const DB_NAME = 'deeniMadrasaDB';
+        const DB_VERSION = 1;
+        const STORES = {
+            STUDENTS: 'students',
+            TEACHERS: 'teachers',
+            CLASSES: 'classes',
+            ATTENDANCE: 'attendance',
+            FEES: 'fees',
+            FEE_STRUCTURE: 'feeStructure',
+            SALARIES: 'salaries',
+            INVENTORY: 'inventory',
+            EXPENSES: 'expenses',
+            ACTIVITIES: 'activities'
+        };
+    
+        document.addEventListener('DOMContentLoaded', initApp);
+    
+        function initApp() {
+            initDB().then(() => {
+                updateDashboardStats();
+                loadClassOptions();
+                loadTeacherOptions();
+                loadStudentOptions();
+                setupNavigation();
+                setupEventListeners();
+                setupCurrentDate();
+                createDemoCharts();
+            }).catch(error => {
+                console.error('Error initializing app:', error);
+                alert('آپلیکیشن شروع کرنے میں مسئلہ ہوا۔ براہ کرم دوبارہ کوشش کریں۔');
+            });
+        }
+    
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = event => {
+                    reject('ڈیٹابیس کھولنے میں مسئلہ: ' + event.target.errorCode);
+                };
+                
+                request.onsuccess = event => {
+                    db = event.target.result;
+                    console.log('ڈیٹابیس کامیابی سے کھل گیا۔');
+                    resolve();
+                };
+                
+                request.onupgradeneeded = event => {
+                    const db = event.target.result;
+                    
+                    if (!db.objectStoreNames.contains(STORES.STUDENTS)) {
+                        const studentsStore = db.createObjectStore(STORES.STUDENTS, { keyPath: 'id', autoIncrement: true });
+                        studentsStore.createIndex('name', 'name', { unique: false });
+                        studentsStore.createIndex('classId', 'classId', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.TEACHERS)) {
+                        const teachersStore = db.createObjectStore(STORES.TEACHERS, { keyPath: 'id', autoIncrement: true });
+                        teachersStore.createIndex('name', 'name', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.CLASSES)) {
+                        const classesStore = db.createObjectStore(STORES.CLASSES, { keyPath: 'id', autoIncrement: true });
+                        classesStore.createIndex('name', 'name', { unique: false });
+                        classesStore.createIndex('teacherId', 'teacherId', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.ATTENDANCE)) {
+                        const attendanceStore = db.createObjectStore(STORES.ATTENDANCE, { keyPath: 'id', autoIncrement: true });
+                        attendanceStore.createIndex('date', 'date', { unique: false });
+                        attendanceStore.createIndex('studentId', 'studentId', { unique: false });
+                        attendanceStore.createIndex('classId', 'classId', { unique: false });
+                        attendanceStore.createIndex('date_class', ['date', 'classId'], { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.FEES)) {
+                        const feesStore = db.createObjectStore(STORES.FEES, { keyPath: 'id', autoIncrement: true });
+                        feesStore.createIndex('studentId', 'studentId', { unique: false });
+                        feesStore.createIndex('month', 'month', { unique: false });
+                        feesStore.createIndex('status', 'status', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.FEE_STRUCTURE)) {
+                        const feeStructureStore = db.createObjectStore(STORES.FEE_STRUCTURE, { keyPath: 'id', autoIncrement: true });
+                        feeStructureStore.createIndex('classId', 'classId', { unique: true });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.SALARIES)) {
+                        const salariesStore = db.createObjectStore(STORES.SALARIES, { keyPath: 'id', autoIncrement: true });
+                        salariesStore.createIndex('teacherId', 'teacherId', { unique: false });
+                        salariesStore.createIndex('month', 'month', { unique: false });
+                        salariesStore.createIndex('status', 'status', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.INVENTORY)) {
+                        const inventoryStore = db.createObjectStore(STORES.INVENTORY, { keyPath: 'id', autoIncrement: true });
+                        inventoryStore.createIndex('category', 'category', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.EXPENSES)) {
+                        const expensesStore = db.createObjectStore(STORES.EXPENSES, { keyPath: 'id', autoIncrement: true });
+                        expensesStore.createIndex('date', 'date', { unique: false });
+                        expensesStore.createIndex('category', 'category', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORES.ACTIVITIES)) {
+                        db.createObjectStore(STORES.ACTIVITIES, { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+            });
+        }
+    
+        function setupNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetPage = this.dataset.page;
+                    
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.page').forEach(page => {
+                        page.style.display = 'none';
+                    });
+                    
+                    document.getElementById(targetPage).style.display = 'block';
+                    
+                    if (targetPage === 'students') {
+                        loadStudents();
+                    } else if (targetPage === 'teachers') {
+                        loadTeachers();
+                    } else if (targetPage === 'classes') {
+                        loadClasses();
+                    } else if (targetPage === 'fees') {
+                        loadFeeStructures();
+                        loadFeeRecords();
+                    } else if (targetPage === 'salaries') {
+                        loadSalaryRecords();
+                    } else if (targetPage === 'inventory') {
+                        loadInventoryItems();
+                    } else if (targetPage === 'expenses') {
+                        loadExpenses();
+                        updateFinancialSummary();
+                    } else if (targetPage === 'attendance') {
+                        const today = new Date().toISOString().split('T');
+                        document.getElementById('attendanceDate').value = today;
+                    } else if (targetPage === 'reports') {
+                        loadReportClassOptions();
+                    } else if (targetPage === 'dashboard') {
+                        updateDashboardStats();
+                        loadRecentActivities();
+                    }
+                });
+            });
+        }
+    
+        function setupEventListeners() {
+            document.getElementById('studentForm').addEventListener('submit', saveStudent);
+            document.getElementById('teacherForm').addEventListener('submit', saveTeacher);
+            document.getElementById('classForm').addEventListener('submit', saveClass);
+            document.getElementById('feeForm').addEventListener('submit', saveFee);
+            document.getElementById('salaryForm').addEventListener('submit', saveSalary);
+            document.getElementById('inventoryForm').addEventListener('submit', saveInventoryItem);
+            document.getElementById('expenseForm').addEventListener('submit', saveExpense);
+            document.getElementById('feeStructureForm').addEventListener('submit', saveFeeStructure);
+            
+            document.getElementById('addCustomField').addEventListener('click', addCustomField);
+            document.getElementById('addTeacherCustomField').addEventListener('click', addTeacherCustomField);
+            
+            document.getElementById('attendanceClass').addEventListener('change', loadAttendanceSheet);
+            document.getElementById('attendanceDate').addEventListener('change', loadAttendanceSheet);
+            document.getElementById('saveAttendance').addEventListener('click', saveAttendance);
+            
+            document.getElementById('feeFilter').addEventListener('change', loadFeeRecords);
+            document.getElementById('salaryMonth').addEventListener('change', loadSalaryRecords);
+            document.getElementById('expenseFilter').addEventListener('change', loadExpenses);
+            
+            document.getElementById('studentSearch').addEventListener('input', function() {
+                loadStudents(this.value);
+            });
+            
+            document.getElementById('teacherSearch').addEventListener('input', function() {
+                loadTeachers(this.value);
+            });
+            
+            document.getElementById('inventorySearch').addEventListener('input', function() {
+                loadInventoryItems(this.value);
+            });
+            
+            document.getElementById('studentReportForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateStudentReport();
+            });
+            
+            document.getElementById('feeReportForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateFeeReport();
+            });
+            
+            document.getElementById('attendanceReportForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateAttendanceReport();
+            });
+            
+            document.getElementById('printReport').addEventListener('click', printReport);
+            document.getElementById('exportCSV').addEventListener('click', exportReportToCSV);
+            
+            document.getElementById('createBackup').addEventListener('click', createBackup);
+            document.getElementById('restoreBackup').addEventListener('click', restoreBackup);
+            document.getElementById('clearAllData').addEventListener('click', clearAllData);
+        }
+    
+        function setupCurrentDate() {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = today.toLocaleDateString('ur-PK', options);
+        }
+    
+        async function updateDashboardStats() {
+            document.getElementById('total-students').textContent = await getCount(STORES.STUDENTS);
+            document.getElementById('total-teachers').textContent = await getCount(STORES.TEACHERS);
+            document.getElementById('total-classes').textContent = await getCount(STORES.CLASSES);
+            
+            const today = new Date().toISOString().split('T');
+            const attendance = await getTodayAttendance(today);
+            document.getElementById('todays-attendance').textContent = attendance + '%';
+        }
+    
+        async function getTodayAttendance(date) {
+            try {
+                const tx = db.transaction([STORES.ATTENDANCE, STORES.STUDENTS], 'readonly');
+                const attendanceStore = tx.objectStore(STORES.ATTENDANCE);
+                const dateIndex = attendanceStore.index('date');
+                
+                const students = await getAll(STORES.STUDENTS);
+                if (students.length === 0) return 0;
+                
+                const attendanceRequest = dateIndex.getAll(date);
+                
+                return new Promise((resolve, reject) => {
+                    attendanceRequest.onsuccess = function() {
+                        const attendance = attendanceRequest.result;
+                        const presentCount = attendance.filter(a => a.status === 'present').length;
+                        const percentage = Math.round((presentCount / students.length) * 100) || 0;
+                        resolve(percentage);
+                    };
+                    
+                    attendanceRequest.onerror = function() {
+                        reject(0);
+                    };
+                });
+            } catch (error) {
+                console.error('Error getting attendance:', error);
+                return 0;
+            }
+        }
+    
+        function createDemoCharts() {
+            const feeCtx = document.getElementById('feeChart').getContext('2d');
+const feeChart = new Chart(feeCtx, {
+    type: 'bar',
+    data: {
+        labels: ['جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون'],
+        datasets: [{
+            label: 'ادا شدہ فیس',
+            data: [12000, 19000, 15000, 18000, 14000, 17000],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }, {
+            label: 'باقی فیس',
+            data: [2000, 1000, 3000, 2000, 4000, 3000],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+            const expenseChart = new Chart(expenseCtx, {
+				type: 'doughnut',
+				data: {
+					labels: ['یوٹیلیٹی', 'مرمت', 'سامان', 'دیگر'],
+					datasets: [{
+						data: [10, 20, 30, 40], // Replace with your actual data
+						backgroundColor: [
+							'rgba(255, 99, 132, 0.2)',
+							'rgba(54, 162, 235, 0.2)',
+							'rgba(255, 206, 86, 0.2)',
+							'rgba(75, 192, 192, 0.2)'
+						],
+						borderColor: [
+							'rgba(255, 99, 132, 1)',
+							'rgba(54, 162, 235, 1)',
+							'rgba(255, 206, 86, 1)',
+							'rgba(75, 192, 192, 1)'
+						],
+						borderWidth: 1
+					}]
+				}
+			});
+        }
+    
+        async function loadRecentActivities() {
+            try {
+                const activities = await getAll(STORES.ACTIVITIES, 5);
+                const activitiesList = document.getElementById('recent-activities');
+                
+                if (activities.length === 0) {
+                    activitiesList.innerHTML = '<li class="list-group-item text-center">کوئی حالیہ سرگرمی نہیں</li>';
+                    return;
+                }
+                
+                let html = '';
+                activities.forEach(activity => {
+                    const date = new Date(activity.timestamp).toLocaleString('ur-PK');
+                    html += `
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>${activity.description}</span>
+                                <small class="text-muted">${date}</small>
+                            </div>
+                        </li>
+                    `;
+                });
+                
+                activitiesList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading activities:', error);
+            }
+        }
+    
+        async function addActivity(description) {
+            try {
+                const activity = {
+                    description,
+                    timestamp: new Date().toISOString()
+                };
+                
+                await add(STORES.ACTIVITIES, activity);
+                loadRecentActivities();
+            } catch (error) {
+                console.error('Error adding activity:', error);
+            }
+        }
+    
+        async function loadClassOptions() {
+            try {
+                const classes = await getAll(STORES.CLASSES);
+                
+                const studentClassSelect = document.getElementById('studentClass');
+                const feeClassSelect = document.getElementById('classForFee');
+                const attendanceClassSelect = document.getElementById('attendanceClass');
+                
+                studentClassSelect.innerHTML = '<option value="">کلاس منتخب کریں</option>';
+                feeClassSelect.innerHTML = '<option value="">کلاس منتخب کریں</option>';
+                attendanceClassSelect.innerHTML = '<option value="">کلاس منتخب کریں</option>';
+                
+                classes.forEach(cls => {
+                    const option = `<option value="${cls.id}">${cls.name}</option>`;
+                    studentClassSelect.innerHTML += option;
+                    feeClassSelect.innerHTML += option;
+                    attendanceClassSelect.innerHTML += option;
+                });
+            } catch (error) {
+                console.error('Error loading class options:', error);
+            }
+        }
+    
+        async function loadTeacherOptions() {
+            try {
+                const teachers = await getAll(STORES.TEACHERS);
+                
+                const classTeacherSelect = document.getElementById('classTeacher');
+                const salaryTeacherSelect = document.getElementById('salaryTeacher');
+                
+                classTeacherSelect.innerHTML = '<option value="">استاد منتخب کریں</option>';
+                salaryTeacherSelect.innerHTML = '<option value="">استاد منتخب کریں</option>';
+                
+                teachers.forEach(teacher => {
+                    const option = `<option value="${teacher.id}">${teacher.name}</option>`;
+                    classTeacherSelect.innerHTML += option;
+                    salaryTeacherSelect.innerHTML += option;
+                });
+            } catch (error) {
+                console.error('Error loading teacher options:', error);
+            }
+        }
+    
+        async function loadStudentOptions() {
+            try {
+                const students = await getAll(STORES.STUDENTS);
+                
+                const feeStudentSelect = document.getElementById('feeStudent');
+                
+                feeStudentSelect.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
+                
+                students.forEach(student => {
+                    feeStudentSelect.innerHTML += `<option value="${student.id}">${student.name} - ${student.fatherName}</option>`;
+                });
+            } catch (error) {
+                console.error('Error loading student options:', error);
+            }
+        }
+    
+        async function loadReportClassOptions() {
+            try {
+                const classes = await getAll(STORES.CLASSES);
+                
+                const reportSelects = [
+                    document.getElementById('studentReportClass'),
+                    document.getElementById('feeReportClass'),
+                    document.getElementById('attendanceReportClass')
+                ];
+                
+                reportSelects.forEach(select => {
+                    select.innerHTML = '<option value="all">تمام کلاسز</option>';
+                    
+                    classes.forEach(cls => {
+                        select.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading report class options:', error);
+            }
+        }
+    
+        function addCustomField() {
+            const customFieldsContainer = document.getElementById('customFields');
+            const fieldId = 'custom_' + Date.now();
+            
+            if (customFieldsContainer.querySelector('p.text-center')) {
+                customFieldsContainer.innerHTML = '';
+            }
+            
+            const fieldHtml = `
+                <div class="row mb-2 custom-field">
+                    <div class="col-5">
+                        <input type="text" class="form-control" placeholder="فیلڈ کا نام" name="${fieldId}_name" required>
+                    </div>
+                    <div class="col-5">
+                        <input type="text" class="form-control" placeholder="فیلڈ کی قیمت" name="${fieldId}_value" required>
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-sm btn-danger w-100" onclick="this.parentElement.parentElement.remove()">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            customFieldsContainer.insertAdjacentHTML('beforeend', fieldHtml);
+        }
+    
+        function addTeacherCustomField() {
+            const customFieldsContainer = document.getElementById('teacherCustomFields');
+            const fieldId = 'custom_' + Date.now();
+            
+            if (customFieldsContainer.querySelector('p.text-center')) {
+                customFieldsContainer.innerHTML = '';
+            }
+            
+            const fieldHtml = `
+                <div class="row mb-2 custom-field">
+                    <div class="col-5">
+                        <input type="text" class="form-control" placeholder="فیلڈ کا نام" name="${fieldId}_name" required>
+                    </div>
+                    <div class="col-5">
+                        <input type="text" class="form-control" placeholder="فیلڈ کی قیمت" name="${fieldId}_value" required>
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-sm btn-danger w-100" onclick="this.parentElement.parentElement.remove()">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            customFieldsContainer.insertAdjacentHTML('beforeend', fieldHtml);
+        }
+    
+        function getCustomFields(containerId) {
+            const container = document.getElementById(containerId);
+            const customFields = {};
+            
+            container.querySelectorAll('.custom-field').forEach(field => {
+                const nameInput = field.querySelector('input[name$="_name"]');
+                const valueInput = field.querySelector('input[name$="_value"]');
+                
+                if (nameInput && valueInput && nameInput.value.trim() !== '') {
+                    customFields[nameInput.value.trim()] = valueInput.value.trim();
+                }
+            });
+            
+            return customFields;
+        }
+    
+        async function saveStudent(e) {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('studentId').value;
+            const student = {
+                name: document.getElementById('studentName').value,
+                fatherName: document.getElementById('fatherName').value,
+                age: parseInt(document.getElementById('studentAge').value),
+                classId: parseInt(document.getElementById('studentClass').value),
+                admissionDate: document.getElementById('admissionDate').value,
+                contactNumber: document.getElementById('contactNumber').value,
+                address: document.getElementById('address').value,
+                customFields: getCustomFields('customFields')
+            };
+            
+            try {
+                if (studentId) {
+                    student.id = parseInt(studentId);
+                    await update(STORES.STUDENTS, student);
+                    addActivity(`طالب علم ${student.name} کی معلومات اپڈیٹ کی گئیں۔`);
+                } else {
+                    await add(STORES.STUDENTS, student);
+                    addActivity(`نیا طالب علم ${student.name} شامل کیا گیا۔`);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('addStudentModal')).hide();
+                document.getElementById('studentForm').reset();
+                document.getElementById('studentId').value = '';
+                document.getElementById('customFields').innerHTML = '<p class="text-center text-muted">کوئی اضافی فیلڈ نہیں</p>';
+                
+                loadStudents();
+                updateDashboardStats();
+            } catch (error) {
+                console.error('Error saving student:', error);
+                alert('طالب علم کی معلومات محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function saveTeacher(e) {
+            e.preventDefault();
+            
+            const teacherId = document.getElementById('teacherId').value;
+            const teacher = {
+                name: document.getElementById('teacherName').value,
+                specialization: document.getElementById('specialization').value,
+                qualification: document.getElementById('qualification').value,
+                contactNumber: document.getElementById('teacherContact').value,
+                joiningDate: document.getElementById('joiningDate').value,
+                salary: parseInt(document.getElementById('salary').value),
+                address: document.getElementById('teacherAddress').value,
+                customFields: getCustomFields('teacherCustomFields')
+            };
+            
+            try {
+                if (teacherId) {
+                    teacher.id = parseInt(teacherId);
+                    await update(STORES.TEACHERS, teacher);
+                    addActivity(`استاد ${teacher.name} کی معلومات اپڈیٹ کی گئیں۔`);
+                } else {
+                    await add(STORES.TEACHERS, teacher);
+                    addActivity(`نیا استاد ${teacher.name} شامل کیا گیا۔`);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('addTeacherModal')).hide();
+                document.getElementById('teacherForm').reset();
+                document.getElementById('teacherId').value = '';
+                document.getElementById('teacherCustomFields').innerHTML = '<p class="text-center text-muted">کوئی اضافی فیلڈ نہیں</p>';
+                
+                loadTeachers();
+                loadTeacherOptions();
+                updateDashboardStats();
+            } catch (error) {
+                console.error('Error saving teacher:', error);
+                alert('استاد کی معلومات محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function saveClass(e) {
+            e.preventDefault();
+            
+            const classId = document.getElementById('classId').value;
+            const classData = {
+                name: document.getElementById('className').value,
+                teacherId: parseInt(document.getElementById('classTeacher').value),
+                time: document.getElementById('classTime').value,
+                roomNumber: document.getElementById('roomNumber').value,
+                description: document.getElementById('classDescription').value
+            };
+            
+            try {
+                if (classId) {
+                    classData.id = parseInt(classId);
+                    await update(STORES.CLASSES, classData);
+                    addActivity(`کلاس ${classData.name} کی معلومات اپڈیٹ کی گئیں۔`);
+                } else {
+                    await add(STORES.CLASSES, classData);
+                    addActivity(`نئی کلاس ${classData.name} شامل کی گئی۔`);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('addClassModal')).hide();
+                document.getElementById('classForm').reset();
+                document.getElementById('classId').value = '';
+                
+                loadClasses();
+                loadClassOptions();
+                updateDashboardStats();
+            } catch (error) {
+                console.error('Error saving class:', error);
+                alert('کلاس کی معلومات محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function saveFee(e) {
+            e.preventDefault();
+            
+            const feeId = document.getElementById('feeId').value;
+            const fee = {
+                studentId: parseInt(document.getElementById('feeStudent').value),
+                month: document.getElementById('feeMonth').value,
+                amount: parseInt(document.getElementById('feeAmount').value),
+                date: document.getElementById('feeDate').value,
+                status: document.getElementById('feeStatus').value,
+                notes: document.getElementById('feeNotes').value
+            };
+            
+            try {
+                const student = await get(STORES.STUDENTS, fee.studentId);
+                
+                if (feeId) {
+                    fee.id = parseInt(feeId);
+                    await update(STORES.FEES, fee);
+                    addActivity(`طالب علم ${student.name} کی فیس اپڈیٹ کی گئی۔`);
+                } else {
+                    await add(STORES.FEES, fee);
+                    addActivity(`طالب علم ${student.name} کی فیس جمع کی گئی۔`);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('addFeeModal')).hide();
+                document.getElementById('feeForm').reset();
+                document.getElementById('feeId').value = '';
+                
+                loadFeeRecords();
+                updateFinancialSummary();
+            } catch (error) {
+                console.error('Error saving fee:', error);
+                alert('فیس کی معلومات محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function saveSalary(e) {
+            e.preventDefault();
+            
+            const salaryId = document.getElementById('salaryId').value;
+            const salary = {
+                teacherId: parseInt(document.getElementById('salaryTeacher').value),
+                month: document.getElementById('salaryMonth').value,
+                amount: parseInt(document.getElementById('salaryAmount').value),
+                paymentDate: document.getElementById('paymentDate').value,
+                status: document.getElementById('salaryStatus').value,
+                notes: document.getElementById('salaryNotes').value
+            };
+            
+            try {
+                const teacher = await get(STORES.TEACHERS, salary.teacherId);
+                
+                if (salaryId) {
+                    salary.id = parseInt(salaryId);
+                    await update(STORES.SALARIES, salary);
+                    addActivity(`استاد ${teacher.name} کی تنخواہ اپڈیٹ کی گئی۔`);
+                } else {
+                    await add(STORES.SALARIES, salary);
+                    addActivity(`استاد ${teacher.name} کی تنخواہ ادا کی گئی۔`);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('paySalaryModal')).hide();
+                document.getElementById('salaryForm').reset();
+                document.getElementById('salaryId').value = '';
+                
+                loadSalaryRecords();
+                updateFinancialSummary();
+            } catch (error) {
+                console.error('Error saving salary:', error);
+                alert('تنخواہ کی معلومات محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function saveInventoryItem(e) {
+            e.preventDefault();
+            
+            const inventoryId = document.getElementById('inventoryId').value;
+            const item = {
+                name: document.getElementById('itemName').value,
+                category: document.getElementById('itemCategory').value,
+                quantity: parseInt(document.getElementById('quantity').value),
+                purchaseDate: document.getElementById('purchaseDate').value,
+                condition: document.getElementById('condition').value,
+                price: parseInt(document.getElementById('price').value),
+                notes: document.getElementById('itemNotes').value
+            };
+            
+            try {
+                if (inventoryId) {
+                    item.id = parseInt(inventoryId);
+                    await update(STORES.INVENTORY, item);
+                    addActivity(`انوینٹری آئٹم ${item.name} اپڈیٹ کیا گیا۔`);
+                } else {
+                    await add(STORES.INVENTORY, item);
+                    addActivity(`نیا انوینٹری آئٹم ${item.name} شامل کیا گیا۔`);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('addInventoryModal')).hide();
+                document.getElementById('inventoryForm').reset();
+                document.getElementById('inventoryId').value = '';
+                
+                loadInventoryItems();
+            } catch (error) {
+                console.error('Error saving inventory item:', error);
+                alert('انوینٹری آئٹم کی معلومات محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function saveExpense(e) {
+            e.preventDefault();
+            
+            const expenseId = document.getElementById('expenseId').value;
+            const expense = {
+                date: document.getElementById('expenseDate').value,
+                category: document.getElementById('expenseCategory').value,
+                description: document.getElementById('expenseDescription').value,
+                amount: parseInt(document.getElementById('expenseAmount').value),
+                paidBy: document.getElementById('paidBy').value
+            };
+            
+            try {
+                if (expenseId) {
+                    expense.id = parseInt(expenseId);
+                    await update(STORES.EXPENSES, expense);
+                    addActivity(`اخراجات ${expense.description} اپڈیٹ کیا گیا۔`);
+                } else {
+                    await add(STORES.EXPENSES, expense);
+                    addActivity(`نیا اخراجات ${expense.description} شامل کیا گیا۔`);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('addExpenseModal')).hide();
+                document.getElementById('expenseForm').reset();
+                document.getElementById('expenseId').value = '';
+                
+                loadExpenses();
+                updateFinancialSummary();
+            } catch (error) {
+                console.error('Error saving expense:', error);
+                alert('اخراجات کی معلومات محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function saveFeeStructure(e) {
+            e.preventDefault();
+            
+            const classId = parseInt(document.getElementById('classForFee').value);
+            const feeStructure = {
+                classId,
+                monthlyFee: parseInt(document.getElementById('monthlyFee').value),
+                admissionFee: parseInt(document.getElementById('admissionFee').value),
+                annualFee: parseInt(document.getElementById('annualFee').value)
+            };
+            
+            try {
+                const existingStructure = await getFeeStructureByClassId(classId);
+                
+                if (existingStructure) {
+                    feeStructure.id = existingStructure.id;
+                    await update(STORES.FEE_STRUCTURE, feeStructure);
+                } else {
+                    await add(STORES.FEE_STRUCTURE, feeStructure);
+                }
+                
+                document.getElementById('feeStructureForm').reset();
+                loadFeeStructures();
+                
+                const classData = await get(STORES.CLASSES, classId);
+                addActivity(`کلاس ${classData.name} کی فیس سٹرکچر اپڈیٹ کی گئی۔`);
+            } catch (error) {
+                console.error('Error saving fee structure:', error);
+                alert('فیس سٹرکچر محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function getFeeStructureByClassId(classId) {
+            try {
+                const tx = db.transaction(STORES.FEE_STRUCTURE, 'readonly');
+                const store = tx.objectStore(STORES.FEE_STRUCTURE);
+                const index = store.index('classId');
+                
+                return new Promise((resolve, reject) => {
+                    const request = index.get(classId);
+                    
+                    request.onsuccess = function() {
+                        resolve(request.result);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error('Error getting fee structure:', error);
+                return null;
+            }
+        }
+    
+        async function loadStudents(searchTerm = '') {
+            try {
+                let students = await getAll(STORES.STUDENTS);
+                const classList = {};
+                
+                const classes = await getAll(STORES.CLASSES);
+                classes.forEach(cls => {
+                    classList[cls.id] = cls.name;
+                });
+                
+                if (searchTerm) {
+                    searchTerm = searchTerm.toLowerCase();
+                    students = students.filter(student => 
+                        student.name.toLowerCase().includes(searchTerm) ||
+                        student.fatherName.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                const studentsList = document.getElementById('studentsList');
+                
+                if (students.length === 0) {
+                    studentsList.innerHTML = '<tr><td colspan="7" class="text-center">کوئی طالب علم نہیں ملا</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                students.forEach(student => {
+                    html += `
+                        <tr>
+                            <td>${student.name}</td>
+                            <td>${student.fatherName}</td>
+                            <td>${student.age}</td>
+                            <td>${classList[student.classId] || 'غیر تعینات'}</td>
+                            <td>${formatDate(student.admissionDate)}</td>
+                            <td>${student.contactNumber}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info me-1" onclick="editStudent(${student.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteStudent(${student.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                studentsList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading students:', error);
+                alert('طلبا کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function loadTeachers(searchTerm = '') {
+            try {
+                let teachers = await getAll(STORES.TEACHERS);
+                
+                if (searchTerm) {
+                    searchTerm = searchTerm.toLowerCase();
+                    teachers = teachers.filter(teacher => 
+                        teacher.name.toLowerCase().includes(searchTerm) ||
+                        teacher.specialization.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                const teachersList = document.getElementById('teachersList');
+                
+                if (teachers.length === 0) {
+                    teachersList.innerHTML = '<tr><td colspan="7" class="text-center">کوئی استاد نہیں ملا</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                teachers.forEach(teacher => {
+                    html += `
+                        <tr>
+                            <td>${teacher.name}</td>
+                            <td>${teacher.specialization}</td>
+                            <td>${teacher.qualification}</td>
+                            <td>${teacher.contactNumber}</td>
+                            <td>${formatDate(teacher.joiningDate)}</td>
+                            <td>${teacher.salary} روپے</td>
+                            <td>
+                                <button class="btn btn-sm btn-info me-1" onclick="editTeacher(${teacher.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteTeacher(${teacher.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                teachersList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading teachers:', error);
+                alert('اساتذہ کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function loadClasses() {
+            try {
+                const classes = await getAll(STORES.CLASSES);
+                const teacherList = {};
+                
+                const teachers = await getAll(STORES.TEACHERS);
+                teachers.forEach(teacher => {
+                    teacherList[teacher.id] = teacher.name;
+                });
+                
+                const classesList = document.getElementById('classesList');
+                
+                if (classes.length === 0) {
+                    classesList.innerHTML = '<tr><td colspan="6" class="text-center">کوئی کلاس نہیں ملی</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                for (const cls of classes) {
+                    const studentCount = await getStudentCountByClass(cls.id);
+                    
+                    html += `
+                        <tr>
+                            <td>${cls.name}</td>
+                            <td>${teacherList[cls.teacherId] || 'غیر تعینات'}</td>
+                            <td>${studentCount}</td>
+                            <td>${cls.time}</td>
+                            <td>${cls.roomNumber}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info me-1" onclick="editClass(${cls.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteClass(${cls.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                classesList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                alert('کلاسز کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function getStudentCountByClass(classId) {
+            try {
+                const tx = db.transaction(STORES.STUDENTS, 'readonly');
+                const store = tx.objectStore(STORES.STUDENTS);
+                const index = store.index('classId');
+                
+                return new Promise((resolve, reject) => {
+                    const request = index.getAll(classId);
+                    
+                    request.onsuccess = function() {
+                        resolve(request.result.length);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error('Error counting students by class:', error);
+                return 0;
+            }
+        }
+    
+        async function loadAttendanceSheet() {
+            const classId = document.getElementById('attendanceClass').value;
+            const date = document.getElementById('attendanceDate').value;
+            
+            if (!classId || !date) {
+                document.getElementById('attendanceList').innerHTML = '<tr><td colspan="3" class="text-center">کلاس منتخب کریں</td></tr>';
+                return;
+            }
+            
+            try {
+                const students = await getStudentsByClass(parseInt(classId));
+                
+                if (students.length === 0) {
+                    document.getElementById('attendanceList').innerHTML = '<tr><td colspan="3" class="text-center">اس کلاس میں کوئی طالب علم نہیں ہے</td></tr>';
+                    return;
+                }
+                
+                const attendance = await getAttendanceByDateAndClass(date, parseInt(classId));
+                const attendanceMap = {};
+                
+                attendance.forEach(a => {
+                    attendanceMap[a.studentId] = a.status;
+                });
+                
+                let html = '';
+                students.forEach(student => {
+                    const status = attendanceMap[student.id] || 'absent';
+                    
+                    html += `
+                        <tr>
+                            <td>${student.name}</td>
+                            <td>${student.fatherName}</td>
+                            <td>
+                                <div class="d-flex">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="attendance_${student.id}" value="present" ${status === 'present' ? 'checked' : ''}>
+                                        <label class="form-check-label">حاضر</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="attendance_${student.id}" value="absent" ${status === 'absent' ? 'checked' : ''}>
+                                        <label class="form-check-label">غیر حاضر</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="attendance_${student.id}" value="leave" ${status === 'leave' ? 'checked' : ''}>
+                                        <label class="form-check-label">چھٹی</label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                document.getElementById('attendanceList').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading attendance sheet:', error);
+                alert('حاضری شیٹ لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function getStudentsByClass(classId) {
+            try {
+                const tx = db.transaction(STORES.STUDENTS, 'readonly');
+                const store = tx.objectStore(STORES.STUDENTS);
+                const index = store.index('classId');
+                
+                return new Promise((resolve, reject) => {
+                    const request = index.getAll(classId);
+                    
+                    request.onsuccess = function() {
+                        resolve(request.result);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error('Error getting students by class:', error);
+                return [];
+            }
+        }
+    
+        async function getAttendanceByDateAndClass(date, classId) {
+            try {
+                const tx = db.transaction(STORES.ATTENDANCE, 'readonly');
+                const store = tx.objectStore(STORES.ATTENDANCE);
+                const index = store.index('date_class');
+                
+                return new Promise((resolve, reject) => {
+                    const request = index.getAll([date, classId]);
+                    
+                    request.onsuccess = function() {
+                        resolve(request.result);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error('Error getting attendance:', error);
+                return [];
+            }
+        }
+    
+        async function saveAttendance() {
+            const classId = parseInt(document.getElementById('attendanceClass').value);
+            const date = document.getElementById('attendanceDate').value;
+            
+            if (!classId || !date) {
+                alert('براہ کرم کلاس منتخب کریں۔');
+                return;
+            }
+            
+            try {
+                const students = await getStudentsByClass(classId);
+                const attendanceRecords = [];
+                
+                students.forEach(student => {
+                    const status = document.querySelector(`input[name="attendance_${student.id}"]:checked`)?.value || 'absent';
+                    
+                    attendanceRecords.push({
+                        date,
+                        classId,
+                        studentId: student.id,
+                        status
+                    });
+                });
+                
+                await deleteAttendanceByDateAndClass(date, classId);
+                
+                for (const record of attendanceRecords) {
+                    await add(STORES.ATTENDANCE, record);
+                }
+                
+                alert('حاضری کامیابی سے محفوظ ہو گئی۔');
+                addActivity(`تاریخ ${formatDate(date)} کی حاضری درج کی گئی۔`);
+                updateDashboardStats();
+            } catch (error) {
+                console.error('Error saving attendance:', error);
+                alert('حاضری محفوظ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteAttendanceByDateAndClass(date, classId) {
+            try {
+                const tx = db.transaction(STORES.ATTENDANCE, 'readwrite');
+                const store = tx.objectStore(STORES.ATTENDANCE);
+                const index = store.index('date_class');
+                
+                return new Promise((resolve, reject) => {
+                    const request = index.getAll([date, classId]);
+                    
+                    request.onsuccess = function() {
+                        const records = request.result;
+                        let deleted = 0;
+                        
+                        if (records.length === 0) {
+                            resolve(0);
+                            return;
+                        }
+                        
+                        records.forEach(record => {
+                            const deleteRequest = store.delete(record.id);
+                            
+                            deleteRequest.onsuccess = function() {
+                                deleted++;
+                                if (deleted === records.length) {
+                                    resolve(deleted);
+                                }
+                            };
+                            
+                            deleteRequest.onerror = function() {
+                                reject(deleteRequest.error);
+                            };
+                        });
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error('Error deleting attendance:', error);
+                return 0;
+            }
+        }
+    
+        async function loadFeeStructures() {
+            try {
+                const structures = await getAll(STORES.FEE_STRUCTURE);
+                const classList = {};
+                
+                const classes = await getAll(STORES.CLASSES);
+                classes.forEach(cls => {
+                    classList[cls.id] = cls.name;
+                });
+                
+                const feeStructureList = document.getElementById('feeStructureList');
+                
+                if (structures.length === 0) {
+                    feeStructureList.innerHTML = '<tr><td colspan="5" class="text-center">کوئی فیس سٹرکچر نہیں ملا</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                structures.forEach(structure => {
+                    html += `
+                        <tr>
+                            <td>${classList[structure.classId] || 'غیر تعینات'}</td>
+                            <td>${structure.monthlyFee} روپے</td>
+                            <td>${structure.admissionFee} روپے</td>
+                            <td>${structure.annualFee} روپے</td>
+                            <td>
+                                <button class="btn btn-sm btn-info me-1" onclick="editFeeStructure(${structure.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteFeeStructure(${structure.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                feeStructureList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading fee structures:', error);
+                alert('فیس سٹرکچر لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function loadFeeRecords() {
+            try {
+                const filter = document.getElementById('feeFilter').value;
+                const fees = await getAll(STORES.FEES);
+                const studentList = {};
+                const classList = {};
+                
+                const students = await getAll(STORES.STUDENTS);
+                students.forEach(student => {
+                    studentList[student.id] = student;
+                });
+                
+                const classes = await getAll(STORES.CLASSES);
+                classes.forEach(cls => {
+                    classList[cls.id] = cls.name;
+                });
+                
+                let filteredFees = fees;
+                if (filter !== 'all') {
+                    filteredFees = fees.filter(fee => fee.status === filter);
+                }
+                
+                const feeRecordsList = document.getElementById('feeRecordsList');
+                
+                if (filteredFees.length === 0) {
+                    feeRecordsList.innerHTML = '<tr><td colspan="7" class="text-center">کوئی ریکارڈ نہیں ملا</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                filteredFees.forEach(fee => {
+                    const student = studentList[fee.studentId];
+                    const className = student ? classList[student.classId] : 'غیر تعینات';
+                    const monthName = getMonthName(fee.month);
+                    
+                    html += `
+                        <tr>
+                            <td>${student ? student.name : 'غیر موجود طالب علم'}</td>
+                            <td>${className}</td>
+                            <td>${monthName}</td>
+                            <td>${fee.amount} روپے</td>
+                            <td>${formatDate(fee.date)}</td>
+                            <td>${fee.status === 'paid' ? '<span class="badge bg-success">ادا شدہ</span>' : '<span class="badge bg-warning">باقی</span>'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info me-1" onclick="editFee(${fee.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteFee(${fee.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                feeRecordsList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading fee records:', error);
+                alert('فیس ریکارڈز لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function loadSalaryRecords() {
+            try {
+                const filterMonth = document.getElementById('salaryMonth').value;
+                const salaries = await getAll(STORES.SALARIES);
+                const teacherList = {};
+                
+                const teachers = await getAll(STORES.TEACHERS);
+                teachers.forEach(teacher => {
+                    teacherList[teacher.id] = teacher;
+                });
+                
+                let filteredSalaries = salaries;
+                if (filterMonth) {
+                    filteredSalaries = salaries.filter(salary => salary.month === filterMonth);
+                }
+                
+                const salaryRecordsList = document.getElementById('salaryRecordsList');
+                
+                if (filteredSalaries.length === 0) {
+                    salaryRecordsList.innerHTML = '<tr><td colspan="6" class="text-center">کوئی ریکارڈ نہیں ملا</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                filteredSalaries.forEach(salary => {
+                    const teacher = teacherList[salary.teacherId];
+                    const monthName = getMonthName(salary.month);
+                    
+                    html += `
+                        <tr>
+                            <td>${teacher ? teacher.name : 'غیر موجود استاد'}</td>
+                            <td>${monthName}</td>
+                            <td>${salary.amount} روپے</td>
+                            <td>${formatDate(salary.paymentDate)}</td>
+                            <td>${salary.status === 'paid' ? '<span class="badge bg-success">ادا شدہ</span>' : '<span class="badge bg-warning">باقی</span>'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info me-1" onclick="editSalary(${salary.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteSalary(${salary.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+						`;
+});
+
+                salaryRecordsList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading salary records:', error);
+                alert('تنخواہ ریکارڈز لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function loadInventoryItems(searchTerm = '') {
+            try {
+                let items = await getAll(STORES.INVENTORY);
+                
+                if (searchTerm) {
+                    searchTerm = searchTerm.toLowerCase();
+                    items = items.filter(item => 
+                        item.name.toLowerCase().includes(searchTerm) ||
+                        item.category.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                const inventoryList = document.getElementById('inventoryList');
+                
+                if (items.length === 0) {
+                    inventoryList.innerHTML = '<tr><td colspan="7" class="text-center">کوئی آئٹم نہیں ملا</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                items.forEach(item => {
+                    const condition = getConditionLabel(item.condition);
+                    const category = getCategoryLabel(item.category);
+                    
+                    html += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${category}</td>
+                            <td>${item.quantity}</td>
+                            <td>${formatDate(item.purchaseDate)}</td>
+                            <td>${condition}</td>
+                            <td>${item.price} روپے</td>
+                            <td>
+                                <button class="btn btn-sm btn-info me-1" onclick="editInventoryItem(${item.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteInventoryItem(${item.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                inventoryList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading inventory items:', error);
+                alert('انوینٹری آئٹمز لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function loadExpenses() {
+            try {
+                const filter = document.getElementById('expenseFilter').value;
+                const expenses = await getAll(STORES.EXPENSES);
+                
+                let filteredExpenses = expenses;
+                if (filter !== 'all') {
+                    filteredExpenses = expenses.filter(expense => expense.category === filter);
+                }
+                
+                const expensesList = document.getElementById('expensesList');
+                
+                if (filteredExpenses.length === 0) {
+                    expensesList.innerHTML = '<tr><td colspan="6" class="text-center">کوئی اخراجات نہیں ملا</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                filteredExpenses.forEach(expense => {
+                    const category = getCategoryLabel(expense.category);
+                    
+                    html += `
+                        <tr>
+                            <td>${formatDate(expense.date)}</td>
+                            <td>${category}</td>
+                            <td>${expense.description}</td>
+                            <td>${expense.amount} روپے</td>
+                            <td>${expense.paidBy}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info me-1" onclick="editExpense(${expense.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteExpense(${expense.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                expensesList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading expenses:', error);
+                alert('اخراجات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function updateFinancialSummary() {
+            try {
+                const fees = await getAll(STORES.FEES);
+                const salaries = await getAll(STORES.SALARIES);
+                const expenses = await getAll(STORES.EXPENSES);
+                
+                const totalIncome = fees
+                    .filter(fee => fee.status === 'paid')
+                    .reduce((sum, fee) => sum + fee.amount, 0);
+                    
+                const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0) +
+                    salaries.filter(salary => salary.status === 'paid')
+                        .reduce((sum, salary) => sum + salary.amount, 0);
+                        
+                const balance = totalIncome - totalExpenses;
+                
+                document.getElementById('totalIncome').textContent = totalIncome + ' روپے';
+                document.getElementById('totalExpense').textContent = totalExpenses + ' روپے';
+                document.getElementById('totalBalance').textContent = balance + ' روپے';
+                
+                updateExpenseChart(expenses);
+            } catch (error) {
+                console.error('Error updating financial summary:', error);
+            }
+        }
+    
+        function updateExpenseChart(expenses) {
+            const categories = {
+                'utility': 0,
+                'maintenance': 0,
+                'supplies': 0,
+                'other': 0
+            };
+            
+            expenses.forEach(expense => {
+                categories[expense.category] += expense.amount;
+            });
+            
+            const data = Object.values(categories);
+            
+            const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+            
+            if (window.expenseChart) {
+                window.expenseChart.data.datasets.data = data;
+                window.expenseChart.update();
+            } else {
+                window.expenseChart = new Chart(expenseCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['یوٹیلیٹی', 'مرمت', 'سامان', 'دیگر'],
+                        datasets: [{
+                            data: data,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    }
+                });
+            }
+        }
+    
+        async function generateStudentReport() {
+            try {
+                const classId = document.getElementById('studentReportClass').value;
+                const minAge = document.getElementById('minAge').value ? parseInt(document.getElementById('minAge').value) : 0;
+                const maxAge = document.getElementById('maxAge').value ? parseInt(document.getElementById('maxAge').value) : 100;
+                
+                let students = await getAll(STORES.STUDENTS);
+                const classes = await getAll(STORES.CLASSES);
+                const classMap = {};
+                
+                classes.forEach(cls => {
+                    classMap[cls.id] = cls.name;
+                });
+                
+                students = students.filter(student => {
+                    if (classId !== 'all' && student.classId !== parseInt(classId)) {
+                        return false;
+                    }
+                    
+                    return student.age >= minAge && student.age <= maxAge;
+                });
+                
+                const reportResult = document.getElementById('reportResult');
+                
+                if (students.length === 0) {
+                    reportResult.innerHTML = '<p class="text-center">کوئی طالب علم نہیں ملا</p>';
+                    return;
+                }
+                
+                let html = `
+                    <div class="mb-3">
+                        <h4>طلبا رپورٹ</h4>
+                        <p>کل طلبا: ${students.length}</p>
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>نام</th>
+                                    <th>والد کا نام</th>
+                                    <th>عمر</th>
+                                    <th>کلاس</th>
+                                    <th>داخلہ تاریخ</th>
+                                    <th>رابطہ نمبر</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                students.forEach(student => {
+                    html += `
+                        <tr>
+                            <td>${student.name}</td>
+                            <td>${student.fatherName}</td>
+                            <td>${student.age}</td>
+                            <td>${classMap[student.classId] || 'غیر تعینات'}</td>
+                            <td>${formatDate(student.admissionDate)}</td>
+                            <td>${student.contactNumber}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                reportResult.innerHTML = html;
+                window.currentReportData = students;
+                window.currentReportType = 'students';
+            } catch (error) {
+                console.error('Error generating student report:', error);
+                alert('رپورٹ بنانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function generateFeeReport() {
+            try {
+                const classId = document.getElementById('feeReportClass').value;
+                const month = document.getElementById('feeReportMonth').value;
+                const status = document.getElementById('feeReportStatus').value;
+                
+                let fees = await getAll(STORES.FEES);
+                const students = await getAll(STORES.STUDENTS);
+                const classes = await getAll(STORES.CLASSES);
+                
+                const studentMap = {};
+                const classMap = {};
+                
+                students.forEach(student => {
+                    studentMap[student.id] = student;
+                });
+                
+                classes.forEach(cls => {
+                    classMap[cls.id] = cls.name;
+                });
+                
+                fees = fees.filter(fee => {
+                    if (status !== 'all' && fee.status !== status) {
+                        return false;
+                    }
+                    
+                    if (month !== 'all' && fee.month !== month) {
+                        return false;
+                    }
+                    
+                    const student = studentMap[fee.studentId];
+                    if (!student) return false;
+                    
+                    if (classId !== 'all' && student.classId !== parseInt(classId)) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                const reportResult = document.getElementById('reportResult');
+                
+                if (fees.length === 0) {
+                    reportResult.innerHTML = '<p class="text-center">کوئی فیس ریکارڈ نہیں ملا</p>';
+                    return;
+                }
+                
+                const totalAmount = fees.reduce((sum, fee) => sum + fee.amount, 0);
+                const paidAmount = fees.filter(fee => fee.status === 'paid').reduce((sum, fee) => sum + fee.amount, 0);
+                const pendingAmount = totalAmount - paidAmount;
+                
+                let html = `
+                    <div class="mb-3">
+                        <h4>فیس رپورٹ</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>کل فیس: ${totalAmount} روپے</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p>ادا شدہ: ${paidAmount} روپے</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p>باقی: ${pendingAmount} روپے</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>طالب علم</th>
+                                    <th>کلاس</th>
+                                    <th>مہینہ</th>
+                                    <th>رقم</th>
+                                    <th>تاریخ</th>
+                                    <th>سٹیٹس</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                fees.forEach(fee => {
+                    const student = studentMap[fee.studentId];
+                    const className = student ? classMap[student.classId] : 'غیر تعینات';
+                    const monthName = getMonthName(fee.month);
+                    const statusLabel = fee.status === 'paid' ? 'ادا شدہ' : 'باقی';
+                    
+                    html += `
+                        <tr>
+                            <td>${student ? student.name : 'غیر موجود طالب علم'}</td>
+                            <td>${className}</td>
+                            <td>${monthName}</td>
+                            <td>${fee.amount} روپے</td>
+                            <td>${formatDate(fee.date)}</td>
+                            <td>${statusLabel}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                reportResult.innerHTML = html;
+                window.currentReportData = fees.map(fee => {
+                    const student = studentMap[fee.studentId];
+                    return {
+                        studentName: student ? student.name : 'غیر موجود طالب علم',
+                        className: student ? classMap[student.classId] : 'غیر تعینات',
+                        month: getMonthName(fee.month),
+                        amount: fee.amount,
+                        date: formatDate(fee.date),
+                        status: fee.status === 'paid' ? 'ادا شدہ' : 'باقی'
+                    };
+                });
+                window.currentReportType = 'fees';
+            } catch (error) {
+                console.error('Error generating fee report:', error);
+                alert('رپورٹ بنانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function generateAttendanceReport() {
+            try {
+                const classId = document.getElementById('attendanceReportClass').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                if (!startDate || !endDate) {
+                    alert('براہ کرم تاریخ کی حد منتخب کریں۔');
+                    return;
+                }
+                
+                let attendance = await getAll(STORES.ATTENDANCE);
+                const students = await getAll(STORES.STUDENTS);
+                const classes = await getAll(STORES.CLASSES);
+                
+                const studentMap = {};
+                const classMap = {};
+                
+                students.forEach(student => {
+                    studentMap[student.id] = student;
+                });
+                
+                classes.forEach(cls => {
+                    classMap[cls.id] = cls.name;
+                });
+                
+                attendance = attendance.filter(record => {
+                    if (record.date < startDate || record.date > endDate) {
+                        return false;
+                    }
+                    
+                    if (classId !== 'all' && record.classId !== parseInt(classId)) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                const reportResult = document.getElementById('reportResult');
+                
+                if (attendance.length === 0) {
+                    reportResult.innerHTML = '<p class="text-center">کوئی حاضری ریکارڈ نہیں ملا</p>';
+                    return;
+                }
+                
+                const totalRecords = attendance.length;
+                const presentCount = attendance.filter(record => record.status === 'present').length;
+                const absentCount = attendance.filter(record => record.status === 'absent').length;
+                const leaveCount = attendance.filter(record => record.status === 'leave').length;
+                
+                const presentPercentage = Math.round((presentCount / totalRecords) * 100);
+                
+                let html = `
+                    <div class="mb-3">
+                        <h4>حاضری رپورٹ</h4>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p>کل ریکارڈز: ${totalRecords}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p>حاضر: ${presentCount} (${presentPercentage}%)</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p>غیر حاضر: ${absentCount}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p>چھٹی: ${leaveCount}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>تاریخ</th>
+                                    <th>طالب علم</th>
+                                    <th>کلاس</th>
+                                    <th>سٹیٹس</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                attendance.forEach(record => {
+                    const student = studentMap[record.studentId];
+                    const className = classMap[record.classId] || 'غیر تعینات';
+                    let statusLabel, statusClass;
+                    
+                    if (record.status === 'present') {
+                        statusLabel = 'حاضر';
+                        statusClass = 'attendance-present';
+                    } else if (record.status === 'absent') {
+                        statusLabel = 'غیر حاضر';
+                        statusClass = 'attendance-absent';
+                    } else {
+                        statusLabel = 'چھٹی';
+                        statusClass = 'attendance-leave';
+                    }
+                    
+                    html += `
+                        <tr class="${statusClass}">
+                            <td>${formatDate(record.date)}</td>
+                            <td>${student ? student.name : 'غیر موجود طالب علم'}</td>
+                            <td>${className}</td>
+                            <td>${statusLabel}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                reportResult.innerHTML = html;
+                window.currentReportData = attendance.map(record => {
+                    const student = studentMap[record.studentId];
+                    let statusLabel;
+                    
+                    if (record.status === 'present') {
+                        statusLabel = 'حاضر';
+                    } else if (record.status === 'absent') {
+                        statusLabel = 'غیر حاضر';
+                    } else {
+                        statusLabel = 'چھٹی';
+                    }
+                    
+                    return {
+                        date: formatDate(record.date),
+                        studentName: student ? student.name : 'غیر موجود طالب علم',
+                        className: classMap[record.classId] || 'غیر تعینات',
+                        status: statusLabel
+                    };
+                });
+                window.currentReportType = 'attendance';
+            } catch (error) {
+                console.error('Error generating attendance report:', error);
+                alert('رپورٹ بنانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        function printReport() {
+            window.print();
+        }
+    
+        function exportReportToCSV() {
+            if (!window.currentReportData || window.currentReportData.length === 0) {
+                alert('برآمد کرنے کے لیے کوئی ڈیٹا نہیں ہے۔');
+                return;
+            }
+            
+            let csvContent = '';
+            const data = window.currentReportData;
+            const keys = Object.keys(data);
+            
+            csvContent += keys.join(',') + '\n';
+            
+            data.forEach(item => {
+                const values = keys.map(key => {
+                    let value = item[key] || '';
+                    
+                    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+                        value = '"' + value.replace(/"/g, '""') + '"';
+                    }
+                    
+                    return value;
+                });
+                
+                csvContent += values.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${window.currentReportType}_report.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    
+        async function createBackup() {
+            try {
+                const backup = {};
+                
+                for (const store of Object.values(STORES)) {
+                    backup[store] = await getAll(store);
+                }
+                
+                const json = JSON.stringify(backup, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', `deeni_madrasa_backup_${new Date().toISOString().split('T')}.json`);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                addActivity('ڈیٹا کا بیک اپ بنایا گیا۔');
+            } catch (error) {
+                console.error('Error creating backup:', error);
+                alert('بیک اپ بنانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function restoreBackup() {
+            try {
+                const fileInput = document.getElementById('backupFile');
+                
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    alert('براہ کرم بیک اپ فائل منتخب کریں۔');
+                    return;
+                }
+                
+                const file = fileInput.files;
+                const reader = new FileReader();
+                
+                reader.onload = async function(event) {
+                    try {
+                        const backup = JSON.parse(event.target.result);
+                        
+                        if (!confirm('یہ عمل موجودہ ڈیٹا کو مٹا دے گا اور بیک اپ سے بحال کرے گا۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟')) {
+                            return;
+                        }
+                        
+                        for (const store of Object.values(STORES)) {
+                            await clearStore(store);
+                            
+                            if (backup[store] && backup[store].length > 0) {
+                                for (const item of backup[store]) {
+                                    await add(store, item);
+                                }
+                            }
+                        }
+                        
+                        alert('ڈیٹا کامیابی سے بحال ہو گیا۔');
+                        fileInput.value = '';
+                        
+                        initApp();
+                        addActivity('ڈیٹا بیک اپ سے بحال کیا گیا۔');
+                    } catch (error) {
+                        console.error('Error parsing backup file:', error);
+                        alert('بیک اپ فائل پڑھنے میں مسئلہ ہوا۔ براہ کرم درست فائل منتخب کریں۔');
+                    }
+                };
+                
+                reader.readAsText(file);
+            } catch (error) {
+                console.error('Error restoring backup:', error);
+                alert('بیک اپ بحال کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function clearAllData() {
+            if (!confirm('کیا آپ واقعی تمام ڈیٹا مٹانا چاہتے ہیں؟ یہ عمل ناقابل واپسی ہے!')) {
+                return;
+            }
+            
+            if (!confirm('آخری بار پوچھ رہے ہیں، کیا آپ واقعی تمام ڈیٹا مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                for (const store of Object.values(STORES)) {
+                    await clearStore(store);
+                }
+                
+                alert('تمام ڈیٹا کامیابی سے مٹا دیا گیا۔');
+                initApp();
+            } catch (error) {
+                console.error('Error clearing data:', error);
+                alert('ڈیٹا مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function editStudent(id) {
+            try {
+                const student = await get(STORES.STUDENTS, id);
+                
+                document.getElementById('studentId').value = student.id;
+                document.getElementById('studentName').value = student.name;
+                document.getElementById('fatherName').value = student.fatherName;
+                document.getElementById('studentAge').value = student.age;
+                document.getElementById('studentClass').value = student.classId;
+                document.getElementById('admissionDate').value = student.admissionDate;
+                document.getElementById('contactNumber').value = student.contactNumber;
+                document.getElementById('address').value = student.address;
+                
+                const customFieldsContainer = document.getElementById('customFields');
+                customFieldsContainer.innerHTML = '';
+                
+                if (student.customFields && Object.keys(student.customFields).length > 0) {
+                    Object.entries(student.customFields).forEach(([key, value]) => {
+                        const fieldId = 'custom_' + Date.now() + Math.random().toString(36).substr(2, 5);
+                        
+                        const fieldHtml = `
+                            <div class="row mb-2 custom-field">
+                                <div class="col-5">
+                                    <input type="text" class="form-control" placeholder="فیلڈ کا نام" name="${fieldId}_name" value="${key}" required>
+                                </div>
+                                <div class="col-5">
+                                    <input type="text" class="form-control" placeholder="فیلڈ کی قیمت" name="${fieldId}_value" value="${value}" required>
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-sm btn-danger w-100" onclick="this.parentElement.parentElement.remove()">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        customFieldsContainer.insertAdjacentHTML('beforeend', fieldHtml);
+                    });
+                } else {
+                    customFieldsContainer.innerHTML = '<p class="text-center text-muted">کوئی اضافی فیلڈ نہیں</p>';
+                }
+                
+                const modal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+                document.querySelector('#addStudentModal .modal-title').textContent = 'طالب علم کی معلومات میں ترمیم کریں';
+                modal.show();
+            } catch (error) {
+                console.error('Error editing student:', error);
+                alert('طالب علم کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteStudent(id) {
+            if (!confirm('کیا آپ واقعی اس طالب علم کو مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                const student = await get(STORES.STUDENTS, id);
+                await remove(STORES.STUDENTS, id);
+                
+                loadStudents();
+                updateDashboardStats();
+                addActivity(`طالب علم ${student.name} کو مٹا دیا گیا۔`);
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                alert('طالب علم کو مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function editTeacher(id) {
+            try {
+                const teacher = await get(STORES.TEACHERS, id);
+                
+                document.getElementById('teacherId').value = teacher.id;
+                document.getElementById('teacherName').value = teacher.name;
+                document.getElementById('specialization').value = teacher.specialization;
+                document.getElementById('qualification').value = teacher.qualification;
+                document.getElementById('teacherContact').value = teacher.contactNumber;
+                document.getElementById('joiningDate').value = teacher.joiningDate;
+                document.getElementById('salary').value = teacher.salary;
+                document.getElementById('teacherAddress').value = teacher.address;
+                
+                const customFieldsContainer = document.getElementById('teacherCustomFields');
+                customFieldsContainer.innerHTML = '';
+                
+                if (teacher.customFields && Object.keys(teacher.customFields).length > 0) {
+                    Object.entries(teacher.customFields).forEach(([key, value]) => {
+                        const fieldId = 'custom_' + Date.now() + Math.random().toString(36).substr(2, 5);
+                        
+                        const fieldHtml = `
+                            <div class="row mb-2 custom-field">
+                                <div class="col-5">
+                                    <input type="text" class="form-control" placeholder="فیلڈ کا نام" name="${fieldId}_name" value="${key}" required>
+                                </div>
+                                <div class="col-5">
+                                    <input type="text" class="form-control" placeholder="فیلڈ کی قیمت" name="${fieldId}_value" value="${value}" required>
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-sm btn-danger w-100" onclick="this.parentElement.parentElement.remove()">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        customFieldsContainer.insertAdjacentHTML('beforeend', fieldHtml);
+                    });
+                } else {
+                    customFieldsContainer.innerHTML = '<p class="text-center text-muted">کوئی اضافی فیلڈ نہیں</p>';
+                }
+                
+                const modal = new bootstrap.Modal(document.getElementById('addTeacherModal'));
+                document.querySelector('#addTeacherModal .modal-title').textContent = 'استاد کی معلومات میں ترمیم کریں';
+                modal.show();
+            } catch (error) {
+                console.error('Error editing teacher:', error);
+                alert('استاد کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteTeacher(id) {
+            if (!confirm('کیا آپ واقعی اس استاد کو مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                const teacher = await get(STORES.TEACHERS, id);
+                await remove(STORES.TEACHERS, id);
+                
+                loadTeachers();
+                loadTeacherOptions();
+                updateDashboardStats();
+                addActivity(`استاد ${teacher.name} کو مٹا دیا گیا۔`);
+            } catch (error) {
+                console.error('Error deleting teacher:', error);
+                alert('استاد کو مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function editClass(id) {
+            try {
+                const classData = await get(STORES.CLASSES, id);
+                
+                document.getElementById('classId').value = classData.id;
+                document.getElementById('className').value = classData.name;
+                document.getElementById('classTeacher').value = classData.teacherId;
+                document.getElementById('classTime').value = classData.time;
+                document.getElementById('roomNumber').value = classData.roomNumber;
+                document.getElementById('classDescription').value = classData.description;
+                
+                const modal = new bootstrap.Modal(document.getElementById('addClassModal'));
+                document.querySelector('#addClassModal .modal-title').textContent = 'کلاس کی معلومات میں ترمیم کریں';
+                modal.show();
+            } catch (error) {
+                console.error('Error editing class:', error);
+                alert('کلاس کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteClass(id) {
+            if (!confirm('کیا آپ واقعی اس کلاس کو مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                const classData = await get(STORES.CLASSES, id);
+                await remove(STORES.CLASSES, id);
+                
+                loadClasses();
+                loadClassOptions();
+                updateDashboardStats();
+                addActivity(`کلاس ${classData.name} کو مٹا دیا گیا۔`);
+            } catch (error) {
+                console.error('Error deleting class:', error);
+                alert('کلاس کو مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function editFee(id) {
+            try {
+                const fee = await get(STORES.FEES, id);
+                
+                document.getElementById('feeId').value = fee.id;
+                document.getElementById('feeStudent').value = fee.studentId;
+                document.getElementById('feeMonth').value = fee.month;
+                document.getElementById('feeAmount').value = fee.amount;
+                document.getElementById('feeDate').value = fee.date;
+                document.getElementById('feeStatus').value = fee.status;
+                document.getElementById('feeNotes').value = fee.notes || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('addFeeModal'));
+                document.querySelector('#addFeeModal .modal-title').textContent = 'فیس کی معلومات میں ترمیم کریں';
+                modal.show();
+            } catch (error) {
+                console.error('Error editing fee:', error);
+                alert('فیس کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteFee(id) {
+            if (!confirm('کیا آپ واقعی اس فیس ریکارڈ کو مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                await remove(STORES.FEES, id);
+                
+                loadFeeRecords();
+                updateFinancialSummary();
+                addActivity('ایک فیس ریکارڈ مٹا دیا گیا۔');
+            } catch (error) {
+                console.error('Error deleting fee:', error);
+                alert('فیس ریکارڈ کو مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function editFeeStructure(id) {
+            try {
+                const feeStructure = await get(STORES.FEE_STRUCTURE, id);
+                
+                document.getElementById('classForFee').value = feeStructure.classId;
+                document.getElementById('monthlyFee').value = feeStructure.monthlyFee;
+                document.getElementById('admissionFee').value = feeStructure.admissionFee;
+                document.getElementById('annualFee').value = feeStructure.annualFee;
+            } catch (error) {
+                console.error('Error editing fee structure:', error);
+                alert('فیس سٹرکچر کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteFeeStructure(id) {
+            if (!confirm('کیا آپ واقعی اس فیس سٹرکچر کو مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                await remove(STORES.FEE_STRUCTURE, id);
+                
+                loadFeeStructures();
+                addActivity('ایک فیس سٹرکچر مٹا دیا گیا۔');
+            } catch (error) {
+                console.error('Error deleting fee structure:', error);
+                alert('فیس سٹرکچر کو مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function editSalary(id) {
+            try {
+                const salary = await get(STORES.SALARIES, id);
+                
+                document.getElementById('salaryId').value = salary.id;
+                document.getElementById('salaryTeacher').value = salary.teacherId;
+                document.getElementById('salaryMonth').value = salary.month;
+                document.getElementById('salaryAmount').value = salary.amount;
+                document.getElementById('paymentDate').value = salary.paymentDate;
+                document.getElementById('salaryStatus').value = salary.status;
+                document.getElementById('salaryNotes').value = salary.notes || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('paySalaryModal'));
+                document.querySelector('#paySalaryModal .modal-title').textContent = 'تنخواہ کی معلومات میں ترمیم کریں';
+                modal.show();
+            } catch (error) {
+                console.error('Error editing salary:', error);
+                alert('تنخواہ کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteSalary(id) {
+            if (!confirm('کیا آپ واقعی اس تنخواہ ریکارڈ کو مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                await remove(STORES.SALARIES, id);
+                
+                loadSalaryRecords();
+                updateFinancialSummary();
+                addActivity('ایک تنخواہ ریکارڈ مٹا دیا گیا۔');
+            } catch (error) {
+                console.error('Error deleting salary:', error);
+                alert('تنخواہ ریکارڈ کو مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function editInventoryItem(id) {
+            try {
+                const item = await get(STORES.INVENTORY, id);
+                
+                document.getElementById('inventoryId').value = item.id;
+                document.getElementById('itemName').value = item.name;
+                document.getElementById('itemCategory').value = item.category;
+                document.getElementById('quantity').value = item.quantity;
+                document.getElementById('purchaseDate').value = item.purchaseDate;
+                document.getElementById('condition').value = item.condition;
+                document.getElementById('price').value = item.price;
+                document.getElementById('itemNotes').value = item.notes || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('addInventoryModal'));
+                document.querySelector('#addInventoryModal .modal-title').textContent = 'آئٹم کی معلومات میں ترمیم کریں';
+                modal.show();
+            } catch (error) {
+                console.error('Error editing inventory item:', error);
+                alert('آئٹم کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteInventoryItem(id) {
+            if (!confirm('کیا آپ واقعی اس آئٹم کو مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                const item = await get(STORES.INVENTORY, id);
+                await remove(STORES.INVENTORY, id);
+                
+                loadInventoryItems();
+                addActivity(`انوینٹری آئٹم ${item.name} کو مٹا دیا گیا۔`);
+            } catch (error) {
+                console.error('Error deleting inventory item:', error);
+                alert('آئٹم کو مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function editExpense(id) {
+            try {
+                const expense = await get(STORES.EXPENSES, id);
+                
+                document.getElementById('expenseId').value = expense.id;
+                document.getElementById('expenseDate').value = expense.date;
+                document.getElementById('expenseCategory').value = expense.category;
+                document.getElementById('expenseDescription').value = expense.description;
+                document.getElementById('expenseAmount').value = expense.amount;
+                document.getElementById('paidBy').value = expense.paidBy;
+                
+                const modal = new bootstrap.Modal(document.getElementById('addExpenseModal'));
+                document.querySelector('#addExpenseModal .modal-title').textContent = 'اخراجات کی معلومات میں ترمیم کریں';
+                modal.show();
+            } catch (error) {
+                console.error('Error editing expense:', error);
+                alert('اخراجات کی معلومات لوڈ کرنے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        async function deleteExpense(id) {
+            if (!confirm('کیا آپ واقعی اس اخراجات کو مٹانا چاہتے ہیں؟')) {
+                return;
+            }
+            
+            try {
+                await remove(STORES.EXPENSES, id);
+                
+                loadExpenses();
+                updateFinancialSummary();
+                addActivity('ایک اخراجات ریکارڈ مٹا دیا گیا۔');
+            } catch (error) {
+                console.error('Error deleting expense:', error);
+                alert('اخراجات کو مٹانے میں مسئلہ ہوا۔');
+            }
+        }
+    
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ur-PK');
+        }
+    
+        function getMonthName(monthNumber) {
+            const months = {
+                '01': 'جنوری',
+                '02': 'فروری',
+                '03': 'مارچ',
+                '04': 'اپریل',
+                '05': 'مئی',
+                '06': 'جون',
+                '07': 'جولائی',
+                '08': 'اگست',
+                '09': 'ستمبر',
+                '10': 'اکتوبر',
+                '11': 'نومبر',
+                '12': 'دسمبر'
+            };
+            
+            return months[monthNumber] || monthNumber;
+        }
+    
+        function getConditionLabel(condition) {
+            const conditions = {
+                'new': 'نئی',
+                'good': 'اچھی',
+                'average': 'اوسط',
+                'poor': 'خراب'
+            };
+            
+            return conditions[condition] || condition;
+        }
+    
+        function getCategoryLabel(category) {
+            const categories = {
+                'utility': 'یوٹیلیٹی',
+                'maintenance': 'مرمت',
+                'supplies': 'سامان',
+                'other': 'دیگر',
+                'furniture': 'فرنیچر',
+                'electronics': 'الیکٹرانکس',
+                'books': 'کتابیں',
+                'stationery': 'سٹیشنری'
+            };
+            
+            return categories[category] || category;
+        }
+    
+        async function getCount(storeName) {
+            try {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.count();
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = function() {
+                        resolve(request.result);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error(`Error getting count for ${storeName}:`, error);
+                return 0;
+            }
+        }
+    
+        async function getAll(storeName, limit = null) {
+            try {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.getAll();
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = function() {
+                        let result = request.result;
+                        
+                        if (limit && result.length > limit) {
+                            result = result.slice(0, limit);
+                        }
+                        
+                        resolve(result);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error(`Error getting all from ${storeName}:`, error);
+                return [];
+            }
+        }
+    
+        async function get(storeName, id) {
+            try {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.get(id);
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = function() {
+                        resolve(request.result);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error(`Error getting from ${storeName}:`, error);
+                return null;
+            }
+        }
+    
+        async function add(storeName, item) {
+            try {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const request = store.add(item);
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = function() {
+                        resolve(request.result);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error(`Error adding to ${storeName}:`, error);
+                throw error;
+            }
+        }
+    
+        async function update(storeName, item) {
+            try {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const request = store.put(item);
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = function() {
+                        resolve(request.result);
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error(`Error updating in ${storeName}:`, error);
+                throw error;
+            }
+        }
+    
+        async function remove(storeName, id) {
+            try {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const request = store.delete(id);
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = function() {
+                        resolve();
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error(`Error removing from ${storeName}:`, error);
+                throw error;
+            }
+        }
+    
+        async function clearStore(storeName) {
+            try {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const request = store.clear();
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = function() {
+                        resolve();
+                    };
+                    
+                    request.onerror = function() {
+                        reject(request.error);
+                    };
+                });
+            } catch (error) {
+                console.error(`Error clearing ${storeName}:`, error);
+                throw error;
+            }
+        }
+    
+        window.editStudent = editStudent;
+        window.deleteStudent = deleteStudent;
+        window.editTeacher = editTeacher;
+        window.deleteTeacher = deleteTeacher;
+        window.editClass = editClass;
+        window.deleteClass = deleteClass;
+        window.editFee = editFee;
+        window.deleteFee = deleteFee;
+        window.editFeeStructure = editFeeStructure;
+        window.deleteFeeStructure = deleteFeeStructure;
+        window.editSalary = editSalary;
+        window.deleteSalary = deleteSalary;
+        window.editInventoryItem = editInventoryItem;
+        window.deleteInventoryItem = deleteInventoryItem;
+        window.editExpense = editExpense;
+        window.deleteExpense = deleteExpense;
+		
+		
+		
+    </script>
+    </body>
+</html>

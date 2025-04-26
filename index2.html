@@ -1,0 +1,2602 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دینی مدرسہ مینجمنٹ</title>
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Nastaliq Urdu', serif; }
+        .en-font { font-family: sans-serif; direction: ltr; text-align: left;}
+        .ur-font { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; text-align: right; }
+        .form-label { margin-bottom: 0.1rem; }
+        .modal-body .row > div { margin-bottom: 0.5rem; }
+        .table th, .table td { vertical-align: middle; font-size: 0.9rem; padding: 0.4rem;}
+        .nav-link { cursor: pointer; }
+        .btn-sm { padding: 0.1rem 0.3rem; font-size: 0.8rem; }
+        .dynamic-field { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
+        .dynamic-field input { flex-grow: 1; }
+        .hidden { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #a4, #a4 * { visibility: visible; }
+            #a4 { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none; }
+        }
+        .form-control, .form-select { font-size: 0.9rem; padding: 0.25rem 0.5rem; height: calc(1.5em + 0.5rem + 2px); }
+        label { font-size: 0.9rem; }
+        h1, h2, h3, h4, h5, h6 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        .card { margin-bottom: 1rem; }
+        .modal-header .btn-close { margin-left: 0; margin-right: -0.5rem; }
+        [dir="ltr"] .modal-header .btn-close { margin-left: -0.5rem; margin-right: 0; }
+        [dir="ltr"] .ur-font { text-align: right; }
+        [dir="rtl"] .en-font { text-align: left; }
+        .table thead th { background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="ur-font">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success no-print">
+        <div class="container-fluid">
+            <a class="navbar-brand ur-font" href="#" data-l="a1">دینی مدرسہ مینجمنٹ</a>
+            <a class="navbar-brand en-font hidden" href="#" data-l="a2">Deeni Madrasa Management</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#a3" aria-controls="a3" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="a3">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                     <li class="nav-item"><a class="nav-link active" data-l="a5" onclick="f1('a6')" data-tab="a6">طلباء</a></li>
+                     <li class="nav-item"><a class="nav-link" data-l="a7" onclick="f1('a8')" data-tab="a8">اساتذہ</a></li>
+                     <li class="nav-item"><a class="nav-link" data-l="a9" onclick="f1('a10')" data-tab="a10">کلاسز</a></li>
+                     <li class="nav-item"><a class="nav-link" data-l="a11" onclick="f1('a12')" data-tab="a12">حاضری</a></li>
+                     <li class="nav-item"><a class="nav-link" data-l="a13" onclick="f1('a14')" data-tab="a14">فیس/تنخواہ</a></li>
+                     <li class="nav-item"><a class="nav-link" data-l="a167" onclick="f1('a168')" data-tab="a168">آمدنی/اخراجات</a></li> 
+                     <li class="nav-item"><a class="nav-link" data-l="a15" onclick="f1('a16')" data-tab="a16">رپورٹس</a></li>
+                </ul>
+                <select class="form-select form-select-sm w-auto" id="a17" onchange="f2(this.value)">
+                    <option value="ur">اردو</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-3">
+        <!-- Student Management -->
+        <div id="a6" class="tab-content">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 data-l="a18">طلباء کا انتظام</h5>
+                    <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a19" onclick="f3()" data-l="a20">نیا طالب علم</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th data-l="a21">نام</th>
+                                    <th data-l="a22">والد کا نام</th>
+                                    <th data-l="a23">عمر</th>
+                                    <th data-l="a24">کلاس</th>
+                                    <th data-l="a25">داخلہ تاریخ</th>
+                                    <th data-l="a26">رابطہ</th>
+                                    <th data-l="a27">پتہ</th>
+                                    <th id="a28" class="dynamic-th"></th> 
+                                    <th class="no-print" data-l="a29">اعمال</th>
+                                </tr>
+                            </thead>
+                            <tbody id="a30"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Management -->
+        <div id="a8" class="tab-content" style="display: none;">
+            <div class="card">
+                 <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 data-l="a31">اساتذہ کا انتظام</h5>
+                    <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a32" onclick="f4()" data-l="a33">نیا استاد</button>
+                </div>
+                 <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th data-l="a34">نام</th>
+                                    <th data-l="a35">قابلیت</th>
+                                    <th data-l="a36">رابطہ</th>
+                                    <th data-l="a37">پتہ</th>
+                                    <th data-l="a38">شمولیت کی تاریخ</th>
+                                     <th id="a39" class="dynamic-th"></th> 
+                                    <th class="no-print" data-l="a29">اعمال</th>
+                                </tr>
+                            </thead>
+                            <tbody id="a40"></tbody>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Class Management -->
+        <div id="a10" class="tab-content" style="display: none;">
+            <div class="card">
+                 <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 data-l="a41">کلاس/درس کا انتظام</h5>
+                    <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a42" onclick="f5()" data-l="a43">نئی کلاس</button>
+                </div>
+                 <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th data-l="a44">کلاس کا نام</th>
+                                    <th data-l="a45">استاد</th>
+                                    <th data-l="a46">طلباء کی تعداد</th>
+                                    <th class="no-print" data-l="a29">اعمال</th>
+                                </tr>
+                            </thead>
+                            <tbody id="a47"></tbody>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Attendance Tracking -->
+        <div id="a12" class="tab-content" style="display: none;">
+             <div class="card">
+                 <div class="card-header">
+                     <h5 data-l="a48">حاضری ٹریکنگ</h5>
+                 </div>
+                 <div class="card-body">
+                     <div class="row mb-3 no-print">
+                         <div class="col-md-4">
+                             <label for="a49" class="form-label" data-l="a50">کلاس منتخب کریں</label>
+                             <select id="a49" class="form-select" onchange="f6()"> </select>
+                         </div>
+                         <div class="col-md-4">
+                             <label for="a51" class="form-label" data-l="a52">تاریخ</label>
+                             <input type="date" id="a51" class="form-control en-font" onchange="f6()" value="">
+                         </div>
+                     </div>
+                     <div class="table-responsive">
+                         <table class="table table-striped table-bordered">
+                             <thead>
+                                 <tr>
+                                     <th data-l="a21">طالب علم کا نام</th>
+                                     <th data-l="a53">حاضری</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="a54"></tbody>
+                         </table>
+                     </div>
+                     <button class="btn btn-success mt-3 no-print" onclick="f7()" data-l="a55">حاضری محفوظ کریں</button>
+                 </div>
+             </div>
+        </div>
+
+        <!-- Fee/Salary Management -->
+        <div id="a14" class="tab-content" style="display: none;">
+             <div class="card">
+                 <div class="card-header">
+                    <h5 data-l="a56">فیس اور تنخواہ کا انتظام</h5>
+                 </div>
+                 <div class="card-body">
+                    <ul class="nav nav-tabs no-print" id="a57" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="a58-tab" data-bs-toggle="tab" data-bs-target="#a58" type="button" role="tab" aria-controls="a58" aria-selected="true" data-l="a59">فیس وصولی</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="a60-tab" data-bs-toggle="tab" data-bs-target="#a60" type="button" role="tab" aria-controls="a60" aria-selected="false" data-l="a61">تنخواہ کی ادائیگی</button>
+                      </li>
+                    </ul>
+                    <div class="tab-content pt-3" id="a62">
+                      <div class="tab-pane fade show active" id="a58" role="tabpanel" aria-labelledby="a58-tab">
+                        <h6 data-l="a63">طالب علم کی فیس</h6>
+                        <div class="row mb-3 no-print">
+                           <div class="col-md-4">
+                               <label for="a64" class="form-label" data-l="a65">طالب علم منتخب کریں</label>
+                               <select id="a64" class="form-select"></select>
+                           </div>
+                            <div class="col-md-3">
+                               <label for="a66" class="form-label" data-l="a67">مہینہ/سال</label>
+                               <input type="month" id="a66" class="form-control en-font">
+                            </div>
+                            <div class="col-md-2">
+                               <label for="a68" class="form-label" data-l="a69">رقم</label>
+                               <input type="number" id="a68" class="form-control en-font">
+                            </div>
+                            <div class="col-md-3 align-self-end">
+                                <button class="btn btn-success" onclick="f8()" data-l="a70">فیس ریکارڈ کریں</button>
+                            </div>
+                        </div>
+                         <div class="table-responsive">
+                             <table class="table table-striped table-bordered">
+                                 <thead>
+                                     <tr>
+                                         <th data-l="a21">طالب علم</th>
+                                         <th data-l="a67">مہینہ/سال</th>
+                                         <th data-l="a69">رقم</th>
+                                         <th data-l="a71">تاریخ</th>
+                                         <th class="no-print" data-l="a29">اعمال</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody id="a72"></tbody>
+                             </table>
+                         </div>
+                      </div>
+                      <div class="tab-pane fade" id="a60" role="tabpanel" aria-labelledby="a60-tab">
+                         <h6 data-l="a73">استاد کی تنخواہ</h6>
+                         <div class="row mb-3 no-print">
+                           <div class="col-md-4">
+                               <label for="a74" class="form-label" data-l="a75">استاد منتخب کریں</label>
+                               <select id="a74" class="form-select"></select>
+                           </div>
+                            <div class="col-md-3">
+                               <label for="a76" class="form-label" data-l="a67">مہینہ/سال</label>
+                               <input type="month" id="a76" class="form-control en-font">
+                            </div>
+                            <div class="col-md-2">
+                               <label for="a77" class="form-label" data-l="a78">تنخواہ</label>
+                               <input type="number" id="a77" class="form-control en-font">
+                            </div>
+                            <div class="col-md-3 align-self-end">
+                                <button class="btn btn-success" onclick="f9()" data-l="a79">تنخواہ ریکارڈ کریں</button>
+                            </div>
+                         </div>
+                         <div class="table-responsive">
+                             <table class="table table-striped table-bordered">
+                                 <thead>
+                                     <tr>
+                                         <th data-l="a7">استاد</th>
+                                         <th data-l="a67">مہینہ/سال</th>
+                                         <th data-l="a78">تنخواہ</th>
+                                         <th data-l="a71">تاریخ</th>
+                                          <th class="no-print" data-l="a29">اعمال</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody id="a80"></tbody>
+                             </table>
+                         </div>
+                      </div>
+                    </div>
+                 </div>
+             </div>
+        </div>
+
+        <!-- Income/Expenses Management -->
+        <div id="a168" class="tab-content" style="display: none;">
+             <div class="card">
+                 <div class="card-header">
+                     <h5 data-l="a167">آمدنی اور اخراجات کا انتظام</h5>
+                 </div>
+                 <div class="card-body">
+                    <ul class="nav nav-tabs no-print" id="a169" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="a170-tab" data-bs-toggle="tab" data-bs-target="#a170" type="button" role="tab" aria-controls="a170" aria-selected="true" data-l="a171">آمدنی</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="a172-tab" data-bs-toggle="tab" data-bs-target="#a172" type="button" role="tab" aria-controls="a172" aria-selected="false" data-l="a173">اخراجات</button>
+                      </li>
+                    </ul>
+                    <div class="tab-content pt-3" id="a174">
+                      <div class="tab-pane fade show active" id="a170" role="tabpanel" aria-labelledby="a170-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 data-l="a171">آمدنی</h6>
+                            <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a175" onclick="f47()" data-l="a176">نئی آمدنی</button>
+                        </div>
+                         <div class="table-responsive">
+                             <table class="table table-striped table-bordered">
+                                 <thead>
+                                     <tr>
+                                         <th data-l="a177">تفصیل</th>
+                                         <th data-l="a178">کیٹیگری</th>
+                                         <th data-l="a69">رقم</th>
+                                         <th data-l="a71">تاریخ</th>
+                                         <th class="no-print" data-l="a29">اعمال</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody id="a179"></tbody>
+                             </table>
+                         </div>
+                      </div>
+                      <div class="tab-pane fade" id="a172" role="tabpanel" aria-labelledby="a172-tab">
+                         <div class="d-flex justify-content-between align-items-center mb-2">
+                             <h6 data-l="a173">اخراجات</h6>
+                             <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a180" onclick="f48()" data-l="a181">نیا خرچہ</button>
+                         </div>
+                         <div class="table-responsive">
+                             <table class="table table-striped table-bordered">
+                                 <thead>
+                                     <tr>
+                                         <th data-l="a177">تفصیل</th>
+                                         <th data-l="a178">کیٹیگری</th>
+                                         <th data-l="a69">رقم</th>
+                                         <th data-l="a71">تاریخ</th>
+                                          <th class="no-print" data-l="a29">اعمال</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody id="a182"></tbody>
+                             </table>
+                         </div>
+                      </div>
+                    </div>
+                 </div>
+             </div>
+        </div>
+
+
+        <!-- Reports -->
+        <div id="a16" class="tab-content" style="display: none;">
+             <div class="card">
+                 <div class="card-header">
+                    <h5 data-l="a81">رپورٹس</h5>
+                 </div>
+                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                           <label for="a82" class="form-label" data-l="a83">رپورٹ کی قسم</label>
+                           <select id="a82" class="form-select" onchange="f10()">
+                               <option value="s" data-l="a84">طلباء کی فہرست</option>
+                               <option value="t" data-l="a85">اساتذہ کی فہرست</option>
+                               <option value="c" data-l="a86">کلاسز کی فہرست</option>
+                               <option value="a" data-l="a87">حاضری رپورٹ</option>
+                               <option value="f" data-l="a88">فیس رپورٹ</option>
+                               <option value="p" data-l="a89">تنخواہ رپورٹ</option>
+                               <option value="inc" data-l="a183">آمدنی رپورٹ</option> 
+                               <option value="exp" data-l="a184">اخراجات رپورٹ</option> 
+                           </select>
+                        </div>
+                        <div class="col-md-4 mb-3" id="a90" style="display: none;"> 
+                            <label for="a91" class="form-label" data-l="a50">کلاس منتخب کریں</label>
+                            <select id="a91" class="form-select"></select>
+                        </div>
+                         <div class="col-md-4 mb-3" id="a92" style="display: none;"> 
+                            <label for="a93" class="form-label" data-l="a94">تاریخ منتخب کریں</label>
+                            <input type="date" id="a93" class="form-control en-font">
+                        </div>
+                         <div class="col-md-4 mb-3" id="a95" style="display: none;"> 
+                            <label for="a96" class="form-label" data-l="a97">مہینہ منتخب کریں</label>
+                            <input type="month" id="a96" class="form-control en-font">
+                        </div>
+                        <div class="col-md-4 mb-3" id="a185" style="display: none;"> 
+                             <label for="a186" class="form-label" data-l="a187">شروع کی تاریخ</label>
+                             <input type="date" id="a186" class="form-control en-font">
+                        </div>
+                         <div class="col-md-4 mb-3" id="a188" style="display: none;">
+                              <label for="a189" class="form-label" data-l="a190">اختتامی تاریخ</label>
+                              <input type="date" id="a189" class="form-control en-font">
+                         </div>
+                        <div class="col-md-12 mb-3">
+                             <button class="btn btn-primary me-2 no-print" onclick="f11()" data-l="a98">رپورٹ دیکھیں</button>
+                             <button class="btn btn-secondary me-2 no-print" onclick="window.print()" data-l="a99">پرنٹ</button>
+                             <button class="btn btn-info no-print" onclick="f12()" data-l="a100">CSV ایکسپورٹ</button>
+                        </div>
+                    </div>
+                    <div id="a4" class="table-responsive">
+                        <h5 id="a101"></h5>
+                        <table class="table table-bordered table-striped">
+                            <thead id="a102"></thead>
+                            <tbody id="a103"></tbody>
+                        </table>
+                    </div>
+                 </div>
+             </div>
+        </div>
+    </div>
+
+    <!-- Student Modal -->
+    <div class="modal fade" id="a19" tabindex="-1" aria-labelledby="a104" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title ur-font" id="a104" data-l="a105">طالب علم کا فارم</h5>
+            <h5 class="modal-title en-font hidden" data-l="a106">Student Form</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="a107">
+              <input type="hidden" id="s_id">
+              <div class="row">
+                  <div class="col-md-6">
+                      <label for="s_name_ur" class="form-label" data-l="a108">نام (اردو)</label>
+                      <input type="text" class="form-control ur-font" id="s_name_ur" required>
+                  </div>
+                   <div class="col-md-6">
+                       <label for="s_name_en" class="form-label en-font" data-l="a109">Name (English)</label>
+                       <input type="text" class="form-control en-font" id="s_name_en">
+                   </div>
+                   <div class="col-md-6">
+                      <label for="s_fname_ur" class="form-label" data-l="a110">والد کا نام (اردو)</label>
+                      <input type="text" class="form-control ur-font" id="s_fname_ur" required>
+                  </div>
+                  <div class="col-md-6">
+                      <label for="s_fname_en" class="form-label en-font" data-l="a111">Father's Name (English)</label>
+                      <input type="text" class="form-control en-font" id="s_fname_en">
+                  </div>
+                  <div class="col-md-4">
+                      <label for="s_age" class="form-label" data-l="a23">عمر</label>
+                      <input type="number" class="form-control en-font" id="s_age">
+                  </div>
+                   <div class="col-md-4">
+                      <label for="s_class" class="form-label" data-l="a24">کلاس</label>
+                      <select class="form-select" id="s_class"></select>
+                  </div>
+                  <div class="col-md-4">
+                      <label for="s_adm_date" class="form-label" data-l="a25">داخلہ تاریخ</label>
+                      <input type="date" class="form-control en-font" id="s_adm_date" required>
+                  </div>
+                   <div class="col-md-6">
+                      <label for="s_contact" class="form-label" data-l="a26">رابطہ</label>
+                      <input type="text" class="form-control en-font" id="s_contact">
+                  </div>
+                  <div class="col-md-6">
+                      <label for="s_address_ur" class="form-label" data-l="a112">پتہ (اردو)</label>
+                      <input type="text" class="form-control ur-font" id="s_address_ur">
+                  </div>
+                   <div class="col-md-6">
+                      <label for="s_address_en" class="form-label en-font" data-l="a113">Address (English)</label>
+                      <input type="text" class="form-control en-font" id="s_address_en">
+                  </div>
+              </div>
+              <h6 class="mt-3" data-l="a114">اضافی معلومات</h6>
+              <div id="a115"></div>
+              <button type="button" class="btn btn-outline-secondary btn-sm mt-2 no-print" onclick="f13('a115', 's')" data-l="a116">فیلڈ شامل کریں</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
+            <button type="button" class="btn btn-success no-print" onclick="f14()" data-l="a118">محفوظ کریں</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher Modal -->
+    <div class="modal fade" id="a32" tabindex="-1" aria-labelledby="a119" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title ur-font" id="a119" data-l="a120">استاد کا فارم</h5>
+             <h5 class="modal-title en-font hidden" data-l="a121">Teacher Form</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="a122">
+              <input type="hidden" id="t_id">
+              <div class="row">
+                  <div class="col-md-6">
+                      <label for="t_name_ur" class="form-label" data-l="a108">نام (اردو)</label>
+                      <input type="text" class="form-control ur-font" id="t_name_ur" required>
+                  </div>
+                  <div class="col-md-6">
+                      <label for="t_name_en" class="form-label en-font" data-l="a109">Name (English)</label>
+                      <input type="text" class="form-control en-font" id="t_name_en">
+                  </div>
+                   <div class="col-md-6">
+                      <label for="t_qual_ur" class="form-label" data-l="a123">قابلیت (اردو)</label>
+                      <input type="text" class="form-control ur-font" id="t_qual_ur">
+                  </div>
+                   <div class="col-md-6">
+                      <label for="t_qual_en" class="form-label en-font" data-l="a124">Qualification (English)</label>
+                      <input type="text" class="form-control en-font" id="t_qual_en">
+                  </div>
+                   <div class="col-md-6">
+                      <label for="t_contact" class="form-label" data-l="a36">رابطہ</label>
+                      <input type="text" class="form-control en-font" id="t_contact">
+                  </div>
+                   <div class="col-md-6">
+                      <label for="t_join_date" class="form-label" data-l="a38">شمولیت کی تاریخ</label>
+                      <input type="date" class="form-control en-font" id="t_join_date" required>
+                  </div>
+                   <div class="col-md-6">
+                      <label for="t_address_ur" class="form-label" data-l="a112">پتہ (اردو)</label>
+                      <input type="text" class="form-control ur-font" id="t_address_ur">
+                  </div>
+                   <div class="col-md-6">
+                      <label for="t_address_en" class="form-label en-font" data-l="a113">Address (English)</label>
+                      <input type="text" class="form-control en-font" id="t_address_en">
+                  </div>
+              </div>
+              <h6 class="mt-3" data-l="a114">اضافی معلومات</h6>
+              <div id="a125"></div>
+              <button type="button" class="btn btn-outline-secondary btn-sm mt-2 no-print" onclick="f13('a125', 't')" data-l="a116">فیلڈ شامل کریں</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+             <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
+            <button type="button" class="btn btn-success no-print" onclick="f15()" data-l="a118">محفوظ کریں</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class Modal -->
+    <div class="modal fade" id="a42" tabindex="-1" aria-labelledby="a126" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title ur-font" id="a126" data-l="a127">کلاس فارم</h5>
+            <h5 class="modal-title en-font hidden" data-l="a128">Class Form</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="a129">
+              <input type="hidden" id="c_id">
+               <div class="mb-3">
+                  <label for="c_name_ur" class="form-label" data-l="a130">کلاس کا نام (اردو)</label>
+                  <input type="text" class="form-control ur-font" id="c_name_ur" required>
+              </div>
+              <div class="mb-3">
+                   <label for="c_name_en" class="form-label en-font" data-l="a131">Class Name (English)</label>
+                   <input type="text" class="form-control en-font" id="c_name_en">
+               </div>
+               <div class="mb-3">
+                  <label for="c_teacher" class="form-label" data-l="a45">استاد</label>
+                  <select class="form-select" id="c_teacher"> </select>
+              </div>
+               <div class="mb-3">
+                    <label class="form-label" data-l="a132">طلباء منتخب کریں</label>
+                    <div id="a133" style="max-height: 200px; overflow-y: auto; border: 1px solid #ced4da; padding: 10px; border-radius: 0.25rem;"></div>
+               </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
+            <button type="button" class="btn btn-success no-print" onclick="f16()" data-l="a118">محفوظ کریں</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <!-- Income Modal -->
+    <div class="modal fade" id="a175" tabindex="-1" aria-labelledby="a191" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title ur-font" id="a191" data-l="a176">نئی آمدنی</h5>
+             <h5 class="modal-title en-font hidden" data-l="a192">New Income</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="a193">
+              <input type="hidden" id="inc_id">
+               <div class="mb-3">
+                  <label for="inc_desc_ur" class="form-label" data-l="a194">تفصیل (اردو)</label>
+                  <input type="text" class="form-control ur-font" id="inc_desc_ur" required>
+              </div>
+               <div class="mb-3">
+                   <label for="inc_desc_en" class="form-label en-font" data-l="a195">Description (Eng)</label>
+                   <input type="text" class="form-control en-font" id="inc_desc_en">
+               </div>
+               <div class="mb-3">
+                  <label for="inc_cat_ur" class="form-label" data-l="a196">کیٹیگری (اردو)</label>
+                  <input type="text" class="form-control ur-font" id="inc_cat_ur">
+              </div>
+               <div class="mb-3">
+                   <label for="inc_cat_en" class="form-label en-font" data-l="a197">Category (Eng)</label>
+                   <input type="text" class="form-control en-font" id="inc_cat_en">
+               </div>
+               <div class="mb-3">
+                  <label for="inc_amt" class="form-label" data-l="a69">رقم</label>
+                  <input type="number" class="form-control en-font" id="inc_amt" required>
+              </div>
+              <div class="mb-3">
+                   <label for="inc_dt" class="form-label" data-l="a71">تاریخ</label>
+                   <input type="date" class="form-control en-font" id="inc_dt" required>
+               </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
+            <button type="button" class="btn btn-success no-print" onclick="f49()" data-l="a118">محفوظ کریں</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expense Modal -->
+    <div class="modal fade" id="a180" tabindex="-1" aria-labelledby="a198" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title ur-font" id="a198" data-l="a181">نیا خرچہ</h5>
+            <h5 class="modal-title en-font hidden" data-l="a199">New Expense</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="a200">
+              <input type="hidden" id="exp_id">
+                <div class="mb-3">
+                   <label for="exp_desc_ur" class="form-label" data-l="a194">تفصیل (اردو)</label>
+                   <input type="text" class="form-control ur-font" id="exp_desc_ur" required>
+               </div>
+                <div class="mb-3">
+                    <label for="exp_desc_en" class="form-label en-font" data-l="a195">Description (Eng)</label>
+                    <input type="text" class="form-control en-font" id="exp_desc_en">
+                </div>
+                <div class="mb-3">
+                   <label for="exp_cat_ur" class="form-label" data-l="a196">کیٹیگری (اردو)</label>
+                   <input type="text" class="form-control ur-font" id="exp_cat_ur">
+               </div>
+                <div class="mb-3">
+                    <label for="exp_cat_en" class="form-label en-font" data-l="a197">Category (Eng)</label>
+                    <input type="text" class="form-control en-font" id="exp_cat_en">
+                </div>
+                <div class="mb-3">
+                   <label for="exp_amt" class="form-label" data-l="a69">رقم</label>
+                   <input type="number" class="form-control en-font" id="exp_amt" required>
+               </div>
+               <div class="mb-3">
+                    <label for="exp_dt" class="form-label" data-l="a71">تاریخ</label>
+                    <input type="date" class="form-control en-font" id="exp_dt" required>
+                </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
+            <button type="button" class="btn btn-success no-print" onclick="f50()" data-l="a118">محفوظ کریں</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        let db;
+        let cl = 'ur'; // Current language
+        const v1 = 2; // DB version Increased for new stores
+
+        const l = {
+             ur: {
+                a1: "دینی مدرسہ مینجمنٹ", a2: "Deeni Madrasa Management", a5: "طلباء", a7: "اساتذہ", a9: "کلاسز", a11: "حاضری", a13: "فیس/تنخواہ", a15: "رپورٹس",
+                a18: "طلباء کا انتظام", a20: "نیا طالب علم", a21: "نام", a22: "والد کا نام", a23: "عمر", a24: "کلاس", a25: "داخلہ تاریخ", a26: "رابطہ", a27: "پتہ", a29: "اعمال",
+                a31: "اساتذہ کا انتظام", a33: "نیا استاد", a34: "نام", a35: "قابلیت", a36: "رابطہ", a37: "پتہ", a38: "شمولیت کی تاریخ",
+                a41: "کلاس/درس کا انتظام", a43: "نئی کلاس", a44: "کلاس کا نام", a45: "استاد", a46: "طلباء کی تعداد",
+                a48: "حاضری ٹریکنگ", a50: "کلاس منتخب کریں", a52: "تاریخ", a53: "حاضری", a55: "حاضری محفوظ کریں",
+                a56: "فیس اور تنخواہ کا انتظام", a59: "فیس وصولی", a61: "تنخواہ کی ادائیگی", a63: "طالب علم کی فیس", a65: "طالب علم منتخب کریں", a67: "مہینہ/سال", a69: "رقم", a70: "فیس ریکارڈ کریں", a71: "تاریخ",
+                a73: "استاد کی تنخواہ", a75: "استاد منتخب کریں", a78: "تنخواہ", a79: "تنخواہ ریکارڈ کریں",
+                a81: "رپورٹس", a83: "رپورٹ کی قسم", a84: "طلباء کی فہرست", a85: "اساتذہ کی فہرست", a86: "کلاسز کی فہرست", a87: "حاضری رپورٹ", a88: "فیس رپورٹ", a89: "تنخواہ رپورٹ", a94: "تاریخ منتخب کریں", a97: "مہینہ منتخب کریں", a98: "رپورٹ دیکھیں", a99: "پرنٹ", a100: "CSV ایکسپورٹ",
+                a105: "طالب علم کا فارم", a108: "نام (اردو)", a110: "والد کا نام (اردو)", a112: "پتہ (اردو)", a114: "اضافی معلومات", a116: "فیلڈ شامل کریں", a117: "بند کریں", a118: "محفوظ کریں",
+                a120: "استاد کا فارم", a123: "قابلیت (اردو)",
+                a127: "کلاس فارم", a130: "کلاس کا نام (اردو)", a132: "طلباء منتخب کریں",
+                a134: "حاضر", a135: "غیر حاضر", a136: "رخصت", a137: "ترمیم", a138: "حذف",
+                a139: "فیلڈ کا نام (اردو)", a140: "فیلڈ کا نام (انگلش)", a141: "فیلڈ حذف کریں",
+                a142: "ڈیٹا بیس کامیابی سے کھولا گیا۔", a143: "ڈیٹا بیس کھولنے میں خرابی:",
+                a144: "ڈیٹا بیس کامیابی سے بنایا/اپ گریڈ کیا گیا۔",
+                a145: "براہ کرم طالب علم، مہینہ اور رقم منتخب کریں۔", a146: "فیس کامیابی سے ریکارڈ ہوگئی۔", a147: "فیس ریکارڈ کرنے میں خرابی:",
+                a148: "براہ کرم استاد، مہینہ اور تنخواہ منتخب کریں۔", a149: "تنخواہ کامیابی سے ریکارڈ ہوگئی۔", a150: "تنخواہ ریکارڈ کرنے میں خرابی:",
+                a151: "براہ کرم کلاس اور تاریخ منتخب کریں۔", a152: "حاضری کامیابی سے محفوظ ہوگئی۔", a153: "حاضری محفوظ کرنے میں خرابی:",
+                a154: "کامیابی سے حذف کر دیا گیا۔", a155: "حذف کرنے میں خرابی:",
+                a156: "طالب علم کامیابی سے محفوظ ہوگیا۔", a157: "طالب علم کو محفوظ کرنے میں خرابی:",
+                a158: "استاد کامیابی سے محفوظ ہوگیا۔", a159: "استاد کو محفوظ کرنے میں خرابی:",
+                a160: "کلاس کامیابی سے محفوظ ہوگئی۔", a161: "کلاس کو محفوظ کرنے میں خرابی:",
+                a162: "تمام ضروری فیلڈز کو پُر کریں۔",
+                a163: "کوئی ڈیٹا دستیاب نہیں۔",
+                a164: "رپورٹ تیار کی جا رہی ہے۔..",
+                a165: "براہ کرم پہلے کلاس منتخب کریں۔",
+                a166: "کل",
+                // New Labels for Income/Expense
+                a167: "آمدنی/اخراجات",
+                a168: "income-expense", // Tab ID
+                a169: "ie-tabs",
+                a170: "income",
+                a171: "آمدنی",
+                a172: "expenses",
+                a173: "اخراجات",
+                a174: "ie-tab-content",
+                a175: "incomeModal",
+                a176: "نئی آمدنی",
+                a177: "تفصیل",
+                a178: "کیٹیگری",
+                a179: "incomeTbody",
+                a180: "expenseModal",
+                a181: "نیا خرچہ",
+                a182: "expensesTbody",
+                a183: "آمدنی رپورٹ",
+                a184: "اخراجات رپورٹ",
+                a185: "reportDateRangeStartDiv",
+                a186: "reportStartDate",
+                a187: "شروع کی تاریخ",
+                a188: "reportDateRangeEndDiv",
+                a189: "reportEndDate",
+                a190: "اختتامی تاریخ",
+                a191: "incomeModalLabel",
+                a192: "New Income",
+                a193: "incomeForm",
+                a194: "تفصیل (اردو)",
+                a195: "Description (Eng)",
+                a196: "کیٹیگری (اردو)",
+                a197: "Category (Eng)",
+                a198: "expenseModalLabel",
+                a199: "New Expense",
+                a200: "expenseForm",
+                a201: "آمدنی کامیابی سے محفوظ ہوگئی۔",
+                a202: "آمدنی محفوظ کرنے میں خرابی:",
+                a203: "خرچہ کامیابی سے محفوظ ہوگیا۔",
+                a204: "خرچہ محفوظ کرنے میں خرابی:",
+             },
+             en: {
+                a1: "Deeni Madrasa Management", a2: "Deeni Madrasa Management", a5: "Students", a7: "Teachers", a9: "Classes", a11: "Attendance", a13: "Fees/Salary", a15: "Reports",
+                a18: "Student Management", a20: "New Student", a21: "Name", a22: "Father's Name", a23: "Age", a24: "Class", a25: "Admission Date", a26: "Contact", a27: "Address", a29: "Actions",
+                a31: "Teacher Management", a33: "New Teacher", a34: "Name", a35: "Qualification", a36: "Contact", a37: "Address", a38: "Joining Date",
+                a41: "Class Management", a43: "New Class", a44: "Class Name", a45: "Teacher", a46: "No. of Students",
+                a48: "Attendance Tracking", a50: "Select Class", a52: "Date", a53: "Status", a55: "Save Attendance",
+                a56: "Fee and Salary Management", a59: "Fee Collection", a61: "Salary Payment", a63: "Student Fees", a65: "Select Student", a67: "Month/Year", a69: "Amount", a70: "Record Fee", a71: "Date",
+                a73: "Teacher Salary", a75: "Select Teacher", a78: "Salary", a79: "Record Salary",
+                a81: "Reports", a83: "Report Type", a84: "Student List", a85: "Teacher List", a86: "Class List", a87: "Attendance Report", a88: "Fee Report", a89: "Salary Report", a94: "Select Date", a97: "Select Month", a98: "Generate Report", a99: "Print", a100: "Export CSV",
+                a105: "Student Form", a106: "Student Form", a108: "Name (Urdu)", a109: "Name (English)", a110: "Father's Name (Urdu)", a111: "Father's Name (English)", a112: "Address (Urdu)", a113: "Address (English)", a114: "Additional Fields", a116: "Add Field", a117: "Close", a118: "Save",
+                a120: "Teacher Form", a121: "Teacher Form", a123: "Qualification (Urdu)", a124: "Qualification (English)",
+                a127: "Class Form", a128: "Class Form", a130: "Class Name (Urdu)", a131: "Class Name (English)", a132: "Select Students",
+                a134: "Present", a135: "Absent", a136: "Leave", a137: "Edit", a138: "Delete",
+                a139: "Field Name (Urdu)", a140: "Field Name (English)", a141: "Remove Field",
+                a142: "Database opened successfully.", a143: "Error opening database:",
+                a144: "Database created/upgraded successfully.",
+                a145: "Please select student, month, and amount.", a146: "Fee recorded successfully.", a147: "Error recording fee:",
+                a148: "Please select teacher, month, and salary.", a149: "Salary recorded successfully.", a150: "Error recording salary:",
+                a151: "Please select class and date.", a152: "Attendance saved successfully.", a153: "Error saving attendance:",
+                a154: "Deleted successfully.", a155: "Error deleting:",
+                a156: "Student saved successfully.", a157: "Error saving student:",
+                a158: "Teacher saved successfully.", a159: "Error saving teacher:",
+                a160: "Class saved successfully.", a161: "Error saving class:",
+                a162: "Please fill all required fields.",
+                a163: "No data available.",
+                a164: "Generating report...",
+                a165: "Please select a class first.",
+                a166: "Total",
+                // New Labels for Income/Expense
+                a167: "Income/Expenses",
+                a168: "income-expense", // Tab ID
+                a169: "ie-tabs",
+                a170: "income",
+                a171: "Income",
+                a172: "expenses",
+                a173: "Expenses",
+                a174: "ie-tab-content",
+                a175: "incomeModal",
+                a176: "New Income",
+                a177: "Description",
+                a178: "Category",
+                a179: "incomeTbody",
+                a180: "expenseModal",
+                a181: "New Expense",
+                a182: "expensesTbody",
+                a183: "Income Report",
+                a184: "Expenses Report",
+                a185: "reportDateRangeStartDiv",
+                a186: "reportStartDate",
+                a187: "Start Date",
+                a188: "reportDateRangeEndDiv",
+                a189: "reportEndDate",
+                a190: "End Date",
+                a191: "incomeModalLabel",
+                a192: "New Income",
+                a193: "incomeForm",
+                a194: "Description (Urdu)",
+                a195: "Description (Eng)",
+                a196: "Category (Urdu)",
+                a197: "Category (Eng)",
+                a198: "expenseModalLabel",
+                a199: "New Expense",
+                a200: "expenseForm",
+                a201: "Income saved successfully.",
+                a202: "Error saving income:",
+                a203: "Expense saved successfully.",
+                a204: "Error saving expense:",
+             }
+        };
+
+        // --- DB Functions ---
+        function f17() { // initDB
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open("madrasaDB", v1);
+                req.onerror = (e) => { console.error(l[cl].a143, e.target.error); reject(l[cl].a143); }; // Log specific error
+                req.onsuccess = (e) => { db = e.target.result; console.log(l[cl].a142); resolve(db); };
+                req.onupgradeneeded = (e) => {
+                    console.log("Upgrading database from version", e.oldVersion, "to", e.newVersion);
+                    db = e.target.result;
+                    const tx = e.target.transaction; // Get transaction for upgrade
+
+                    // Existing stores (ensure they are checked/created)
+                    if (!db.objectStoreNames.contains('s')) {
+                        const os1 = db.createObjectStore("s", { keyPath: "id", autoIncrement: true });
+                        os1.createIndex("name_ur", "nu", { unique: false });
+                        os1.createIndex("class", "cl", { unique: false });
+                    }
+                     if (!db.objectStoreNames.contains('t')) {
+                        const os2 = db.createObjectStore("t", { keyPath: "id", autoIncrement: true });
+                        os2.createIndex("name_ur", "nu", { unique: false });
+                    }
+                     if (!db.objectStoreNames.contains('c')) {
+                        const os3 = db.createObjectStore("c", { keyPath: "id", autoIncrement: true });
+                        os3.createIndex("name_ur", "nu", { unique: false });
+                        os3.createIndex("teacher_id", "ti", { unique: false });
+                    }
+                     if (!db.objectStoreNames.contains('a')) {
+                        const os4 = db.createObjectStore("a", { keyPath: "id", autoIncrement: true });
+                        os4.createIndex("date_class", ["dt", "ci"], { unique: false });
+                        os4.createIndex("student_id", "si", { unique: false });
+                        os4.createIndex("date", "dt", { unique: false }); // Add index for date only if needed
+                    }
+                     if (!db.objectStoreNames.contains('f')) {
+                        const os5 = db.createObjectStore("f", { keyPath: "id", autoIncrement: true });
+                        os5.createIndex("student_id", "si", { unique: false });
+                        os5.createIndex("month", "m", { unique: false });
+                         os5.createIndex("date", "dt", { unique: false }); // Add index for date
+                    }
+                    if (!db.objectStoreNames.contains('p')) {
+                        const os6 = db.createObjectStore("p", { keyPath: "id", autoIncrement: true });
+                        os6.createIndex("teacher_id", "ti", { unique: false });
+                        os6.createIndex("month", "m", { unique: false });
+                        os6.createIndex("date", "dt", { unique: false }); // Add index for date
+                    }
+
+                     // New Stores for Income/Expenses (Version 2+)
+                     if (e.oldVersion < 2) {
+                         if (!db.objectStoreNames.contains('inc')) {
+                            const osInc = db.createObjectStore("inc", { keyPath: "id", autoIncrement: true });
+                            osInc.createIndex("date", "dt", { unique: false });
+                            osInc.createIndex("category_ur", "ctu", { unique: false });
+                         }
+                          if (!db.objectStoreNames.contains('exp')) {
+                            const osExp = db.createObjectStore("exp", { keyPath: "id", autoIncrement: true });
+                            osExp.createIndex("date", "dt", { unique: false });
+                            osExp.createIndex("category_ur", "ctu", { unique: false });
+                         }
+                     }
+
+                    console.log(l[cl].a144);
+                    // Note: Upgrade transaction auto-commits
+                };
+            });
+        }
+
+        function f18(sn, d) { // addData
+            return new Promise((resolve, reject) => {
+                if (!db) { reject("DB not initialized"); return; }
+                const tx = db.transaction(sn, "readwrite");
+                const os = tx.objectStore(sn);
+                const req = os.add(d);
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => { console.error(`Error adding to ${sn}:`, e.target.error); reject(e.target.error);};
+            });
+        }
+
+        function f19(sn, id, d) { // updateData
+            return new Promise((resolve, reject) => {
+                 if (!db) { reject("DB not initialized"); return; }
+                 const tx = db.transaction(sn, "readwrite");
+                 const os = tx.objectStore(sn);
+                 // Check if record exists before putting - optional but good practice
+                 const getReq = os.get(id);
+                 getReq.onsuccess = (e) => {
+                    if(e.target.result){
+                         d.id = id; // Ensure id is part of the data object for put
+                         const req = os.put(d);
+                         req.onsuccess = () => resolve();
+                         req.onerror = (e) => {console.error(`Error updating ${sn} ID ${id}:`, e.target.error); reject(e.target.error);};
+                    } else {
+                        console.error(`Record not found for update: ${sn} ID ${id}`);
+                        reject(`Record not found for update: ${sn} ID ${id}`);
+                    }
+                 };
+                  getReq.onerror = (e) => {console.error(`Error checking existence for update ${sn} ID ${id}:`, e.target.error); reject(e.target.error);};
+
+            });
+        }
+
+        function f20(sn, id) { // deleteData
+            return new Promise((resolve, reject) => {
+                if (!db) { reject("DB not initialized"); return; }
+                const tx = db.transaction(sn, "readwrite");
+                const os = tx.objectStore(sn);
+                const req = os.delete(id);
+                req.onsuccess = () => resolve();
+                req.onerror = (e) => { console.error(`Error deleting from ${sn} ID ${id}:`, e.target.error); reject(e.target.error);};
+            });
+        }
+
+        function f21(sn, id) { // getData
+             return new Promise((resolve, reject) => {
+                 if (!db) { reject("DB not initialized"); return; }
+                 const tx = db.transaction(sn, "readonly");
+                 const os = tx.objectStore(sn);
+                 const req = os.get(id);
+                 req.onsuccess = (e) => resolve(e.target.result); // Can be undefined if not found
+                 req.onerror = (e) => { console.error(`Error getting from ${sn} ID ${id}:`, e.target.error); reject(e.target.error);};
+             });
+        }
+
+        function f22(sn, idx, k) { // getDataByIndex
+             return new Promise((resolve, reject) => {
+                if (!db) { reject("DB not initialized"); return; }
+                const tx = db.transaction(sn, "readonly");
+                const os = tx.objectStore(sn);
+                const index = os.index(idx);
+                const req = index.getAll(k);
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => { console.error(`Error getting from index ${idx} in ${sn} with key ${k}:`, e.target.error); reject(e.target.error);};
+            });
+        }
+
+         function f51(sn, idx, r) { // getDataByIndexRange
+             return new Promise((resolve, reject) => {
+                 if (!db) { reject("DB not initialized"); return; }
+                 const tx = db.transaction(sn, "readonly");
+                 const os = tx.objectStore(sn);
+                 const index = os.index(idx);
+                 const req = index.getAll(r); // Use IDBKeyRange
+                 req.onsuccess = (e) => resolve(e.target.result);
+                 req.onerror = (e) => { console.error(`Error getting range from index ${idx} in ${sn}:`, e.target.error); reject(e.target.error); };
+             });
+         }
+
+
+        function f23(sn) { // getAllData
+            return new Promise((resolve, reject) => {
+                 if (!db) { reject("DB not initialized"); return; }
+                 const tx = db.transaction(sn, "readonly");
+                 const os = tx.objectStore(sn);
+                 const req = os.getAll();
+                 req.onsuccess = (e) => resolve(e.target.result);
+                 req.onerror = (e) => { console.error(`Error getting all from ${sn}:`, e.target.error); reject(e.target.error);};
+            });
+        }
+
+         // --- UI Functions ---
+       function f1(tab) { // switchTab
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    
+    const tabEl = ge(tab);
+    if (tabEl) tabEl.style.display = 'block';
+    
+    const navLink = document.querySelector(`.nav-link[data-tab="${tab}"]`);
+    if (navLink) navLink.classList.add('active');
+    
+    // Load data and initialize sub-tabs for specific tabs
+    if (tab === 'a6') f24(); // Students
+    else if (tab === 'a8') f25(); // Teachers
+    else if (tab === 'a10') f26(); // Classes
+    else if (tab === 'a12') { f30(); f6(); } // Attendance
+    else if (tab === 'a14') { 
+        f33(); // Populate fee student dropdown
+        f34(); // Populate salary teacher dropdown
+        f35(); // Load fees table
+        f36(); // Load salaries table
+        // Activate the default sub-tab (Fee Collection)
+        const feeTab = ge('a58-tab');
+        if (feeTab) {
+            new bootstrap.Tab(feeTab).show();
+        }
+    } else if (tab === 'a168') { 
+        f45(); // Load income table
+        f46(); // Load expenses table
+        // Activate the default sub-tab (Income)
+        const incomeTab = ge('a170-tab');
+        if (incomeTab) {
+            new bootstrap.Tab(incomeTab).show();
+        }
+    } else if (tab === 'a16') f10(); // Reports
+}
+
+        function f2(lc) { // setLanguage
+            cl = lc;
+            const isUrdu = cl === 'ur';
+            document.documentElement.lang = cl;
+            document.body.dir = isUrdu ? 'rtl' : 'ltr';
+            document.body.classList.toggle('ur-font', isUrdu);
+            document.body.classList.toggle('en-font', !isUrdu);
+
+            document.querySelectorAll('[data-l]').forEach(el => {
+                 const key = el.getAttribute('data-l');
+                 if (l[cl] && l[cl][key]) {
+                     if(el.tagName === 'OPTION' && el.parentElement.id === 'a17'){ // Keep language selector text as is
+                          // Do nothing special for the language selector options themselves
+                     } else {
+                        el.textContent = l[cl][key];
+                     }
+                 }
+                 // Handle specific elements needing class/visibility changes
+                 if (el.tagName === 'H5' && el.classList.contains('modal-title')) {
+                    el.classList.toggle('hidden', el.classList.contains(isUrdu ? 'en-font' : 'ur-font'));
+                 } else if (el.tagName === 'A' && el.classList.contains('navbar-brand')) {
+                     el.classList.toggle('hidden', el.classList.contains(isUrdu ? 'en-font' : 'ur-font'));
+                 }
+            });
+             // Refresh current tab to apply language changes to dynamic content
+             const activeTabId = document.querySelector('.nav-link.active')?.getAttribute('data-tab');
+             if (activeTabId) {
+                 f1(activeTabId);
+             } else {
+                 f1('a6'); // Fallback to default tab if none active
+             }
+        }
+
+        function gv(id) { const el=ge(id); return el ? el.value.trim() : ''; } // get value safely
+        function sv(id, val) { const el=ge(id); if(el) el.value = val; } // set value safely
+        function ge(id) { return document.getElementById(id); } // get element
+        function ht(id, h) { const el=ge(id); if(el) el.innerHTML = h; } // set html safely
+
+        function f13(cId, p) { // addDynamicField
+             const c = ge(cId);
+             if (!c) return;
+             const fid = `df-${Date.now()}`;
+             const f = document.createElement('div');
+             f.className = 'dynamic-field';
+             f.id = fid;
+             f.innerHTML = `
+                 <input type="text" class="form-control form-control-sm ur-font" placeholder="${l[cl].a139}" data-l-ur>
+                 <input type="text" class="form-control form-control-sm en-font" placeholder="${l[cl].a140}" data-l-en>
+                 <input type="text" class="form-control form-control-sm" placeholder="${l[cl].a21 /* Assuming value placeholder is 'Name' like */}" data-value>
+                 <button type="button" class="btn btn-danger btn-sm no-print" onclick="ge('${fid}').remove()" data-l="a141">${l[cl].a141}</button>
+             `;
+             c.appendChild(f);
+         }
+
+        function f27(cId, flds) { // populateDynamicFields
+             const c = ge(cId);
+             if (!c) return;
+             ht(cId,''); // Clear existing
+             if (!flds) return;
+             flds.forEach(f => {
+                 const fid = `df-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+                 const dv = document.createElement('div');
+                 dv.className = 'dynamic-field';
+                 dv.id = fid;
+                 // Use current language for placeholder text in value field
+                 const placeholderValue = cl === 'ur' ? (f.lu || f.le || l[cl].a21) : (f.le || f.lu || l[cl].a21);
+                 dv.innerHTML = `
+                     <input type="text" class="form-control form-control-sm ur-font" placeholder="${l[cl].a139}" value="${f.lu || ''}" data-l-ur>
+                     <input type="text" class="form-control form-control-sm en-font" placeholder="${l[cl].a140}" value="${f.le || ''}" data-l-en>
+                     <input type="text" class="form-control form-control-sm ${f.lu ? 'ur-font' : 'en-font'}" placeholder="${placeholderValue}" value="${f.v || ''}" data-value>
+                     <button type="button" class="btn btn-danger btn-sm no-print" onclick="ge('${fid}').remove()" data-l="a141">${l[cl].a141}</button>
+                 `;
+                 c.appendChild(dv);
+             });
+         }
+
+         function f28(cId) { // getDynamicFieldsData
+             const flds = [];
+             const container = ge(cId);
+             if (!container) return flds;
+             container.querySelectorAll('.dynamic-field').forEach(f => {
+                 const luEl = f.querySelector('[data-l-ur]');
+                 const leEl = f.querySelector('[data-l-en]');
+                 const vEl = f.querySelector('[data-value]');
+                  if (luEl && leEl && vEl) {
+                     const lu = luEl.value.trim();
+                     const le = leEl.value.trim();
+                     const v = vEl.value.trim();
+                     if (lu || le) { // Only save if a label is provided
+                         flds.push({ lu, le, v });
+                     }
+                  }
+             });
+             return flds;
+         }
+
+        // --- Student Functions ---
+         function f3() { // clearStudentForm
+             ge('a107').reset();
+             sv('s_id', '');
+             ht('a115', ''); // Clear dynamic fields
+             f32(ge('s_class')); // Populate class dropdown
+         }
+
+         async function f14() { // saveStudent
+            const id = gv('s_id');
+            const sData = {
+                nu: gv('s_name_ur'), ne: gv('s_name_en'),
+                fu: gv('s_fname_ur'), fe: gv('s_fname_en'),
+                ag: gv('s_age') ? parseInt(gv('s_age')) : null,
+                cl: gv('s_class') ? parseInt(gv('s_class')) : null,
+                ad: gv('s_adm_date'),
+                cn: gv('s_contact'),
+                au: gv('s_address_ur'), ae: gv('s_address_en'),
+                cf: f28('a115')
+            };
+
+             if (!sData.nu && !sData.ne) { // Require at least one name
+                 alert(l[cl].a162 + " (" + l[cl].a21 + ")"); return;
+             }
+              if (!sData.fu && !sData.fe) { // Require at least one father's name
+                 alert(l[cl].a162 + " (" + l[cl].a22 + ")"); return;
+             }
+             if (!sData.ad) {
+                alert(l[cl].a162 + " (" + l[cl].a25 + ")"); return;
+             }
+
+            try {
+                if (id) {
+                    await f19('s', parseInt(id), sData);
+                } else {
+                    await f18('s', sData);
+                }
+                 const modalInstance = bootstrap.Modal.getInstance(ge('a19'));
+                 if (modalInstance) modalInstance.hide();
+                 f24(); // Refresh list
+                 alert(l[cl].a156); // Alert after modal hide & refresh start
+            } catch (err) {
+                console.error(l[cl].a157, err);
+                alert(l[cl].a157 + ': ' + err);
+            }
+         }
+
+        async function f24() { // loadStudents
+            try {
+                const sts = await f23('s');
+                const cls = await f23('c');
+                const clMap = cls.reduce((map, cl) => { map[cl.id] = cl; return map; }, {});
+                const tb = ge('a30');
+                const dynHeadEl = ge('a28');
+                 if(!tb || !dynHeadEl) return; // Exit if elements not found
+
+                ht('a30', '');
+                ht('a28', '');
+                dynHeadEl.style.display = 'table-cell'; // Ensure it's visible initially
+                dynHeadEl.removeAttribute('colspan');
+
+                const baseCols = 7; // Name, FName, Age, Class, AdmDate, Contact, Address
+                const actionCol = 1;
+
+                if (sts.length === 0) {
+                    ht('a30', `<tr><td colspan="${baseCols + actionCol}">${l[cl].a163}</td></tr>`);
+                    dynHeadEl.style.display = 'none'; // Hide dynamic header if no data
+                    return;
+                }
+
+                // Get all unique dynamic field labels for header
+                 const allDynHeaders = {};
+                 sts.forEach(s => {
+                     if (s.cf) {
+                         s.cf.forEach(f => {
+                             const key = `${f.lu || ''}-${f.le || ''}`; // Unique key
+                             if ((f.lu || f.le) && !allDynHeaders[key]) {
+                                  allDynHeaders[key] = { lu: f.lu, le: f.le, isUrdu: !!f.lu };
+                             }
+                         });
+                     }
+                 });
+                 const dynHeaders = Object.values(allDynHeaders);
+                 let dynThHTML = '';
+                 dynHeaders.forEach(h => dynThHTML += `<th class="${h.isUrdu ? 'ur-font' : 'en-font'}">${cl === 'ur' ? (h.lu || h.le) : (h.le || h.lu)}</th>`);
+
+                 // Set the dynamic header content and colspan if there are dynamic headers
+                 if (dynHeaders.length > 0) {
+                    ht('a28', dynThHTML);
+                    dynHeadEl.colSpan = dynHeaders.length;
+                 } else {
+                    dynHeadEl.style.display = 'none'; // Hide the header cell if no dynamic columns
+                 }
+                 const totalCols = baseCols + dynHeaders.length + actionCol;
+
+
+                sts.forEach(s => {
+                    const clName = s.cl && clMap[s.cl] ? (cl === 'ur' ? clMap[s.cl].nu : clMap[s.cl].ne) || clMap[s.cl].nu || '-' : '-';
+                    const nameDisplay = (cl === 'ur' ? s.nu : s.ne) || s.nu || '-';
+                    const fnameDisplay = (cl === 'ur' ? s.fu : s.fe) || s.fu || '-';
+                    const addrDisplay = (cl === 'ur' ? s.au : s.ae) || s.au || '-';
+
+                    let dynTd = '';
+                     dynHeaders.forEach(h => {
+                         const field = s.cf ? s.cf.find(f => f.lu === h.lu && f.le === h.le) : null;
+                         const val = field ? field.v || '-' : '-';
+                         const langClass = field && field.isUrdu ? 'ur-font' : 'en-font'; // Base alignment on header's detected language pref
+                         dynTd += `<td class="${langClass}">${val}</td>`;
+                     });
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="${s.nu ? 'ur-font' : 'en-font'}">${nameDisplay}</td>
+                        <td class="${s.fu ? 'ur-font' : 'en-font'}">${fnameDisplay}</td>
+                        <td class="en-font">${s.ag || '-'}</td>
+                        <td class="ur-font">${clName}</td>
+                        <td class="en-font">${s.ad || '-'}</td>
+                        <td class="en-font">${s.cn || '-'}</td>
+                        <td class="${s.au ? 'ur-font' : 'en-font'}">${addrDisplay}</td>
+                        ${dynTd}
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm me-1" onclick="f37(${s.id})" data-l="a137">${l[cl].a137}</button>
+                            <button class="btn btn-danger btn-sm" onclick="f38('s', ${s.id})" data-l="a138">${l[cl].a138}</button>
+                        </td>
+                    `;
+                    tb.appendChild(tr);
+                });
+                // Set the colspan on the "no data" row correctly if needed after processing
+                 if (tb.innerHTML === '') {
+                      ht('a30', `<tr><td colspan="${totalCols}">${l[cl].a163}</td></tr>`);
+                 }
+
+
+            } catch (err) {
+                console.error("Error loading students:", err);
+                 ht('a30', `<tr><td colspan="9">Error loading data. Check console.</td>`); // Default colspan
+            }
+        }
+
+        async function f37(id) { // editStudent
+            try {
+                const s = await f21('s', id);
+                if (!s) { console.error(`Student with ID ${id} not found.`); return; }
+                sv('s_id', s.id);
+                sv('s_name_ur', s.nu || ''); sv('s_name_en', s.ne || '');
+                sv('s_fname_ur', s.fu || ''); sv('s_fname_en', s.fe || '');
+                sv('s_age', s.ag || '');
+                await f32(ge('s_class'), s.cl); // Populate and select class
+                sv('s_adm_date', s.ad || '');
+                sv('s_contact', s.cn || '');
+                sv('s_address_ur', s.au || ''); sv('s_address_en', s.ae || '');
+                f27('a115', s.cf); // Populate dynamic fields
+                const modal = new bootstrap.Modal(ge('a19'));
+                 if(modal) modal.show();
+            } catch (err) {
+                console.error(`Error loading student ${id} for edit:`, err);
+            }
+        }
+
+
+         // --- Teacher Functions ---
+        function f4() { // clearTeacherForm
+            const form = ge('a122');
+             if (form) form.reset();
+            sv('t_id', '');
+            ht('a125', ''); // Clear dynamic fields
+        }
+
+        async function f15() { // saveTeacher
+             const id = gv('t_id');
+             const tData = {
+                 nu: gv('t_name_ur'), ne: gv('t_name_en'),
+                 qu: gv('t_qual_ur'), qe: gv('t_qual_en'),
+                 cn: gv('t_contact'),
+                 jd: gv('t_join_date'),
+                 au: gv('t_address_ur'), ae: gv('t_address_en'),
+                 cf: f28('a125')
+             };
+
+              if (!tData.nu && !tData.ne) { // Require at least one name
+                 alert(l[cl].a162 + " (" + l[cl].a34 + ")"); return;
+              }
+              if (!tData.jd) {
+                 alert(l[cl].a162 + " (" + l[cl].a38 + ")"); return;
+              }
+
+             try {
+                 if (id) {
+                     await f19('t', parseInt(id), tData);
+                 } else {
+                     await f18('t', tData);
+                 }
+                  const modalInstance = bootstrap.Modal.getInstance(ge('a32'));
+                  if (modalInstance) modalInstance.hide();
+                  f25(); // Refresh list
+                 alert(l[cl].a158);
+             } catch (err) {
+                 console.error(l[cl].a159, err);
+                 alert(l[cl].a159 + ': ' + err);
+             }
+         }
+
+         async function f25() { // loadTeachers
+            try {
+                 const ts = await f23('t');
+                 const tb = ge('a40');
+                 const dynHeadEl = ge('a39');
+                  if(!tb || !dynHeadEl) return;
+
+                 ht('a40','');
+                 ht('a39','');
+                 dynHeadEl.style.display = 'table-cell';
+                 dynHeadEl.removeAttribute('colspan');
+
+                 const baseCols = 5; // Name, Qual, Contact, Address, JoinDate
+                 const actionCol = 1;
+
+                  if (ts.length === 0) {
+                     ht('a40', `<tr><td colspan="${baseCols + actionCol}">${l[cl].a163}</td></tr>`);
+                     dynHeadEl.style.display = 'none';
+                     return;
+                  }
+
+                  // Dynamic headers
+                 const allDynHeaders = {};
+                 ts.forEach(t => {
+                     if (t.cf) {
+                         t.cf.forEach(f => {
+                              const key = `${f.lu || ''}-${f.le || ''}`;
+                              if ((f.lu || f.le) && !allDynHeaders[key]) {
+                                  allDynHeaders[key] = { lu: f.lu, le: f.le, isUrdu: !!f.lu };
+                              }
+                         });
+                     }
+                 });
+                 const dynHeaders = Object.values(allDynHeaders);
+                 let dynThHTML = '';
+                 dynHeaders.forEach(h => dynThHTML += `<th class="${h.isUrdu ? 'ur-font' : 'en-font'}">${cl === 'ur' ? (h.lu || h.le) : (h.le || h.lu)}</th>`);
+
+                 // Set the dynamic header content and colspan
+                 if (dynHeaders.length > 0) {
+                     ht('a39', dynThHTML);
+                     dynHeadEl.colSpan = dynHeaders.length;
+                 } else {
+                     dynHeadEl.style.display = 'none';
+                 }
+                  const totalCols = baseCols + dynHeaders.length + actionCol;
+
+                 ts.forEach(t => {
+                     let dynTd = '';
+                      dynHeaders.forEach(h => {
+                          const field = t.cf ? t.cf.find(f => f.lu === h.lu && f.le === h.le) : null;
+                          const val = field ? field.v || '-' : '-';
+                          const langClass = field && field.isUrdu ? 'ur-font' : 'en-font';
+                          dynTd += `<td class="${langClass}">${val}</td>`;
+                      });
+                     const nameDisplay = (cl === 'ur' ? t.nu : t.ne) || t.nu || '-';
+                     const qualDisplay = (cl === 'ur' ? t.qu : t.qe) || t.qu || '-';
+                     const addrDisplay = (cl === 'ur' ? t.au : t.ae) || t.au || '-';
+
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `
+                         <td class="${t.nu ? 'ur-font' : 'en-font'}">${nameDisplay}</td>
+                         <td class="${t.qu ? 'ur-font' : 'en-font'}">${qualDisplay}</td>
+                         <td class="en-font">${t.cn || '-'}</td>
+                          <td class="${t.au ? 'ur-font' : 'en-font'}">${addrDisplay}</td>
+                         <td class="en-font">${t.jd || '-'}</td>
+                         ${dynTd}
+                         <td class="no-print">
+                             <button class="btn btn-primary btn-sm me-1" onclick="f39(${t.id})" data-l="a137">${l[cl].a137}</button>
+                             <button class="btn btn-danger btn-sm" onclick="f38('t', ${t.id})" data-l="a138">${l[cl].a138}</button>
+                         </td>
+                     `;
+                     tb.appendChild(tr);
+                 });
+                  if (tb.innerHTML === '') {
+                     ht('a40', `<tr><td colspan="${totalCols}">${l[cl].a163}</td></tr>`);
+                 }
+
+            } catch(err) {
+                 console.error("Error loading teachers:", err);
+                  ht('a40', `<tr><td colspan="7">Error loading data. Check console.</td>`);
+            }
+         }
+
+         async function f39(id) { // editTeacher
+            try {
+                const t = await f21('t', id);
+                 if (!t) { console.error(`Teacher with ID ${id} not found.`); return; }
+                sv('t_id', t.id);
+                sv('t_name_ur', t.nu || ''); sv('t_name_en', t.ne || '');
+                sv('t_qual_ur', t.qu || ''); sv('t_qual_en', t.qe || '');
+                sv('t_contact', t.cn || '');
+                sv('t_join_date', t.jd || '');
+                sv('t_address_ur', t.au || ''); sv('t_address_en', t.ae || '');
+                 f27('a125', t.cf); // Populate dynamic fields
+                 const modal = new bootstrap.Modal(ge('a32'));
+                  if(modal) modal.show();
+            } catch (err) {
+                console.error(`Error loading teacher ${id} for edit:`, err);
+            }
+        }
+
+
+        // --- Class Functions ---
+        async function f5() { // clearClassForm
+            const form = ge('a129');
+            if (form) form.reset();
+             sv('c_id', '');
+             await f40(ge('c_teacher')); // Populate teachers
+             await f41(ge('a133')); // Populate students checkboxes
+         }
+
+        async function f16() { // saveClass
+             const id = gv('c_id');
+             const selStds = []; // selected student ids
+             const stdCheckboxes = ge('a133');
+             if(stdCheckboxes) {
+                 stdCheckboxes.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                     selStds.push(parseInt(cb.value));
+                 });
+             }
+
+             const cData = {
+                 nu: gv('c_name_ur'), ne: gv('c_name_en'),
+                 ti: gv('c_teacher') ? parseInt(gv('c_teacher')) : null, // teacher_id
+                 si: selStds // student_ids
+             };
+
+              if (!cData.nu && !cData.ne) { // Require at least one name
+                 alert(l[cl].a162 + " (" + l[cl].a44 + ")"); return;
+             }
+
+             try {
+                 let classId;
+                 if (id) {
+                     classId = parseInt(id);
+                     await f19('c', classId, cData);
+                 } else {
+                     classId = await f18('c', cData);
+                 }
+
+                 // Update student records with this class ID (this could be slow with many students)
+                 // Consider optimizing if performance is an issue
+                 const allStudents = await f23('s');
+                 const updatePromises = [];
+                 for (const student of allStudents) {
+                     const assigned = cData.si.includes(student.id);
+                     if (assigned && student.cl !== classId) {
+                         student.cl = classId;
+                         updatePromises.push(f19('s', student.id, student));
+                     } else if (!assigned && student.cl === classId) {
+                          student.cl = null; // Remove from this class
+                          updatePromises.push(f19('s', student.id, student));
+                     }
+                 }
+                 await Promise.all(updatePromises);
+
+
+                  const modalInstance = bootstrap.Modal.getInstance(ge('a42'));
+                  if(modalInstance) modalInstance.hide();
+                 f26(); // Refresh list
+                 f24(); // Refresh student list to show updated classes
+                 alert(l[cl].a160);
+             } catch (err) {
+                 console.error(l[cl].a161, err);
+                 alert(l[cl].a161 + ': ' + err);
+             }
+         }
+
+         async function f26() { // loadClasses
+             try {
+                const cs = await f23('c');
+                const ts = await f23('t');
+                const tMap = ts.reduce((map, t) => { map[t.id] = t; return map; }, {});
+                const tb = ge('a47');
+                 if (!tb) return;
+                ht('a47','');
+
+                 if (cs.length === 0) {
+                     ht('a47', `<tr><td colspan="4">${l[cl].a163}</td></tr>`);
+                     return;
+                 }
+
+                cs.forEach(c => {
+                    const t = c.ti ? tMap[c.ti] : null;
+                    const stdCount = c.si ? c.si.length : 0;
+                    const cNameDisplay = (cl === 'ur' ? c.nu : c.ne) || c.nu || '-';
+                    const tNameDisplay = t ? ((cl === 'ur' ? t.nu : t.ne) || t.nu || '-') : '-';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="${c.nu ? 'ur-font' : 'en-font'}">${cNameDisplay}</td>
+                        <td class="${t?.nu ? 'ur-font' : 'en-font'}">${tNameDisplay}</td>
+                        <td class="en-font">${stdCount}</td>
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm me-1" onclick="f42(${c.id})" data-l="a137">${l[cl].a137}</button>
+                            <button class="btn btn-danger btn-sm" onclick="f38('c', ${c.id})" data-l="a138">${l[cl].a138}</button>
+                        </td>
+                    `;
+                    tb.appendChild(tr);
+                });
+             } catch(err) {
+                  console.error("Error loading classes:", err);
+                  ht('a47', `<tr><td colspan="4">Error loading data.</td></tr>`);
+             }
+         }
+
+         async function f42(id) { // editClass
+             try {
+                const c = await f21('c', id);
+                 if (!c) { console.error(`Class with ID ${id} not found.`); return; }
+                sv('c_id', c.id);
+                sv('c_name_ur', c.nu || ''); sv('c_name_en', c.ne || '');
+                await f40(ge('c_teacher'), c.ti);
+                await f41(ge('a133'), c.si || []);
+                 const modal = new bootstrap.Modal(ge('a42'));
+                  if(modal) modal.show();
+             } catch(err) {
+                  console.error(`Error loading class ${id} for edit:`, err);
+             }
+         }
+
+        async function f40(selEl, selId) { // populateTeachersDropdown
+             if(!selEl) return;
+            try {
+                const ts = await f23('t');
+                const currentVal = selEl.value; // Preserve current selection if possible
+                ht(selEl.id, `<option value="">---</option>`);
+                ts.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = (cl === 'ur' ? t.nu : t.ne) || t.nu || `Teacher ${t.id}`; // Display based on current lang, with fallback
+                    selEl.appendChild(opt);
+                });
+                 // Reselect the appropriate ID or the previously selected value
+                 selEl.value = selId || currentVal || "";
+
+            } catch (err) {
+                console.error("Error populating teachers:", err);
+            }
+        }
+
+        async function f41(divEl, selIds = []) { // populateStudentCheckboxes
+             if(!divEl) return;
+            try {
+                const sts = await f23('s');
+                ht(divEl.id, '');
+                 if (sts.length === 0) {
+                     divEl.innerHTML = l[cl].a163;
+                     return;
+                 }
+                sts.forEach(s => {
+                    const cbDiv = document.createElement('div');
+                    cbDiv.className = 'form-check';
+                    const cbId = `s_cb_${s.id}`;
+                    const nameDisplay = (cl === 'ur' ? s.nu : s.ne) || s.nu || `Student ${s.id}`;
+                    cbDiv.innerHTML = `
+                        <input class="form-check-input" type="checkbox" value="${s.id}" id="${cbId}" ${selIds.includes(s.id) ? 'checked' : ''}>
+                        <label class="form-check-label ${s.nu ? 'ur-font' : 'en-font'}" for="${cbId}">
+                            ${nameDisplay}
+                        </label>
+                    `;
+                    divEl.appendChild(cbDiv);
+                });
+            } catch (err) {
+                 console.error("Error populating students:", err);
+                 divEl.innerHTML = "Error loading students.";
+            }
+        }
+
+         async function f32(selEl, selId) { // populateClassesDropdown
+              if(!selEl) return;
+             try {
+                 const cs = await f23('c');
+                 const currentVal = selEl.value; // Preserve selection
+                 ht(selEl.id, '<option value="">---</option>');
+                 cs.forEach(c => {
+                     const opt = document.createElement('option');
+                     opt.value = c.id;
+                     opt.textContent = (cl === 'ur' ? c.nu : c.ne) || c.nu || `Class ${c.id}`; // Display based on current lang, with fallback
+                     selEl.appendChild(opt);
+                 });
+                  // Reselect the appropriate ID or the previously selected value
+                  selEl.value = selId || currentVal || "";
+
+             } catch (err) {
+                 console.error("Error populating classes:", err);
+             }
+         }
+
+         // --- Attendance Functions ---
+        async function f30() { // populateAttendanceClassFilter
+             await f32(ge('a49'));
+         }
+
+         async function f6() { // loadAttendanceSheet
+            const cId = parseInt(gv('a49'));
+            const dt = gv('a51');
+            const tb = ge('a54');
+             if (!tb) return;
+            ht('a54', '');
+
+            if (!cId || !dt) {
+                ht('a54', `<tr><td colspan="2">${l[cl].a165}</td></tr>`);
+                return;
+            }
+
+             try {
+                 const cls = await f21('c', cId);
+                 if (!cls || !cls.si || cls.si.length === 0) {
+                     ht('a54', `<tr><td colspan="2">${l[cl].a163}</td></tr>`);
+                     return;
+                 }
+                 const stdIds = cls.si;
+
+                 const attRecs = await f22('a', 'date_class', [dt, cId]);
+                 const attMap = attRecs.reduce((map, rec) => { map[rec.si] = rec; return map; }, {});
+
+                 // Get student details (optimized slightly)
+                 const tx = db.transaction('s', 'readonly');
+                 const store = tx.objectStore('s');
+                 const studentPromises = stdIds.map(sId => new Promise((res, rej) => {
+                     const req = store.get(sId);
+                     req.onsuccess = e => res(e.target.result); // Resolve with student or undefined
+                     req.onerror = e => { console.error(`Error fetching student ${sId}:`, e); res(null); }; // Resolve null on error
+                 }));
+
+                 const students = await Promise.all(studentPromises);
+                 let studentsFound = false;
+
+                 students.forEach(s => {
+                     if (s) { // Check if student was found
+                         studentsFound = true;
+                         const att = attMap[s.id];
+                         const attId = att ? att.id : '';
+                         const st = att ? att.st : 'p'; // Default present
+                         const nameDisplay = (cl === 'ur' ? s.nu : s.ne) || s.nu || `Student ${s.id}`;
+
+                         const tr = document.createElement('tr');
+                         tr.dataset.sid = s.id;
+                         tr.dataset.aid = attId;
+                         tr.innerHTML = `
+                             <td class="${s.nu ? 'ur-font' : 'en-font'}">${nameDisplay}</td>
+                             <td>
+                                 <select class="form-select form-select-sm">
+                                     <option value="p" ${st === 'p' ? 'selected' : ''} data-l="a134">${l[cl].a134}</option>
+                                     <option value="a" ${st === 'a' ? 'selected' : ''} data-l="a135">${l[cl].a135}</option>
+                                     <option value="l" ${st === 'l' ? 'selected' : ''} data-l="a136">${l[cl].a136}</option>
+                                 </select>
+                             </td>
+                         `;
+                         tb.appendChild(tr);
+                     }
+                 });
+
+                 if (!studentsFound) {
+                     ht('a54', `<tr><td colspan="2">${l[cl].a163}</td></tr>`);
+                 }
+
+             } catch (err) {
+                  console.error("Error loading attendance sheet:", err);
+                  ht('a54', `<tr><td colspan="2">Error loading data.</td></tr>`);
+             }
+         }
+
+         async function f7() { // saveAttendance
+             const cId = parseInt(gv('a49'));
+             const dt = gv('a51');
+             if (!cId || !dt) {
+                 alert(l[cl].a151);
+                 return;
+             }
+
+             const rows = ge('a54').querySelectorAll('tr[data-sid]');
+             if(rows.length === 0) { return; } // Nothing to save
+             const promises = [];
+
+             rows.forEach(row => {
+                 const sId = parseInt(row.dataset.sid);
+                 const aId = row.dataset.aid ? parseInt(row.dataset.aid) : null;
+                 const st = row.querySelector('select').value;
+
+                 const aData = { dt, ci: cId, si: sId, st };
+
+                 if (aId) { promises.push(f19('a', aId, aData)); }
+                 else { promises.push(f18('a', aData)); }
+             });
+
+             try {
+                 await Promise.all(promises);
+                 alert(l[cl].a152);
+                 f6(); // Refresh sheet to get new IDs
+             } catch (err) {
+                 console.error(l[cl].a153, err);
+                 alert(l[cl].a153 + ': ' + err);
+             }
+         }
+
+        // --- Fee/Salary Functions ---
+        async function f33() { // populateFeeStudentDropdown
+             const sel = ge('a64');
+             if(!sel) return;
+            try {
+                const sts = await f23('s');
+                const currentVal = sel.value; // Preserve selection
+                ht(sel.id, '<option value="">---</option>');
+                sts.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = (cl === 'ur' ? s.nu : s.ne) || s.nu || `Student ${s.id}`;
+                    sel.appendChild(opt);
+                });
+                 sel.value = currentVal || ""; // Restore previous selection if exists
+            } catch (err) {
+                console.error("Error populating fee students:", err);
+            }
+        }
+        async function f34() { // populateSalaryTeacherDropdown
+            await f40(ge('a74')); // Use the same function as for class teacher
+        }
+
+         async function f8() { // recordFee
+            const sId = parseInt(gv('a64'));
+            const mn = gv('a66'); // month (YYYY-MM)
+            const amStr = gv('a68'); // amount string
+            const dt = new Date().toISOString().split('T')[0]; // Record date
+
+            if (!sId || !mn || !amStr) {
+                alert(l[cl].a145);
+                return;
+            }
+             const am = parseFloat(amStr);
+             if (isNaN(am) || am <= 0) {
+                 alert(l[cl].a69 + " " + (cl === 'ur' ? "درست ہونا چاہئے" : "must be a valid positive number"));
+                 return;
+             }
+
+            const fData = { si: sId, m: mn, am: am, dt };
+            try {
+                await f18('f', fData);
+                alert(l[cl].a146);
+                // ge('a64').value = ''; // Maybe keep student selected
+                // ge('a66').value = ''; // Maybe keep month selected
+                ge('a68').value = ''; // Clear amount
+                f35(); // Refresh fee list
+            } catch (err) {
+                console.error(l[cl].a147, err);
+                alert(l[cl].a147 + ': ' + err);
+            }
+        }
+
+        async function f9() { // recordSalary
+             const tId = parseInt(gv('a74'));
+             const mn = gv('a76');
+             const amStr = gv('a77');
+             const dt = new Date().toISOString().split('T')[0];
+
+             if (!tId || !mn || !amStr) {
+                 alert(l[cl].a148);
+                 return;
+             }
+             const am = parseFloat(amStr);
+              if (isNaN(am) || am <= 0) {
+                 alert(l[cl].a78 + " " + (cl === 'ur' ? "درست ہونا چاہئے" : "must be a valid positive number"));
+                 return;
+             }
+
+             const pData = { ti: tId, m: mn, am: am, dt };
+             try {
+                 await f18('p', pData);
+                 alert(l[cl].a149);
+                 // ge('a74').value = ''; // Maybe keep teacher selected
+                 // ge('a76').value = ''; // Maybe keep month selected
+                 ge('a77').value = ''; // Clear amount
+                 f36(); // Refresh salary list
+             } catch (err) {
+                 console.error(l[cl].a150, err);
+                 alert(l[cl].a150 + ': ' + err);
+             }
+         }
+
+         async function f35() { // loadFees
+             try {
+                 const fs = await f23('f');
+                 const sts = await f23('s');
+				 console.log("Fees:", fs);
+                 const sMap = sts.reduce((map, s) => { map[s.id] = s; return map; }, {});
+                 const tb = ge('a72');
+                 if (!tb) return;
+                 ht('a72','');
+
+                  if (fs.length === 0) {
+                     ht('a72', `<tr><td colspan="5">${l[cl].a163}</td></tr>`);
+                     return;
+                 }
+
+                 fs.sort((a, b) => (b.m + b.dt).localeCompare(a.m + a.dt)); // Sort by month then date desc
+
+                 fs.forEach(f => {
+                     const s = sMap[f.si];
+                     const sName = s ? (cl === 'ur' ? s.nu : s.ne) || s.nu || `Student ${f.si}` : 'Unknown';
+                     const nameClass = s && s.nu ? 'ur-font' : 'en-font';
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `
+                         <td class="${nameClass}">${sName}</td>
+                         <td class="en-font">${f.m}</td>
+                         <td class="en-font">${f.am.toFixed(2)}</td>
+                         <td class="en-font">${f.dt}</td>
+                         <td class="no-print">
+                             <button class="btn btn-danger btn-sm" onclick="f38('f', ${f.id})" data-l="a138">${l[cl].a138}</button>
+                         </td>
+                     `;
+                     tb.appendChild(tr);
+                 });
+             } catch (err) {
+                 console.error("Error loading fees:", err);
+                  ht('a72', `<tr><td colspan="5">Error loading data.</td></tr>`);
+             }
+         }
+
+         async function f36() { // loadSalaries
+             try {
+                 const ps = await f23('p');
+                 const ts = await f23('t');
+                 const tMap = ts.reduce((map, t) => { map[t.id] = t; return map; }, {});
+                 const tb = ge('a80');
+                 if (!tb) return;
+                 ht('a80','');
+
+                  if (ps.length === 0) {
+                     ht('a80', `<tr><td colspan="5">${l[cl].a163}</td></tr>`);
+                     return;
+                 }
+
+                  ps.sort((a, b) => (b.m + b.dt).localeCompare(a.m + a.dt)); // Sort by month then date desc
+
+
+                 ps.forEach(p => {
+                     const t = tMap[p.ti];
+                     const tName = t ? (cl === 'ur' ? t.nu : t.ne) || t.nu || `Teacher ${p.ti}` : 'Unknown';
+                     const nameClass = t && t.nu ? 'ur-font' : 'en-font';
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `
+                         <td class="${nameClass}">${tName}</td>
+                         <td class="en-font">${p.m}</td>
+                         <td class="en-font">${p.am.toFixed(2)}</td>
+                         <td class="en-font">${p.dt}</td>
+                          <td class="no-print">
+                             <button class="btn btn-danger btn-sm" onclick="f38('p', ${p.id})" data-l="a138">${l[cl].a138}</button>
+                         </td>
+                     `;
+                     tb.appendChild(tr);
+                 });
+             } catch (err) {
+                  console.error("Error loading salaries:", err);
+                   ht('a80', `<tr><td colspan="5">Error loading data.</td></tr>`);
+             }
+         }
+
+        // --- Income/Expense Functions ---
+        function f47() { // clearIncomeForm
+            const form = ge('a193');
+             if (form) form.reset();
+            sv('inc_id', '');
+            sv('inc_dt', new Date().toISOString().split('T')[0]); // Default to today
+        }
+        function f48() { // clearExpenseForm
+             const form = ge('a200');
+             if (form) form.reset();
+            sv('exp_id', '');
+            sv('exp_dt', new Date().toISOString().split('T')[0]); // Default to today
+        }
+
+        async function f49() { // saveIncome
+            const id = gv('inc_id');
+            const iData = {
+                dur: gv('inc_desc_ur'), den: gv('inc_desc_en'), // description
+                cur: gv('inc_cat_ur'), cen: gv('inc_cat_en'), // category
+                amt: parseFloat(gv('inc_amt')),
+                dt: gv('inc_dt')
+            };
+             if ((!iData.dur && !iData.den) || isNaN(iData.amt) || !iData.dt) {
+                 alert(l[cl].a162); return;
+             }
+            try {
+                if (id) { await f19('inc', parseInt(id), iData); }
+                else { await f18('inc', iData); }
+                alert(l[cl].a201);
+                const modalInstance = bootstrap.Modal.getInstance(ge('a175'));
+                if (modalInstance) modalInstance.hide();
+                f45(); // Refresh list
+            } catch (err) { console.error(l[cl].a202, err); alert(l[cl].a202 + ': ' + err); }
+        }
+
+         async function f50() { // saveExpense
+            const id = gv('exp_id');
+            const eData = {
+                dur: gv('exp_desc_ur'), den: gv('exp_desc_en'),
+                cur: gv('exp_cat_ur'), cen: gv('exp_cat_en'),
+                amt: parseFloat(gv('exp_amt')),
+                dt: gv('exp_dt')
+            };
+             if ((!eData.dur && !eData.den) || isNaN(eData.amt) || !eData.dt) {
+                 alert(l[cl].a162); return;
+             }
+             try {
+                if (id) { await f19('exp', parseInt(id), eData); }
+                else { await f18('exp', eData); }
+                alert(l[cl].a203);
+                const modalInstance = bootstrap.Modal.getInstance(ge('a180'));
+                if (modalInstance) modalInstance.hide();
+                f46(); // Refresh list
+            } catch (err) { console.error(l[cl].a204, err); alert(l[cl].a204 + ': ' + err); }
+        }
+
+         async function f45() { // loadIncome
+             try {
+                 const incs = await f23('inc');
+				 console.log("Income:", incs);
+                 const tb = ge('a179');
+                 if (!tb) return;
+                 ht(tb.id, '');
+                 if (incs.length === 0) { ht(tb.id, `<tr><td colspan="5">${l[cl].a163}</td></tr>`); return; }
+                 incs.sort((a,b) => b.dt.localeCompare(a.dt)); // Sort by date desc
+                 incs.forEach(i => {
+                     const desc = (cl === 'ur' ? i.dur : i.den) || i.dur || i.den || '-';
+                     const cat = (cl === 'ur' ? i.cur : i.cen) || i.cur || i.cen || '-';
+                     const descClass = i.dur ? 'ur-font' : 'en-font';
+                     const catClass = i.cur ? 'ur-font' : 'en-font';
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `
+                         <td class="${descClass}">${desc}</td>
+                         <td class="${catClass}">${cat}</td>
+                         <td class="en-font">${i.amt.toFixed(2)}</td>
+                         <td class="en-font">${i.dt}</td>
+                         <td class="no-print">
+                            <button class="btn btn-danger btn-sm" onclick="f38('inc', ${i.id})" data-l="a138">${l[cl].a138}</button>
+                         </td>`;
+                     tb.appendChild(tr);
+                 });
+             } catch(err) { console.error("Error loading income:", err); ht('a179', `<tr><td colspan="5">Error loading data.</td></tr>`);}
+         }
+         async function f46() { // loadExpenses
+             try {
+                 const exps = await f23('exp');
+                 const tb = ge('a182');
+                  if (!tb) return;
+                 ht(tb.id, '');
+                 if (exps.length === 0) { ht(tb.id, `<tr><td colspan="5">${l[cl].a163}</td></tr>`); return; }
+                  exps.sort((a,b) => b.dt.localeCompare(a.dt)); // Sort by date desc
+                 exps.forEach(e => {
+                     const desc = (cl === 'ur' ? e.dur : e.den) || e.dur || e.den || '-';
+                     const cat = (cl === 'ur' ? e.cur : e.cen) || e.cur || e.cen || '-';
+                      const descClass = e.dur ? 'ur-font' : 'en-font';
+                     const catClass = e.cur ? 'ur-font' : 'en-font';
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `
+                         <td class="${descClass}">${desc}</td>
+                         <td class="${catClass}">${cat}</td>
+                         <td class="en-font">${e.amt.toFixed(2)}</td>
+                         <td class="en-font">${e.dt}</td>
+                         <td class="no-print">
+                             <button class="btn btn-danger btn-sm" onclick="f38('exp', ${e.id})" data-l="a138">${l[cl].a138}</button>
+                         </td>`;
+                     tb.appendChild(tr);
+                 });
+             } catch(err) { console.error("Error loading expenses:", err); ht('a182', `<tr><td colspan="5">Error loading data.</td></tr>`);}
+         }
+
+        // --- Shared Delete ---
+        async function f38(sn, id) { // deleteItem
+            const storeNameMap = { s:l[cl].a5, t:l[cl].a7, c:l[cl].a9, f:l[cl].a59, p:l[cl].a61, inc:l[cl].a171, exp:l[cl].a173, a:'Attendance Record'};
+            const itemType = storeNameMap[sn] || 'Item';
+            const cnf = confirm(`${l[cl].a138} ${itemType}؟`); // Use translated 'Delete' + item type
+            if (cnf) {
+                try {
+                    await f20(sn, id);
+                    alert(l[cl].a154);
+                    // Refresh the relevant list based on store name
+                     const activeTab = document.querySelector('.nav-link.active')?.getAttribute('data-tab');
+                     if (sn === 's') { f24(); if(activeTab === 'a14') f33(); if(activeTab === 'a10') f5(); if(activeTab === 'a12') f6(); }
+                     else if (sn === 't') { f25(); if(activeTab === 'a14') f34(); if(activeTab === 'a10') f5(); }
+                     else if (sn === 'c') { f26(); if(activeTab === 'a12') f30(); if(activeTab === 'a6') f24();}
+                     else if (sn === 'f') f35();
+                     else if (sn === 'p') f36();
+                     else if (sn === 'inc') f45();
+                     else if (sn === 'exp') f46();
+                     // Attendance ('a') records are deleted implicitly when saving new state for the day
+                     if(activeTab === 'a16') f11(); // Refresh reports if visible
+
+                } catch (err) {
+                    console.error(l[cl].a155, err);
+                    alert(l[cl].a155 + ': ' + err);
+                }
+            }
+        }
+
+         // --- Reports ---
+         function f10() { // setupReportFilters
+             const rt = gv('a82'); // report type
+             const showClass = (rt === 'a');
+             const showDate = (rt === 'a');
+             const showMonth = (rt === 'f' || rt === 'p');
+             const showDateRange = (rt === 'inc' || rt === 'exp');
+
+             ge('a90').style.display = showClass ? 'block' : 'none'; // Class filter
+             ge('a92').style.display = showDate ? 'block' : 'none'; // Date filter
+             ge('a95').style.display = showMonth ? 'block' : 'none'; // Month filter
+             ge('a185').style.display = showDateRange ? 'block' : 'none'; // Start Date filter
+             ge('a188').style.display = showDateRange ? 'block' : 'none'; // End Date filter
+
+             if (showClass) f32(ge('a91')); // Populate class dropdown
+             ht('a101', ''); ht('a102', ''); ht('a103', ''); // Clear report area
+         }
+
+         async function f11() { // generateReport
+             const rt = gv('a82');
+             const rTitleEl = ge('a101');
+             const rHeadEl = ge('a102');
+             const rBodyEl = ge('a103');
+             if (!rTitleEl || !rHeadEl || !rBodyEl) return;
+
+             ht(rTitleEl.id, l[cl].a164); ht(rHeadEl.id, ''); ht(rBodyEl.id, '');
+
+             let data = [];
+             let headers = [];
+             let title = ge('a82').options[ge('a82').selectedIndex].text;
+             let headerClasses = []; // To store CSS classes for headers
+             let total = 0; // For financial reports
+
+             try {
+                 const sts = await f23('s');
+                 const ts = await f23('t');
+                 const cls = await f23('c');
+                 const sMap = sts.reduce((map, s) => { map[s.id] = s; return map; }, {});
+                 const tMap = ts.reduce((map, t) => { map[t.id] = t; return map; }, {});
+                 const clMap = cls.reduce((map, cl) => { map[cl.id] = cl; return map; }, {});
+
+                // Dynamic headers cache
+                let sDynH = null, tDynH = null;
+
+                 if (rt === 's') { // Students
+                    headers = [l[cl].a21, l[cl].a22, l[cl].a23, l[cl].a24, l[cl].a25, l[cl].a26, l[cl].a27];
+                    headerClasses = ['ur-font', 'ur-font', 'en-font', 'ur-font', 'en-font', 'en-font', 'ur-font'];
+                    sDynH = f43(sts, 's');
+                    sDynH.forEach(h => {
+                        headers.push(cl === 'ur' ? (h.lu || h.le) : (h.le || h.lu));
+                        headerClasses.push(h.isUrdu ? 'ur-font' : 'en-font');
+                    });
+                    data = sts.map(s => {
+                         const clName = s.cl && clMap[s.cl] ? (cl === 'ur' ? clMap[s.cl].nu : clMap[s.cl].ne) || clMap[s.cl].nu || '-' : '-';
+                         const nameDisplay = (cl === 'ur' ? s.nu : s.ne) || s.nu || '-';
+                         const fnameDisplay = (cl === 'ur' ? s.fu : s.fe) || s.fu || '-';
+                         const addrDisplay = (cl === 'ur' ? s.au : s.ae) || s.au || '-';
+                         const row = [nameDisplay, fnameDisplay, s.ag || '-', clName, s.ad || '-', s.cn || '-', addrDisplay];
+                         sDynH.forEach(h => row.push(f44(s.cf, h)));
+                         return row;
+                     });
+
+                 } else if (rt === 't') { // Teachers
+                     headers = [l[cl].a34, l[cl].a35, l[cl].a36, l[cl].a37, l[cl].a38];
+                     headerClasses = ['ur-font', 'ur-font', 'en-font', 'ur-font', 'en-font'];
+                     tDynH = f43(ts, 't');
+                     tDynH.forEach(h => {
+                        headers.push(cl === 'ur' ? (h.lu || h.le) : (h.le || h.lu));
+                        headerClasses.push(h.isUrdu ? 'ur-font' : 'en-font');
+                     });
+                     data = ts.map(t => {
+                         const nameDisplay = (cl === 'ur' ? t.nu : t.ne) || t.nu || '-';
+                         const qualDisplay = (cl === 'ur' ? t.qu : t.qe) || t.qu || '-';
+                         const addrDisplay = (cl === 'ur' ? t.au : t.ae) || t.au || '-';
+                         const row = [nameDisplay, qualDisplay, t.cn || '-', addrDisplay, t.jd || '-'];
+                         tDynH.forEach(h => row.push(f44(t.cf, h)));
+                          return row;
+                     });
+
+                 } else if (rt === 'c') { // Classes
+                     headers = [l[cl].a44, l[cl].a45, l[cl].a46];
+                     headerClasses = ['ur-font', 'ur-font', 'en-font'];
+                     data = cls.map(c => {
+                        const cNameDisplay = (cl === 'ur' ? c.nu : c.ne) || c.nu || '-';
+                        const tNameDisplay = c.ti && tMap[c.ti] ? ((cl === 'ur' ? tMap[c.ti].nu : tMap[c.ti].ne) || tMap[c.ti].nu || '-') : '-';
+                        return [cNameDisplay, tNameDisplay, c.si ? c.si.length : 0];
+                     });
+                 } else if (rt === 'a') { // Attendance
+                     const cId = parseInt(gv('a91'));
+                     const dt = gv('a93');
+                     if (!cId || !dt) { alert(l[cl].a151); ht(rTitleEl.id, ''); return; }
+                     const clName = clMap[cId] ? (cl === 'ur' ? clMap[cId].nu : clMap[cId].ne) || clMap[cId].nu || '' : '';
+                     title = `${ge('a82').options[ge('a82').selectedIndex].text} - ${clName} (${dt})`;
+                     headers = [l[cl].a21, l[cl].a53];
+                     headerClasses = ['ur-font', 'ur-font'];
+                     const attRecs = await f22('a', 'date_class', [dt, cId]);
+                     const attMap = attRecs.reduce((map, rec) => { map[rec.si] = rec.st; return map; }, {});
+                     const clStds = cls.find(c => c.id === cId)?.si || [];
+                     data = clStds
+                        .map(sId => sMap[sId]) // Get student objects
+                        .filter(s => s) // Filter out undefined students
+                        .map(s => {
+                            const statusKey = attMap[s.id];
+                            let statusText = l[cl].a135; // Default Absent
+                            if (statusKey === 'p') statusText = l[cl].a134;
+                            else if (statusKey === 'l') statusText = l[cl].a136;
+                            const nameDisplay = (cl === 'ur' ? s.nu : s.ne) || s.nu || `Student ${s.id}`;
+                            return [nameDisplay, statusText];
+                         });
+                 } else if (rt === 'f') { // Fees
+                     const mn = gv('a96');
+                     if (!mn) { alert(l[cl].a97); ht(rTitleEl.id, ''); return; }
+                     title = `${ge('a82').options[ge('a82').selectedIndex].text} (${mn})`;
+                     headers = [l[cl].a21, l[cl].a67, l[cl].a69, l[cl].a71];
+                     headerClasses = ['ur-font', 'en-font', 'en-font', 'en-font'];
+                     const fs = await f22('f', 'month', mn);
+                     total = 0;
+                     data = fs.map(f => {
+                         total += f.am;
+                          const s = sMap[f.si];
+                          const nameDisplay = s ? ((cl === 'ur' ? s.nu : s.ne) || s.nu || `Student ${f.si}`) : 'Unknown';
+                         return [nameDisplay, f.m, f.am.toFixed(2), f.dt]
+                     });
+                 } else if (rt === 'p') { // Salary (Payments)
+                     const mn = gv('a96');
+                     if (!mn) { alert(l[cl].a97); ht(rTitleEl.id, ''); return; }
+                     title = `${ge('a82').options[ge('a82').selectedIndex].text} (${mn})`;
+                     headers = [l[cl].a7, l[cl].a67, l[cl].a78, l[cl].a71];
+                     headerClasses = ['ur-font', 'en-font', 'en-font', 'en-font'];
+                     const ps = await f22('p', 'month', mn);
+                     total = 0;
+                     data = ps.map(p => {
+                          total += p.am;
+                          const t = tMap[p.ti];
+                          const nameDisplay = t ? ((cl === 'ur' ? t.nu : t.ne) || t.nu || `Teacher ${p.ti}`) : 'Unknown';
+                         return [nameDisplay, p.m, p.am.toFixed(2), p.dt]
+                     });
+                 } else if (rt === 'inc' || rt === 'exp') { // Income or Expense Report
+                     const startDt = gv('a186');
+                     const endDt = gv('a189');
+                     if (!startDt || !endDt) { alert((cl === 'ur' ? 'براہ کرم تاریخ کی حد منتخب کریں۔' : 'Please select a date range.')); ht(rTitleEl.id, ''); return; }
+                      title = `${ge('a82').options[ge('a82').selectedIndex].text} (${startDt} - ${endDt})`;
+                      headers = [l[cl].a177, l[cl].a178, l[cl].a69, l[cl].a71]; // Desc, Cat, Amt, Date
+                      headerClasses = ['ur-font', 'ur-font', 'en-font', 'en-font'];
+                      const storeName = (rt === 'inc') ? 'inc' : 'exp';
+                      const range = IDBKeyRange.bound(startDt, endDt);
+                      const items = await f51(storeName, 'date', range);
+                      total = 0;
+                      data = items.map(item => {
+                          total += item.amt;
+                          const desc = (cl === 'ur' ? item.dur : item.den) || item.dur || item.den || '-';
+                          const cat = (cl === 'ur' ? item.cur : item.cen) || item.cur || item.cen || '-';
+                          return [desc, cat, item.amt.toFixed(2), item.dt];
+                      });
+                 }
+
+                 ht(rTitleEl.id, title);
+                 // Render headers with classes
+                 let headHTML = '<tr>';
+                 headers.forEach((h, index) => headHTML += `<th class="${headerClasses[index] || ''}">${h}</th>`);
+                 headHTML += '</tr>';
+                 ht(rHeadEl.id, headHTML);
+
+                 // Render data with appropriate classes based on headers
+                 let bodyHTML = '';
+                 if (data.length > 0) {
+                     data.forEach((row) => {
+                         bodyHTML += `<tr>`;
+                         row.forEach((cell, cellIndex) => {
+                             const cellClass = headerClasses[cellIndex] || '';
+                             const displayCell = cell !== undefined && cell !== null ? cell : '-';
+                             bodyHTML += `<td class="${cellClass}">${displayCell}</td>`;
+                         });
+                         bodyHTML += '</tr>';
+                     });
+                      // Add total row for financial reports
+                     if (rt === 'f' || rt === 'p' || rt === 'inc' || rt === 'exp') {
+                          bodyHTML += `<tr class="fw-bold table-group-divider">`;
+                          bodyHTML += `<td colspan="${headers.length - 2}">${l[cl].a166}</td>`; // Label in first cell(s)
+                          bodyHTML += `<td class="en-font">${total.toFixed(2)}</td>`; // Total amount
+                          bodyHTML += `<td></td>`; // Empty cell for date/actions column
+                          bodyHTML += `</tr>`;
+                     }
+                 } else {
+                     bodyHTML = `<tr><td colspan="${headers.length}">${l[cl].a163}</td></tr>`;
+                 }
+                 ht(rBodyEl.id, bodyHTML);
+
+             } catch (err) {
+                 console.error("Error generating report:", err);
+                 ht(rTitleEl.id, 'Error');
+                 ht(rBodyEl.id, `<tr><td colspan="1">Error generating report.</td></tr>`);
+             }
+         }
+
+        function f43(items, type) { // getDynamicHeaders (returns {lu, le, isUrdu})
+             const headers = {};
+             items.forEach(item => {
+                 if (item.cf) {
+                     item.cf.forEach(f => {
+                         const key = `${f.lu || ''}-${f.le || ''}`; // Unique key based on labels
+                         if ((f.lu || f.le) && !headers[key]) { // Need at least one label
+                             headers[key] = { lu: f.lu, le: f.le, isUrdu: !!f.lu };
+                         }
+                     });
+                 }
+             });
+             return Object.values(headers);
+        }
+
+        function f44(cf, header) { // getDynamicFieldValue based on header object {lu, le}
+             if (!cf) return '-';
+             // Find field matching both labels if they exist, or single label if only one exists
+             const field = cf.find(f => f.lu === header.lu && f.le === header.le);
+             return field ? field.v || '-' : '-';
+        }
+
+
+         function f12() { // exportCSV
+             const table = ge('a4')?.querySelector('table');
+             if (!table) return;
+             const title = ge('a101')?.textContent || 'Report';
+             let csv = [];
+             const rows = table.querySelectorAll('tr');
+
+             for (let i = 0; i < rows.length; i++) {
+                 const row = [], cols = rows[i].querySelectorAll('td, th');
+                 for (let j = 0; j < cols.length; j++) {
+                      let data = cols[j].innerText.replace(/"/g, '""');
+                      if (data.search(/("|,|\n)/g) >= 0) { data = `"${data}"`; }
+                     row.push(data);
+                 }
+                 csv.push(row.join(','));
+             }
+             const csvContent = "\uFEFF" + csv.join('\n'); // Add BOM for Excel
+             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+             const link = document.createElement("a");
+              const url = URL.createObjectURL(blob);
+              link.setAttribute("href", url);
+             const fileName = `${title.replace(/[^a-z0-9ء-ي\s]/gi, '_').replace(/\s+/g, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`; // Sanitize filename
+             link.setAttribute("download", fileName);
+             link.style.visibility = 'hidden';
+             document.body.appendChild(link);
+             link.click();
+             document.body.removeChild(link);
+             URL.revokeObjectURL(url); // Clean up blob URL
+         }
+
+
+        // --- Initialization ---
+        async function initializeApp() {
+             try {
+                await f17(); // Init DB
+
+                // Set default dates
+                const today = new Date().toISOString().split('T')[0];
+                sv('a51', today); // Attendance date
+                sv('a93', today); // Report date
+                sv('inc_dt', today); // Income date default
+                sv('exp_dt', today); // Expense date default
+                sv('a186', today); // Report start date default
+                sv('a189', today); // Report end date default
+
+                const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+                sv('a66', currentMonth); // Fee month
+                sv('a76', currentMonth); // Salary month
+                sv('a96', currentMonth); // Report month
+
+                 await f31(); // Load initial data for dropdowns used across tabs
+                 f2('ur'); // Set default language to Urdu (this will trigger f1 for the default tab)
+
+            } catch (err) {
+                console.error("Initialization failed:", err);
+                alert("Failed to initialize the application. Please check console for errors.");
+                // Display a user-friendly message on the page
+                const container = document.querySelector('.container-fluid');
+                if (container) {
+                    container.innerHTML = `<div class="alert alert-danger">Application Initialization Failed. Database could not be opened. Please check browser permissions or try clearing site data. Error: ${err}</div>`;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        async function f31() { // Initial data load for dropdowns used across tabs
+             await Promise.all([
+                f33(), // Fee students
+                f34(), // Salary teachers
+                f30(), // Attendance class filter
+                f32(ge('a91')) // Report Class filter
+            ]).catch(err => console.error("Error loading initial dropdown data:", err));
+        }
+
+
+
+
+
+
+
+
+
+
+// Database Initialization
+let dbp = null;
+async function initDB() {
+    if (dbp) return dbp;
+    dbp = new Promise((resolve, reject) => {
+        const request = indexedDB.open('madrasaDB', 2);
+        request.onupgradeneeded = e => {
+            console.log(`Upgrading database from version ${e.oldVersion} to 2`);
+            const db = request.result;
+            if (e.oldVersion < 1) {
+                db.createObjectStore('s', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('t', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('c', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('a', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('f', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('p', { keyPath: 'id', autoIncrement: true });
+            }
+            if (e.oldVersion < 2) {
+                db.createObjectStore('inc', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('exp', { keyPath: 'id', autoIncrement: true });
+            }
+            console.log('ڈیٹا بیس کامیابی سے بنایا/اپ گریڈ کیا گیا۔');
+        };
+        request.onsuccess = () => {
+            console.log('ڈیٹا بیس کامیابی سے کھولا گیا۔');
+            resolve(request.result);
+        };
+        request.onerror = () => reject(request.error);
+    });
+    return dbp;
+}
+
+// Fetch record by ID
+async function f21(s, i) {
+    try {
+        const db = await initDB();
+        const tx = db.transaction(s, 'readonly');
+        const st = tx.objectStore(s);
+        const r = await new Promise((resolve, reject) => {
+            const req = st.get(i);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+        return r || null;
+    } catch (err) {
+        console.error(`Error fetching ${s} with id ${i}:`, err);
+        return null;
+    }
+}
+
+// Tab Switching (Simplified)
+function f1(tab) {
+    // Hide all tab content
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+
+    // Show selected tab
+    const tabEl = ge(tab);
+    if (tabEl) {
+        tabEl.style.display = 'block';
+        tabEl.style.visibility = 'visible';
+    }
+
+    // Activate navigation link
+    const navLink = document.querySelector(`.nav-link[data-tab="${tab}"]`);
+    if (navLink) navLink.classList.add('active');
+
+    // Load data for specific tabs
+    if (tab === 'a6') f24(); // Students
+    else if (tab === 'a8') f25(); // Teachers
+    else if (tab === 'a10') f26(); // Classes
+    else if (tab === 'a12') { f30(); f6(); } // Attendance
+    else if (tab === 'a14') {
+        f33(); // Populate fee student dropdown
+        f34(); // Populate salary teacher dropdown
+        f35(); // Load fees table
+        f36(); // Load salaries table
+        showSubTab('a58'); // Show Fee Collection sub-tab
+    } else if (tab === 'a168') {
+        f45(); // Load income table
+        f46(); // Load expenses table
+        showSubTab('a170'); // Show Income sub-tab
+    } else if (tab === 'a16') f10(); // Reports
+}
+
+// Sub-Tab Switching (Plain JavaScript)
+function showSubTab(subTabId) {
+    // Hide all sub-tab content within the active tab
+    const activeTab = document.querySelector('.tab-content[style*="block"]');
+    if (activeTab) {
+        activeTab.querySelectorAll('.sub-tab-content').forEach(st => st.style.display = 'none');
+    }
+
+    // Show selected sub-tab
+    const subTabEl = ge(subTabId);
+    if (subTabEl) {
+        subTabEl.style.display = 'block';
+        subTabEl.style.visibility = 'visible';
+    }
+
+    // Update active sub-tab link
+    const subTabLinks = document.querySelectorAll('.nav-link.sub-tab-link');
+    subTabLinks.forEach(link => link.classList.remove('active'));
+    const activeSubTabLink = document.querySelector(`.nav-link.sub-tab-link[data-sub-tab="${subTabId}"]`);
+    if (activeSubTabLink) activeSubTabLink.classList.add('active');
+
+    // Refresh relevant table
+    if (subTabId === 'a58') f35(); // Fee Collection
+    else if (subTabId === 'a60') f36(); // Salary Payment
+    else if (subTabId === 'a170') f45(); // Income
+    else if (subTabId === 'a172') f46(); // Expenses
+}
+
+// Table Rendering Functions
+async function f35() { // loadFees
+    const fs = await f23('f');
+    const t = ge('a72');
+    if (!t) {
+        console.error("Table body a72 not found");
+        return;
+    }
+    let h = '';
+    for (let f of fs) {
+        const s = await f21('s', f.si);
+        h += `<tr><td>${s ? s.nu : 'نام نہیں ملا'}</td><td>${f.m}</td><td>${f.am}</td><td>${f.dt}</td><td><button class="btn btn-danger btn-sm" onclick="f37(${f.id})">${l[cl].a7}</button></td></tr>`;
+    }
+    t.innerHTML = h || `<tr><td colspan="5">${l[cl].a163}</td></tr>`;
+    t.style.display = 'table-row-group';
+    console.log("Fees table HTML:", t.innerHTML);
+}
+
+async function f36() { // loadSalaries
+    const ps = await f23('p');
+    const t = ge('a80');
+    if (!t) {
+        console.error("Table body a80 not found");
+        return;
+    }
+    let h = '';
+    for (let p of ps) {
+        const tchr = await f21('t', p.ti);
+        h += `<tr><td>${tchr ? tchr.nu : 'نام نہیں ملا'}</td><td>${p.m}</td><td>${p.am}</td><td>${p.dt}</td><td><button class="btn btn-danger btn-sm" onclick="f38(${p.id})">${l[cl].a7}</button></td></tr>`;
+    }
+    t.innerHTML = h || `<tr><td colspan="5">${l[cl].a163}</td></tr>`;
+    t.style.display = 'table-row-group';
+    console.log("Salaries table HTML:", t.innerHTML);
+}
+
+async function f45() { // loadIncome
+    const incs = await f23('inc');
+    const t = ge('a179');
+    if (!t) {
+        console.error("Table body a179 not found");
+        return;
+    }
+    let h = '';
+    for (let inc of incs) {
+        h += `<tr><td>${inc.dur}</td><td>${inc.cur}</td><td>${inc.amt}</td><td>${inc.dt}</td><td><button class="btn btn-danger btn-sm" onclick="f51(${inc.id})">${l[cl].a7}</button></td></tr>`;
+    }
+    t.innerHTML = h || `<tr><td colspan="5">${l[cl].a163}</td></tr>`;
+    t.style.display = 'table-row-group';
+    console.log("Income table HTML:", t.innerHTML);
+}
+
+async function f46() { // loadExpenses
+    const exps = await f23('exp');
+    const t = ge('a182');
+    if (!t) {
+        console.error("Table body a182 not found");
+        return;
+    }
+    let h = '';
+    for (let exp of exps) {
+        h += `<tr><td>${exp.dur}</td><td>${exp.cur}</td><td>${exp.amt}</td><td>${exp.dt}</td><td><button class="btn btn-danger btn-sm" onclick="f52(${exp.id})">${l[cl].a7}</button></td></tr>`;
+    }
+    t.innerHTML = h || `<tr><td colspan="5">${l[cl].a163}</td></tr>`;
+    t.style.display = 'table-row-group';
+    console.log("Expenses table HTML:", t.innerHTML);
+}
+
+// Populate Sample Data
+async function populateSampleData() {
+    try {
+        // Initialize database
+        await initDB();
+
+        // Check if stores are empty
+        const fees = await f23('f');
+        const salaries = await f23('p');
+        const income = await f23('inc');
+        const expenses = await f23('exp');
+        const students = await f23('s');
+        const teachers = await f23('t');
+
+        // Add a sample student if none exist
+        let studentId = students.length > 0 ? students[0].id : null;
+        if (!studentId) {
+            const studentData = {
+                nu: "احمد خان", ne: "Ahmed Khan",
+                fu: "محمد خان", fe: "Mohammad Khan",
+                ag: 12, cl: null, ad: "2025-04-01",
+                cn: "1234567890", au: "کراچی", ae: "Karachi",
+                cf: []
+            };
+            studentId = await f18('s', studentData);
+        }
+
+        // Add a sample teacher if none exist
+        let teacherId = teachers.length > 0 ? teachers[0].id : null;
+        if (!teacherId) {
+            const teacherData = {
+                nu: "مولانا فیصل", ne: "Maulana Faisal",
+                qu: "عالم", qe: "Scholar",
+                cn: "0987654321", jd: "2025-04-01",
+                au: "لاہور", ae: "Lahore",
+                cf: []
+            };
+            teacherId = await f18('t', teacherData);
+        }
+
+        // Add sample fee if store is empty
+        if (fees.length === 0) {
+            const feeData = {
+                si: studentId,
+                m: "2025-04",
+                am: 500,
+                dt: "2025-04-25"
+            };
+            await f18('f', feeData);
+        }
+
+        // Add sample salary if store is empty
+        if (salaries.length === 0) {
+            const salaryData = {
+                ti: teacherId,
+                m: "2025-04",
+                am: 1000,
+                dt: "2025-04-25"
+            };
+            await f18('p', salaryData);
+        }
+
+        // Add sample income if store is empty
+        if (income.length === 0) {
+            const incomeData = {
+                dur: "عطیہ", den: "Donation",
+                cur: "عام", cen: "General",
+                amt: 2000,
+                dt: "2025-04-25"
+            };
+            await f18('inc', incomeData);
+        }
+
+        // Add sample expense if store is empty
+        if (expenses.length === 0) {
+            const expenseData = {
+                dur: "بجلی بل", den: "Electricity Bill",
+                cur: "یوٹیلیٹی", cen: "Utility",
+                amt: 800,
+                dt: "2025-04-25"
+            };
+            await f18('exp', expenseData);
+        }
+
+        console.log("Sample data populated successfully.");
+
+        // Wait for DOM to be fully ready
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Refresh dropdowns and tables
+        await f33(); // Populate fee student dropdown
+        await f34(); // Populate salary teacher dropdown
+        await f35(); // Refresh fees table
+        await f36(); // Refresh salaries table
+        await f45(); // Refresh income table
+        await personally
+
+// Initialize Application
+async function initializeAppWithSampleData() {
+    await initializeApp(); // Call the original initialization
+    await populateSampleData(); // Populate sample data
+    f1('a14'); // Default to Fee/Salary tab
+}
+
+// Replace the original event listener
+document.removeEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener('DOMContentLoaded', initializeAppWithSampleData);
+
+// Ensure visibility with CSS
+const style = document.createElement('style');
+style.textContent = `
+    .tab-content, .sub-tab-content, table, tbody {
+        display: block !important;
+        visibility: visible !important;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+`;
+document.head.appendChild(style);
+
+    </script>
+</body>
+</html>

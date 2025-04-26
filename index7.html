@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دینی مدرسہ انتظامیہ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliق+Urdu:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; text-align: right; }
+        .nav-link { text-align: right !important; }
+        .form-label { text-align: right; display: block; width: 100%; }
+        .form-control, .form-select { text-align: right; }
+        .modal-header, .modal-body, .modal-footer { text-align: right; }
+        .modal-title { float: right; }
+        .btn-close { margin-left: 0; margin-right: auto; }
+        .table { text-align: right; }
+        th, td { vertical-align: middle; }
+        .dynamic-field { display: flex; align-items: center; margin-bottom: 0.5rem; }
+        .dynamic-field input { margin-left: 0.5rem; }
+        .section { display: none; }
+        .active-section { display: block; }
+        .toast-container { position: fixed; top: 1rem; left: 1rem; z-index: 1090; }
+         @media print {
+            body * { visibility: hidden; }
+            #prtSec, #prtSec * { visibility: visible; }
+            #prtSec { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none; }
+        }
+        /* Short name CSS classes */
+        .df { display: flex; }
+        .ac { align-items: center; }
+        .mb1 { margin-bottom: 0.5rem; }
+        .ml1 { margin-left: 0.5rem; }
+        .mrA { margin-right: auto; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark no-print">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">دینی مدرسہ انتظامیہ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nb" aria-controls="nb" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="nb">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                     <li class="nav-item"><a class="nav-link" href="#sM" onclick="shS('sM')">طلبہ</a></li>
+                     <li class="nav-item"><a class="nav-link" href="#tM" onclick="shS('tM')">اساتذہ</a></li>
+                     <li class="nav-item"><a class="nav-link" href="#cM" onclick="shS('cM')">جماعتیں</a></li>
+                     <li class="nav-item"><a class="nav-link" href="#aT" onclick="shS('aT')">حاضری</a></li>
+                     <li class="nav-item"><a class="nav-link" href="#fS" onclick="shS('fS')">فیس/تنخواہ</a></li>
+                     <li class="nav-item"><a class="nav-link" href="#iE" onclick="shS('iE')">انوینٹری/اخراجات</a></li>
+                     <li class="nav-item"><a class="nav-link" href="#rP" onclick="shS('rP')">رپورٹس</a></li>
+                     <li class="nav-item"><a class="nav-link" href="#bR" onclick="shS('bR')">بیک اپ/بحالی</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Student Management -->
+        <div id="sM" class="section active-section">
+            <h2>طلبہ کا انتظام</h2>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#sMMdl" onclick="clrSFrm()">نیا طالب علم شامل کریں</button>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>نام</th>
+                        <th>والد کا نام</th>
+                        <th>عمر</th>
+                        <th>جماعت</th>
+                        <th>داخلہ تاریخ</th>
+                        <th>رابطہ</th>
+                        <th>پتہ</th>
+                        <th>اضافی معلومات</th>
+                        <th>اعمال</th>
+                    </tr>
+                </thead>
+                <tbody id="sTblBdy"></tbody>
+            </table>
+        </div>
+
+        <!-- Teacher Management -->
+        <div id="tM" class="section">
+            <h2>اساتذہ کا انتظام</h2>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#tMMdl" onclick="clrTFrm()">نیا استاد شامل کریں</button>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>نام</th>
+                        <th>رابطہ</th>
+                        <th>پتہ</th>
+                        <th>شمولیت کی تاریخ</th>
+                        <th>قابلیت</th>
+                        <th>اضافی معلومات</th>
+                        <th>اعمال</th>
+                    </tr>
+                </thead>
+                <tbody id="tTblBdy"></tbody>
+            </table>
+        </div>
+
+        <!-- Class Management -->
+        <div id="cM" class="section">
+            <h2>جماعتوں کا انتظام</h2>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#cMMdl" onclick="clrCFrm()">نئی جماعت بنائیں</button>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>جماعت کا نام/درس</th>
+                        <th>استاد</th>
+                        <th>طلبہ</th>
+                        <th>اعمال</th>
+                    </tr>
+                </thead>
+                <tbody id="cTblBdy"></tbody>
+            </table>
+        </div>
+
+        <!-- Attendance Tracking -->
+        <div id="aT" class="section">
+            <h2>حاضری کا نظام</h2>
+             <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="aDt" class="form-label">تاریخ:</label>
+                    <input type="date" id="aDt" class="form-control" value="">
+                </div>
+                 <div class="col-md-4">
+                    <label for="aCls" class="form-label">جماعت منتخب کریں:</label>
+                    <select id="aCls" class="form-select" onchange="ldAStds()"></select>
+                </div>
+                 <div class="col-md-4 d-flex align-items-end">
+                     <button class="btn btn-primary" onclick="ldAStds()">طلبہ لوڈ کریں</button>
+                 </div>
+            </div>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>طالب علم ID</th>
+                        <th>طالب علم کا نام</th>
+                        <th>حاضری</th>
+                    </tr>
+                </thead>
+                <tbody id="aTblBdy"></tbody>
+            </table>
+            <button class="btn btn-success mt-3" onclick="svAtt()">حاضری محفوظ کریں</button>
+        </div>
+
+        <!-- Fee and Salary Management -->
+        <div id="fS" class="section">
+            <h2>فیس اور تنخواہ کا نظام</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>طلبہ کی فیس</h4>
+                     <div class="mb-3">
+                        <label for="fStd" class="form-label">طالب علم منتخب کریں:</label>
+                        <select id="fStd" class="form-select"></select>
+                    </div>
+                     <div class="mb-3">
+                        <label for="fAmt" class="form-label">رقم:</label>
+                        <input type="number" id="fAmt" class="form-control">
+                    </div>
+                     <div class="mb-3">
+                        <label for="fDt" class="form-label">تاریخ:</label>
+                        <input type="date" id="fDt" class="form-control" value="">
+                    </div>
+                     <div class="mb-3">
+                        <label for="fSts" class="form-label">حالت:</label>
+                        <select id="fSts" class="form-select">
+                            <option value="وصول شدہ">وصول شدہ</option>
+                            <option value="واجب الادا">واجب الادا</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="adFee()">فیس شامل کریں</button>
+                     <h5 class="mt-4">فیس ریکارڈ</h5>
+                     <table class="table table-sm table-bordered">
+                         <thead><tr><th>ID</th><th>طالب علم</th><th>رقم</th><th>تاریخ</th><th>حالت</th><th>اعمال</th></tr></thead>
+                         <tbody id="fTblBdy"></tbody>
+                     </table>
+                </div>
+                <div class="col-md-6">
+                    <h4>اساتذہ کی تنخواہ</h4>
+                     <div class="mb-3">
+                        <label for="sTch" class="form-label">استاد منتخب کریں:</label>
+                        <select id="sTch" class="form-select"></select>
+                    </div>
+                     <div class="mb-3">
+                        <label for="sAmt" class="form-label">رقم:</label>
+                        <input type="number" id="sAmt" class="form-control">
+                    </div>
+                     <div class="mb-3">
+                        <label for="sDt" class="form-label">تاریخ:</label>
+                        <input type="date" id="sDt" class="form-control" value="">
+                    </div>
+                     <div class="mb-3">
+                        <label for="sSts" class="form-label">حالت:</label>
+                        <select id="sSts" class="form-select">
+                            <option value="ادا شدہ">ادا شدہ</option>
+                            <option value="واجب الادا">واجب الادا</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="adSal()">تنخواہ شامل کریں</button>
+                     <h5 class="mt-4">تنخواہ ریکارڈ</h5>
+                     <table class="table table-sm table-bordered">
+                         <thead><tr><th>ID</th><th>استاد</th><th>رقم</th><th>تاریخ</th><th>حالت</th><th>اعمال</th></tr></thead>
+                         <tbody id="salTblBdy"></tbody>
+                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory and Expense Management -->
+         <div id="iE" class="section">
+            <h2>مدرسہ انوینٹری اور اخراجات</h2>
+            <div class="row">
+                 <div class="col-md-6">
+                     <h4>انوینٹری</h4>
+                     <button class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#iMMdl" onclick="clrIFrm()">نیا آئٹم شامل کریں</button>
+                     <table class="table table-sm table-bordered">
+                         <thead><tr><th>ID</th><th>آئٹم کا نام</th><th>مقدار</th><th>تفصیل</th><th>اعمال</th></tr></thead>
+                         <tbody id="iTblBdy"></tbody>
+                     </table>
+                 </div>
+                 <div class="col-md-6">
+                     <h4>آمدنی/اخراجات</h4>
+                     <button class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#eMMdl" onclick="clrEFrm()">نیا اندراج شامل کریں</button>
+                      <table class="table table-sm table-bordered">
+                         <thead><tr><th>ID</th><th>تاریخ</th><th>تفصیل</th><th>قسم</th><th>رقم</th><th>اعمال</th></tr></thead>
+                         <tbody id="eTblBdy"></tbody>
+                     </table>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Reports -->
+        <div id="rP" class="section">
+            <h2>رپورٹس</h2>
+            <div class="mb-3">
+                <label for="rTyp" class="form-label">رپورٹ کی قسم منتخب کریں:</label>
+                <select id="rTyp" class="form-select" onchange="gnRp()">
+                    <option value="">منتخب کریں...</option>
+                    <option value="s">طلبہ کی فہرست</option>
+                    <option value="fPnd">واجب الادا فیس</option>
+                    <option value="fRcvd">وصول شدہ فیس</option>
+                    <option value="salPnd">واجب الادا تنخواہیں</option>
+                    <option value="salPd">ادا شدہ تنخواہیں</option>
+                    <option value="aAbs">غیر حاضر طلبہ (آج)</option>
+                    <option value="aPrs">حاضر طلبہ (آج)</option>
+                    <option value="i">انوینٹری</option>
+                    <option value="eInc">آمدنی</option>
+                    <option value="eExp">اخراجات</option>
+                 </select>
+            </div>
+             <div id="rCnt" class="mt-4">
+                 <div id="prtSec">
+                     <h3 id="rTtl"></h3>
+                     <table id="rTbl" class="table table-bordered">
+                         <thead id="rTblH"></thead>
+                         <tbody id="rTblB"></tbody>
+                     </table>
+                 </div>
+                 <button class="btn btn-secondary mt-3 no-print" onclick="expCSV()">CSV ایکسپورٹ</button>
+                 <button class="btn btn-info mt-3 no-print" onclick="prntRp()">پرنٹ</button>
+            </div>
+        </div>
+
+        <!-- Backup and Restore -->
+        <div id="bR" class="section">
+            <h2>بیک اپ اور بحالی</h2>
+            <div class="mb-3">
+                <button class="btn btn-primary" onclick="bckpDt()">ڈیٹا کا بیک اپ لیں</button>
+                <small class="d-block mt-1">موجودہ تمام ڈیٹا کو JSON فائل میں ڈاؤن لوڈ کریں۔</small>
+            </div>
+             <div class="mb-3">
+                <label for="rstFl" class="form-label">بیک اپ فائل سے بحال کریں:</label>
+                <input type="file" id="rstFl" class="form-control" accept=".json">
+                <button class="btn btn-warning mt-2" onclick="rstDt()">ڈیٹا بحال کریں</button>
+                 <small class="d-block mt-1">JSON بیک اپ فائل منتخب کریں اور ڈیٹا بحال کریں۔ خبردار: موجودہ ڈیٹا حذف ہو جائے گا۔</small>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Student Modal -->
+    <div class="modal fade" id="sMMdl" tabindex="-1" aria-labelledby="sMMdlLbl" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sMMdlLbl">طالب علم فارم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بند کریں"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sFrm">
+                        <input type="hidden" id="sId">
+                        <div class="mb-3">
+                            <label for="sN" class="form-label">نام <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="sN" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sFN" class="form-label">والد کا نام</label>
+                            <input type="text" class="form-control" id="sFN">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="sA" class="form-label">عمر</label>
+                                <input type="number" class="form-control" id="sA">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sC" class="form-label">جماعت</label>
+                                <select class="form-select" id="sC"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                             <div class="col-md-6 mb-3">
+                                <label for="sAD" class="form-label">داخلے کی تاریخ</label>
+                                <input type="date" class="form-control" id="sAD">
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="sCn" class="form-label">رابطہ نمبر</label>
+                                <input type="text" class="form-control" id="sCn">
+                            </div>
+                        </div>
+                         <div class="mb-3">
+                            <label for="sAd" class="form-label">پتہ</label>
+                            <textarea class="form-control" id="sAd" rows="2"></textarea>
+                        </div>
+                        <hr>
+                        <h6>اضافی معلومات</h6>
+                        <div id="sDFlds"></div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="adSDFld()">نیا فیلڈ شامل کریں</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                    <button type="button" class="btn btn-primary" onclick="svS()">محفوظ کریں</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Teacher Modal -->
+    <div class="modal fade" id="tMMdl" tabindex="-1" aria-labelledby="tMMdlLbl" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tMMdlLbl">استاد فارم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بند کریں"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="tFrm">
+                        <input type="hidden" id="tId">
+                        <div class="mb-3">
+                            <label for="tN" class="form-label">نام <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="tN" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="tCn" class="form-label">رابطہ نمبر</label>
+                            <input type="text" class="form-control" id="tCn">
+                        </div>
+                        <div class="mb-3">
+                            <label for="tAd" class="form-label">پتہ</label>
+                            <textarea class="form-control" id="tAd" rows="2"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tJD" class="form-label">شمولیت کی تاریخ</label>
+                                <input type="date" class="form-control" id="tJD">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tQ" class="form-label">قابلیت</label>
+                                <input type="text" class="form-control" id="tQ">
+                            </div>
+                        </div>
+                        <hr>
+                        <h6>اضافی معلومات</h6>
+                        <div id="tDFlds"></div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="adTDFld()">نیا فیلڈ شامل کریں</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                    <button type="button" class="btn btn-primary" onclick="svT()">محفوظ کریں</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Class Modal -->
+    <div class="modal fade" id="cMMdl" tabindex="-1" aria-labelledby="cMMdlLbl" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cMMdlLbl">جماعت فارم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بند کریں"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cFrm">
+                        <input type="hidden" id="cId">
+                        <div class="mb-3">
+                            <label for="cN" class="form-label">جماعت کا نام/درس <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="cN" required>
+                        </div>
+                        <div class="mb-3">
+                             <label for="cT" class="form-label">استاد تفویض کریں</label>
+                             <select class="form-select" id="cT">
+                                 <option value="">کوئی نہیں</option>
+                             </select>
+                        </div>
+                         <div class="mb-3">
+                            <label class="form-label">طلبہ تفویض کریں</label>
+                            <div id="cSList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ced4da; padding: 0.5rem; border-radius: 0.25rem;">
+                                <!-- Student checkboxes will be populated here -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                    <button type="button" class="btn btn-primary" onclick="svC()">محفوظ کریں</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Inventory Modal -->
+    <div class="modal fade" id="iMMdl" tabindex="-1" aria-labelledby="iMMdlLbl" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="iMMdlLbl">انوینٹری آئٹم فارم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بند کریں"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="iFrm">
+                        <input type="hidden" id="iId">
+                        <div class="mb-3">
+                            <label for="iN" class="form-label">آئٹم کا نام <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="iN" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="iQ" class="form-label">مقدار</label>
+                            <input type="number" class="form-control" id="iQ" value="1">
+                        </div>
+                         <div class="mb-3">
+                            <label for="iD" class="form-label">تفصیل</label>
+                            <textarea class="form-control" id="iD" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                    <button type="button" class="btn btn-primary" onclick="svI()">محفوظ کریں</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Expense/Income Modal -->
+    <div class="modal fade" id="eMMdl" tabindex="-1" aria-labelledby="eMMdlLbl" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eMMdlLbl">آمدنی/خرچ فارم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بند کریں"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eFrm">
+                        <input type="hidden" id="eId">
+                         <div class="mb-3">
+                            <label for="eDt" class="form-label">تاریخ <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="eDt" required value="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eD" class="form-label">تفصیل <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="eD" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eT" class="form-label">قسم <span class="text-danger">*</span></label>
+                            <select class="form-select" id="eT" required>
+                                <option value="آمدنی">آمدنی</option>
+                                <option value="خرچ">خرچ</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eA" class="form-label">رقم <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="eA" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
+                    <button type="button" class="btn btn-primary" onclick="svE()">محفوظ کریں</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+     <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="tst" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">اطلاع</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="بند کریں"></button>
+        </div>
+        <div class="toast-body" id="tstBdy">
+        </div>
+      </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        const dbN = 'dMMDb';
+        const dbV = 1;
+        let db;
+        const sOS = 's'; // students
+        const tOS = 't'; // teachers
+        const cOS = 'c'; // classes
+        const aOS = 'a'; // attendance
+        const feeOS = 'f'; // fees
+        const salOS = 'sl'; // salaries
+        const iOS = 'i'; // inventory
+        const eOS = 'e'; // expenses
+
+        const tstEl = document.getElementById('tst');
+        const tst = new bootstrap.Toast(tstEl);
+        const tstBdy = document.getElementById('tstBdy');
+
+        // Short Name Aliases for DOM elements
+        const sFrm = document.getElementById('sFrm');
+        const tFrm = document.getElementById('tFrm');
+        const cFrm = document.getElementById('cFrm');
+        const iFrm = document.getElementById('iFrm');
+        const eFrm = document.getElementById('eFrm');
+
+        const sTblBdy = document.getElementById('sTblBdy');
+        const tTblBdy = document.getElementById('tTblBdy');
+        const cTblBdy = document.getElementById('cTblBdy');
+        const aTblBdy = document.getElementById('aTblBdy');
+        const fTblBdy = document.getElementById('fTblBdy');
+        const salTblBdy = document.getElementById('salTblBdy');
+        const iTblBdy = document.getElementById('iTblBdy');
+        const eTblBdy = document.getElementById('eTblBdy');
+
+        const sMMdlEl = document.getElementById('sMMdl');
+        const tMMdlEl = document.getElementById('tMMdl');
+        const cMMdlEl = document.getElementById('cMMdl');
+        const iMMdlEl = document.getElementById('iMMdl');
+        const eMMdlEl = document.getElementById('eMMdl');
+        const sMMdl = new bootstrap.Modal(sMMdlEl);
+        const tMMdl = new bootstrap.Modal(tMMdlEl);
+        const cMMdl = new bootstrap.Modal(cMMdlEl);
+        const iMMdl = new bootstrap.Modal(iMMdlEl);
+        const eMMdl = new bootstrap.Modal(eMMdlEl);
+
+        // Utility: Show Notification
+        function shN(msg, typ = 'success') {
+             tstBdy.textContent = msg;
+             tstEl.className = `toast bg-${typ} text-white`; // Basic coloring
+             tst.show();
+        }
+
+        // Utility: Get Current Date String (YYYY-MM-DD)
+        function gtCDtStr() {
+             const dt = new Date();
+             const y = dt.getFullYear();
+             const m = (dt.getMonth() + 1).toString().padStart(2, '0');
+             const d = dt.getDate().toString().padStart(2, '0');
+             return `${y}-${m}-${d}`;
+        }
+
+        // DB Initialization
+        function initDb() {
+            const req = indexedDB.open(dbN, dbV);
+            req.onerror = (e) => console.error('Database error:', e.target.errorCode);
+            req.onsuccess = (e) => {
+                db = e.target.result;
+                console.log('Database opened successfully');
+                ldAlDt(); // Load initial data
+            };
+            req.onupgradeneeded = (e) => {
+                db = e.target.result;
+                if (!db.objectStoreNames.contains(sOS)) db.createObjectStore(sOS, { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains(tOS)) db.createObjectStore(tOS, { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains(cOS)) db.createObjectStore(cOS, { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains(aOS)) {
+                     const aSt = db.createObjectStore(aOS, { keyPath: 'id', autoIncrement: true });
+                     aSt.createIndex('dt_sid', ['dt', 'sId'], { unique: true });
+                     aSt.createIndex('dt_cid', ['dt', 'cId'], { unique: false });
+                }
+                if (!db.objectStoreNames.contains(feeOS)) db.createObjectStore(feeOS, { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains(salOS)) db.createObjectStore(salOS, { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains(iOS)) db.createObjectStore(iOS, { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains(eOS)) db.createObjectStore(eOS, { keyPath: 'id', autoIncrement: true });
+                 console.log('Database setup complete');
+            };
+        }
+
+        // Generic DB Operations
+        function gtTx(osN, md = 'readonly') { return db.transaction(osN, md); }
+        function gtOs(tx, osN) { return tx.objectStore(osN); }
+
+        function adItm(osN, itm, cb) {
+            const tx = gtTx(osN, 'readwrite');
+            const os = gtOs(tx, osN);
+            const req = os.add(itm);
+            req.onsuccess = (e) => cb(e.target.result);
+            req.onerror = (e) => console.error(`Error adding to ${osN}:`, e.target.error);
+        }
+
+        function gtItm(osN, id, cb) {
+            const tx = gtTx(osN);
+            const os = gtOs(tx, osN);
+            const req = os.get(id);
+            req.onsuccess = (e) => cb(e.target.result);
+            req.onerror = (e) => console.error(`Error getting from ${osN}:`, e.target.error);
+        }
+
+        function gtAllItms(osN, cb) {
+            const tx = gtTx(osN);
+            const os = gtOs(tx, osN);
+            const req = os.getAll();
+            req.onsuccess = (e) => cb(e.target.result);
+            req.onerror = (e) => console.error(`Error getting all from ${osN}:`, e.target.error);
+        }
+
+         function updItm(osN, itm, cb) {
+             const tx = gtTx(osN, 'readwrite');
+             const os = gtOs(tx, osN);
+             const req = os.put(itm);
+             req.onsuccess = () => cb();
+             req.onerror = (e) => console.error(`Error updating ${osN}:`, e.target.error);
+         }
+
+        function delItm(osN, id, cb) {
+            const tx = gtTx(osN, 'readwrite');
+            const os = gtOs(tx, osN);
+            const req = os.delete(id);
+            req.onsuccess = () => cb();
+            req.onerror = (e) => console.error(`Error deleting from ${osN}:`, e.target.error);
+        }
+
+        function gtItmsByIdx(osN, idxN, ky, cb) {
+            const tx = gtTx(osN);
+            const os = gtOs(tx, osN);
+            const idx = os.index(idxN);
+            const req = idx.getAll(ky);
+            req.onsuccess = (e) => cb(e.target.result);
+            req.onerror = (e) => console.error(`Error getting by index ${idxN} from ${osN}:`, e.target.error);
+        }
+
+        // Navigation
+        function shS(sId) {
+             document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+             document.getElementById(sId).classList.add('active-section');
+             // Refresh data for the shown section if needed
+             if (sId === 'sM') lS();
+             if (sId === 'tM') lT();
+             if (sId === 'cM') lC();
+             if (sId === 'aT') { ldSelCs('aCls'); document.getElementById('aDt').value = gtCDtStr(); aTblBdy.innerHTML = ''; }
+             if (sId === 'fS') { ldSelSs('fStd'); ldSelTs('sTch'); lFee(); lSal(); document.getElementById('fDt').value = gtCDtStr(); document.getElementById('sDt').value = gtCDtStr(); }
+             if (sId === 'iE') { lI(); lE(); }
+             if (sId === 'rP') { document.getElementById('rCnt').style.display = 'none'; document.getElementById('rTyp').value = ''; }
+         }
+
+         // Dynamic Fields UI
+         function adDynFld(cntId, k = '', v = '') {
+            const cnt = document.getElementById(cntId);
+            const d = document.createElement('div');
+            d.className = 'df ac mb1 dynamic-field'; // Use short class names
+            d.innerHTML = `
+                <input type="text" class="form-control form-control-sm mrA" placeholder="فیلڈ کا نام" value="${k}">
+                <input type="text" class="form-control form-control-sm ml1" placeholder="ویلیو" value="${v}">
+                <button type="button" class="btn btn-danger btn-sm ml1" onclick="rmDynFld(this)">X</button>
+            `;
+            cnt.appendChild(d);
+         }
+
+         function rmDynFld(btn) {
+            btn.closest('.dynamic-field').remove();
+         }
+
+         function gtDynFlds(cntId) {
+             const flds = {};
+             document.querySelectorAll(`#${cntId} .dynamic-field`).forEach(d => {
+                 const kIn = d.children[0];
+                 const vIn = d.children[1];
+                 if (kIn.value.trim()) {
+                     flds[kIn.value.trim()] = vIn.value.trim();
+                 }
+             });
+             return flds;
+         }
+
+         function stDynFlds(cntId, flds) {
+             const cnt = document.getElementById(cntId);
+             cnt.innerHTML = ''; // Clear existing
+             if (flds) {
+                 for (const [k, v] of Object.entries(flds)) {
+                     adDynFld(cntId, k, v);
+                 }
+             }
+         }
+
+        // Student Management (sM)
+        function clrSFrm() {
+            sFrm.reset();
+            document.getElementById('sId').value = '';
+            document.getElementById('sDFlds').innerHTML = '';
+            ldSelCs('sC'); // Load classes into dropdown
+        }
+        window.adSDFld = () => adDynFld('sDFlds');
+
+        function svS() {
+             const sId = document.getElementById('sId').value;
+             const sN = document.getElementById('sN').value.trim();
+             if (!sN) { shN('براہ کرم طالب علم کا نام درج کریں۔', 'danger'); return; }
+             const s = {
+                 n: sN,
+                 fN: document.getElementById('sFN').value.trim(),
+                 a: document.getElementById('sA').value,
+                 cId: document.getElementById('sC').value, // Store class ID
+                 aD: document.getElementById('sAD').value,
+                 cn: document.getElementById('sCn').value.trim(),
+                 ad: document.getElementById('sAd').value.trim(),
+                 eF: gtDynFlds('sDFlds') // Store extra fields
+             };
+
+             if (sId) { // Update
+                 s.id = parseInt(sId);
+                 updItm(sOS, s, () => {
+                     shN('طالب علم کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں۔');
+                     sMMdl.hide();
+                     lS();
+                 });
+             } else { // Add
+                 adItm(sOS, s, (id) => {
+                     shN(`طالب علم ${s.n} کامیابی سے شامل کر دیا گیا۔`);
+                     sMMdl.hide();
+                     lS();
+                 });
+             }
+         }
+
+        function lS() {
+            gtAllItms(sOS, (ss) => {
+                gtAllItms(cOS, (cs) => { // Get classes to display names
+                    const cMp = cs.reduce((acc, c) => { acc[c.id] = c.n; return acc; }, {});
+                    sTblBdy.innerHTML = '';
+                    ss.forEach(s => {
+                        const r = sTblBdy.insertRow();
+                        r.innerHTML = `
+                            <td>${s.id}</td>
+                            <td>${s.n}</td>
+                            <td>${s.fN || '-'}</td>
+                            <td>${s.a || '-'}</td>
+                            <td>${cMp[s.cId] || 'کوئی نہیں'}</td>
+                            <td>${s.aD || '-'}</td>
+                            <td>${s.cn || '-'}</td>
+                            <td>${s.ad || '-'}</td>
+                            <td>${s.eF ? Object.entries(s.eF).map(([k,v]) => `${k}: ${v}`).join('<br>') : '-'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="edS(${s.id})">ترمیم</button>
+                                <button class="btn btn-sm btn-danger" onclick="delS(${s.id})">حذف</button>
+                            </td>
+                        `;
+                    });
+                });
+             });
+        }
+
+        function edS(id) {
+             gtItm(sOS, id, (s) => {
+                 clrSFrm();
+                 document.getElementById('sId').value = s.id;
+                 document.getElementById('sN').value = s.n;
+                 document.getElementById('sFN').value = s.fN || '';
+                 document.getElementById('sA').value = s.a || '';
+                 document.getElementById('sC').value = s.cId || ''; // Select class
+                 document.getElementById('sAD').value = s.aD || '';
+                 document.getElementById('sCn').value = s.cn || '';
+                 document.getElementById('sAd').value = s.ad || '';
+                 stDynFlds('sDFlds', s.eF);
+                 sMMdl.show();
+             });
+         }
+
+        function delS(id) {
+            if (confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟')) {
+                delItm(sOS, id, () => {
+                    shN('طالب علم کامیابی سے حذف کر دیا گیا۔');
+                    lS();
+                    lC(); // Refresh classes in case student was assigned
+                });
+            }
+        }
+
+        // Teacher Management (tM)
+        function clrTFrm() {
+             tFrm.reset();
+             document.getElementById('tId').value = '';
+             document.getElementById('tDFlds').innerHTML = '';
+         }
+         window.adTDFld = () => adDynFld('tDFlds');
+
+        function svT() {
+             const tId = document.getElementById('tId').value;
+             const tN = document.getElementById('tN').value.trim();
+             if (!tN) { shN('براہ کرم استاد کا نام درج کریں۔', 'danger'); return; }
+             const t = {
+                 n: tN,
+                 cn: document.getElementById('tCn').value.trim(),
+                 ad: document.getElementById('tAd').value.trim(),
+                 jD: document.getElementById('tJD').value,
+                 q: document.getElementById('tQ').value.trim(),
+                 eF: gtDynFlds('tDFlds')
+             };
+
+             if (tId) { // Update
+                 t.id = parseInt(tId);
+                 updItm(tOS, t, () => {
+                     shN('استاد کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں۔');
+                     tMMdl.hide();
+                     lT();
+                 });
+             } else { // Add
+                 adItm(tOS, t, (id) => {
+                     shN(`استاد ${t.n} کامیابی سے شامل کر دیا گیا۔`);
+                     tMMdl.hide();
+                     lT();
+                 });
+             }
+         }
+
+        function lT() {
+             gtAllItms(tOS, (ts) => {
+                 tTblBdy.innerHTML = '';
+                 ts.forEach(t => {
+                     const r = tTblBdy.insertRow();
+                     r.innerHTML = `
+                         <td>${t.id}</td>
+                         <td>${t.n}</td>
+                         <td>${t.cn || '-'}</td>
+                         <td>${t.ad || '-'}</td>
+                         <td>${t.jD || '-'}</td>
+                         <td>${t.q || '-'}</td>
+                         <td>${t.eF ? Object.entries(t.eF).map(([k,v]) => `${k}: ${v}`).join('<br>') : '-'}</td>
+                         <td>
+                             <button class="btn btn-sm btn-primary" onclick="edT(${t.id})">ترمیم</button>
+                             <button class="btn btn-sm btn-danger" onclick="delT(${t.id})">حذف</button>
+                         </td>
+                     `;
+                 });
+             });
+         }
+
+         function edT(id) {
+             gtItm(tOS, id, (t) => {
+                 clrTFrm();
+                 document.getElementById('tId').value = t.id;
+                 document.getElementById('tN').value = t.n;
+                 document.getElementById('tCn').value = t.cn || '';
+                 document.getElementById('tAd').value = t.ad || '';
+                 document.getElementById('tJD').value = t.jD || '';
+                 document.getElementById('tQ').value = t.q || '';
+                 stDynFlds('tDFlds', t.eF);
+                 tMMdl.show();
+             });
+         }
+
+        function delT(id) {
+             if (confirm('کیا آپ واقعی اس استاد کو حذف کرنا چاہتے ہیں؟')) {
+                 delItm(tOS, id, () => {
+                     shN('استاد کامیابی سے حذف کر دیا گیا۔');
+                     lT();
+                     lC(); // Refresh classes in case teacher was assigned
+                 });
+             }
+         }
+
+        // Class Management (cM)
+         function clrCFrm() {
+             cFrm.reset();
+             document.getElementById('cId').value = '';
+             ldSelTs('cT', true); // Load teachers, include "none" option
+             ldChkSs('cSList'); // Load students as checkboxes
+         }
+
+         function ldSelTs(selId, addNone = false) {
+            const sel = document.getElementById(selId);
+            sel.innerHTML = addNone ? '<option value="">کوئی نہیں</option>' : '';
+            gtAllItms(tOS, (ts) => {
+                ts.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = `${t.n} (ID: ${t.id})`;
+                    sel.appendChild(opt);
+                });
+            });
+         }
+
+         function ldSelCs(selId, addNone = false) {
+            const sel = document.getElementById(selId);
+            sel.innerHTML = addNone ? '<option value="">کوئی نہیں</option>' : '';
+            gtAllItms(cOS, (cs) => {
+                cs.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = `${c.n} (ID: ${c.id})`;
+                    sel.appendChild(opt);
+                });
+            });
+         }
+
+          function ldSelSs(selId, addNone = false) {
+            const sel = document.getElementById(selId);
+            sel.innerHTML = addNone ? '<option value="">کوئی نہیں</option>' : '';
+            gtAllItms(sOS, (ss) => {
+                ss.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = `${s.n} (ID: ${s.id})`;
+                    sel.appendChild(opt);
+                });
+            });
+         }
+
+
+         function ldChkSs(divId, selSIds = []) {
+             const div = document.getElementById(divId);
+             div.innerHTML = '';
+             gtAllItms(sOS, (ss) => {
+                 if (ss.length === 0) {
+                     div.innerHTML = '<p>کوئی طالب علم موجود نہیں ہے۔ پہلے طلبہ شامل کریں۔</p>';
+                     return;
+                 }
+                 ss.forEach(s => {
+                     const chkDiv = document.createElement('div');
+                     chkDiv.className = 'form-check';
+                     chkDiv.innerHTML = `
+                         <input class="form-check-input" type="checkbox" value="${s.id}" id="sChk${s.id}" ${selSIds.includes(s.id) ? 'checked' : ''}>
+                         <label class="form-check-label" for="sChk${s.id}">
+                             ${s.n} (ID: ${s.id})
+                         </label>
+                     `;
+                     div.appendChild(chkDiv);
+                 });
+             });
+         }
+
+         function gtSelChkSs(divId) {
+             const sIds = [];
+             document.querySelectorAll(`#${divId} input[type="checkbox"]:checked`).forEach(chk => {
+                 sIds.push(parseInt(chk.value));
+             });
+             return sIds;
+         }
+
+
+        function svC() {
+             const cId = document.getElementById('cId').value;
+             const cN = document.getElementById('cN').value.trim();
+             if (!cN) { shN('براہ کرم جماعت کا نام درج کریں۔', 'danger'); return; }
+             const c = {
+                 n: cN,
+                 tId: document.getElementById('cT').value ? parseInt(document.getElementById('cT').value) : null,
+                 sIds: gtSelChkSs('cSList') // Array of selected student IDs
+             };
+
+             if (cId) { // Update
+                 c.id = parseInt(cId);
+                 updItm(cOS, c, () => {
+                     shN('جماعت کامیابی سے اپ ڈیٹ ہو گئی۔');
+                     cMMdl.hide();
+                     lC();
+                 });
+             } else { // Add
+                 adItm(cOS, c, (id) => {
+                     shN(`جماعت ${c.n} کامیابی سے بنائی گئی۔`);
+                     cMMdl.hide();
+                     lC();
+                 });
+             }
+         }
+
+         function lC() {
+             gtAllItms(cOS, (cs) => {
+                 gtAllItms(tOS, (ts) => { // Fetch teachers for names
+                     gtAllItms(sOS, (ss) => { // Fetch students for names/count
+                         const tMp = ts.reduce((acc, t) => { acc[t.id] = t.n; return acc; }, {});
+                         const sMp = ss.reduce((acc, s) => { acc[s.id] = s.n; return acc; }, {});
+                         cTblBdy.innerHTML = '';
+                         cs.forEach(c => {
+                             const sNms = (c.sIds || []).map(id => sMp[id] || `ID: ${id}`).join(', ');
+                             const r = cTblBdy.insertRow();
+                             r.innerHTML = `
+                                 <td>${c.id}</td>
+                                 <td>${c.n}</td>
+                                 <td>${c.tId ? (tMp[c.tId] || `ID: ${c.tId}`) : 'کوئی نہیں'}</td>
+                                 <td>${sNms || 'کوئی نہیں'} (${(c.sIds || []).length})</td>
+                                 <td>
+                                     <button class="btn btn-sm btn-primary" onclick="edC(${c.id})">ترمیم</button>
+                                     <button class="btn btn-sm btn-danger" onclick="delC(${c.id})">حذف</button>
+                                 </td>
+                             `;
+                         });
+                         // Also update class dropdowns elsewhere if needed
+                         ldSelCs('sC'); // For student form
+                         ldSelCs('aCls'); // For attendance form
+                     });
+                 });
+             });
+         }
+
+        function edC(id) {
+            gtItm(cOS, id, (c) => {
+                clrCFrm();
+                document.getElementById('cId').value = c.id;
+                document.getElementById('cN').value = c.n;
+                document.getElementById('cT').value = c.tId || '';
+                ldChkSs('cSList', c.sIds || []); // Load students and check assigned ones
+                cMMdl.show();
+            });
+        }
+
+        function delC(id) {
+             if (confirm('کیا آپ واقعی اس جماعت کو حذف کرنا چاہتے ہیں؟')) {
+                 delItm(cOS, id, () => {
+                     shN('جماعت کامیابی سے حذف کر دی گئی۔');
+                     lC();
+                 });
+             }
+         }
+
+        // Attendance Tracking (aT)
+        function ldAStds() {
+            const cId = parseInt(document.getElementById('aCls').value);
+            const dt = document.getElementById('aDt').value;
+            aTblBdy.innerHTML = '';
+            if (!cId || !dt) {
+                shN('براہ کرم تاریخ اور جماعت منتخب کریں۔', 'warning');
+                return;
+            }
+
+            gtItm(cOS, cId, (c) => {
+                if (!c || !c.sIds || c.sIds.length === 0) {
+                    aTblBdy.innerHTML = '<tr><td colspan="3">اس جماعت میں کوئی طالب علم نہیں ہے۔</td></tr>';
+                    return;
+                }
+
+                gtAllItms(sOS, (allSs) => {
+                    const sMp = allSs.reduce((acc, s) => { acc[s.id] = s.n; return acc; }, {});
+                    const clsSs = c.sIds; // IDs of students in this class
+
+                    // Fetch existing attendance for this date and class
+                    gtItmsByIdx(aOS, 'dt_cid', [dt, cId], (exA) => {
+                         const exAMp = exA.reduce((acc, att) => { acc[att.sId] = att.st; return acc; }, {});
+
+                         clsSs.forEach(sId => {
+                             const sN = sMp[sId] || `ID: ${sId}`;
+                             const st = exAMp[sId] || 'حاضر'; // Default to Present if no record found
+                             const r = aTblBdy.insertRow();
+                             r.dataset.sId = sId;
+                             r.innerHTML = `
+                                 <td>${sId}</td>
+                                 <td>${sN}</td>
+                                 <td>
+                                     <select class="form-select form-select-sm aStsSel">
+                                         <option value="حاضر" ${st === 'حاضر' ? 'selected' : ''}>حاضر</option>
+                                         <option value="غیر حاضر" ${st === 'غیر حاضر' ? 'selected' : ''}>غیر حاضر</option>
+                                         <option value="رخصت" ${st === 'رخصت' ? 'selected' : ''}>رخصت</option>
+                                     </select>
+                                 </td>
+                             `;
+                         });
+                    });
+                });
+            });
+        }
+
+
+        function svAtt() {
+            const dt = document.getElementById('aDt').value;
+            const cId = parseInt(document.getElementById('aCls').value);
+            if (!dt || !cId) {
+                shN('براہ کرم تاریخ اور جماعت منتخب کریں۔', 'warning');
+                return;
+            }
+
+            const attRecs = [];
+            document.querySelectorAll('#aTblBdy tr').forEach(r => {
+                 attRecs.push({
+                     dt: dt,
+                     cId: cId,
+                     sId: parseInt(r.dataset.sId),
+                     st: r.querySelector('.aStsSel').value
+                 });
+            });
+
+            if (attRecs.length === 0) {
+                shN('محفوظ کرنے کے لیے کوئی حاضری ریکارڈ نہیں ہے۔', 'info');
+                return;
+            }
+
+            const tx = gtTx([aOS, cOS], 'readwrite'); // Need cOS to check if class exists? maybe not needed here.
+            const aSt = gtOs(tx, aOS);
+            const idx = aSt.index('dt_sid');
+            let cnt = 0;
+
+             // First, delete existing records for this date and these students to avoid duplicates/errors
+             // This is simpler than trying to update existing ones based on dt_sid index.
+             const delReqs = [];
+             attRecs.forEach(rec => {
+                 const keyRange = IDBKeyRange.only([rec.dt, rec.sId]);
+                 delReqs.push(new Promise((res, rej) => {
+                     const cursorReq = idx.openKeyCursor(keyRange);
+                     cursorReq.onsuccess = e => {
+                         const cur = e.target.result;
+                         if (cur) {
+                             aSt.delete(cur.primaryKey).onsuccess = res; // Resolve promise on successful delete
+                             // We expect only one match due to unique index, no need to continue
+                         } else {
+                             res(); // Resolve if no matching key found
+                         }
+                     };
+                     cursorReq.onerror = rej;
+                 }));
+             });
+
+             Promise.all(delReqs).then(() => {
+                 // After deletions, add the new records
+                 let addCnt = 0;
+                 attRecs.forEach(rec => {
+                     const addReq = aSt.add(rec);
+                     addReq.onsuccess = () => {
+                         addCnt++;
+                         if (addCnt === attRecs.length) {
+                            shN('حاضری کامیابی سے محفوظ ہو گئی۔');
+                            aTblBdy.innerHTML = ''; // Clear table after saving
+                            document.getElementById('aCls').value = ''; // Reset class selection
+                         }
+                     };
+                      addReq.onerror = (e) => console.error("Error adding attendance:", e.target.error);
+                 });
+             }).catch(err => {
+                 console.error("Error deleting old attendance records:", err);
+                 shN('حاضری محفوظ کرنے میں خرابی ہوئی۔ پرانے ریکارڈز کو حذف کرنے میں ناکامی۔', 'danger');
+             });
+
+             tx.onerror = (e) => console.error("Transaction error saving attendance:", e.target.error);
+        }
+
+
+        // Fee and Salary Management (fS)
+         function adFee() {
+            const sId = parseInt(document.getElementById('fStd').value);
+            const amt = parseFloat(document.getElementById('fAmt').value);
+            const dt = document.getElementById('fDt').value;
+            const sts = document.getElementById('fSts').value;
+
+             if (!sId || isNaN(amt) || !dt || !sts) {
+                 shN('براہ کرم تمام فیس فیلڈز پُر کریں۔', 'warning');
+                 return;
+             }
+             const fee = { sId, amt, dt, sts };
+             adItm(feeOS, fee, () => {
+                 shN('فیس کا ریکارڈ کامیابی سے شامل کر دیا گیا۔');
+                 lFee(); // Refresh fee table
+                 document.getElementById('fAmt').value = ''; // Clear amount
+             });
+         }
+
+        function lFee() {
+             gtAllItms(feeOS, (fees) => {
+                 gtAllItms(sOS, (ss) => { // Fetch students for names
+                     const sMp = ss.reduce((acc, s) => { acc[s.id] = s.n; return acc; }, {});
+                     fTblBdy.innerHTML = '';
+                     fees.sort((a, b) => b.id - a.id); // Show newest first
+                     fees.forEach(f => {
+                         const r = fTblBdy.insertRow();
+                         r.innerHTML = `
+                             <td>${f.id}</td>
+                             <td>${sMp[f.sId] || `ID: ${f.sId}`}</td>
+                             <td>${f.amt}</td>
+                             <td>${f.dt}</td>
+                             <td><span class="badge bg-${f.sts === 'وصول شدہ' ? 'success' : 'warning'}">${f.sts}</span></td>
+                             <td><button class="btn btn-sm btn-danger" onclick="delFee(${f.id})">حذف</button></td>
+                         `;
+                     });
+                 });
+             });
+         }
+
+         function delFee(id) {
+             if (confirm('کیا آپ واقعی اس فیس ریکارڈ کو حذف کرنا چاہتے ہیں؟')) {
+                 delItm(feeOS, id, () => { shN('فیس ریکارڈ حذف کر دیا گیا۔'); lFee(); });
+             }
+         }
+
+        function adSal() {
+            const tId = parseInt(document.getElementById('sTch').value);
+            const amt = parseFloat(document.getElementById('sAmt').value);
+            const dt = document.getElementById('sDt').value;
+            const sts = document.getElementById('sSts').value;
+
+            if (!tId || isNaN(amt) || !dt || !sts) {
+                shN('براہ کرم تمام تنخواہ فیلڈز پُر کریں۔', 'warning');
+                return;
+            }
+            const sal = { tId, amt, dt, sts };
+            adItm(salOS, sal, () => {
+                shN('تنخواہ کا ریکارڈ کامیابی سے شامل کر دیا گیا۔');
+                lSal(); // Refresh salary table
+                document.getElementById('sAmt').value = ''; // Clear amount
+            });
+        }
+
+        function lSal() {
+            gtAllItms(salOS, (sals) => {
+                gtAllItms(tOS, (ts) => { // Fetch teachers for names
+                    const tMp = ts.reduce((acc, t) => { acc[t.id] = t.n; return acc; }, {});
+                    salTblBdy.innerHTML = '';
+                    sals.sort((a, b) => b.id - a.id); // Show newest first
+                    sals.forEach(s => {
+                        const r = salTblBdy.insertRow();
+                        r.innerHTML = `
+                            <td>${s.id}</td>
+                            <td>${tMp[s.tId] || `ID: ${s.tId}`}</td>
+                            <td>${s.amt}</td>
+                            <td>${s.dt}</td>
+                            <td><span class="badge bg-${s.sts === 'ادا شدہ' ? 'success' : 'warning'}">${s.sts}</span></td>
+                             <td><button class="btn btn-sm btn-danger" onclick="delSal(${s.id})">حذف</button></td>
+                        `;
+                    });
+                });
+            });
+        }
+
+         function delSal(id) {
+             if (confirm('کیا آپ واقعی اس تنخواہ ریکارڈ کو حذف کرنا چاہتے ہیں؟')) {
+                 delItm(salOS, id, () => { shN('تنخواہ ریکارڈ حذف کر دیا گیا۔'); lSal(); });
+             }
+         }
+
+        // Inventory and Expense Management (iE)
+        function clrIFrm() { iFrm.reset(); document.getElementById('iId').value = ''; }
+        function clrEFrm() { eFrm.reset(); document.getElementById('eId').value = ''; document.getElementById('eDt').value = gtCDtStr(); }
+
+        function svI() {
+            const iId = document.getElementById('iId').value;
+            const iN = document.getElementById('iN').value.trim();
+            if (!iN) { shN('براہ کرم آئٹم کا نام درج کریں۔', 'danger'); return; }
+            const i = {
+                n: iN,
+                q: parseInt(document.getElementById('iQ').value) || 0,
+                d: document.getElementById('iD').value.trim()
+            };
+
+            if (iId) { // Update
+                i.id = parseInt(iId);
+                updItm(iOS, i, () => { shN('انوینٹری آئٹم اپ ڈیٹ ہو گیا۔'); iMMdl.hide(); lI(); });
+            } else { // Add
+                adItm(iOS, i, () => { shN('انوینٹری آئٹم شامل کر دیا گیا۔'); iMMdl.hide(); lI(); });
+            }
+        }
+
+        function lI() {
+            gtAllItms(iOS, (items) => {
+                iTblBdy.innerHTML = '';
+                items.forEach(i => {
+                    const r = iTblBdy.insertRow();
+                    r.innerHTML = `
+                        <td>${i.id}</td>
+                        <td>${i.n}</td>
+                        <td>${i.q}</td>
+                        <td>${i.d || '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="edI(${i.id})">ترمیم</button>
+                            <button class="btn btn-sm btn-danger" onclick="delI(${i.id})">حذف</button>
+                        </td>
+                    `;
+                });
+            });
+        }
+
+         function edI(id) {
+             gtItm(iOS, id, (i) => {
+                 clrIFrm();
+                 document.getElementById('iId').value = i.id;
+                 document.getElementById('iN').value = i.n;
+                 document.getElementById('iQ').value = i.q;
+                 document.getElementById('iD').value = i.d || '';
+                 iMMdl.show();
+             });
+         }
+
+         function delI(id) {
+             if (confirm('کیا آپ واقعی اس انوینٹری آئٹم کو حذف کرنا چاہتے ہیں؟')) {
+                 delItm(iOS, id, () => { shN('انوینٹری آئٹم حذف کر دیا گیا۔'); lI(); });
+             }
+         }
+
+        function svE() {
+            const eId = document.getElementById('eId').value;
+            const eDt = document.getElementById('eDt').value;
+            const eD = document.getElementById('eD').value.trim();
+            const eT = document.getElementById('eT').value;
+            const eA = parseFloat(document.getElementById('eA').value);
+
+            if (!eDt || !eD || !eT || isNaN(eA)) {
+                shN('براہ کرم تمام آمدنی/خرچ فیلڈز پُر کریں۔', 'danger');
+                return;
+            }
+            const e = { dt: eDt, d: eD, t: eT, a: eA };
+
+             if (eId) { // Update
+                e.id = parseInt(eId);
+                updItm(eOS, e, () => { shN('اندراج اپ ڈیٹ ہو گیا۔'); eMMdl.hide(); lE(); });
+            } else { // Add
+                adItm(eOS, e, () => { shN('اندراج شامل کر دیا گیا۔'); eMMdl.hide(); lE(); });
+            }
+        }
+
+        function lE() {
+            gtAllItms(eOS, (items) => {
+                eTblBdy.innerHTML = '';
+                items.sort((a,b) => b.id - a.id); // Show newest first
+                items.forEach(e => {
+                    const r = eTblBdy.insertRow();
+                    r.innerHTML = `
+                        <td>${e.id}</td>
+                        <td>${e.dt}</td>
+                        <td>${e.d}</td>
+                        <td><span class="badge bg-${e.t === 'آمدنی' ? 'info' : 'secondary'}">${e.t}</span></td>
+                        <td>${e.a}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="edE(${e.id})">ترمیم</button>
+                            <button class="btn btn-sm btn-danger" onclick="delE(${e.id})">حذف</button>
+                        </td>
+                    `;
+                });
+            });
+        }
+
+         function edE(id) {
+             gtItm(eOS, id, (e) => {
+                 clrEFrm();
+                 document.getElementById('eId').value = e.id;
+                 document.getElementById('eDt').value = e.dt;
+                 document.getElementById('eD').value = e.d;
+                 document.getElementById('eT').value = e.t;
+                 document.getElementById('eA').value = e.a;
+                 eMMdl.show();
+             });
+         }
+
+        function delE(id) {
+             if (confirm('کیا آپ واقعی اس اندراج کو حذف کرنا چاہتے ہیں؟')) {
+                 delItm(eOS, id, () => { shN('اندراج حذف کر دیا گیا۔'); lE(); });
+             }
+         }
+
+
+        // Reports (rP)
+        let crrRpDt = []; // Current Report Data
+        let crrRpCols = []; // Current Report Columns
+        let crrRpTtl = ''; // Current Report Title
+
+        function gnRp() {
+             const rTyp = document.getElementById('rTyp').value;
+             const rCnt = document.getElementById('rCnt');
+             const rTblH = document.getElementById('rTblH');
+             const rTblB = document.getElementById('rTblB');
+             const rTtl = document.getElementById('rTtl');
+             rTblH.innerHTML = '';
+             rTblB.innerHTML = '';
+             rTtl.textContent = '';
+             crrRpDt = [];
+             crrRpCols = [];
+             crrRpTtl = '';
+
+
+             if (!rTyp) {
+                 rCnt.style.display = 'none';
+                 return;
+             }
+             rCnt.style.display = 'block';
+
+             const prms = [gtAllItms(sOS), gtAllItms(tOS), gtAllItms(cOS), gtAllItms(feeOS), gtAllItms(salOS), gtAllItms(aOS), gtAllItms(iOS), gtAllItms(eOS)];
+
+             Promise.all(prms.map(p => new Promise(res => p(res)))).then(([ss, ts, cs, fees, sals, atts, invs, exps]) => {
+                 const sMp = ss.reduce((acc, s) => { acc[s.id] = s; return acc; }, {});
+                 const tMp = ts.reduce((acc, t) => { acc[t.id] = t.n; return acc; }, {});
+                 const cMp = cs.reduce((acc, c) => { acc[c.id] = c.n; return acc; }, {});
+                 const today = gtCDtStr();
+
+                 switch (rTyp) {
+                     case 's': // Students List
+                         crrRpTtl = 'تمام طلبہ کی فہرست';
+                         crrRpCols = ['ID', 'نام', 'والد کا نام', 'عمر', 'جماعت', 'داخلہ تاریخ', 'رابطہ', 'پتہ'];
+                         crrRpDt = ss.map(s => ({
+                             ID: s.id, 'نام': s.n, 'والد کا نام': s.fN, 'عمر': s.a, 'جماعت': cMp[s.cId] || '-', 'داخلہ تاریخ': s.aD, 'رابطہ': s.cn, 'پتہ': s.ad
+                         }));
+                         break;
+                     case 'fPnd': // Pending Fees
+                         crrRpTtl = 'واجب الادا فیس کی رپورٹ';
+                         crrRpCols = ['فیس ID', 'طالب علم', 'رقم', 'تاریخ', 'حالت'];
+                         crrRpDt = fees.filter(f => f.sts === 'واجب الادا').map(f => ({
+                             'فیس ID': f.id, 'طالب علم': sMp[f.sId]?.n || `ID: ${f.sId}`, 'رقم': f.amt, 'تاریخ': f.dt, 'حالت': f.sts
+                         }));
+                         break;
+                      case 'fRcvd': // Received Fees
+                         crrRpTtl = 'وصول شدہ فیس کی رپورٹ';
+                         crrRpCols = ['فیس ID', 'طالب علم', 'رقم', 'تاریخ', 'حالت'];
+                         crrRpDt = fees.filter(f => f.sts === 'وصول شدہ').map(f => ({
+                             'فیس ID': f.id, 'طالب علم': sMp[f.sId]?.n || `ID: ${f.sId}`, 'رقم': f.amt, 'تاریخ': f.dt, 'حالت': f.sts
+                         }));
+                         break;
+                    case 'salPnd': // Pending Salaries
+                         crrRpTtl = 'واجب الادا تنخواہوں کی رپورٹ';
+                         crrRpCols = ['تنخواہ ID', 'استاد', 'رقم', 'تاریخ', 'حالت'];
+                         crrRpDt = sals.filter(s => s.sts === 'واجب الادا').map(s => ({
+                            'تنخواہ ID': s.id, 'استاد': tMp[s.tId] || `ID: ${s.tId}`, 'رقم': s.amt, 'تاریخ': s.dt, 'حالت': s.sts
+                         }));
+                         break;
+                    case 'salPd': // Paid Salaries
+                         crrRpTtl = 'ادا شدہ تنخواہوں کی رپورٹ';
+                         crrRpCols = ['تنخواہ ID', 'استاد', 'رقم', 'تاریخ', 'حالت'];
+                         crrRpDt = sals.filter(s => s.sts === 'ادا شدہ').map(s => ({
+                            'تنخواہ ID': s.id, 'استاد': tMp[s.tId] || `ID: ${s.tId}`, 'رقم': s.amt, 'تاریخ': s.dt, 'حالت': s.sts
+                         }));
+                         break;
+                    case 'aAbs': // Absent Today
+                         crrRpTtl = `آج (${today}) غیر حاضر طلبہ`;
+                         crrRpCols = ['طالب علم ID', 'نام', 'جماعت', 'حالت'];
+                         crrRpDt = atts.filter(a => a.dt === today && a.st === 'غیر حاضر').map(a => ({
+                            'طالب علم ID': a.sId, 'نام': sMp[a.sId]?.n || `ID: ${a.sId}`, 'جماعت': cMp[sMp[a.sId]?.cId] || '-', 'حالت': a.st
+                         }));
+                         break;
+                    case 'aPrs': // Present Today
+                         crrRpTtl = `آج (${today}) حاضر طلبہ`;
+                         crrRpCols = ['طالب علم ID', 'نام', 'جماعت', 'حالت'];
+                         crrRpDt = atts.filter(a => a.dt === today && a.st === 'حاضر').map(a => ({
+                            'طالب علم ID': a.sId, 'نام': sMp[a.sId]?.n || `ID: ${a.sId}`, 'جماعت': cMp[sMp[a.sId]?.cId] || '-', 'حالت': a.st
+                         }));
+                         break;
+                    case 'i': // Inventory
+                         crrRpTtl = 'مدرسہ انوینٹری';
+                         crrRpCols = ['ID', 'آئٹم کا نام', 'مقدار', 'تفصیل'];
+                         crrRpDt = invs.map(i => ({
+                             ID: i.id, 'آئٹم کا نام': i.n, 'مقدار': i.q, 'تفصیل': i.d
+                         }));
+                         break;
+                     case 'eInc': // Income
+                         crrRpTtl = 'آمدنی کی رپورٹ';
+                         crrRpCols = ['ID', 'تاریخ', 'تفصیل', 'رقم'];
+                         crrRpDt = exps.filter(e => e.t === 'آمدنی').map(e => ({
+                             ID: e.id, 'تاریخ': e.dt, 'تفصیل': e.d, 'رقم': e.a
+                         }));
+                         break;
+                    case 'eExp': // Expenses
+                         crrRpTtl = 'اخراجات کی رپورٹ';
+                         crrRpCols = ['ID', 'تاریخ', 'تفصیل', 'رقم'];
+                         crrRpDt = exps.filter(e => e.t === 'خرچ').map(e => ({
+                             ID: e.id, 'تاریخ': e.dt, 'تفصیل': e.d, 'رقم': e.a
+                         }));
+                         break;
+                 }
+
+                 rTtl.textContent = crrRpTtl;
+
+                 // Populate Header
+                 const hr = rTblH.insertRow();
+                 crrRpCols.forEach(col => {
+                     const th = document.createElement('th');
+                     th.textContent = col;
+                     hr.appendChild(th);
+                 });
+
+                 // Populate Body
+                 crrRpDt.forEach(item => {
+                     const br = rTblB.insertRow();
+                     crrRpCols.forEach(col => {
+                         const td = br.insertCell();
+                         td.textContent = item[col] !== undefined && item[col] !== null ? item[col] : '-';
+                     });
+                 });
+
+                 if(crrRpDt.length === 0) {
+                    rTblB.innerHTML = `<tr><td colspan="${crrRpCols.length}">اس رپورٹ کے لیے کوئی ڈیٹا نہیں ملا۔</td></tr>`;
+                 }
+
+             });
+         }
+
+         function expCSV() {
+             if (!crrRpDt || crrRpDt.length === 0) {
+                 shN('ایکسپورٹ کرنے کے لیے کوئی ڈیٹا نہیں ہے۔', 'warning');
+                 return;
+             }
+
+             const hdr = crrRpCols.join(',');
+             const rows = crrRpDt.map(item => crrRpCols.map(col => {
+                  let v = item[col];
+                  if (v === null || v === undefined) v = '';
+                  v = String(v);
+                  // Escape commas and quotes if necessary
+                  if (v.includes(',') || v.includes('"') || v.includes('\n')) {
+                      v = `"${v.replace(/"/g, '""')}"`;
+                  }
+                  return v;
+              }).join(','));
+
+             const csv = [hdr, ...rows].join('\n');
+             const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' }); // Add BOM for Excel
+
+             const lnk = document.createElement("a");
+             const url = URL.createObjectURL(blob);
+             lnk.setAttribute("href", url);
+             lnk.setAttribute("download", `${crrRpTtl.replace(/ /g, '_')}.csv`);
+             lnk.style.visibility = 'hidden';
+             document.body.appendChild(lnk);
+             lnk.click();
+             document.body.removeChild(lnk);
+             shN('CSV فائل کامیابی سے ایکسپورٹ ہو گئی۔');
+         }
+
+        function prntRp() {
+            const rpSec = document.getElementById('prtSec');
+            if (!rpSec || !crrRpTtl) {
+                 shN('پرنٹ کرنے کے لیے کوئی رپورٹ نہیں ہے۔', 'warning');
+                 return;
+             }
+            window.print();
+         }
+
+        // Backup and Restore (bR)
+        function bckpDt() {
+            const osNms = [sOS, tOS, cOS, aOS, feeOS, salOS, iOS, eOS];
+            const expDt = {};
+            let completed = 0;
+
+            osNms.forEach(osN => {
+                 gtAllItms(osN, (dt) => {
+                     expDt[osN] = dt;
+                     completed++;
+                     if (completed === osNms.length) {
+                         const dtStr = JSON.stringify(expDt, null, 2);
+                         const blob = new Blob([dtStr], { type: 'application/json' });
+                         const url = URL.createObjectURL(blob);
+                         const a = document.createElement('a');
+                         a.href = url;
+                         a.download = `madrasa_backup_${gtCDtStr()}.json`;
+                         document.body.appendChild(a);
+                         a.click();
+                         document.body.removeChild(a);
+                         URL.revokeObjectURL(url);
+                         shN('ڈیٹا کا بیک اپ کامیابی سے ڈاؤن لوڈ ہو گیا۔');
+                     }
+                 });
+             });
+         }
+
+         function rstDt() {
+             const flIn = document.getElementById('rstFl');
+             if (!flIn.files || flIn.files.length === 0) {
+                 shN('بحال کرنے کے لیے براہ کرم ایک بیک اپ فائل منتخب کریں۔', 'warning');
+                 return;
+             }
+             const fl = flIn.files[0];
+             if (!fl.name.endsWith('.json')) {
+                 shN('غلط فائل کی قسم۔ براہ کرم .json بیک اپ فائل منتخب کریں۔', 'danger');
+                 return;
+             }
+
+             if (!confirm('کیا آپ واقعی ڈیٹا بحال کرنا چاہتے ہیں؟ موجودہ تمام ڈیٹا حذف ہو جائے گا۔')) {
+                 return;
+             }
+
+             const rdr = new FileReader();
+             rdr.onload = (e) => {
+                 try {
+                     const impDt = JSON.parse(e.target.result);
+                     const osNms = [sOS, tOS, cOS, aOS, feeOS, salOS, iOS, eOS];
+                     const tx = gtTx(osNms, 'readwrite');
+                     let cleared = 0;
+                     let added = 0;
+                     let totalToAdd = 0;
+
+                     osNms.forEach(osN => {
+                         const os = gtOs(tx, osN);
+                         os.clear().onsuccess = () => {
+                             cleared++;
+                             if (cleared === osNms.length) {
+                                 // All stores cleared, now add data
+                                 osNms.forEach(osNameToAdd => {
+                                     const dtToAdd = impDt[osNameToAdd] || [];
+                                     totalToAdd += dtToAdd.length;
+                                     const currentOs = gtOs(tx, osNameToAdd); // Need to get store again in the same transaction
+                                     dtToAdd.forEach(itm => {
+                                         // Remove potential 'id' if autoincrement is used and we are restoring
+                                         // However, for relations (like studentId in fees), we NEED the IDs.
+                                         // Let's assume backups *include* IDs and restoration should preserve them.
+                                         // if (currentOs.autoIncrement) delete itm[currentOs.keyPath]; // Better not to delete id
+                                         currentOs.add(itm).onsuccess = () => {
+                                             added++;
+                                             if(added === totalToAdd){
+                                                 shN('ڈیٹا کامیابی سے بحال ہو گیا۔ براہ کرم صفحہ ریفریش کریں۔');
+                                                 ldAlDt(); // Reload all data displays
+                                             }
+                                         };
+                                     });
+                                 });
+                                 if(totalToAdd === 0) { // Handle case where backup file is empty/valid but has no data arrays
+                                     shN('بیک اپ فائل سے ڈیٹا کامیابی سے بحال کر دیا گیا (کوئی ریکارڈ نہیں ملا)۔');
+                                     ldAlDt();
+                                 }
+                             }
+                         };
+                     });
+
+                     tx.oncomplete = () => {
+                         // This might fire before all adds are finished due to async nature
+                         console.log("Restore transaction complete.");
+                     };
+                     tx.onerror = (ev) => {
+                         console.error("Restore transaction error:", ev.target.error);
+                         shN('ڈیٹا بحال کرنے میں خرابی۔ تفصیلات کے لیے کنسول چیک کریں۔', 'danger');
+                     };
+
+                 } catch (err) {
+                     console.error("Error parsing or restoring backup file:", err);
+                     shN('بیک اپ فائل کو پڑھنے یا بحال کرنے میں خرابی۔ فائل خراب ہو سکتی ہے۔', 'danger');
+                 }
+             };
+             rdr.onerror = () => {
+                 shN('بیک اپ فائل پڑھنے میں خرابی۔', 'danger');
+             };
+             rdr.readAsText(fl);
+             flIn.value = ''; // Reset file input
+         }
+
+        // Load All Data on startup
+         function ldAlDt() {
+            lS();
+            lT();
+            lC();
+            lFee();
+            lSal();
+            lI();
+            lE();
+            // Don't load attendance/reports initially, requires user selection
+         }
+
+        // Initialize DB on page load
+        document.addEventListener('DOMContentLoaded', initDb);
+const fontUrl = "https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap";
+
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href = fontUrl;
+document.head.appendChild(link);
+
+const style = document.createElement("style");
+style.innerHTML = `
+  * {
+    font-family: 'Noto Nastaliq Urdu', serif !important;
+  }
+`;
+document.head.appendChild(style);
+
+    </script>
+</body>
+</html>

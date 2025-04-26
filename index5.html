@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دینی مدرسہ انتظامیہ / Deeni Madrasa Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', 'Noto Nastaliq Urdu', sans-serif; }
+        .urdu { font-family: 'Noto Nastaliq Urdu', serif; }
+        .nav-link, .btn, .form-label, h1, h2, h3, th, td { font-family: 'Roboto', 'Noto Nastaliq Urdu', sans-serif; }
+        .modal-title, .card-header { font-family: 'Roboto', 'Noto Nastaliq Urdu', sans-serif; font-weight: bold;}
+        .table th, .table td { vertical-align: middle; }
+        .form-label { display: block; text-align: right; margin-bottom: 0.5rem; }
+        .form-control, .form-select { margin-bottom: 1rem; }
+        .input-group .form-control { margin-bottom: 0; }
+        .input-group-text { margin-bottom: 1rem; } /* Align with form-control margin */
+         /* Ensure RTL works correctly with Bootstrap */
+        body[dir="rtl"] .text-start { text-align: right !important; }
+        body[dir="rtl"] .text-end { text-align: left !important; }
+        body[dir="rtl"] .float-start { float: right !important; }
+        body[dir="rtl"] .float-end { float: left !important; }
+        body[dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important;}
+        body[dir="rtl"] .me-auto { margin-left: auto !important; margin-right: 0 !important;}
+        body[dir="rtl"] .modal-header .btn-close { margin-left: auto; margin-right: -0.5rem;}
+        body[dir="rtl"] .form-check-input { margin-left: 0.5em; margin-right: -1.25em;}
+        body[dir="rtl"] .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) { border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: var(--bs-border-radius); border-bottom-right-radius: var(--bs-border-radius); }
+        body[dir="rtl"] .input-group:not(.has-validation) > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu), body[dir="rtl"] .input-group:not(.has-validation) > .dropdown-toggle:nth-last-child(n+3) { border-top-right-radius: 0; border-bottom-right-radius: 0; border-top-left-radius: var(--bs-border-radius); border-bottom-left-radius: var(--bs-border-radius); }
+        body[dir="rtl"] .input-group .input-group-text { border-left: 1px solid #dee2e6; border-right: 0;}
+        .cf-row { border-bottom: 1px dashed #ccc; padding-bottom: 10px; margin-bottom: 10px; }
+        .cf-row:last-child { border-bottom: none; }
+         @media print {
+            .no-print { display: none !important; }
+            body { font-size: 10pt; }
+            .table { font-size: 9pt; }
+            .container-fluid { padding: 0 !important;}
+         }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success no-print">
+        <div class="container-fluid">
+            <a class="navbar-brand urdu" href="#">دینی مدرسہ انتظامیہ / Deeni Madrasa Management</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#n1" aria-controls="n1" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="n1">
+                <ul class="nav nav-tabs card-header-tabs ms-auto" id="t1" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="t1-1-tab" data-bs-toggle="tab" data-bs-target="#t1-1" type="button" role="tab" aria-controls="t1-1" aria-selected="true">طلباء / Students</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-2-tab" data-bs-toggle="tab" data-bs-target="#t1-2" type="button" role="tab" aria-controls="t1-2" aria-selected="false">اساتذہ / Teachers</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-3-tab" data-bs-toggle="tab" data-bs-target="#t1-3" type="button" role="tab" aria-controls="t1-3" aria-selected="false">کلاسز / Classes</button>
+                    </li>
+                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-4-tab" data-bs-toggle="tab" data-bs-target="#t1-4" type="button" role="tab" aria-controls="t1-4" aria-selected="false">حاضری / Attendance</button>
+                    </li>
+                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-5-tab" data-bs-toggle="tab" data-bs-target="#t1-5" type="button" role="tab" aria-controls="t1-5" aria-selected="false">فیس / Fees</button>
+                    </li>
+                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-6-tab" data-bs-toggle="tab" data-bs-target="#t1-6" type="button" role="tab" aria-controls="t1-6" aria-selected="false">تنخواہیں / Salaries</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-7-tab" data-bs-toggle="tab" data-bs-target="#t1-7" type="button" role="tab" aria-controls="t1-7" aria-selected="false">انوینٹری / Inventory</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-8-tab" data-bs-toggle="tab" data-bs-target="#t1-8" type="button" role="tab" aria-controls="t1-8" aria-selected="false">آمدن و خرچ / Income & Expense</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-9-tab" data-bs-toggle="tab" data-bs-target="#t1-9" type="button" role="tab" aria-controls="t1-9" aria-selected="false">رپورٹس / Reports</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="t1-10-tab" data-bs-toggle="tab" data-bs-target="#t1-10" type="button" role="tab" aria-controls="t1-10" aria-selected="false">بیک اپ / بحال کریں / Backup/Restore</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-3">
+        <div class="tab-content" id="t1c">
+            <!-- Students Tab -->
+            <div class="tab-pane fade show active" id="t1-1" role="tabpanel" aria-labelledby="t1-1-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <h2 class="urdu">طلباء / Students</h2>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#m1" onclick="clrFrm('f1')">نیا طالب علم شامل کریں / Add New Student</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="urdu">نام (اردو) / Name (Urdu)</th>
+                                <th class="urdu">نام (انگریزی) / Name (English)</th>
+                                <th class="urdu">والد کا نام (اردو) / Father's Name (Urdu)</th>
+                                <th class="urdu">والد کا نام (انگریزی) / Father's Name (English)</th>
+                                <th class="urdu">عمر / Age</th>
+                                <th class="urdu">کلاس / Class</th>
+                                <th class="urdu">داخلہ کی تاریخ / Admission Date</th>
+                                <th class="urdu">رابطہ / Contact</th>
+                                <th class="urdu">پتہ (اردو) / Address (Urdu)</th>
+                                <th class="urdu">پتہ (انگریزی) / Address (English)</th>
+                                <th id="st-ch-h" class="urdu">اضافی خانے / Custom Fields</th>
+                                <th class="no-print urdu">اعمال / Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l1"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Teachers Tab -->
+            <div class="tab-pane fade" id="t1-2" role="tabpanel" aria-labelledby="t1-2-tab">
+                 <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <h2 class="urdu">اساتذہ / Teachers</h2>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#m2" onclick="clrFrm('f2')">نیا استاد شامل کریں / Add New Teacher</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                         <thead class="table-light">
+                            <tr>
+                                <th class="urdu">نام (اردو) / Name (Urdu)</th>
+                                <th class="urdu">نام (انگریزی) / Name (English)</th>
+                                <th class="urdu">مضمون (اردو) / Subject (Urdu)</th>
+                                <th class="urdu">مضمون (انگریزی) / Subject (English)</th>
+                                <th class="urdu">رابطہ / Contact</th>
+                                <th class="urdu">پتہ (اردو) / Address (Urdu)</th>
+                                <th class="urdu">پتہ (انگریزی) / Address (English)</th>
+                                <th id="tc-ch-h" class="urdu">اضافی خانے / Custom Fields</th>
+                                <th class="no-print urdu">اعمال / Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l2"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Classes Tab -->
+            <div class="tab-pane fade" id="t1-3" role="tabpanel" aria-labelledby="t1-3-tab">
+                 <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <h2 class="urdu">کلاسز / Classes</h2>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#m3" onclick="clrFrm('f3'); popDd('f3-i4', 'tc')">نئی کلاس بنائیں / Create New Class</button>
+                </div>
+                 <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                         <thead class="table-light">
+                            <tr>
+                                <th class="urdu">کلاس کا نام (اردو) / Class Name (Urdu)</th>
+                                <th class="urdu">کلاس کا نام (انگریزی) / Class Name (English)</th>
+                                <th class="urdu">تفصیل (اردو) / Description (Urdu)</th>
+                                <th class="urdu">تفصیل (انگریزی) / Description (English)</th>
+                                <th class="urdu">استاد / Teacher</th>
+                                <th class="no-print urdu">اعمال / Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l3"></tbody>
+                    </table>
+                </div>
+            </div>
+
+             <!-- Attendance Tab -->
+            <div class="tab-pane fade" id="t1-4" role="tabpanel" aria-labelledby="t1-4-tab">
+                <h2 class="urdu">حاضری / Attendance</h2>
+                 <div class="row mb-3 no-print">
+                     <div class="col-md-4">
+                         <label for="a1" class="form-label urdu">تاریخ / Date:</label>
+                         <input type="date" id="a1" class="form-control" value="">
+                     </div>
+                     <div class="col-md-4">
+                         <label for="a2" class="form-label urdu">کلاس منتخب کریں / Select Class:</label>
+                         <select id="a2" class="form-select" onchange="ldAt()"></select>
+                     </div>
+                 </div>
+                 <div id="a3">
+                     <!-- Attendance table will be loaded here -->
+                 </div>
+                 <button class="btn btn-success mt-3 no-print" onclick="svAt()">حاضری محفوظ کریں / Save Attendance</button>
+            </div>
+
+            <!-- Fees Tab -->
+            <div class="tab-pane fade" id="t1-5" role="tabpanel" aria-labelledby="t1-5-tab">
+                 <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <h2 class="urdu">فیس / Fees</h2>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#m5" onclick="clrFrm('f5'); popDd('f5-i1', 'st'); popDd('f5-i2', 'cl')">نئی فیس شامل کریں / Add New Fee Record</button>
+                </div>
+                 <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                         <thead class="table-light">
+                            <tr>
+                                <th class="urdu">طالب علم / Student</th>
+                                <th class="urdu">کلاس / Class</th>
+                                <th class="urdu">مہینہ/سال / Month/Year</th>
+                                <th class="urdu">رقم / Amount</th>
+                                <th class="urdu">تاریخ / Date</th>
+                                <th class="urdu">حیثیت / Status</th>
+                                <th class="urdu">تفصیل (اردو) / Description (Urdu)</th>
+                                <th class="urdu">تفصیل (انگریزی) / Description (English)</th>
+                                <th class="no-print urdu">اعمال / Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l5"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Salaries Tab -->
+            <div class="tab-pane fade" id="t1-6" role="tabpanel" aria-labelledby="t1-6-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <h2 class="urdu">تنخواہیں / Salaries</h2>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#m6" onclick="clrFrm('f6'); popDd('f6-i1', 'tc')">نئی تنخواہ شامل کریں / Add New Salary Record</button>
+                </div>
+                 <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                         <thead class="table-light">
+                            <tr>
+                                <th class="urdu">استاد / Teacher</th>
+                                <th class="urdu">مہینہ/سال / Month/Year</th>
+                                <th class="urdu">رقم / Amount</th>
+                                <th class="urdu">تاریخ / Date</th>
+                                <th class="urdu">حیثیت / Status</th>
+                                <th class="urdu">تفصیل (اردو) / Description (Urdu)</th>
+                                <th class="urdu">تفصیل (انگریزی) / Description (English)</th>
+                                <th class="no-print urdu">اعمال / Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l6"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Inventory Tab -->
+             <div class="tab-pane fade" id="t1-7" role="tabpanel" aria-labelledby="t1-7-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <h2 class="urdu">انوینٹری / Inventory</h2>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#m7" onclick="clrFrm('f7')">نیا آئٹم شامل کریں / Add New Item</button>
+                </div>
+                 <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                         <thead class="table-light">
+                            <tr>
+                                <th class="urdu">آئٹم کا نام (اردو) / Item Name (Urdu)</th>
+                                <th class="urdu">آئٹم کا نام (انگریزی) / Item Name (English)</th>
+                                <th class="urdu">مقدار / Quantity</th>
+                                <th class="urdu">تفصیل (اردو) / Description (Urdu)</th>
+                                <th class="urdu">تفصیل (انگریزی) / Description (English)</th>
+                                <th class="no-print urdu">اعمال / Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l7"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Income/Expense Tab -->
+            <div class="tab-pane fade" id="t1-8" role="tabpanel" aria-labelledby="t1-8-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+                    <h2 class="urdu">آمدن و خرچ / Income & Expense</h2>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#m8" onclick="clrFrm('f8')">نیا لین دین شامل کریں / Add New Transaction</button>
+                </div>
+                 <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                         <thead class="table-light">
+                            <tr>
+                                <th class="urdu">تاریخ / Date</th>
+                                <th class="urdu">قسم / Type</th>
+                                <th class="urdu">تفصیل (اردو) / Description (Urdu)</th>
+                                <th class="urdu">تفصیل (انگریزی) / Description (English)</th>
+                                <th class="urdu">رقم / Amount</th>
+                                <th class="no-print urdu">اعمال / Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l8"></tbody>
+                    </table>
+                     <div class="mt-3">
+                        <h4 class="urdu">خلاصہ / Summary</h4>
+                        <p class="urdu">کل آمدن / Total Income: <span id="s1">0</span></p>
+                        <p class="urdu">کل خرچ / Total Expense: <span id="s2">0</span></p>
+                        <p class="urdu">بیلنس / Balance: <span id="s3">0</span></p>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="tab-pane fade" id="t1-9" role="tabpanel" aria-labelledby="t1-9-tab">
+                <h2 class="urdu">رپورٹس / Reports</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-header urdu">طلباء کی رپورٹ / Student Report</div>
+                            <div class="card-body">
+                                <select id="r1-1" class="form-select mb-2">
+                                    <option value="" class="urdu">تمام کلاسز / All Classes</option>
+                                </select>
+                                <button class="btn btn-primary w-100 mb-2 urdu" onclick="gnRp('st')">رپورٹ بنائیں / Generate Report</button>
+                                <button class="btn btn-secondary w-100 mb-2 urdu no-print" onclick="prRp()">پرنٹ / Print</button>
+                                <button class="btn btn-info w-100 urdu no-print" onclick="exCsv('st-report', 'student_report.csv')">CSV ایکسپورٹ / Export CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                         <div class="card">
+                             <div class="card-header urdu">حاضری کی رپورٹ / Attendance Report</div>
+                            <div class="card-body">
+                                <label for="r2-1" class="form-label urdu">کلاس / Class:</label>
+                                <select id="r2-1" class="form-select mb-2"></select>
+                                <label for="r2-2" class="form-label urdu">تاریخ سے / From Date:</label>
+                                <input type="date" id="r2-2" class="form-control mb-2">
+                                <label for="r2-3" class="form-label urdu">تاریخ تک / To Date:</label>
+                                <input type="date" id="r2-3" class="form-control mb-2">
+                                <button class="btn btn-primary w-100 mb-2 urdu" onclick="gnRp('at')">رپورٹ بنائیں / Generate Report</button>
+                                <button class="btn btn-secondary w-100 mb-2 urdu no-print" onclick="prRp()">پرنٹ / Print</button>
+                                <button class="btn btn-info w-100 urdu no-print" onclick="exCsv('at-report', 'attendance_report.csv')">CSV ایکسپورٹ / Export CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-header urdu">فیس کی رپورٹ / Fee Report</div>
+                            <div class="card-body">
+                                <label for="r3-1" class="form-label urdu">کلاس / Class:</label>
+                                <select id="r3-1" class="form-select mb-2">
+                                     <option value="" class="urdu">تمام کلاسز / All Classes</option>
+                                </select>
+                                <label for="r3-2" class="form-label urdu">حیثیت / Status:</label>
+                                <select id="r3-2" class="form-select mb-2">
+                                    <option value="" class="urdu">تمام / All</option>
+                                    <option value="paid" class="urdu">ادا شدہ / Paid</option>
+                                    <option value="pending" class="urdu">واجب الادا / Pending</option>
+                                </select>
+                                <label for="r3-3" class="form-label urdu">مہینہ/سال / Month/Year (YYYY-MM):</label>
+                                <input type="month" id="r3-3" class="form-control mb-2">
+                                <button class="btn btn-primary w-100 mb-2 urdu" onclick="gnRp('fe')">رپورٹ بنائیں / Generate Report</button>
+                                <button class="btn btn-secondary w-100 mb-2 urdu no-print" onclick="prRp()">پرنٹ / Print</button>
+                                <button class="btn btn-info w-100 urdu no-print" onclick="exCsv('fe-report', 'fee_report.csv')">CSV ایکسپورٹ / Export CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-header urdu">آمدن و خرچ کی رپورٹ / Income/Expense Report</div>
+                            <div class="card-body">
+                                <label for="r4-1" class="form-label urdu">قسم / Type:</label>
+                                <select id="r4-1" class="form-select mb-2">
+                                    <option value="" class="urdu">تمام / All</option>
+                                    <option value="income" class="urdu">آمدن / Income</option>
+                                    <option value="expense" class="urdu">خرچ / Expense</option>
+                                </select>
+                                <label for="r4-2" class="form-label urdu">تاریخ سے / From Date:</label>
+                                <input type="date" id="r4-2" class="form-control mb-2">
+                                <label for="r4-3" class="form-label urdu">تاریخ تک / To Date:</label>
+                                <input type="date" id="r4-3" class="form-control mb-2">
+                                <button class="btn btn-primary w-100 mb-2 urdu" onclick="gnRp('tr')">رپورٹ بنائیں / Generate Report</button>
+                                <button class="btn btn-secondary w-100 mb-2 urdu no-print" onclick="prRp()">پرنٹ / Print</button>
+                                <button class="btn btn-info w-100 urdu no-print" onclick="exCsv('tr-report', 'transaction_report.csv')">CSV ایکسپورٹ / Export CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="r-out" class="mt-4 table-responsive">
+                    <!-- Report output table will be displayed here -->
+                </div>
+            </div>
+
+             <!-- Backup/Restore Tab -->
+            <div class="tab-pane fade" id="t1-10" role="tabpanel" aria-labelledby="t1-10-tab">
+                <h2 class="urdu">بیک اپ / بحال کریں / Backup / Restore</h2>
+                 <div class="row">
+                     <div class="col-md-6 mb-3">
+                         <div class="card">
+                             <div class="card-header urdu">ڈیٹا بیک اپ / Backup Data</div>
+                             <div class="card-body">
+                                 <p class="urdu">اپنے تمام ڈیٹا کو JSON فائل کے بطور ڈاؤن لوڈ کرنے کے لئے نیچے دیئے گئے بٹن پر کلک کریں۔ / Click the button below to download all your data as a JSON file.</p>
+                                 <button class="btn btn-success w-100 urdu" onclick="bakData()">بیک اپ ڈاؤن لوڈ کریں / Download Backup</button>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="col-md-6 mb-3">
+                         <div class="card">
+                             <div class="card-header urdu">ڈیٹا بحال کریں / Restore Data</div>
+                             <div class="card-body">
+                                 <p class="text-danger urdu"><strong>انتباہ:</strong> بحال کرنے سے موجودہ تمام ڈیٹا حذف ہو جائے گا۔ / <strong>Warning:</strong> Restoring will delete all current data.</p>
+                                 <label for="b1" class="form-label urdu">بیک اپ فائل منتخب کریں (.json) / Select backup file (.json):</label>
+                                 <input type="file" id="b1" class="form-control mb-2" accept=".json">
+                                 <button class="btn btn-warning w-100 urdu" onclick="resData()">ڈیٹا بحال کریں / Restore Data</button>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Student Modal -->
+    <div class="modal fade" id="m1" tabindex="-1" aria-labelledby="m1l" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="f1" onsubmit="svSt(event)">
+                    <div class="modal-header">
+                        <h5 class="modal-title urdu" id="m1l">طالب علم کی تفصیلات / Student Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="f1-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="f1-i1" class="form-label urdu">نام (اردو) / Name (Urdu)</label>
+                                <input type="text" class="form-control urdu" id="f1-i1" required>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f1-i2" class="form-label urdu">نام (انگریزی) / Name (English)</label>
+                                <input type="text" class="form-control" id="f1-i2">
+                            </div>
+                        </div>
+                         <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="f1-i3" class="form-label urdu">والد کا نام (اردو) / Father's Name (Urdu)</label>
+                                <input type="text" class="form-control urdu" id="f1-i3">
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f1-i4" class="form-label urdu">والد کا نام (انگریزی) / Father's Name (English)</label>
+                                <input type="text" class="form-control" id="f1-i4">
+                            </div>
+                        </div>
+                         <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="f1-i5" class="form-label urdu">عمر / Age</label>
+                                <input type="number" class="form-control" id="f1-i5">
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f1-i6" class="form-label urdu">کلاس / Class</label>
+                                <select class="form-select" id="f1-i6"></select>
+                            </div>
+                        </div>
+                         <div class="row">
+                             <div class="col-md-6 mb-3">
+                                <label for="f1-i7" class="form-label urdu">داخلہ کی تاریخ / Admission Date</label>
+                                <input type="date" class="form-control" id="f1-i7">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="f1-i8" class="form-label urdu">رابطہ / Contact</label>
+                                <input type="text" class="form-control" id="f1-i8">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f1-i9" class="form-label urdu">پتہ (اردو) / Address (Urdu)</label>
+                            <textarea class="form-control urdu" id="f1-i9" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f1-i10" class="form-label urdu">پتہ (انگریزی) / Address (English)</label>
+                            <textarea class="form-control" id="f1-i10" rows="2"></textarea>
+                        </div>
+                        <h5 class="urdu">اضافی خانے / Custom Fields</h5>
+                        <div id="f1-cf"></div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mt-2 no-print urdu" onclick="addCf('f1-cf')">نیا خانہ شامل کریں / Add New Field</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary urdu" data-bs-dismiss="modal">بند کریں / Close</button>
+                        <button type="submit" class="btn btn-primary urdu">محفوظ کریں / Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!-- Teacher Modal -->
+    <div class="modal fade" id="m2" tabindex="-1" aria-labelledby="m2l" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="f2" onsubmit="svTc(event)">
+                    <div class="modal-header">
+                        <h5 class="modal-title urdu" id="m2l">استاد کی تفصیلات / Teacher Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="f2-id">
+                         <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="f2-i1" class="form-label urdu">نام (اردو) / Name (Urdu)</label>
+                                <input type="text" class="form-control urdu" id="f2-i1" required>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f2-i2" class="form-label urdu">نام (انگریزی) / Name (English)</label>
+                                <input type="text" class="form-control" id="f2-i2">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="f2-i3" class="form-label urdu">مضمون (اردو) / Subject (Urdu)</label>
+                                <input type="text" class="form-control urdu" id="f2-i3">
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f2-i4" class="form-label urdu">مضمون (انگریزی) / Subject (English)</label>
+                                <input type="text" class="form-control" id="f2-i4">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f2-i5" class="form-label urdu">رابطہ / Contact</label>
+                            <input type="text" class="form-control" id="f2-i5">
+                        </div>
+                         <div class="mb-3">
+                            <label for="f2-i6" class="form-label urdu">پتہ (اردو) / Address (Urdu)</label>
+                            <textarea class="form-control urdu" id="f2-i6" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f2-i7" class="form-label urdu">پتہ (انگریزی) / Address (English)</label>
+                            <textarea class="form-control" id="f2-i7" rows="2"></textarea>
+                        </div>
+                        <h5 class="urdu">اضافی خانے / Custom Fields</h5>
+                        <div id="f2-cf"></div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mt-2 no-print urdu" onclick="addCf('f2-cf')">نیا خانہ شامل کریں / Add New Field</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary urdu" data-bs-dismiss="modal">بند کریں / Close</button>
+                        <button type="submit" class="btn btn-primary urdu">محفوظ کریں / Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Class Modal -->
+    <div class="modal fade" id="m3" tabindex="-1" aria-labelledby="m3l" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                 <form id="f3" onsubmit="svCl(event)">
+                    <div class="modal-header">
+                        <h5 class="modal-title urdu" id="m3l">کلاس کی تفصیلات / Class Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="f3-id">
+                         <div class="mb-3">
+                            <label for="f3-i1" class="form-label urdu">کلاس کا نام (اردو) / Class Name (Urdu)</label>
+                            <input type="text" class="form-control urdu" id="f3-i1" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="f3-i2" class="form-label urdu">کلاس کا نام (انگریزی) / Class Name (English)</label>
+                            <input type="text" class="form-control" id="f3-i2">
+                        </div>
+                        <div class="mb-3">
+                            <label for="f3-i3" class="form-label urdu">تفصیل (اردو) / Description (Urdu)</label>
+                            <textarea class="form-control urdu" id="f3-i3" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f3-i3e" class="form-label urdu">تفصیل (انگریزی) / Description (English)</label>
+                            <textarea class="form-control" id="f3-i3e" rows="2"></textarea>
+                        </div>
+                         <div class="mb-3">
+                            <label for="f3-i4" class="form-label urdu">استاد منتخب کریں / Select Teacher</label>
+                            <select class="form-select" id="f3-i4"></select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary urdu" data-bs-dismiss="modal">بند کریں / Close</button>
+                        <button type="submit" class="btn btn-primary urdu">محفوظ کریں / Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!-- Fee Modal -->
+    <div class="modal fade" id="m5" tabindex="-1" aria-labelledby="m5l" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                 <form id="f5" onsubmit="svFe(event)">
+                    <div class="modal-header">
+                        <h5 class="modal-title urdu" id="m5l">فیس ریکارڈ / Fee Record</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="f5-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="f5-i1" class="form-label urdu">طالب علم / Student</label>
+                                <select class="form-select" id="f5-i1" required></select>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f5-i2" class="form-label urdu">کلاس / Class</label>
+                                <select class="form-select" id="f5-i2"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="f5-i3" class="form-label urdu">مہینہ/سال / Month/Year</label>
+                                <input type="month" class="form-control" id="f5-i3" required>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f5-i4" class="form-label urdu">رقم / Amount</label>
+                                <input type="number" step="0.01" class="form-control" id="f5-i4" required>
+                            </div>
+                        </div>
+                         <div class="row">
+                             <div class="col-md-6 mb-3">
+                                <label for="f5-i5" class="form-label urdu">تاریخ / Date</label>
+                                <input type="date" class="form-control" id="f5-i5" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="f5-i6" class="form-label urdu">حیثیت / Status</label>
+                                <select class="form-select" id="f5-i6" required>
+                                    <option value="paid" class="urdu">ادا شدہ / Paid</option>
+                                    <option value="pending" class="urdu">واجب الادا / Pending</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f5-i7" class="form-label urdu">تفصیل (اردو) / Description (Urdu)</label>
+                            <textarea class="form-control urdu" id="f5-i7" rows="2"></textarea>
+                        </div>
+                         <div class="mb-3">
+                            <label for="f5-i8" class="form-label urdu">تفصیل (انگریزی) / Description (English)</label>
+                            <textarea class="form-control" id="f5-i8" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary urdu" data-bs-dismiss="modal">بند کریں / Close</button>
+                        <button type="submit" class="btn btn-primary urdu">محفوظ کریں / Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!-- Salary Modal -->
+    <div class="modal fade" id="m6" tabindex="-1" aria-labelledby="m6l" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                 <form id="f6" onsubmit="svSa(event)">
+                    <div class="modal-header">
+                        <h5 class="modal-title urdu" id="m6l">تنخواہ ریکارڈ / Salary Record</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="f6-id">
+                         <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="f6-i1" class="form-label urdu">استاد / Teacher</label>
+                                <select class="form-select" id="f6-i1" required></select>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f6-i2" class="form-label urdu">مہینہ/سال / Month/Year</label>
+                                <input type="month" class="form-control" id="f6-i2" required>
+                            </div>
+                        </div>
+                         <div class="row">
+                             <div class="col-md-6 mb-3">
+                                <label for="f6-i3" class="form-label urdu">رقم / Amount</label>
+                                <input type="number" step="0.01" class="form-control" id="f6-i3" required>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="f6-i4" class="form-label urdu">تاریخ / Date</label>
+                                <input type="date" class="form-control" id="f6-i4" required>
+                            </div>
+                        </div>
+                         <div class="mb-3">
+                            <label for="f6-i5" class="form-label urdu">حیثیت / Status</label>
+                            <select class="form-select" id="f6-i5" required>
+                                <option value="paid" class="urdu">ادا شدہ / Paid</option>
+                                <option value="pending" class="urdu">واجب الادا / Pending</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f6-i6" class="form-label urdu">تفصیل (اردو) / Description (Urdu)</label>
+                            <textarea class="form-control urdu" id="f6-i6" rows="2"></textarea>
+                        </div>
+                         <div class="mb-3">
+                            <label for="f6-i7" class="form-label urdu">تفصیل (انگریزی) / Description (English)</label>
+                            <textarea class="form-control" id="f6-i7" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary urdu" data-bs-dismiss="modal">بند کریں / Close</button>
+                        <button type="submit" class="btn btn-primary urdu">محفوظ کریں / Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Modal -->
+    <div class="modal fade" id="m7" tabindex="-1" aria-labelledby="m7l" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                 <form id="f7" onsubmit="svIv(event)">
+                    <div class="modal-header">
+                        <h5 class="modal-title urdu" id="m7l">انوینٹری آئٹم / Inventory Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="f7-id">
+                         <div class="mb-3">
+                            <label for="f7-i1" class="form-label urdu">آئٹم کا نام (اردو) / Item Name (Urdu)</label>
+                            <input type="text" class="form-control urdu" id="f7-i1" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="f7-i2" class="form-label urdu">آئٹم کا نام (انگریزی) / Item Name (English)</label>
+                            <input type="text" class="form-control" id="f7-i2">
+                        </div>
+                        <div class="mb-3">
+                            <label for="f7-i3" class="form-label urdu">مقدار / Quantity</label>
+                            <input type="number" class="form-control" id="f7-i3" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f7-i4" class="form-label urdu">تفصیل (اردو) / Description (Urdu)</label>
+                            <textarea class="form-control urdu" id="f7-i4" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f7-i5" class="form-label urdu">تفصیل (انگریزی) / Description (English)</label>
+                            <textarea class="form-control" id="f7-i5" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary urdu" data-bs-dismiss="modal">بند کریں / Close</button>
+                        <button type="submit" class="btn btn-primary urdu">محفوظ کریں / Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!-- Transaction Modal -->
+    <div class="modal fade" id="m8" tabindex="-1" aria-labelledby="m8l" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                 <form id="f8" onsubmit="svTr(event)">
+                    <div class="modal-header">
+                        <h5 class="modal-title urdu" id="m8l">نیا لین دین / New Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="f8-id">
+                         <div class="mb-3">
+                            <label for="f8-i1" class="form-label urdu">تاریخ / Date</label>
+                            <input type="date" class="form-control" id="f8-i1" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="f8-i2" class="form-label urdu">قسم / Type</label>
+                            <select class="form-select" id="f8-i2" required>
+                                <option value="income" class="urdu">آمدن / Income</option>
+                                <option value="expense" class="urdu">خرچ / Expense</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f8-i3" class="form-label urdu">تفصیل (اردو) / Description (Urdu)</label>
+                            <textarea class="form-control urdu" id="f8-i3" rows="2"></textarea>
+                        </div>
+                         <div class="mb-3">
+                            <label for="f8-i4" class="form-label urdu">تفصیل (انگریزی) / Description (English)</label>
+                            <textarea class="form-control" id="f8-i4" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f8-i5" class="form-label urdu">رقم / Amount</label>
+                            <input type="number" step="0.01" class="form-control" id="f8-i5" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary urdu" data-bs-dismiss="modal">بند کریں / Close</button>
+                        <button type="submit" class="btn btn-primary urdu">محفوظ کریں / Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        const dbName = "dmd";
+        const stores = {
+            st: "st", // students
+            tc: "tc", // teachers
+            cl: "cl", // classes
+            at: "at", // attendance
+            fe: "fe", // fees
+            sa: "sa", // salaries
+            iv: "iv", // inventory
+            tr: "tr" // transactions
+        };
+        let db;
+
+        function el(id) { return document.getElementById(id); }
+        function val(id, v) { if (v !== undefined) el(id).value = v; return el(id).value; }
+        function inn(id, h) { if (h !== undefined) el(id).innerHTML = h; return el(id).innerHTML; }
+
+        // --- IndexedDB Functions ---
+        function initDb() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(dbName, 6); // Increment version if schema changes
+                req.onerror = (e) => { console.error("DB Error:", e.target.error); reject("DB Error"); };
+                req.onsuccess = (e) => { db = e.target.result; console.log("DB Opened"); resolve(); };
+                req.onupgradeneeded = (e) => {
+                    db = e.target.result;
+                    const oldVersion = e.oldVersion;
+                    console.log(`Upgrading DB from version ${oldVersion}`);
+
+                    Object.values(stores).forEach(sName => {
+                        if (!db.objectStoreNames.contains(sName)) {
+                            const os = db.createObjectStore(sName, { keyPath: "id", autoIncrement: true });
+                            if (sName === stores.st) { os.createIndex("n_ur", "n1", { unique: false }); os.createIndex("c_id", "i6", { unique: false }); }
+                            if (sName === stores.tc) { os.createIndex("n_ur", "i1", { unique: false }); }
+                            if (sName === stores.cl) { os.createIndex("n_ur", "i1", { unique: false }); }
+                            if (sName === stores.at) { os.createIndex("dt", "dt", { unique: false }); os.createIndex("st_id", "st_id", { unique: false }); os.createIndex("dt_st", ["dt", "st_id"], { unique: true }); }
+                            if (sName === stores.fe) { os.createIndex("st_id", "i1", { unique: false }); os.createIndex("dt", "i5", { unique: false }); os.createIndex("my", "i3", { unique: false }); }
+                            if (sName === stores.sa) { os.createIndex("tc_id", "i1", { unique: false }); os.createIndex("dt", "i4", { unique: false }); os.createIndex("my", "i2", { unique: false });}
+                            if (sName === stores.iv) { os.createIndex("n_ur", "i1", { unique: false }); }
+                            if (sName === stores.tr) { os.createIndex("dt", "i1", { unique: false }); os.createIndex("tp", "i2", { unique: false }); }
+                        } else {
+                            // Handle potential index additions in future versions
+                            const tx = e.target.transaction;
+                            const os = tx.objectStore(sName);
+                            if (sName === stores.at && oldVersion < 6 && !os.indexNames.contains("dt_st")) {
+                                os.createIndex("dt_st", ["dt", "st_id"], { unique: true });
+                            }
+                             // Add other necessary index checks and creations based on version upgrades
+                        }
+                    });
+                    console.log("DB Upgrade Complete");
+                };
+            });
+        }
+
+        function getStore(sName, mode = "readonly") {
+            if (!db) { console.error("DB not initialized"); return null; }
+            const tx = db.transaction(sName, mode);
+            tx.onerror = (e) => console.error(`TX Error (${sName}, ${mode}):`, e.target.error);
+            return tx.objectStore(sName);
+        }
+
+        function addData(sName, data) {
+            return new Promise((resolve, reject) => {
+                const store = getStore(sName, "readwrite");
+                if (!store) return reject("Store not available");
+                const req = store.add(data);
+                req.onsuccess = (e) => resolve(e.target.result); // Returns the new key
+                req.onerror = (e) => { console.error(`Add Error (${sName}):`, e.target.error); reject(e.target.error); };
+            });
+        }
+
+        function getData(sName, id) {
+            return new Promise((resolve, reject) => {
+                const store = getStore(sName);
+                 if (!store) return reject("Store not available");
+                const req = store.get(id);
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => { console.error(`Get Error (${sName}, ${id}):`, e.target.error); reject(e.target.error); };
+            });
+        }
+
+        function getAllData(sName, indexName = null, query = null) {
+            return new Promise((resolve, reject) => {
+                const store = getStore(sName);
+                if (!store) return reject("Store not available");
+                let req;
+                if (indexName && query !== null) {
+                    req = store.index(indexName).getAll(query);
+                } else if (indexName) {
+                     req = store.index(indexName).getAll();
+                } else {
+                    req = store.getAll();
+                }
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => { console.error(`GetAll Error (${sName}):`, e.target.error); reject(e.target.error); };
+            });
+        }
+
+
+        function updateData(sName, data) {
+            return new Promise((resolve, reject) => {
+                const store = getStore(sName, "readwrite");
+                 if (!store) return reject("Store not available");
+                const req = store.put(data); // put handles both add and update
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => { console.error(`Update Error (${sName}, ID ${data.id}):`, e.target.error); reject(e.target.error); };
+            });
+        }
+
+        function deleteData(sName, id) {
+            return new Promise((resolve, reject) => {
+                const store = getStore(sName, "readwrite");
+                 if (!store) return reject("Store not available");
+                const req = store.delete(id);
+                req.onsuccess = (e) => resolve();
+                req.onerror = (e) => { console.error(`Delete Error (${sName}, ${id}):`, e.target.error); reject(e.target.error); };
+            });
+        }
+
+        // --- UI and Logic Functions ---
+        function clrFrm(fId) {
+            const form = el(fId);
+            if (!form) return;
+            form.reset();
+            val(fId + '-id', '');
+             // Clear custom fields
+            const cfDiv = el(fId + '-cf');
+            if (cfDiv) inn(cfDiv, '');
+            // Set default date for relevant forms
+            if (fId === 'f5') val('f5-i5', new Date().toISOString().split('T')[0]);
+            if (fId === 'f6') val('f6-i4', new Date().toISOString().split('T')[0]);
+            if (fId === 'f8') val('f8-i1', new Date().toISOString().split('T')[0]);
+        }
+
+        function addCf(cfDivId, cfData = null) {
+            const cfDiv = el(cfDivId);
+            const idx = cfDiv.children.length;
+            const row = document.createElement('div');
+            row.className = 'row mb-2 cf-row';
+            row.innerHTML = `
+                <div class="col-md-4">
+                    <label class="form-label form-label-sm urdu">فیلڈ نام (Urdu)</label>
+                    <input type="text" class="form-control form-control-sm urdu cf-key-ur" value="${cfData ? cfData.k_ur || '' : ''}" placeholder="مثال: شناختی کارڈ">
+                </div>
+                <div class="col-md-4">
+                     <label class="form-label form-label-sm urdu">Field Name (Eng)</label>
+                    <input type="text" class="form-control form-control-sm cf-key-en" value="${cfData ? cfData.k_en || '' : ''}" placeholder="e.g., CNIC">
+                </div>
+                 <div class="col-md-3">
+                    <label class="form-label form-label-sm urdu">ویلیو / Value</label>
+                    <input type="text" class="form-control form-control-sm urdu cf-val" value="${cfData ? cfData.v || '' : ''}" placeholder="ویلیو">
+                </div>
+                 <div class="col-md-1 align-self-end">
+                    <button type="button" class="btn btn-danger btn-sm no-print" onclick="this.closest('.cf-row').remove()">X</button>
+                </div>`;
+            cfDiv.appendChild(row);
+        }
+
+        function getCf(cfDivId) {
+            const data = {};
+            el(cfDivId).querySelectorAll('.cf-row').forEach(row => {
+                const k_ur = row.querySelector('.cf-key-ur').value.trim();
+                const k_en = row.querySelector('.cf-key-en').value.trim();
+                const v = row.querySelector('.cf-val').value.trim();
+                if (k_ur || k_en) { // Store if at least one key is present
+                    // Use a combined key or a structured object. Let's use structured.
+                     const keyName = k_en || k_ur; // Prefer English key if available for internal consistency? Or just store both. Let's store both.
+                     data[`${k_en}_${k_ur}`] = { k_en: k_en, k_ur: k_ur, v: v };
+                }
+            });
+            return data;
+        }
+
+         function fmtCf(cfObj) {
+             if (!cfObj || Object.keys(cfObj).length === 0) return '';
+             let html = '<ul class="list-unstyled mb-0">';
+             for (const key in cfObj) {
+                 const field = cfObj[key];
+                 const label = field.k_ur ? `<span class="urdu">${field.k_ur}</span>` : '';
+                 const label_en = field.k_en ? (label ? ` / ${field.k_en}`: field.k_en) : '';
+                 const value = field.v || '';
+                 html += `<li><strong>${label}${label_en}:</strong> <span class="urdu">${value}</span></li>`;
+             }
+             html += '</ul>';
+             return html;
+         }
+
+        async function popDd(selId, sName) {
+            const sel = el(selId);
+            inn(sel, '<option value="" class="urdu">منتخب کریں / Select...</option>');
+            try {
+                const data = await getAllData(sName);
+                let items = [];
+                if (sName === stores.st) items = data.map(d => ({ id: d.id, text: `${d.n1 || ''} / ${d.i2 || ''}` }));
+                else if (sName === stores.tc) items = data.map(d => ({ id: d.id, text: `${d.i1 || ''} / ${d.i2 || ''}` }));
+                else if (sName === stores.cl) items = data.map(d => ({ id: d.id, text: `${d.i1 || ''} / ${d.i2 || ''}` }));
+
+                items.sort((a, b) => a.text.localeCompare(b.text)); // Sort alphabetically
+                items.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.id;
+                    opt.textContent = item.text;
+                    sel.appendChild(opt);
+                });
+            } catch (err) { console.error(`Error populating dropdown ${selId}:`, err); }
+        }
+
+        async function getNameById(sName, id) {
+             if (!id) return '';
+             try {
+                 const item = await getData(sName, id);
+                 if (!item) return 'N/A';
+                 if (sName === stores.st) return `<span class="urdu">${item.n1 || ''}</span> / ${item.i2 || ''}`;
+                 if (sName === stores.tc) return `<span class="urdu">${item.i1 || ''}</span> / ${item.i2 || ''}`;
+                 if (sName === stores.cl) return `<span class="urdu">${item.i1 || ''}</span> / ${item.i2 || ''}`;
+                 return 'N/A';
+             } catch (err) {
+                 console.error(`Error getting name for ${sName} ID ${id}:`, err);
+                 return 'Error';
+             }
+         }
+
+        // --- Student Functions ---
+        async function svSt(e) {
+            e.preventDefault();
+            const id = parseInt(val('f1-id')) || null;
+            const data = {
+                n1: val('f1-i1'), i2: val('f1-i2'), i3: val('f1-i3'), i4: val('f1-i4'),
+                i5: val('f1-i5') ? parseInt(val('f1-i5')) : null,
+                i6: val('f1-i6') ? parseInt(val('f1-i6')) : null,
+                i7: val('f1-i7'), i8: val('f1-i8'), i9: val('f1-i9'), i10: val('f1-i10'),
+                cf: getCf('f1-cf')
+            };
+            try {
+                if (id) {
+                    data.id = id;
+                    await updateData(stores.st, data);
+                } else {
+                    await addData(stores.st, data);
+                }
+                bootstrap.Modal.getInstance(el('m1')).hide();
+                ldSt();
+            } catch (err) { console.error("Error saving student:", err); alert("Error saving student!"); }
+        }
+
+        async function ldSt() {
+            try {
+                const sts = await getAllData(stores.st);
+                 const cls = await getAllData(stores.cl); // Fetch classes for lookup
+                 const clMap = cls.reduce((map, cl) => {
+                    map[cl.id] = `<span class="urdu">${cl.i1 || ''}</span> / ${cl.i2 || ''}`;
+                    return map;
+                 }, {});
+
+                let html = '';
+                let hasCf = false;
+                sts.forEach(s => {
+                    const cfHtml = fmtCf(s.cf);
+                    if (cfHtml) hasCf = true;
+                    html += `<tr>
+                        <td class="urdu">${s.n1 || ''}</td>
+                        <td>${s.i2 || ''}</td>
+                        <td class="urdu">${s.i3 || ''}</td>
+                        <td>${s.i4 || ''}</td>
+                        <td>${s.i5 || ''}</td>
+                        <td>${clMap[s.i6] || 'N/A'}</td>
+                        <td>${s.i7 || ''}</td>
+                        <td>${s.i8 || ''}</td>
+                        <td class="urdu">${s.i9 || ''}</td>
+                        <td>${s.i10 || ''}</td>
+                        <td>${cfHtml}</td>
+                        <td class="no-print">
+                            <button class="btn btn-sm btn-warning me-1 urdu" onclick="edSt(${s.id})">ترمیم / Edit</button>
+                            <button class="btn btn-sm btn-danger urdu" onclick="delSt(${s.id})">حذف / Delete</button>
+                        </td>
+                    </tr>`;
+                });
+                inn('l1', html);
+                el('st-ch-h').style.display = hasCf ? '' : 'none'; // Show/hide custom field header
+                // Update report dropdown
+                 popDd('r1-1', stores.cl);
+            } catch (err) { console.error("Error loading students:", err); }
+        }
+
+        async function edSt(id) {
+            try {
+                const s = await getData(stores.st, id);
+                val('f1-id', s.id);
+                val('f1-i1', s.n1 || ''); val('f1-i2', s.i2 || ''); val('f1-i3', s.i3 || ''); val('f1-i4', s.i4 || '');
+                val('f1-i5', s.i5 || ''); val('f1-i6', s.i6 || ''); val('f1-i7', s.i7 || ''); val('f1-i8', s.i8 || '');
+                val('f1-i9', s.i9 || ''); val('f1-i10', s.i10 || '');
+                // Populate custom fields
+                 const cfDiv = el('f1-cf');
+                 inn(cfDiv, ''); // Clear existing
+                 if (s.cf) {
+                    for(const key in s.cf) { addCf('f1-cf', s.cf[key]); }
+                 }
+                await popDd('f1-i6', stores.cl); // Repopulate and set class
+                val('f1-i6', s.i6 || ''); // Set the value after population
+                new bootstrap.Modal(el('m1')).show();
+            } catch (err) { console.error("Error editing student:", err); }
+        }
+
+        async function delSt(id) {
+            if (confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟ / Are you sure you want to delete this student?')) {
+                try {
+                    await deleteData(stores.st, id);
+                    // Optionally delete related data (fees, attendance) or handle constraints
+                    ldSt();
+                    ldAt(); // Reload attendance if the current view depends on this student
+                    ldFe(); // Reload fees
+                } catch (err) { console.error("Error deleting student:", err); alert("Error deleting student!"); }
+            }
+        }
+
+
+        // --- Teacher Functions ---
+         async function svTc(e) {
+            e.preventDefault();
+            const id = parseInt(val('f2-id')) || null;
+            const data = {
+                i1: val('f2-i1'), i2: val('f2-i2'), i3: val('f2-i3'), i4: val('f2-i4'),
+                i5: val('f2-i5'), i6: val('f2-i6'), i7: val('f2-i7'),
+                cf: getCf('f2-cf')
+            };
+            try {
+                if (id) {
+                    data.id = id;
+                    await updateData(stores.tc, data);
+                } else {
+                    await addData(stores.tc, data);
+                }
+                bootstrap.Modal.getInstance(el('m2')).hide();
+                ldTc();
+            } catch (err) { console.error("Error saving teacher:", err); alert("Error saving teacher!"); }
+        }
+
+        async function ldTc() {
+            try {
+                const tcs = await getAllData(stores.tc);
+                let html = '';
+                let hasCf = false;
+                tcs.forEach(t => {
+                     const cfHtml = fmtCf(t.cf);
+                    if (cfHtml) hasCf = true;
+                    html += `<tr>
+                        <td class="urdu">${t.i1 || ''}</td>
+                        <td>${t.i2 || ''}</td>
+                         <td class="urdu">${t.i3 || ''}</td>
+                        <td>${t.i4 || ''}</td>
+                        <td>${t.i5 || ''}</td>
+                        <td class="urdu">${t.i6 || ''}</td>
+                         <td>${t.i7 || ''}</td>
+                         <td>${cfHtml}</td>
+                        <td class="no-print">
+                            <button class="btn btn-sm btn-warning me-1 urdu" onclick="edTc(${t.id})">ترمیم / Edit</button>
+                            <button class="btn btn-sm btn-danger urdu" onclick="delTc(${t.id})">حذف / Delete</button>
+                        </td>
+                    </tr>`;
+                });
+                inn('l2', html);
+                el('tc-ch-h').style.display = hasCf ? '' : 'none'; // Show/hide custom field header
+            } catch (err) { console.error("Error loading teachers:", err); }
+        }
+
+         async function edTc(id) {
+            try {
+                const t = await getData(stores.tc, id);
+                val('f2-id', t.id);
+                val('f2-i1', t.i1 || ''); val('f2-i2', t.i2 || ''); val('f2-i3', t.i3 || ''); val('f2-i4', t.i4 || '');
+                val('f2-i5', t.i5 || ''); val('f2-i6', t.i6 || ''); val('f2-i7', t.i7 || '');
+                 // Populate custom fields
+                 const cfDiv = el('f2-cf');
+                 inn(cfDiv, ''); // Clear existing
+                 if (t.cf) {
+                    for(const key in t.cf) { addCf('f2-cf', t.cf[key]); }
+                 }
+                new bootstrap.Modal(el('m2')).show();
+            } catch (err) { console.error("Error editing teacher:", err); }
+        }
+
+        async function delTc(id) {
+            if (confirm('کیا آپ واقعی اس استاد کو حذف کرنا چاہتے ہیں؟ / Are you sure you want to delete this teacher?')) {
+                try {
+                    // Check if teacher is assigned to any class
+                     const classes = await getAllData(stores.cl);
+                     const assigned = classes.some(c => c.i4 === id);
+                     if (assigned) {
+                         alert('استاد کو حذف نہیں کیا جا سکتا کیونکہ وہ ایک کلاس کو تفویض کیا گیا ہے۔ / Cannot delete teacher as they are assigned to a class.');
+                         return;
+                     }
+                    await deleteData(stores.tc, id);
+                    ldTc();
+                    ldCl(); // Reload classes
+                    ldSa(); // Reload salaries
+                } catch (err) { console.error("Error deleting teacher:", err); alert("Error deleting teacher!"); }
+            }
+        }
+
+        // --- Class Functions ---
+        async function svCl(e) {
+            e.preventDefault();
+            const id = parseInt(val('f3-id')) || null;
+            const data = {
+                i1: val('f3-i1'), i2: val('f3-i2'), i3: val('f3-i3'), i3e: val('f3-i3e'),
+                i4: val('f3-i4') ? parseInt(val('f3-i4')) : null
+            };
+            try {
+                if (id) {
+                    data.id = id;
+                    await updateData(stores.cl, data);
+                } else {
+                    await addData(stores.cl, data);
+                }
+                bootstrap.Modal.getInstance(el('m3')).hide();
+                ldCl();
+                ldSt(); // Reload students in case class assignment changed in dropdowns elsewhere
+                ldAt(); // Reload attendance class dropdown
+                ldFe(); // Reload fees class dropdown
+            } catch (err) { console.error("Error saving class:", err); alert("Error saving class!"); }
+        }
+
+        async function ldCl() {
+            try {
+                const cls = await getAllData(stores.cl);
+                const tcs = await getAllData(stores.tc); // Fetch teachers for lookup
+                const tcMap = tcs.reduce((map, tc) => {
+                    map[tc.id] = `<span class="urdu">${tc.i1 || ''}</span> / ${tc.i2 || ''}`;
+                    return map;
+                }, {});
+
+                let html = '';
+                cls.forEach(c => {
+                    html += `<tr>
+                        <td class="urdu">${c.i1 || ''}</td>
+                        <td>${c.i2 || ''}</td>
+                        <td class="urdu">${c.i3 || ''}</td>
+                        <td>${c.i3e || ''}</td>
+                        <td>${tcMap[c.i4] || 'N/A'}</td>
+                        <td class="no-print">
+                            <button class="btn btn-sm btn-warning me-1 urdu" onclick="edCl(${c.id})">ترمیم / Edit</button>
+                            <button class="btn btn-sm btn-danger urdu" onclick="delCl(${c.id})">حذف / Delete</button>
+                        </td>
+                    </tr>`;
+                });
+                inn('l3', html);
+                // Update relevant dropdowns
+                popDd('f1-i6', stores.cl); // Student form class dropdown
+                popDd('a2', stores.cl); // Attendance class dropdown
+                popDd('f5-i2', stores.cl); // Fee form class dropdown
+                popDd('r2-1', stores.cl); // Attendance report class dropdown
+                 popDd('r3-1', stores.cl); // Fee report class dropdown
+
+            } catch (err) { console.error("Error loading classes:", err); }
+        }
+
+        async function edCl(id) {
+            try {
+                const c = await getData(stores.cl, id);
+                val('f3-id', c.id);
+                val('f3-i1', c.i1 || ''); val('f3-i2', c.i2 || ''); val('f3-i3', c.i3 || ''); val('f3-i3e', c.i3e || '');
+                await popDd('f3-i4', stores.tc); // Repopulate teacher dropdown
+                val('f3-i4', c.i4 || ''); // Set current teacher
+                new bootstrap.Modal(el('m3')).show();
+            } catch (err) { console.error("Error editing class:", err); }
+        }
+
+        async function delCl(id) {
+             if (confirm('کیا آپ واقعی اس کلاس کو حذف کرنا چاہتے ہیں؟ اس سے متعلقہ طلباء، فیس، اور حاضری کا ڈیٹا متاثر نہیں ہوگا لیکن کلاس سے تعلق ختم ہوجائے گا۔ / Are you sure you want to delete this class? Related student, fee, and attendance data will not be deleted but the class association will be lost.')) {
+                try {
+                    // Optional: Check if students are assigned and warn/handle
+                     const students = await getAllData(stores.st, 'c_id', id);
+                     if (students.length > 0) {
+                         if(!confirm(`اس کلاس میں ${students.length} طلباء ہیں۔ حذف کرنے سے ان کا کلاس سے تعلق ختم ہوجائے گا۔ جاری رکھیں؟ / This class has ${students.length} students. Deleting it will remove their class association. Continue?`)) {
+                             return;
+                         }
+                         // Optionally, update students to remove class ID or move to 'unassigned'
+                         const updates = students.map(s => {
+                            s.i6 = null; // Remove class association
+                            return updateData(stores.st, s);
+                         });
+                         await Promise.all(updates);
+                     }
+
+                    await deleteData(stores.cl, id);
+                    ldCl();
+                    ldSt(); // Update student list display
+                    ldFe(); // Update fee list display
+                    ldAt(); // Update attendance display/dropdown
+                } catch (err) { console.error("Error deleting class:", err); alert("Error deleting class!"); }
+            }
+        }
+
+        // --- Attendance Functions ---
+        async function ldAt() {
+            const dt = val('a1');
+            const clId = val('a2');
+            inn('a3', ''); // Clear previous table
+
+            if (!dt || !clId) {
+                inn('a3', '<p class="text-center text-muted urdu">براہ کرم تاریخ اور کلاس منتخب کریں۔ / Please select a date and class.</p>');
+                return;
+            }
+             const clIdNum = parseInt(clId);
+
+            try {
+                // Get students in the selected class
+                const sts = await getAllData(stores.st, 'c_id', clIdNum);
+                // Get existing attendance records for this date and class
+                 const attRecs = await getAllData(stores.at, 'dt_st'); // Fetch all then filter? Or use index? 'dt' index? Let's use dt index
+                 const dtRecs = await getAllData(stores.at, 'dt', dt);
+                 const todaysAtt = dtRecs.filter(r => sts.some(s => s.id === r.st_id)); // Filter by students in the class
+
+                 const attMap = todaysAtt.reduce((map, rec) => {
+                    map[rec.st_id] = rec.st; // st = status
+                    return map;
+                }, {});
+
+                if (sts.length === 0) {
+                     inn('a3', '<p class="text-center text-muted urdu">اس کلاس میں کوئی طالب علم نہیں ہے۔ / No students found in this class.</p>');
+                     return;
+                }
+
+                let tbl = `<table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="urdu">طالب علم / Student</th>
+                            <th class="urdu">حاضر / Present</th>
+                            <th class="urdu">غیر حاضر / Absent</th>
+                            <th class="urdu">رخصت / Leave</th>
+                        </tr>
+                    </thead><tbody>`;
+
+                sts.sort((a, b) => (a.n1 || a.i2).localeCompare(b.n1 || b.i2)); // Sort students by name
+
+                sts.forEach(s => {
+                    const stName = `<span class="urdu">${s.n1 || ''}</span> / ${s.i2 || ''}`;
+                    const currentStatus = attMap[s.id] || 'present'; // Default to present
+                    tbl += `<tr>
+                        <td>${stName}</td>
+                        <td><input class="form-check-input" type="radio" name="att-${s.id}" value="present" ${currentStatus === 'present' ? 'checked' : ''}></td>
+                        <td><input class="form-check-input" type="radio" name="att-${s.id}" value="absent" ${currentStatus === 'absent' ? 'checked' : ''}></td>
+                        <td><input class="form-check-input" type="radio" name="att-${s.id}" value="leave" ${currentStatus === 'leave' ? 'checked' : ''}></td>
+                    </tr>`;
+                });
+
+                tbl += '</tbody></table>';
+                inn('a3', tbl);
+
+            } catch (err) {
+                console.error("Error loading attendance sheet:", err);
+                inn('a3', '<p class="text-center text-danger urdu">حاضری لوڈ کرنے میں خرابی۔ / Error loading attendance.</p>');
+            }
+        }
+
+        async function svAt() {
+            const dt = val('a1');
+            const clId = val('a2');
+             if (!dt || !clId) {
+                alert("براہ کرم تاریخ اور کلاس منتخب کریں۔ / Please select date and class.");
+                return;
+            }
+
+            const attDiv = el('a3');
+            const inputs = attDiv.querySelectorAll('input[type="radio"]:checked');
+             if (inputs.length === 0) {
+                 alert("کوئی حاضری نشان زد نہیں ہوئی۔ / No attendance marked.");
+                 return;
+             }
+
+             const store = getStore(stores.at, "readwrite");
+             if (!store) { alert("DB Store Error!"); return; }
+
+             const index = store.index("dt_st"); // Use the compound index
+             let promises = [];
+
+             inputs.forEach(input => {
+                const st_id = parseInt(input.name.split('-')[1]);
+                const st = input.value; // status
+                const key = [dt, st_id];
+
+                // Check if record exists using the index
+                const getReq = index.get(key);
+
+                const promise = new Promise((resolve, reject) => {
+                    getReq.onsuccess = (e) => {
+                        const existingRecord = e.target.result;
+                        let putReq;
+                        if (existingRecord) {
+                            // Update existing record
+                            if (existingRecord.st !== st) { // Only update if status changed
+                                existingRecord.st = st;
+                                putReq = store.put(existingRecord);
+                            } else {
+                                resolve(); // No change needed
+                                return;
+                            }
+                        } else {
+                            // Add new record
+                            putReq = store.put({ dt: dt, st_id: st_id, st: st });
+                        }
+
+                        if (putReq) {
+                             putReq.onsuccess = () => resolve();
+                             putReq.onerror = (err) => { console.error("Put Error:", err); reject(err); };
+                        }
+                    };
+                    getReq.onerror = (err) => { console.error("Get Req Error:", err); reject(err); };
+                });
+                 promises.push(promise);
+            });
+
+
+            try {
+                 await Promise.all(promises);
+                 alert("حاضری کامیابی سے محفوظ ہو گئی۔ / Attendance saved successfully.");
+            } catch (error) {
+                 console.error("Error saving attendance records:", error);
+                 alert("حاضری محفوظ کرنے میں کچھ غلط ہوا۔ / Error saving some attendance records.");
+            }
+        }
+
+
+        // --- Fee Functions ---
+         async function svFe(e) {
+            e.preventDefault();
+            const id = parseInt(val('f5-id')) || null;
+            const data = {
+                i1: val('f5-i1') ? parseInt(val('f5-i1')) : null, // student_id
+                i2: val('f5-i2') ? parseInt(val('f5-i2')) : null, // class_id
+                i3: val('f5-i3'), // month_year
+                i4: val('f5-i4') ? parseFloat(val('f5-i4')) : 0, // amount
+                i5: val('f5-i5'), // date
+                i6: val('f5-i6'), // status
+                i7: val('f5-i7'), // desc ur
+                i8: val('f5-i8')  // desc en
+            };
+             if (!data.i1 || !data.i3 || !data.i5) {
+                 alert("طالب علم، مہینہ/سال، اور تاریخ درکار ہے۔ / Student, Month/Year, and Date are required.");
+                 return;
+             }
+            try {
+                if (id) {
+                    data.id = id;
+                    await updateData(stores.fe, data);
+                } else {
+                    await addData(stores.fe, data);
+                }
+                bootstrap.Modal.getInstance(el('m5')).hide();
+                ldFe();
+            } catch (err) { console.error("Error saving fee:", err); alert("Error saving fee!"); }
+        }
+
+         async function ldFe() {
+            try {
+                const fees = await getAllData(stores.fe);
+                // Pre-fetch student and class names for efficiency
+                const [sts, cls] = await Promise.all([
+                    getAllData(stores.st),
+                    getAllData(stores.cl)
+                ]);
+                 const stMap = sts.reduce((map, s) => {
+                    map[s.id] = `<span class="urdu">${s.n1 || ''}</span> / ${s.i2 || ''}`; return map; }, {});
+                 const clMap = cls.reduce((map, c) => {
+                    map[c.id] = `<span class="urdu">${c.i1 || ''}</span> / ${c.i2 || ''}`; return map; }, {});
+
+                let html = '';
+                fees.sort((a, b) => b.i5.localeCompare(a.i5) || (stMap[a.i1] || '').localeCompare(stMap[b.i1] || '')); // Sort by date desc, then student name
+
+                fees.forEach(f => {
+                    const statusClass = f.i6 === 'paid' ? 'text-success' : 'text-danger';
+                    const statusTextUrdu = f.i6 === 'paid' ? 'ادا شدہ' : 'واجب الادا';
+                    const statusTextEng = f.i6 === 'paid' ? 'Paid' : 'Pending';
+                    html += `<tr>
+                        <td>${stMap[f.i1] || 'N/A'}</td>
+                        <td>${clMap[f.i2] || 'N/A'}</td>
+                        <td>${f.i3 || ''}</td>
+                        <td>${f.i4 || 0}</td>
+                        <td>${f.i5 || ''}</td>
+                        <td class="${statusClass}"><span class="urdu">${statusTextUrdu}</span> / ${statusTextEng}</td>
+                        <td class="urdu">${f.i7 || ''}</td>
+                         <td>${f.i8 || ''}</td>
+                        <td class="no-print">
+                            <button class="btn btn-sm btn-warning me-1 urdu" onclick="edFe(${f.id})">ترمیم / Edit</button>
+                            <button class="btn btn-sm btn-danger urdu" onclick="delFe(${f.id})">حذف / Delete</button>
+                        </td>
+                    </tr>`;
+                });
+                inn('l5', html);
+            } catch (err) { console.error("Error loading fees:", err); }
+        }
+
+         async function edFe(id) {
+            try {
+                const f = await getData(stores.fe, id);
+                val('f5-id', f.id);
+                await Promise.all([ // Populate dropdowns first
+                    popDd('f5-i1', stores.st),
+                    popDd('f5-i2', stores.cl)
+                ]);
+                 val('f5-i1', f.i1 || '');
+                 val('f5-i2', f.i2 || '');
+                 val('f5-i3', f.i3 || ''); val('f5-i4', f.i4 || ''); val('f5-i5', f.i5 || '');
+                 val('f5-i6', f.i6 || 'pending'); val('f5-i7', f.i7 || ''); val('f5-i8', f.i8 || '');
+
+                new bootstrap.Modal(el('m5')).show();
+            } catch (err) { console.error("Error editing fee:", err); }
+        }
+
+        async function delFe(id) {
+            if (confirm('کیا آپ واقعی اس فیس ریکارڈ کو حذف کرنا چاہتے ہیں؟ / Are you sure you want to delete this fee record?')) {
+                try {
+                    await deleteData(stores.fe, id);
+                    ldFe();
+                } catch (err) { console.error("Error deleting fee:", err); alert("Error deleting fee!"); }
+            }
+        }
+
+        // --- Salary Functions ---
+        async function svSa(e) {
+            e.preventDefault();
+            const id = parseInt(val('f6-id')) || null;
+            const data = {
+                i1: val('f6-i1') ? parseInt(val('f6-i1')) : null, // teacher_id
+                i2: val('f6-i2'), // month_year
+                i3: val('f6-i3') ? parseFloat(val('f6-i3')) : 0, // amount
+                i4: val('f6-i4'), // date
+                i5: val('f6-i5'), // status
+                i6: val('f6-i6'), // desc ur
+                i7: val('f6-i7') // desc en
+            };
+             if (!data.i1 || !data.i2 || !data.i4) {
+                 alert("استاد، مہینہ/سال، اور تاریخ درکار ہے۔ / Teacher, Month/Year, and Date are required.");
+                 return;
+             }
+            try {
+                if (id) {
+                    data.id = id;
+                    await updateData(stores.sa, data);
+                } else {
+                    await addData(stores.sa, data);
+                }
+                bootstrap.Modal.getInstance(el('m6')).hide();
+                ldSa();
+            } catch (err) { console.error("Error saving salary:", err); alert("Error saving salary!"); }
+        }
+
+        async function ldSa() {
+            try {
+                const sals = await getAllData(stores.sa);
+                // Pre-fetch teacher names
+                 const tcs = await getAllData(stores.tc);
+                 const tcMap = tcs.reduce((map, t) => {
+                    map[t.id] = `<span class="urdu">${t.i1 || ''}</span> / ${t.i2 || ''}`; return map; }, {});
+
+                let html = '';
+                 sals.sort((a, b) => b.i4.localeCompare(a.i4) || (tcMap[a.i1] || '').localeCompare(tcMap[b.i1] || '')); // Sort by date desc, then teacher name
+
+                sals.forEach(s => {
+                     const statusClass = s.i5 === 'paid' ? 'text-success' : 'text-danger';
+                     const statusTextUrdu = s.i5 === 'paid' ? 'ادا شدہ' : 'واجب الادا';
+                     const statusTextEng = s.i5 === 'paid' ? 'Paid' : 'Pending';
+                    html += `<tr>
+                        <td>${tcMap[s.i1] || 'N/A'}</td>
+                        <td>${s.i2 || ''}</td>
+                        <td>${s.i3 || 0}</td>
+                        <td>${s.i4 || ''}</td>
+                        <td class="${statusClass}"><span class="urdu">${statusTextUrdu}</span> / ${statusTextEng}</td>
+                        <td class="urdu">${s.i6 || ''}</td>
+                        <td>${s.i7 || ''}</td>
+                        <td class="no-print">
+                            <button class="btn btn-sm btn-warning me-1 urdu" onclick="edSa(${s.id})">ترمیم / Edit</button>
+                            <button class="btn btn-sm btn-danger urdu" onclick="delSa(${s.id})">حذف / Delete</button>
+                        </td>
+                    </tr>`;
+                });
+                inn('l6', html);
+            } catch (err) { console.error("Error loading salaries:", err); }
+        }
+
+        async function edSa(id) {
+            try {
+                const s = await getData(stores.sa, id);
+                val('f6-id', s.id);
+                await popDd('f6-i1', stores.tc); // Populate dropdown first
+                val('f6-i1', s.i1 || '');
+                val('f6-i2', s.i2 || ''); val('f6-i3', s.i3 || ''); val('f6-i4', s.i4 || '');
+                val('f6-i5', s.i5 || 'pending'); val('f6-i6', s.i6 || ''); val('f6-i7', s.i7 || '');
+                new bootstrap.Modal(el('m6')).show();
+            } catch (err) { console.error("Error editing salary:", err); }
+        }
+
+        async function delSa(id) {
+            if (confirm('کیا آپ واقعی اس تنخواہ ریکارڈ کو حذف کرنا چاہتے ہیں؟ / Are you sure you want to delete this salary record?')) {
+                try {
+                    await deleteData(stores.sa, id);
+                    ldSa();
+                } catch (err) { console.error("Error deleting salary:", err); alert("Error deleting salary!"); }
+            }
+        }
+
+        // --- Inventory Functions ---
+        async function svIv(e) {
+            e.preventDefault();
+            const id = parseInt(val('f7-id')) || null;
+            const data = {
+                i1: val('f7-i1'), i2: val('f7-i2'),
+                i3: val('f7-i3') ? parseInt(val('f7-i3')) : 0,
+                i4: val('f7-i4'), i5: val('f7-i5')
+            };
+            try {
+                if (id) {
+                    data.id = id;
+                    await updateData(stores.iv, data);
+                } else {
+                    await addData(stores.iv, data);
+                }
+                bootstrap.Modal.getInstance(el('m7')).hide();
+                ldIv();
+            } catch (err) { console.error("Error saving inventory item:", err); alert("Error saving item!"); }
+        }
+
+        async function ldIv() {
+            try {
+                const items = await getAllData(stores.iv);
+                let html = '';
+                items.forEach(i => {
+                    html += `<tr>
+                        <td class="urdu">${i.i1 || ''}</td>
+                        <td>${i.i2 || ''}</td>
+                        <td>${i.i3 || 0}</td>
+                        <td class="urdu">${i.i4 || ''}</td>
+                        <td>${i.i5 || ''}</td>
+                        <td class="no-print">
+                            <button class="btn btn-sm btn-warning me-1 urdu" onclick="edIv(${i.id})">ترمیم / Edit</button>
+                            <button class="btn btn-sm btn-danger urdu" onclick="delIv(${i.id})">حذف / Delete</button>
+                        </td>
+                    </tr>`;
+                });
+                inn('l7', html);
+            } catch (err) { console.error("Error loading inventory:", err); }
+        }
+
+        async function edIv(id) {
+            try {
+                const i = await getData(stores.iv, id);
+                val('f7-id', i.id);
+                val('f7-i1', i.i1 || ''); val('f7-i2', i.i2 || ''); val('f7-i3', i.i3 || '');
+                val('f7-i4', i.i4 || ''); val('f7-i5', i.i5 || '');
+                new bootstrap.Modal(el('m7')).show();
+            } catch (err) { console.error("Error editing inventory item:", err); }
+        }
+
+        async function delIv(id) {
+             if (confirm('کیا آپ واقعی اس انوینٹری آئٹم کو حذف کرنا چاہتے ہیں؟ / Are you sure you want to delete this inventory item?')) {
+                try {
+                    await deleteData(stores.iv, id);
+                    ldIv();
+                } catch (err) { console.error("Error deleting inventory item:", err); alert("Error deleting item!"); }
+            }
+        }
+
+        // --- Transaction (Income/Expense) Functions ---
+         async function svTr(e) {
+            e.preventDefault();
+            const id = parseInt(val('f8-id')) || null;
+            const data = {
+                i1: val('f8-i1'), // date
+                i2: val('f8-i2'), // type
+                i3: val('f8-i3'), // desc ur
+                i4: val('f8-i4'), // desc en
+                i5: val('f8-i5') ? parseFloat(val('f8-i5')) : 0 // amount
+            };
+             if (!data.i1 || !data.i2 || !data.i5) {
+                 alert("تاریخ، قسم، اور رقم درکار ہے۔ / Date, Type, and Amount are required.");
+                 return;
+             }
+            try {
+                if (id) {
+                    data.id = id;
+                    await updateData(stores.tr, data);
+                } else {
+                    await addData(stores.tr, data);
+                }
+                bootstrap.Modal.getInstance(el('m8')).hide();
+                ldTr();
+            } catch (err) { console.error("Error saving transaction:", err); alert("Error saving transaction!"); }
+        }
+
+        async function ldTr() {
+            try {
+                const trans = await getAllData(stores.tr);
+                let html = '';
+                let totalIncome = 0;
+                let totalExpense = 0;
+
+                trans.sort((a, b) => b.i1.localeCompare(a.i1)); // Sort by date desc
+
+                trans.forEach(t => {
+                    const typeClass = t.i2 === 'income' ? 'text-success' : 'text-danger';
+                    const typeTextUrdu = t.i2 === 'income' ? 'آمدن' : 'خرچ';
+                    const typeTextEng = t.i2 === 'income' ? 'Income' : 'Expense';
+
+                    if (t.i2 === 'income') totalIncome += t.i5;
+                    else totalExpense += t.i5;
+
+                    html += `<tr>
+                        <td>${t.i1 || ''}</td>
+                        <td class="${typeClass}"><span class="urdu">${typeTextUrdu}</span> / ${typeTextEng}</td>
+                        <td class="urdu">${t.i3 || ''}</td>
+                        <td>${t.i4 || ''}</td>
+                        <td>${t.i5 || 0}</td>
+                        <td class="no-print">
+                            <button class="btn btn-sm btn-warning me-1 urdu" onclick="edTr(${t.id})">ترمیم / Edit</button>
+                            <button class="btn btn-sm btn-danger urdu" onclick="delTr(${t.id})">حذف / Delete</button>
+                        </td>
+                    </tr>`;
+                });
+                inn('l8', html);
+                // Update summary
+                inn('s1', totalIncome.toFixed(2));
+                inn('s2', totalExpense.toFixed(2));
+                inn('s3', (totalIncome - totalExpense).toFixed(2));
+            } catch (err) { console.error("Error loading transactions:", err); }
+        }
+
+        async function edTr(id) {
+            try {
+                const t = await getData(stores.tr, id);
+                val('f8-id', t.id);
+                val('f8-i1', t.i1 || ''); val('f8-i2', t.i2 || 'income'); val('f8-i3', t.i3 || '');
+                val('f8-i4', t.i4 || ''); val('f8-i5', t.i5 || '');
+                new bootstrap.Modal(el('m8')).show();
+            } catch (err) { console.error("Error editing transaction:", err); }
+        }
+
+        async function delTr(id) {
+             if (confirm('کیا آپ واقعی اس لین دین کو حذف کرنا چاہتے ہیں؟ / Are you sure you want to delete this transaction?')) {
+                try {
+                    await deleteData(stores.tr, id);
+                    ldTr();
+                } catch (err) { console.error("Error deleting transaction:", err); alert("Error deleting transaction!"); }
+            }
+        }
+
+
+         // --- Report Functions ---
+         async function gnRp(type) {
+            const outDiv = el('r-out');
+            inn(outDiv, '<p class="text-center urdu">رپورٹ بنائی جا رہی ہے... / Generating report...</p>');
+            let data = [];
+            let headers = [];
+            let tblId = '';
+
+             try {
+                 if (type === 'st') {
+                     tblId = 'st-report';
+                     const clId = val('r1-1');
+                     headers = ["نام (Urdu)", "Name (Eng)", "والد (Urdu)", "Father (Eng)", "Age", "Class", "Adm Date", "Contact", "Address (Urdu)", "Address (Eng)"];
+                     let sts = await getAllData(stores.st);
+                      if (clId) {
+                         sts = sts.filter(s => s.i6 === parseInt(clId));
+                     }
+                     const cls = await getAllData(stores.cl);
+                     const clMap = cls.reduce((map, cl) => { map[cl.id] = `${cl.i1 || ''} / ${cl.i2 || ''}`; return map; }, {});
+                     data = sts.map(s => [s.n1, s.i2, s.i3, s.i4, s.i5, clMap[s.i6] || 'N/A', s.i7, s.i8, s.i9, s.i10]);
+
+                 } else if (type === 'at') {
+                    tblId = 'at-report';
+                    const clId = val('r2-1');
+                    const dtFrom = val('r2-2');
+                    const dtTo = val('r2-3');
+                    headers = ["Date", "Student Name (Urdu)", "Student Name (Eng)", "Status"];
+                    if (!clId || !dtFrom || !dtTo) {
+                        inn(outDiv, '<p class="text-danger text-center urdu">براہ کرم کلاس اور تاریخ کی حد منتخب کریں۔ / Please select class and date range.</p>'); return;
+                    }
+                    const clIdNum = parseInt(clId);
+                    // Fetch relevant students and attendance records
+                     const [sts, allAtt] = await Promise.all([
+                        getAllData(stores.st, 'c_id', clIdNum),
+                        getAllData(stores.at, 'dt') // Fetch by date index
+                     ]);
+                     const stMap = sts.reduce((map, s) => { map[s.id] = { n1: s.n1, i2: s.i2 }; return map; }, {});
+
+                     const filteredAtt = allAtt.filter(a =>
+                        a.dt >= dtFrom && a.dt <= dtTo && stMap[a.st_id]
+                     );
+
+                     filteredAtt.sort((a, b) => a.dt.localeCompare(b.dt) || (stMap[a.st_id]?.n1 || '').localeCompare(stMap[b.st_id]?.n1 || '')); // Sort by date, then student name
+
+                     data = filteredAtt.map(a => {
+                         const st = stMap[a.st_id];
+                         const statusMap = { present: 'حاضر / Present', absent: 'غیر حاضر / Absent', leave: 'رخصت / Leave' };
+                         return [a.dt, st?.n1 || 'N/A', st?.i2 || 'N/A', statusMap[a.st] || a.st];
+                     });
+
+                 } else if (type === 'fe') {
+                     tblId = 'fe-report';
+                     const clId = val('r3-1');
+                     const status = val('r3-2');
+                     const month = val('r3-3'); // YYYY-MM
+                     headers = ["Student (Urdu)", "Student (Eng)", "Class", "Month/Year", "Amount", "Date Paid", "Status", "Desc (Urdu)", "Desc (Eng)"];
+
+                     let fees = await getAllData(stores.fe);
+                     // Filter by status
+                     if (status) fees = fees.filter(f => f.i6 === status);
+                     // Filter by month/year
+                      if (month) fees = fees.filter(f => f.i3 === month);
+
+                     // Filter by class (needs student data)
+                     const sts = await getAllData(stores.st);
+                     const stMap = sts.reduce((map, s) => { map[s.id] = { n1: s.n1, i2: s.i2, clId: s.i6 }; return map; }, {});
+
+                     if (clId) {
+                         const clIdNum = parseInt(clId);
+                         fees = fees.filter(f => stMap[f.i1] && stMap[f.i1].clId === clIdNum);
+                     }
+
+                     // Need class names map
+                      const cls = await getAllData(stores.cl);
+                      const clMap = cls.reduce((map, cl) => { map[cl.id] = `${cl.i1 || ''} / ${cl.i2 || ''}`; return map; }, {});
+
+                     fees.sort((a, b) => (stMap[a.i1]?.n1 || '').localeCompare(stMap[b.i1]?.n1 || '') || a.i3.localeCompare(b.i3)); // Sort by student, then month
+
+                     data = fees.map(f => {
+                         const st = stMap[f.i1];
+                         const cl = st ? clMap[st.clId] : 'N/A';
+                         const statusMap = { paid: 'ادا شدہ / Paid', pending: 'واجب الادا / Pending' };
+                         return [
+                            st?.n1 || 'N/A', st?.i2 || 'N/A', cl,
+                            f.i3, f.i4, f.i5, statusMap[f.i6] || f.i6,
+                            f.i7, f.i8
+                         ];
+                     });
+
+                 } else if (type === 'tr') {
+                     tblId = 'tr-report';
+                     const typeFilter = val('r4-1');
+                     const dtFrom = val('r4-2');
+                     const dtTo = val('r4-3');
+                     headers = ["Date", "Type", "Desc (Urdu)", "Desc (Eng)", "Amount"];
+
+                     let trans = await getAllData(stores.tr);
+                     // Filter
+                     if (typeFilter) trans = trans.filter(t => t.i2 === typeFilter);
+                     if (dtFrom) trans = trans.filter(t => t.i1 >= dtFrom);
+                     if (dtTo) trans = trans.filter(t => t.i1 <= dtTo);
+
+                     trans.sort((a,b) => a.i1.localeCompare(b.i1)); // Sort by date asc
+
+                     let totalIn = 0, totalOut = 0;
+                     data = trans.map(t => {
+                         const typeMap = { income: 'آمدن / Income', expense: 'خرچ / Expense'};
+                         if(t.i2 === 'income') totalIn += t.i5; else totalOut += t.i5;
+                         return [t.i1, typeMap[t.i2] || t.i2, t.i3, t.i4, t.i5.toFixed(2)];
+                     });
+                     // Add Summary Row
+                      data.push(['', '', '<strong class="urdu">کل آمدن / Total Income:</strong>', '', `<strong>${totalIn.toFixed(2)}</strong>`]);
+                      data.push(['', '', '<strong class="urdu">کل خرچ / Total Expense:</strong>', '', `<strong>${totalOut.toFixed(2)}</strong>`]);
+                      data.push(['', '', '<strong class="urdu">بیلنس / Balance:</strong>', '', `<strong>${(totalIn - totalOut).toFixed(2)}</strong>`]);
+
+                 } else {
+                     inn(outDiv, '<p class="text-center urdu">نامعلوم رپورٹ کی قسم / Unknown report type.</p>'); return;
+                 }
+
+                // Generate Table HTML
+                 let tblHtml = `<h3 class="text-center urdu">${getReportTitle(type)}</h3>
+                 <table class="table table-bordered table-striped" id="${tblId}">
+                    <thead class="table-light"><tr>`;
+                 headers.forEach(h => tblHtml += `<th class="urdu">${h}</th>`);
+                 tblHtml += `</tr></thead><tbody>`;
+                 data.forEach(row => {
+                     tblHtml += '<tr>';
+                     row.forEach(cell => tblHtml += `<td class="${typeof cell === 'string' && cell.includes('urdu') ? '' : 'urdu'}">${cell || ''}</td>`);
+                     tblHtml += '</tr>';
+                 });
+                 tblHtml += '</tbody></table>';
+                 inn(outDiv, tblHtml);
+
+             } catch (err) {
+                 console.error(`Error generating report ${type}:`, err);
+                 inn(outDiv, `<p class="text-danger text-center urdu">رپورٹ بنانے میں خرابی۔ / Error generating report.</p>`);
+             }
+         }
+
+        function getReportTitle(type){
+            switch(type){
+                case 'st': return 'طلباء کی رپورٹ / Student Report';
+                case 'at': return 'حاضری کی رپورٹ / Attendance Report';
+                case 'fe': return 'فیس کی رپورٹ / Fee Report';
+                case 'tr': return 'آمدن و خرچ کی رپورٹ / Income/Expense Report';
+                default: return 'رپورٹ / Report';
+            }
+        }
+
+        function prRp() {
+            const reportContent = el('r-out').innerHTML;
+            if (!reportContent || reportContent.includes('Generating') || reportContent.includes('Error')) {
+                 alert('پہلے ایک رپورٹ بنائیں۔ / Please generate a report first.');
+                 return;
+            }
+            window.print();
+        }
+
+         function exCsv(tblId, fName) {
+            const tbl = el(tblId);
+            if (!tbl) { alert('برآمد کرنے کے لئے کوئی رپورٹ نہیں ملی۔ / No report found to export.'); return; }
+
+            let csv = [];
+            // Header Row
+            const headers = [];
+            tbl.querySelectorAll('thead th').forEach(th => {
+                // Extract text, handling potential mixed Urdu/English spans
+                let headerText = '';
+                th.childNodes.forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        headerText += node.textContent.trim();
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        headerText += node.textContent.trim(); // Get text content of spans etc.
+                    }
+                });
+                 headers.push(`"${headerText.replace(/"/g, '""')}"`); // Escape double quotes
+            });
+            csv.push(headers.join(','));
+
+            // Data Rows
+            tbl.querySelectorAll('tbody tr').forEach(row => {
+                const rowData = [];
+                 // Skip summary rows in transaction report
+                let isSummary = false;
+                row.querySelectorAll('td').forEach(td => {
+                    let cellText = '';
+                     // Handle potential complex HTML like bold tags in summary
+                     if (td.querySelector('strong')) {
+                         isSummary = true; // Detect summary rows based on <strong>
+                         cellText = td.textContent.trim(); // Get combined text
+                     } else {
+                        // Handle potential mixed Urdu/English spans within a cell
+                        td.childNodes.forEach(node => {
+                             if (node.nodeType === Node.TEXT_NODE) {
+                                cellText += node.textContent.trim();
+                            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                                cellText += node.textContent.trim();
+                            }
+                        });
+                     }
+                     rowData.push(`"${cellText.replace(/"/g, '""')}"`); // Escape double quotes
+                });
+                // Only add non-summary rows or handle them differently if needed
+                // if (!isSummary || tblId !== 'tr-report') { // Example: skip summary for tr report
+                     csv.push(rowData.join(','));
+                // }
+            });
+
+             const csvStr = csv.join('\n');
+             const blob = new Blob([`\uFEFF${csvStr}`], { type: 'text/csv;charset=utf-8;' }); // Add BOM for Excel UTF-8 compatibility
+
+            const link = document.createElement('a');
+            if (link.download !== undefined) { // Feature detection
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', fName);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            } else {
+                 alert("آپ کا براؤزر CSV ڈاؤن لوڈ کی حمایت نہیں کرتا ہے۔ / Your browser does not support downloading CSV files directly.");
+            }
+        }
+
+
+        // --- Backup & Restore ---
+        async function bakData() {
+            const backup = {};
+             const storeNames = Object.values(stores);
+            try {
+                for (const sName of storeNames) {
+                     backup[sName] = await getAllData(sName);
+                 }
+                 const json = JSON.stringify(backup, null, 2); // Pretty print JSON
+                 const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                 const dateStr = new Date().toISOString().split('T')[0];
+                link.download = `madrasa_backup_${dateStr}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                alert("بیک اپ کامیابی سے ڈاؤن لوڈ ہو گیا۔ / Backup downloaded successfully.");
+            } catch (err) {
+                 console.error("Error creating backup:", err);
+                 alert("بیک اپ بنانے میں خرابی۔ / Error creating backup.");
+            }
+        }
+
+         function resData() {
+            const fileInput = el('b1');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                 alert("براہ کرم بحال کرنے کے لئے ایک بیک اپ فائل منتخب کریں۔ / Please select a backup file to restore.");
+                return;
+            }
+            const file = fileInput.files[0];
+            if (!file.name.endsWith('.json')) {
+                 alert("براہ کرم ایک درست .json بیک اپ فائل منتخب کریں۔ / Please select a valid .json backup file.");
+                return;
+            }
+
+            if (!confirm("انتباہ! بحال کرنے سے موجودہ تمام ڈیٹا حذف ہو جائے گا۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟\n\nWARNING! Restoring will delete ALL current data. Are you absolutely sure you want to proceed?")) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const backupData = JSON.parse(e.target.result);
+                    // Clear all current data first
+                    await clearAllData();
+                    // Import data
+                    await importData(backupData);
+                     alert("ڈیٹا کامیابی سے بحال ہو گیا۔ براہ کرم صفحہ تازہ کریں یا دوبارہ لوڈ کرنے کیلئے تمام ٹیبز پر کلک کریں۔ / Data restored successfully. Please refresh the page or click through all tabs to reload views.");
+                     // Reload all data displays
+                    ldSt(); ldTc(); ldCl(); ldFe(); ldSa(); ldIv(); ldTr(); ldAt(); // Reloading ldAt might need date/class selection again
+                    // Optionally force page reload: window.location.reload();
+                } catch (err) {
+                    console.error("Error restoring data:", err);
+                    alert("ڈیٹا بحال کرنے میں خرابی۔ فائل خراب ہو سکتی ہے یا فارمیٹ غلط ہے۔ / Error restoring data. The file might be corrupt or in the wrong format.");
+                } finally {
+                     fileInput.value = ''; // Clear the file input
+                }
+            };
+             reader.onerror = (e) => {
+                console.error("Error reading file:", e);
+                alert("بیک اپ فائل پڑھنے میں خرابی۔ / Error reading backup file.");
+                fileInput.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            return new Promise(async (resolve, reject) => {
+                const storeNames = Object.values(stores);
+                 const tx = db.transaction(storeNames, "readwrite");
+                 tx.onerror = (e) => { console.error("Clear TX Error:", e.target.error); reject(e.target.error); };
+                 tx.oncomplete = () => { console.log("All stores cleared."); resolve(); };
+
+                let clearPromises = [];
+                storeNames.forEach(sName => {
+                    const store = tx.objectStore(sName);
+                    const req = store.clear();
+                    clearPromises.push(new Promise((res, rej) => {
+                        req.onsuccess = res;
+                        req.onerror = rej;
+                    }));
+                });
+
+                try {
+                    await Promise.all(clearPromises);
+                 } catch (err) {
+                    console.error("Error clearing stores:", err);
+                    reject(err); // Reject the main promise if any clear operation fails
+                }
+            });
+        }
+
+        function importData(backupData) {
+             return new Promise(async (resolve, reject) => {
+                 const storeNames = Object.keys(backupData).filter(key => stores[key]); // Ensure we only import known stores
+                 const tx = db.transaction(storeNames, "readwrite");
+                 tx.onerror = (e) => { console.error("Import TX Error:", e.target.error); reject(e.target.error); };
+                 tx.oncomplete = () => { console.log("Data import complete."); resolve(); };
+
+                 let importPromises = [];
+                 storeNames.forEach(sName => {
+                     const store = tx.objectStore(sName);
+                     const data = backupData[sName] || [];
+                     data.forEach(item => {
+                         // Important: Remove the ID if it exists to allow autoIncrement to work correctly
+                         // unless your backup intentionally includes specific IDs you want to preserve
+                         // For simplicity here, we assume autoIncrement should generate new IDs.
+                         // If preserving IDs, ensure the object store wasn't cleared or handle potential conflicts.
+                         // Let's assume we want IndexedDB to assign new IDs during restore.
+                        // delete item.id; // Remove potentially conflicting ID
+
+                         // Alternative: Keep the ID if you need to restore relationships.
+                         // Requires careful handling during backup/restore design.
+                         // Let's keep the ID for now, assuming the clear operation worked.
+                         const req = store.put(item); // Use put to handle adding items with existing IDs after clear
+                          importPromises.push(new Promise((res, rej) => {
+                            req.onsuccess = res;
+                            req.onerror = (e) => { console.warn(`Import Error (${sName}, item ${item.id}):`, e.target.error); res(); /* Continue on single item error? */ };
+                         }));
+                     });
+                 });
+
+                 try {
+                    await Promise.all(importPromises);
+                 } catch (err) {
+                    // This catch might not be reached if individual puts fail but the transaction continues
+                    console.error("Error during import operations:", err);
+                    reject(err);
+                 }
+             });
+        }
+
+        // --- Initial Load ---
+         document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDb();
+                 // Set default attendance date
+                 el('a1').valueAsDate = new Date();
+                // Load initial data
+                 ldSt();
+                 ldTc();
+                 ldCl();
+                 ldAt(); // Load attendance section dependencies (dropdown)
+                 ldFe();
+                 ldSa();
+                 ldIv();
+                 ldTr();
+            } catch (error) {
+                 console.error("Initialization failed:", error);
+                 alert("ایپلیکیشن شروع کرنے میں ناکام! / Failed to initialize the application!");
+            }
+             // Add event listener for attendance date change
+             el('a1').addEventListener('change', ldAt);
+        });
+
+    </script>
+
+</body>
+</html>
