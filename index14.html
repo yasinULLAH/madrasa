@@ -1,0 +1,3450 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دینی مدرسہ مینجمنٹ سسٹم</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #34495e;
+        }
+        .sidebar a.active {
+            background-color: #3498db;
+        }
+        .main-content {
+            margin-right: 250px;
+            padding: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+        .btn-success {
+            background-color: #2ecc71;
+            border-color: #2ecc71;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+        .table th {
+            background-color: #3498db;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-right: 0;
+            }
+        }
+        .urdu-input {
+            text-align: right;
+            direction: rtl;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="text-center mb-4">
+                    <h4>دینی مدرسہ مینجمنٹ</h4>
+                </div>
+                <ul class="nav flex-column">
+                    <li><a href="#" class="active" id="dashboard-link"><i class="fas fa-home"></i> ڈیش بورڈ</a></li>
+                    <li><a href="#" id="students-link"><i class="fas fa-users"></i> طلبہ کا انتظام</a></li>
+                    <li><a href="#" id="teachers-link"><i class="fas fa-chalkboard-teacher"></i> اساتذہ کا انتظام</a></li>
+                    <li><a href="#" id="classes-link"><i class="fas fa-school"></i> جماعتوں کا انتظام</a></li>
+                    <li><a href="#" id="attendance-link"><i class="fas fa-clipboard-check"></i> حاضری کا نظام</a></li>
+                    <li><a href="#" id="fees-link"><i class="fas fa-money-bill-wave"></i> فیس اور تنخواہ</a></li>
+                    <li><a href="#" id="reports-link"><i class="fas fa-file-alt"></i> رپورٹس</a></li>
+                    <li><a href="#" id="inventory-link"><i class="fas fa-boxes"></i> انوینٹری اور اخراجات</a></li>
+                    <li><a href="#" id="backup-link"><i class="fas fa-database"></i> بیک اپ اور بحالی</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <!-- Dashboard -->
+                <div id="dashboard-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">ڈیش بورڈ</h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card text-white bg-primary mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">کل طلبہ</h5>
+                                    <p class="card-text display-4" id="total-students">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">کل اساتذہ</h5>
+                                    <p class="card-text display-4" id="total-teachers">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white bg-info mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">کل جماعتیں</h5>
+                                    <p class="card-text display-4" id="total-classes">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    حالیہ داخل شدہ طلبہ
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="recent-students-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>نام</th>
+                                                    <th>جماعت</th>
+                                                    <th>تاریخ داخلہ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    آج کی حاضری
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="today-attendance-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>جماعت</th>
+                                                    <th>حاضر</th>
+                                                    <th>غائب</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Management -->
+                <div id="students-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">طلبہ کا انتظام</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button class="btn btn-primary me-2" id="add-student-btn">نیا طالب علم شامل کریں</button>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4" id="add-student-form" style="display: none;">
+                        <div class="card-header">
+                            نیا طالب علم شامل کریں
+                        </div>
+                        <div class="card-body">
+                            <form id="student-form">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="student-name" class="form-label">نام</label>
+                                        <input type="text" class="form-control urdu-input" id="student-name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="father-name" class="form-label">والد کا نام</label>
+                                        <input type="text" class="form-control urdu-input" id="father-name" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="student-age" class="form-label">عمر</label>
+                                        <input type="number" class="form-control" id="student-age" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="student-class" class="form-label">جماعت</label>
+                                        <select class="form-select" id="student-class" required>
+                                            <option value="">منتخب کریں</option>
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="admission-date" class="form-label">تاریخ داخلہ</label>
+                                        <input type="date" class="form-control" id="admission-date" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="student-contact" class="form-label">رابطہ نمبر</label>
+                                        <input type="tel" class="form-control" id="student-contact">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="student-address" class="form-label">پتہ</label>
+                                    <textarea class="form-control urdu-input" id="student-address" rows="2"></textarea>
+                                </div>
+                                <div id="student-custom-fields">
+                                    <!-- Custom fields will be added here -->
+                                </div>
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-secondary" id="add-student-field-btn">نیا فیلڈ شامل کریں</button>
+                                </div>
+                                <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                                <button type="button" class="btn btn-danger" id="cancel-student-btn">منسوخ کریں</button>
+                                <input type="hidden" id="student-id">
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            تمام طلبہ کی فہرست
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="students-table">
+                                    <thead>
+                                        <tr>
+                                            <th>نام</th>
+                                            <th>والد کا نام</th>
+                                            <th>عمر</th>
+                                            <th>جماعت</th>
+                                            <th>تاریخ داخلہ</th>
+                                            <th>رابطہ نمبر</th>
+                                            <th>عمل</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teachers Management -->
+                <div id="teachers-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">اساتذہ کا انتظام</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button class="btn btn-primary me-2" id="add-teacher-btn">نیا استاد شامل کریں</button>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4" id="add-teacher-form" style="display: none;">
+                        <div class="card-header">
+                            نیا استاد شامل کریں
+                        </div>
+                        <div class="card-body">
+                            <form id="teacher-form">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="teacher-name" class="form-label">نام</label>
+                                        <input type="text" class="form-control urdu-input" id="teacher-name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="teacher-father-name" class="form-label">والد کا نام</label>
+                                        <input type="text" class="form-control urdu-input" id="teacher-father-name" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="teacher-age" class="form-label">عمر</label>
+                                        <input type="number" class="form-control" id="teacher-age" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="teacher-qualification" class="form-label">قابلیت</label>
+                                        <input type="text" class="form-control urdu-input" id="teacher-qualification" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="teacher-joining-date" class="form-label">تاریخ تقرری</label>
+                                        <input type="date" class="form-control" id="teacher-joining-date" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="teacher-contact" class="form-label">رابطہ نمبر</label>
+                                        <input type="tel" class="form-control" id="teacher-contact" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="teacher-salary" class="form-label">تنخواہ</label>
+                                        <input type="number" class="form-control" id="teacher-salary" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="teacher-address" class="form-label">پتہ</label>
+                                    <textarea class="form-control urdu-input" id="teacher-address" rows="2"></textarea>
+                                </div>
+                                <div id="teacher-custom-fields">
+                                    <!-- Custom fields will be added here -->
+                                </div>
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-secondary" id="add-teacher-field-btn">نیا فیلڈ شامل کریں</button>
+                                </div>
+                                <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                                <button type="button" class="btn btn-danger" id="cancel-teacher-btn">منسوخ کریں</button>
+                                <input type="hidden" id="teacher-id">
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            تمام اساتذہ کی فہرست
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="teachers-table">
+                                    <thead>
+                                        <tr>
+                                            <th>نام</th>
+                                            <th>قابلیت</th>
+                                            <th>عمر</th>
+                                            <th>تنخواہ</th>
+                                            <th>رابطہ نمبر</th>
+                                            <th>عمل</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classes Management -->
+                <div id="classes-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">جماعتوں کا انتظام</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button class="btn btn-primary me-2" id="add-class-btn">نیا جماعت شامل کریں</button>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4" id="add-class-form" style="display: none;">
+                        <div class="card-header">
+                            نیا جماعت شامل کریں
+                        </div>
+                        <div class="card-body">
+                            <form id="class-form">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="class-name" class="form-label">جماعت کا نام</label>
+                                        <input type="text" class="form-control urdu-input" id="class-name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="class-teacher" class="form-label">جماعت استاد</label>
+                                        <select class="form-select" id="class-teacher" required>
+                                            <option value="">منتخب کریں</option>
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="class-description" class="form-label">تفصیل</label>
+                                    <textarea class="form-control urdu-input" id="class-description" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">طالب علم شامل کریں</label>
+                                    <select class="form-select" id="class-students" multiple>
+                                        <!-- Will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                                <button type="button" class="btn btn-danger" id="cancel-class-btn">منسوخ کریں</button>
+                                <input type="hidden" id="class-id">
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            تمام جماعتیں
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="classes-table">
+                                    <thead>
+                                        <tr>
+                                            <th>جماعت کا نام</th>
+                                            <th>استاد</th>
+                                            <th>طلبہ کی تعداد</th>
+                                            <th>عمل</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Management -->
+                <div id="attendance-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">حاضری کا نظام</h1>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            حاضری درج کریں
+                        </div>
+                        <div class="card-body">
+                            <form id="attendance-form">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="attendance-date" class="form-label">تاریخ</label>
+                                        <input type="date" class="form-control" id="attendance-date" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="attendance-class" class="form-label">جماعت</label>
+                                        <select class="form-select" id="attendance-class" required>
+                                            <option value="">منتخب کریں</option>
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">عمل</label><br>
+                                        <button type="button" class="btn btn-primary" id="load-students-btn">طلبہ لوڈ کریں</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" id="attendance-recording-section" style="display: none;">
+                        <div class="card-header">
+                            طلبہ کی حاضری درج کریں
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="attendance-table">
+                                    <thead>
+                                        <tr>
+                                            <th>نام</th>
+                                            <th>حالت</th>
+                                            <th>نوٹ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn btn-success mt-3" id="save-attendance-btn">حاضری محفوظ کریں</button>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            حاضری کی رپورٹ
+                        </div>
+                        <div class="card-body">
+                            <form id="attendance-report-form">
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="report-start-date" class="form-label">شروع تاریخ</label>
+                                        <input type="date" class="form-control" id="report-start-date">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="report-end-date" class="form-label">اختتام تاریخ</label>
+                                        <input type="date" class="form-control" id="report-end-date">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="report-class" class="form-label">جماعت</label>
+                                        <select class="form-select" id="report-class">
+                                            <option value="">تمام جماعتیں</option>
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">عمل</label><br>
+                                        <button type="button" class="btn btn-primary" id="generate-report-btn">رپورٹ بنائیں</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="table-responsive mt-3" id="attendance-report-result">
+                                <!-- Report will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fees and Salary Management -->
+                <div id="fees-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">فیس اور تنخواہ کا نظام</h1>
+                    </div>
+
+                    <ul class="nav nav-tabs" id="fees-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="student-fees-tab" data-bs-toggle="tab" data-bs-target="#student-fees" type="button" role="tab">طلبہ کی فیس</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="teacher-salary-tab" data-bs-toggle="tab" data-bs-target="#teacher-salary" type="button" role="tab">اساتذہ کی تنخواہ</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="fees-tab-content">
+                        <div class="tab-pane fade show active" id="student-fees" role="tabpanel">
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    فیس وصول کریں
+                                </div>
+                                <div class="card-body">
+                                    <form id="fee-payment-form">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label for="fee-student" class="form-label">طالب علم</label>
+                                                <select class="form-select" id="fee-student" required>
+                                                    <option value="">منتخب کریں</option>
+                                                    <!-- Will be populated by JavaScript -->
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="fee-amount" class="form-label">رقم</label>
+                                                <input type="number" class="form-control" id="fee-amount" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="fee-date" class="form-label">تاریخ</label>
+                                                <input type="date" class="form-control" id="fee-date" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="fee-notes" class="form-label">نوٹ</label>
+                                            <textarea class="form-control urdu-input" id="fee-notes" rows="2"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">فیس وصول کریں</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    فیس کی رپورٹ
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="fees-report-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>نام</th>
+                                                    <th>جماعت</th>
+                                                    <th>آخری ادائیگی</th>
+                                                    <th>رقم</th>
+                                                    <th>بقیہ</th>
+                                                    <th>عمل</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="teacher-salary" role="tabpanel">
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    تنخواہ ادا کریں
+                                </div>
+                                <div class="card-body">
+                                    <form id="salary-payment-form">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label for="salary-teacher" class="form-label">استاد</label>
+                                                <select class="form-select" id="salary-teacher" required>
+                                                    <option value="">منتخب کریں</option>
+                                                    <!-- Will be populated by JavaScript -->
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="salary-amount" class="form-label">رقم</label>
+                                                <input type="number" class="form-control" id="salary-amount" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="salary-date" class="form-label">تاریخ</label>
+                                                <input type="date" class="form-control" id="salary-date" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="salary-notes" class="form-label">نوٹ</label>
+                                            <textarea class="form-control urdu-input" id="salary-notes" rows="2"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">تنخواہ ادا کریں</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    تنخواہ کی رپورٹ
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="salary-report-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>نام</th>
+                                                    <th>تنخواہ</th>
+                                                    <th>آخری ادائیگی</th>
+                                                    <th>رقم</th>
+                                                    <th>بقیہ</th>
+                                                    <th>عمل</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports -->
+                <div id="reports-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">رپورٹس</h1>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            رپورٹس جنریٹ کریں
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">طلبہ کی رپورٹ</h5>
+                                            <p class="card-text">تمام طلبہ کی تفصیلی رپورٹ جنریٹ کریں</p>
+                                            <button class="btn btn-primary" id="generate-students-report">جنریٹ کریں</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">اساتذہ کی رپورٹ</h5>
+                                            <p class="card-text">تمام اساتذہ کی تفصیلی رپورٹ جنریٹ کریں</p>
+                                            <button class="btn btn-primary" id="generate-teachers-report">جنریٹ کریں</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">جماعتوں کی رپورٹ</h5>
+                                            <p class="card-text">تمام جماعتوں کی تفصیلی رپورٹ جنریٹ کریں</p>
+                                            <button class="btn btn-primary" id="generate-classes-report">جنریٹ کریں</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">حاضری کی رپورٹ</h5>
+                                            <p class="card-text">مخصوص مدت کی حاضری کی رپورٹ جنریٹ کریں</p>
+                                            <button class="btn btn-primary" id="generate-attendance-report">جنریٹ کریں</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">فیس کی رپورٹ</h5>
+                                            <p class="card-text">تمام فیس کی تفصیلی رپورٹ جنریٹ کریں</p>
+                                            <button class="btn btn-primary" id="generate-fees-report">جنریٹ کریں</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">تنخواہ کی رپورٹ</h5>
+                                            <p class="card-text">تمام تنخواہ کی تفصیلی رپورٹ جنریٹ کریں</p>
+                                            <button class="btn btn-primary" id="generate-salaries-report">جنریٹ کریں</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4" id="report-result-section" style="display: none;">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">رپورٹ</h5>
+                            <div>
+                                <button class="btn btn-sm btn-success me-2" id="print-report-btn">پرنٹ کریں</button>
+                                <button class="btn btn-sm btn-primary" id="export-report-btn">CSV ڈاؤن لوڈ کریں</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="report-result-table">
+                                    <!-- Report will be displayed here -->
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory and Expenses -->
+                <div id="inventory-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">انوینٹری اور اخراجات</h1>
+                    </div>
+
+                    <ul class="nav nav-tabs" id="inventory-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="inventory-tab-btn" data-bs-toggle="tab" data-bs-target="#inventory-tab-content" type="button" role="tab">انوینٹری</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="expenses-tab-btn" data-bs-toggle="tab" data-bs-target="#expenses-tab-content" type="button" role="tab">اخراجات</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="income-tab-btn" data-bs-toggle="tab" data-bs-target="#income-tab-content" type="button" role="tab">آمدنی</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="inventory-tab-panes">
+                        <div class="tab-pane fade show active" id="inventory-tab-content" role="tabpanel">
+                            <div class="card mt-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span>انوینٹری کا انتظام</span>
+                                    <button class="btn btn-primary btn-sm" id="add-inventory-btn">نیا آئٹم شامل کریں</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="inventory-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>آئٹم کا نام</th>
+                                                    <th>مقدار</th>
+                                                    <th>قیمت</th>
+                                                    <th>تاریخ</th>
+                                                    <th>نوٹ</th>
+                                                    <th>عمل</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="expenses-tab-content" role="tabpanel">
+                            <div class="card mt-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span>اخراجات درج کریں</span>
+                                    <button class="btn btn-primary btn-sm" id="add-expense-btn">نیا خرچہ شامل کریں</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="expenses-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>خرچہ کی قسم</th>
+                                                    <th>رقم</th>
+                                                    <th>تاریخ</th>
+                                                    <th>تفصیل</th>
+                                                    <th>عمل</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="income-tab-content" role="tabpanel">
+                            <div class="card mt-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span>آمدنی درج کریں</span>
+                                    <button class="btn btn-primary btn-sm" id="add-income-btn">نیا آمدنی شامل کریں</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="income-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>آمدنی کی قسم</th>
+                                                    <th>رقم</th>
+                                                    <th>تاریخ</th>
+                                                    <th>تفصیل</th>
+                                                    <th>عمل</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Modal -->
+                    <div class="modal fade" id="inventory-modal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="inventory-modal-title">انوینٹری آئٹم شامل کریں</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="inventory-form">
+                                        <div class="mb-3">
+                                            <label for="inventory-item" class="form-label">آئٹم کا نام</label>
+                                            <input type="text" class="form-control urdu-input" id="inventory-item" required>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="inventory-quantity" class="form-label">مقدار</label>
+                                                <input type="number" class="form-control" id="inventory-quantity" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="inventory-price" class="form-label">قیمت</label>
+                                                <input type="number" class="form-control" id="inventory-price" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="inventory-date" class="form-label">تاریخ</label>
+                                            <input type="date" class="form-control" id="inventory-date" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="inventory-notes" class="form-label">نوٹ</label>
+                                            <textarea class="form-control urdu-input" id="inventory-notes" rows="2"></textarea>
+                                        </div>
+                                        <input type="hidden" id="inventory-id">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
+                                    <button type="button" class="btn btn-primary" id="save-inventory-btn">محفوظ کریں</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expense Modal -->
+                    <div class="modal fade" id="expense-modal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="expense-modal-title">خرچہ شامل کریں</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="expense-form">
+                                        <div class="mb-3">
+                                            <label for="expense-type" class="form-label">خرچہ کی قسم</label>
+                                            <input type="text" class="form-control urdu-input" id="expense-type" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="expense-amount" class="form-label">رقم</label>
+                                            <input type="number" class="form-control" id="expense-amount" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="expense-date" class="form-label">تاریخ</label>
+                                            <input type="date" class="form-control" id="expense-date" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="expense-description" class="form-label">تفصیل</label>
+                                            <textarea class="form-control urdu-input" id="expense-description" rows="2"></textarea>
+                                        </div>
+                                        <input type="hidden" id="expense-id">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
+                                    <button type="button" class="btn btn-primary" id="save-expense-btn">محفوظ کریں</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Income Modal -->
+                    <div class="modal fade" id="income-modal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="income-modal-title">آمدنی شامل کریں</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="income-form">
+                                        <div class="mb-3">
+                                            <label for="income-type" class="form-label">آمدنی کی قسم</label>
+                                            <input type="text" class="form-control urdu-input" id="income-type" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="income-amount" class="form-label">رقم</label>
+                                            <input type="number" class="form-control" id="income-amount" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="income-date" class="form-label">تاریخ</label>
+                                            <input type="date" class="form-control" id="income-date" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="income-description" class="form-label">تفصیل</label>
+                                            <textarea class="form-control urdu-input" id="income-description" rows="2"></textarea>
+                                        </div>
+                                        <input type="hidden" id="income-id">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
+                                    <button type="button" class="btn btn-primary" id="save-income-btn">محفوظ کریں</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup and Restore -->
+                <div id="backup-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">بیک اپ اور بحالی</h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    ڈیٹا کا بیک اپ بنائیں
+                                </div>
+                                <div class="card-body">
+                                    <p>اپنے تمام ڈیٹا کا بیک اپ ڈاؤن لوڈ کریں۔ یہ ایک JSON فائل ہوگی جسے آپ بعد میں بحال کر سکتے ہیں۔</p>
+                                    <button class="btn btn-primary" id="backup-data-btn">بیک اپ ڈاؤن لوڈ کریں</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    ڈیٹا بحال کریں
+                                </div>
+                                <div class="card-body">
+                                    <p>پہلے سے محفوظ شدہ بیک اپ سے اپنا ڈیٹا بحال کریں۔ نوٹ: موجودہ ڈیٹا اوور رائٹ ہو جائے گا۔</p>
+                                    <div class="mb-3">
+                                        <label for="restore-file" class="form-label">بیک اپ فائل منتخب کریں</label>
+                                        <input class="form-control" type="file" id="restore-file" accept=".json">
+                                    </div>
+                                    <button class="btn btn-success" id="restore-data-btn">ڈیٹا بحال کریں</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            ڈیٹا کو صاف کریں
+                        </div>
+                        <div class="card-body">
+                            <p>تمام ڈیٹا کو مستقل طور پر حذف کر دیں۔ یہ عمل واپس نہیں ہو سکتا۔</p>
+                            <button class="btn btn-danger" id="clear-data-btn">تمام ڈیٹا صاف کریں</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize IndexedDB
+            const dbName = 'DeeniMadrasaDB';
+            const dbVersion = 1;
+            
+            let db;
+            const request = indexedDB.open(dbName, dbVersion);
+            
+            request.onupgradeneeded = function(event) {
+                db = event.target.result;
+                
+                // Create object stores
+                if (!db.objectStoreNames.contains('students')) {
+                    const studentsStore = db.createObjectStore('students', { keyPath: 'id', autoIncrement: true });
+                    studentsStore.createIndex('name', 'name', { unique: false });
+                    studentsStore.createIndex('class', 'class', { unique: false });
+                }
+                
+                if (!db.objectStoreNames.contains('teachers')) {
+                    const teachersStore = db.createObjectStore('teachers', { keyPath: 'id', autoIncrement: true });
+                    teachersStore.createIndex('name', 'name', { unique: false });
+                }
+                
+                if (!db.objectStoreNames.contains('classes')) {
+                    const classesStore = db.createObjectStore('classes', { keyPath: 'id', autoIncrement: true });
+                    classesStore.createIndex('name', 'name', { unique: true });
+                }
+                
+                if (!db.objectStoreNames.contains('attendance')) {
+                    const attendanceStore = db.createObjectStore('attendance', { keyPath: 'id', autoIncrement: true });
+                    attendanceStore.createIndex('date', 'date', { unique: false });
+                    attendanceStore.createIndex('classId', 'classId', { unique: false });
+                }
+                
+                if (!db.objectStoreNames.contains('fees')) {
+                    const feesStore = db.createObjectStore('fees', { keyPath: 'id', autoIncrement: true });
+                    feesStore.createIndex('studentId', 'studentId', { unique: false });
+                    feesStore.createIndex('date', 'date', { unique: false });
+                }
+                
+                if (!db.objectStoreNames.contains('salaries')) {
+                    const salariesStore = db.createObjectStore('salaries', { keyPath: 'id', autoIncrement: true });
+                    salariesStore.createIndex('teacherId', 'teacherId', { unique: false });
+                    salariesStore.createIndex('date', 'date', { unique: false });
+                }
+                
+                if (!db.objectStoreNames.contains('inventory')) {
+                    db.createObjectStore('inventory', { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains('expenses')) {
+                    db.createObjectStore('expenses', { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains('income')) {
+                    db.createObjectStore('income', { keyPath: 'id', autoIncrement: true });
+                }
+            };
+            
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                console.log('Database initialized successfully');
+                updateDashboard();
+                loadStudents();
+                loadTeachers();
+                loadClasses();
+            };
+            
+            request.onerror = function(event) {
+                console.error('Database error:', event.target.error);
+            };
+            
+            // Navigation
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Hide all sections
+                    document.querySelectorAll('.main-content > div').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.sidebar a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    
+                    // Show the selected section and mark link as active
+                    const sectionId = this.id.replace('-link', '-section');
+                    document.getElementById(sectionId).style.display = 'block';
+                    this.classList.add('active');
+                });
+            });
+            
+            // Student Management
+            document.getElementById('add-student-btn').addEventListener('click', function() {
+                document.getElementById('add-student-form').style.display = 'block';
+                document.getElementById('student-form').reset();
+                document.getElementById('student-id').value = '';
+                document.getElementById('student-custom-fields').innerHTML = '';
+            });
+            
+            document.getElementById('cancel-student-btn').addEventListener('click', function() {
+                document.getElementById('add-student-form').style.display = 'none';
+            });
+            
+            document.getElementById('add-student-field-btn').addEventListener('click', function() {
+                const fieldId = Date.now();
+                const fieldHtml = `
+                    <div class="row mb-3" id="student-field-${fieldId}">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control urdu-input" placeholder="فیلڈ کا نام" required>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control urdu-input" placeholder="قدر" required>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger w-100" onclick="document.getElementById('student-field-${fieldId}').remove()">حذف کریں</button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('student-custom-fields').insertAdjacentHTML('beforeend', fieldHtml);
+            });
+            
+            document.getElementById('student-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const student = {
+                    name: document.getElementById('student-name').value,
+                    fatherName: document.getElementById('father-name').value,
+                    age: document.getElementById('student-age').value,
+                    class: document.getElementById('student-class').value,
+                    admissionDate: document.getElementById('admission-date').value,
+                    contact: document.getElementById('student-contact').value,
+                    address: document.getElementById('student-address').value,
+                    customFields: []
+                };
+                
+                // Get custom fields
+                const customFields = document.getElementById('student-custom-fields').querySelectorAll('.row');
+                customFields.forEach(field => {
+                    const inputs = field.querySelectorAll('input');
+                    student.customFields.push({
+                        name: inputs[0].value,
+                        value: inputs[1].value
+                    });
+                });
+                
+                const studentId = document.getElementById('student-id').value;
+                const transaction = db.transaction(['students'], 'readwrite');
+                const store = transaction.objectStore('students');
+                
+                if (studentId) {
+                    // Update existing student
+                    student.id = parseInt(studentId);
+                    const request = store.put(student);
+                    
+                    request.onsuccess = function() {
+                        alert('طالب علم کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں');
+                        document.getElementById('add-student-form').style.display = 'none';
+                        loadStudents();
+                        updateDashboard();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('طالب علم کی معلومات اپ ڈیٹ کرنے میں خرابی');
+                    };
+                } else {
+                    // Add new student
+                    const request = store.add(student);
+                    
+                    request.onsuccess = function() {
+                        alert('نیا طالب علم کامیابی سے شامل ہو گیا');
+                        document.getElementById('add-student-form').style.display = 'none';
+                        loadStudents();
+                        updateDashboard();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('طالب علم شامل کرنے میں خرابی');
+                    };
+                }
+            });
+            
+            // Teacher Management
+            document.getElementById('add-teacher-btn').addEventListener('click', function() {
+                document.getElementById('add-teacher-form').style.display = 'block';
+                document.getElementById('teacher-form').reset();
+                document.getElementById('teacher-id').value = '';
+                document.getElementById('teacher-custom-fields').innerHTML = '';
+            });
+            
+            document.getElementById('cancel-teacher-btn').addEventListener('click', function() {
+                document.getElementById('add-teacher-form').style.display = 'none';
+            });
+            
+            document.getElementById('add-teacher-field-btn').addEventListener('click', function() {
+                const fieldId = Date.now();
+                const fieldHtml = `
+                    <div class="row mb-3" id="teacher-field-${fieldId}">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control urdu-input" placeholder="فیلڈ کا نام" required>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control urdu-input" placeholder="قدر" required>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger w-100" onclick="document.getElementById('teacher-field-${fieldId}').remove()">حذف کریں</button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('teacher-custom-fields').insertAdjacentHTML('beforeend', fieldHtml);
+            });
+            
+            document.getElementById('teacher-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const teacher = {
+                    name: document.getElementById('teacher-name').value,
+                    fatherName: document.getElementById('teacher-father-name').value,
+                    age: document.getElementById('teacher-age').value,
+                    qualification: document.getElementById('teacher-qualification').value,
+                    joiningDate: document.getElementById('teacher-joining-date').value,
+                    contact: document.getElementById('teacher-contact').value,
+                    salary: document.getElementById('teacher-salary').value,
+                    address: document.getElementById('teacher-address').value,
+                    customFields: []
+                };
+                
+                // Get custom fields
+                const customFields = document.getElementById('teacher-custom-fields').querySelectorAll('.row');
+                customFields.forEach(field => {
+                    const inputs = field.querySelectorAll('input');
+                    teacher.customFields.push({
+                        name: inputs[0].value,
+                        value: inputs[1].value
+                    });
+                });
+                
+                const teacherId = document.getElementById('teacher-id').value;
+                const transaction = db.transaction(['teachers'], 'readwrite');
+                const store = transaction.objectStore('teachers');
+                
+                if (teacherId) {
+                    // Update existing teacher
+                    teacher.id = parseInt(teacherId);
+                    const request = store.put(teacher);
+                    
+                    request.onsuccess = function() {
+                        alert('استاد کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں');
+                        document.getElementById('add-teacher-form').style.display = 'none';
+                        loadTeachers();
+                        updateDashboard();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('استاد کی معلومات اپ ڈیٹ کرنے میں خرابی');
+                    };
+                } else {
+                    // Add new teacher
+                    const request = store.add(teacher);
+                    
+                    request.onsuccess = function() {
+                        alert('نیا استاد کامیابی سے شامل ہو گیا');
+                        document.getElementById('add-teacher-form').style.display = 'none';
+                        loadTeachers();
+                        updateDashboard();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('استاد شامل کرنے میں خرابی');
+                    };
+                }
+            });
+            
+            // Class Management
+            document.getElementById('add-class-btn').addEventListener('click', function() {
+                document.getElementById('add-class-form').style.display = 'block';
+                document.getElementById('class-form').reset();
+                document.getElementById('class-id').value = '';
+                
+                // Load teachers for dropdown
+                loadTeachersForDropdown();
+                
+                // Load students for multiselect
+                loadStudentsForMultiselect();
+            });
+            
+            document.getElementById('cancel-class-btn').addEventListener('click', function() {
+                document.getElementById('add-class-form').style.display = 'none';
+            });
+            
+            document.getElementById('class-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const selectedStudents = Array.from(document.getElementById('class-students').selectedOptions).map(option => parseInt(option.value));
+                
+                const classData = {
+                    name: document.getElementById('class-name').value,
+                    teacherId: parseInt(document.getElementById('class-teacher').value),
+                    description: document.getElementById('class-description').value,
+                    studentIds: selectedStudents
+                };
+                
+                const classId = document.getElementById('class-id').value;
+                const transaction = db.transaction(['classes'], 'readwrite');
+                const store = transaction.objectStore('classes');
+                
+                if (classId) {
+                    // Update existing class
+                    classData.id = parseInt(classId);
+                    const request = store.put(classData);
+                    
+                    request.onsuccess = function() {
+                        alert('جماعت کی معلومات کامیابی سے اپ ڈیٹ ہو گئیں');
+                        document.getElementById('add-class-form').style.display = 'none';
+                        loadClasses();
+                        updateDashboard();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('جماعت کی معلومات اپ ڈیٹ کرنے میں خرابی');
+                    };
+                } else {
+                    // Add new class
+                    const request = store.add(classData);
+                    
+                    request.onsuccess = function() {
+                        alert('نیا جماعت کامیابی سے شامل ہو گیا');
+                        document.getElementById('add-class-form').style.display = 'none';
+                        loadClasses();
+                        updateDashboard();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('جماعت شامل کرنے میں خرابی');
+                    };
+                }
+            });
+            
+            // Attendance Management
+            document.getElementById('load-students-btn').addEventListener('click', function() {
+                const classId = document.getElementById('attendance-class').value;
+                const date = document.getElementById('attendance-date').value;
+                
+                if (!classId || !date) {
+                    alert('براہ کرم تاریخ اور جماعت منتخب کریں');
+                    return;
+                }
+                
+                loadStudentsForAttendance(classId, date);
+            });
+            
+            document.getElementById('save-attendance-btn').addEventListener('click', function() {
+                const classId = document.getElementById('attendance-class').value;
+                const date = document.getElementById('attendance-date').value;
+                
+                if (!classId || !date) {
+                    alert('براہ کرم تاریخ اور جماعت منتخب کریں');
+                    return;
+                }
+                
+                const attendanceRows = document.querySelectorAll('#attendance-table tbody tr');
+                const attendanceData = [];
+                
+                attendanceRows.forEach(row => {
+                    const studentId = row.getAttribute('data-student-id');
+                    const status = row.querySelector('select').value;
+                    const note = row.querySelector('input[type="text"]').value;
+                    
+                    attendanceData.push({
+                        studentId: parseInt(studentId),
+                        status: status,
+                        note: note
+                    });
+                });
+                
+                const attendanceRecord = {
+                    classId: parseInt(classId),
+                    date: date,
+                    attendance: attendanceData
+                };
+                
+                // Check if attendance already exists for this date and class
+                const transaction = db.transaction(['attendance'], 'readwrite');
+                const store = transaction.objectStore('attendance');
+                const index = store.index('date');
+                const dateRange = IDBKeyRange.only(date);
+                const request = index.openCursor(dateRange);
+                
+                let existingRecordId = null;
+                
+                request.onsuccess = function(event) {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        if (cursor.value.classId === parseInt(classId)) {
+                            existingRecordId = cursor.value.id;
+                        }
+                        cursor.continue();
+                    } else {
+                        // No more records
+                        if (existingRecordId) {
+                            // Update existing record
+                            attendanceRecord.id = existingRecordId;
+                            const updateRequest = store.put(attendanceRecord);
+                            
+                            updateRequest.onsuccess = function() {
+                                alert('حاضری کامیابی سے اپ ڈیٹ ہو گئی');
+                                updateDashboard();
+                            };
+                            
+                            updateRequest.onerror = function() {
+                                alert('حاضری اپ ڈیٹ کرنے میں خرابی');
+                            };
+                        } else {
+                            // Add new record
+                            const addRequest = store.add(attendanceRecord);
+                            
+                            addRequest.onsuccess = function() {
+                                alert('حاضری کامیابی سے محفوظ ہو گئی');
+                                updateDashboard();
+                            };
+                            
+                            addRequest.onerror = function() {
+                                alert('حاضری محفوظ کرنے میں خرابی');
+                            };
+                        }
+                    }
+                };
+                
+                request.onerror = function() {
+                    alert('حاضری چیک کرنے میں خرابی');
+                };
+            });
+            
+            document.getElementById('generate-report-btn').addEventListener('click', function() {
+                const startDate = document.getElementById('report-start-date').value;
+                const endDate = document.getElementById('report-end-date').value;
+                const classId = document.getElementById('report-class').value;
+                
+                if (!startDate || !endDate) {
+                    alert('براہ کرم تاریخوں کی حد منتخب کریں');
+                    return;
+                }
+                
+                generateAttendanceReport(startDate, endDate, classId);
+            });
+            
+            // Fees and Salary Management
+            document.getElementById('fee-payment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const feePayment = {
+                    studentId: parseInt(document.getElementById('fee-student').value),
+                    amount: parseFloat(document.getElementById('fee-amount').value),
+                    date: document.getElementById('fee-date').value,
+                    notes: document.getElementById('fee-notes').value
+                };
+                
+                const transaction = db.transaction(['fees'], 'readwrite');
+                const store = transaction.objectStore('fees');
+                const request = store.add(feePayment);
+                
+                request.onsuccess = function() {
+                    alert('فیس کی ادائیگی کامیابی سے محفوظ ہو گئی');
+                    document.getElementById('fee-payment-form').reset();
+                    loadFeesReport();
+                };
+                
+                request.onerror = function() {
+                    alert('فیس کی ادائیگی محفوظ کرنے میں خرابی');
+                };
+            });
+            
+            document.getElementById('salary-payment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const salaryPayment = {
+                    teacherId: parseInt(document.getElementById('salary-teacher').value),
+                    amount: parseFloat(document.getElementById('salary-amount').value),
+                    date: document.getElementById('salary-date').value,
+                    notes: document.getElementById('salary-notes').value
+                };
+                
+                const transaction = db.transaction(['salaries'], 'readwrite');
+                const store = transaction.objectStore('salaries');
+                const request = store.add(salaryPayment);
+                
+                request.onsuccess = function() {
+                    alert('تنخواہ کی ادائیگی کامیابی سے محفوظ ہو گئی');
+                    document.getElementById('salary-payment-form').reset();
+                    loadSalariesReport();
+                };
+                
+                request.onerror = function() {
+                    alert('تنخواہ کی ادائیگی محفوظ کرنے میں خرابی');
+                };
+            });
+            
+            // Reports
+            document.getElementById('generate-students-report').addEventListener('click', function() {
+                generateStudentsReport();
+            });
+            
+            document.getElementById('generate-teachers-report').addEventListener('click', function() {
+                generateTeachersReport();
+            });
+            
+            document.getElementById('generate-classes-report').addEventListener('click', function() {
+                generateClassesReport();
+            });
+            
+            document.getElementById('generate-attendance-report').addEventListener('click', function() {
+                // Show the attendance report section
+                document.getElementById('attendance-section').style.display = 'block';
+                document.getElementById('reports-section').style.display = 'none';
+                
+                // Update active link
+                document.querySelectorAll('.sidebar a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById('attendance-link').classList.add('active');
+            });
+            
+            document.getElementById('generate-fees-report').addEventListener('click', function() {
+                // Show the fees report section
+                document.getElementById('fees-section').style.display = 'block';
+                document.getElementById('reports-section').style.display = 'none';
+                
+                // Update active link
+                document.querySelectorAll('.sidebar a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById('fees-link').classList.add('active');
+            });
+            
+            document.getElementById('generate-salaries-report').addEventListener('click', function() {
+                // Show the salary report section
+                document.getElementById('fees-section').style.display = 'block';
+                document.getElementById('reports-section').style.display = 'none';
+                
+                // Switch to salary tab
+                document.getElementById('teacher-salary-tab').click();
+                
+                // Update active link
+                document.querySelectorAll('.sidebar a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById('fees-link').classList.add('active');
+            });
+            
+            document.getElementById('print-report-btn').addEventListener('click', function() {
+                window.print();
+            });
+            
+            document.getElementById('export-report-btn').addEventListener('click', function() {
+                exportReportToCSV();
+            });
+            
+            // Inventory and Expenses
+            document.getElementById('add-inventory-btn').addEventListener('click', function() {
+                document.getElementById('inventory-modal-title').textContent = 'انوینٹری آئٹم شامل کریں';
+                document.getElementById('inventory-form').reset();
+                document.getElementById('inventory-id').value = '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('inventory-modal'));
+                modal.show();
+            });
+            
+            document.getElementById('add-expense-btn').addEventListener('click', function() {
+                document.getElementById('expense-modal-title').textContent = 'خرچہ شامل کریں';
+                document.getElementById('expense-form').reset();
+                document.getElementById('expense-id').value = '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('expense-modal'));
+                modal.show();
+            });
+            
+            document.getElementById('add-income-btn').addEventListener('click', function() {
+                document.getElementById('income-modal-title').textContent = 'آمدنی شامل کریں';
+                document.getElementById('income-form').reset();
+                document.getElementById('income-id').value = '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('income-modal'));
+                modal.show();
+            });
+            
+            document.getElementById('save-inventory-btn').addEventListener('click', function() {
+                const inventoryItem = {
+                    item: document.getElementById('inventory-item').value,
+                    quantity: document.getElementById('inventory-quantity').value,
+                    price: document.getElementById('inventory-price').value,
+                    date: document.getElementById('inventory-date').value,
+                    notes: document.getElementById('inventory-notes').value
+                };
+                
+                const inventoryId = document.getElementById('inventory-id').value;
+                const transaction = db.transaction(['inventory'], 'readwrite');
+                const store = transaction.objectStore('inventory');
+                
+                if (inventoryId) {
+                    // Update existing item
+                    inventoryItem.id = parseInt(inventoryId);
+                    const request = store.put(inventoryItem);
+                    
+                    request.onsuccess = function() {
+                        alert('انوینٹری آئٹم کامیابی سے اپ ڈیٹ ہو گیا');
+                        bootstrap.Modal.getInstance(document.getElementById('inventory-modal')).hide();
+                        loadInventory();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('انوینٹری آئٹم اپ ڈیٹ کرنے میں خرابی');
+                    };
+                } else {
+                    // Add new item
+                    const request = store.add(inventoryItem);
+                    
+                    request.onsuccess = function() {
+                        alert('انوینٹری آئٹم کامیابی سے شامل ہو گیا');
+                        bootstrap.Modal.getInstance(document.getElementById('inventory-modal')).hide();
+                        loadInventory();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('انوینٹری آئٹم شامل کرنے میں خرابی');
+                    };
+                }
+            });
+            
+            document.getElementById('save-expense-btn').addEventListener('click', function() {
+                const expense = {
+                    type: document.getElementById('expense-type').value,
+                    amount: document.getElementById('expense-amount').value,
+                    date: document.getElementById('expense-date').value,
+                    description: document.getElementById('expense-description').value
+                };
+                
+                const expenseId = document.getElementById('expense-id').value;
+                const transaction = db.transaction(['expenses'], 'readwrite');
+                const store = transaction.objectStore('expenses');
+                
+                if (expenseId) {
+                    // Update existing expense
+                    expense.id = parseInt(expenseId);
+                    const request = store.put(expense);
+                    
+                    request.onsuccess = function() {
+                        alert('خرچہ کامیابی سے اپ ڈیٹ ہو گیا');
+                        bootstrap.Modal.getInstance(document.getElementById('expense-modal')).hide();
+                        loadExpenses();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('خرچہ اپ ڈیٹ کرنے میں خرابی');
+                    };
+                } else {
+                    // Add new expense
+                    const request = store.add(expense);
+                    
+                    request.onsuccess = function() {
+                        alert('خرچہ کامیابی سے شامل ہو گیا');
+                        bootstrap.Modal.getInstance(document.getElementById('expense-modal')).hide();
+                        loadExpenses();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('خرچہ شامل کرنے میں خرابی');
+                    };
+                }
+            });
+            
+            document.getElementById('save-income-btn').addEventListener('click', function() {
+                const income = {
+                    type: document.getElementById('income-type').value,
+                    amount: document.getElementById('income-amount').value,
+                    date: document.getElementById('income-date').value,
+                    description: document.getElementById('income-description').value
+                };
+                
+                const incomeId = document.getElementById('income-id').value;
+                const transaction = db.transaction(['income'], 'readwrite');
+                const store = transaction.objectStore('income');
+                
+                if (incomeId) {
+                    // Update existing income
+                    income.id = parseInt(incomeId);
+                    const request = store.put(income);
+                    
+                    request.onsuccess = function() {
+                        alert('آمدنی کامیابی سے اپ ڈیٹ ہو گئی');
+                        bootstrap.Modal.getInstance(document.getElementById('income-modal')).hide();
+                        loadIncome();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('آمدنی اپ ڈیٹ کرنے میں خرابی');
+                    };
+                } else {
+                    // Add new income
+                    const request = store.add(income);
+                    
+                    request.onsuccess = function() {
+                        alert('آمدنی کامیابی سے شامل ہو گئی');
+                        bootstrap.Modal.getInstance(document.getElementById('income-modal')).hide();
+                        loadIncome();
+                    };
+                    
+                    request.onerror = function() {
+                        alert('آمدنی شامل کرنے میں خرابی');
+                    };
+                }
+            });
+            
+            // Backup and Restore
+            document.getElementById('backup-data-btn').addEventListener('click', function() {
+                backupData();
+            });
+            
+            document.getElementById('restore-data-btn').addEventListener('click', function() {
+                const fileInput = document.getElementById('restore-file');
+                if (fileInput.files.length === 0) {
+                    alert('براہ کرم بیک اپ فائل منتخب کریں');
+                    return;
+                }
+                
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        restoreData(data);
+                    } catch (error) {
+                        alert('فائل پڑھنے میں خرابی: ' + error.message);
+                    }
+                };
+                
+                reader.readAsText(file);
+            });
+            
+            document.getElementById('clear-data-btn').addEventListener('click', function() {
+                if (confirm('کیا آپ واقعی تمام ڈیٹا کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔')) {
+                    clearAllData();
+                }
+            });
+        });
+        
+        // Load students for display
+        function loadStudents() {
+            const transaction = db.transaction(['students'], 'readonly');
+            const store = transaction.objectStore('students');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const students = request.result;
+                const tbody = document.querySelector('#students-table tbody');
+                tbody.innerHTML = '';
+                
+                students.forEach(student => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.fatherName}</td>
+                        <td>${student.age}</td>
+                        <td>${student.class}</td>
+                        <td>${student.admissionDate}</td>
+                        <td>${student.contact}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-student" data-id="${student.id}">ترمیم</button>
+                            <button class="btn btn-sm btn-danger delete-student" data-id="${student.id}">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                // Add event listeners to edit and delete buttons
+                document.querySelectorAll('.edit-student').forEach(button => {
+                    button.addEventListener('click', function() {
+                        editStudent(parseInt(this.getAttribute('data-id')));
+                    });
+                });
+                
+                document.querySelectorAll('.delete-student').forEach(button => {
+                    button.addEventListener('click', function() {
+                        if (confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟')) {
+                            deleteStudent(parseInt(this.getAttribute('data-id')));
+                        }
+                    });
+                });
+                
+                // Also update the student dropdowns in other sections
+                updateStudentDropdowns();
+            };
+            
+            request.onerror = function() {
+                console.error('Error loading students');
+            };
+        }
+        
+        // Load teachers for display
+        function loadTeachers() {
+            const transaction = db.transaction(['teachers'], 'readonly');
+            const store = transaction.objectStore('teachers');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const teachers = request.result;
+                const tbody = document.querySelector('#teachers-table tbody');
+                tbody.innerHTML = '';
+                
+                teachers.forEach(teacher => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${teacher.name}</td>
+                        <td>${teacher.qualification}</td>
+                        <td>${teacher.age}</td>
+                        <td>${teacher.salary}</td>
+                        <td>${teacher.contact}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-teacher" data-id="${teacher.id}">ترمیم</button>
+                            <button class="btn btn-sm btn-danger delete-teacher" data-id="${teacher.id}">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                // Add event listeners to edit and delete buttons
+                document.querySelectorAll('.edit-teacher').forEach(button => {
+                    button.addEventListener('click', function() {
+                        editTeacher(parseInt(this.getAttribute('data-id')));
+                    });
+                });
+                
+                document.querySelectorAll('.delete-teacher').forEach(button => {
+                    button.addEventListener('click', function() {
+                        if (confirm('کیا آپ واقعی اس استاد کو حذف کرنا چاہتے ہیں؟')) {
+                            deleteTeacher(parseInt(this.getAttribute('data-id')));
+                        }
+                    });
+                });
+                
+                // Also update the teacher dropdowns in other sections
+                updateTeacherDropdowns();
+            };
+            
+            request.onerror = function() {
+                console.error('Error loading teachers');
+            };
+        }
+        
+        // Load classes for display
+        function loadClasses() {
+            const transaction = db.transaction(['classes'], 'readonly');
+            const store = transaction.objectStore('classes');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const classes = request.result;
+                const tbody = document.querySelector('#classes-table tbody');
+                tbody.innerHTML = '';
+                
+                // We need to get teacher names for each class
+                const teacherTransaction = db.transaction(['teachers'], 'readonly');
+                const teacherStore = teacherTransaction.objectStore('teachers');
+                
+                classes.forEach(cls => {
+                    const teacherRequest = teacherStore.get(cls.teacherId);
+                    
+                    teacherRequest.onsuccess = function() {
+                        const teacher = teacherRequest.result;
+                        const teacherName = teacher ? teacher.name : 'نامعلوم';
+                        
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${cls.name}</td>
+                            <td>${teacherName}</td>
+                            <td>${cls.studentIds ? cls.studentIds.length : 0}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary edit-class" data-id="${cls.id}">ترمیم</button>
+                                <button class="btn btn-sm btn-danger delete-class" data-id="${cls.id}">حذف</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                        
+                        // Add event listeners to edit and delete buttons
+                        tr.querySelector('.edit-class').addEventListener('click', function() {
+                            editClass(parseInt(this.getAttribute('data-id')));
+                        });
+                        
+                        tr.querySelector('.delete-class').addEventListener('click', function() {
+                            if (confirm('کیا آپ واقعی اس جماعت کو حذف کرنا چاہتے ہیں؟')) {
+                                deleteClass(parseInt(this.getAttribute('data-id')));
+                            }
+                        });
+                    };
+                });
+                
+                // Also update the class dropdowns in other sections
+                updateClassDropdowns();
+            };
+            
+            request.onerror = function() {
+                console.error('Error loading classes');
+            };
+        }
+        
+        // Load inventory items
+        function loadInventory() {
+            const transaction = db.transaction(['inventory'], 'readonly');
+            const store = transaction.objectStore('inventory');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const items = request.result;
+                const tbody = document.querySelector('#inventory-table tbody');
+                tbody.innerHTML = '';
+                
+                items.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.item}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.price}</td>
+                        <td>${item.date}</td>
+                        <td>${item.notes || ''}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-inventory" data-id="${item.id}">ترمیم</button>
+                            <button class="btn btn-sm btn-danger delete-inventory" data-id="${item.id}">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                    
+                    // Add event listeners to edit and delete buttons
+                    tr.querySelector('.edit-inventory').addEventListener('click', function() {
+                        editInventoryItem(parseInt(this.getAttribute('data-id')));
+                    });
+                    
+                    tr.querySelector('.delete-inventory').addEventListener('click', function() {
+                        if (confirm('کیا آپ واقعی اس آئٹم کو حذف کرنا چاہتے ہیں؟')) {
+                            deleteInventoryItem(parseInt(this.getAttribute('data-id')));
+                        }
+                    });
+                });
+            };
+        }
+        
+        // Load expenses
+        function loadExpenses() {
+            const transaction = db.transaction(['expenses'], 'readonly');
+            const store = transaction.objectStore('expenses');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const expenses = request.result;
+                const tbody = document.querySelector('#expenses-table tbody');
+                tbody.innerHTML = '';
+                
+                expenses.forEach(expense => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${expense.type}</td>
+                        <td>${expense.amount}</td>
+                        <td>${expense.date}</td>
+                        <td>${expense.description || ''}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-expense" data-id="${expense.id}">ترمیم</button>
+                            <button class="btn btn-sm btn-danger delete-expense" data-id="${expense.id}">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                    
+                    // Add event listeners to edit and delete buttons
+                    tr.querySelector('.edit-expense').addEventListener('click', function() {
+                        editExpense(parseInt(this.getAttribute('data-id')));
+                    });
+                    
+                    tr.querySelector('.delete-expense').addEventListener('click', function() {
+                        if (confirm('کیا آپ واقعی اس خرچہ کو حذف کرنا چاہتے ہیں؟')) {
+                            deleteExpense(parseInt(this.getAttribute('data-id')));
+                        }
+                    });
+                });
+            };
+        }
+        
+        // Load income records
+        function loadIncome() {
+            const transaction = db.transaction(['income'], 'readonly');
+            const store = transaction.objectStore('income');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const incomeRecords = request.result;
+                const tbody = document.querySelector('#income-table tbody');
+                tbody.innerHTML = '';
+                
+                incomeRecords.forEach(income => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${income.type}</td>
+                        <td>${income.amount}</td>
+                        <td>${income.date}</td>
+                        <td>${income.description || ''}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-income" data-id="${income.id}">ترمیم</button>
+                            <button class="btn btn-sm btn-danger delete-income" data-id="${income.id}">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                    
+                    // Add event listeners to edit and delete buttons
+                    tr.querySelector('.edit-income').addEventListener('click', function() {
+                        editIncome(parseInt(this.getAttribute('data-id')));
+                    });
+                    
+                    tr.querySelector('.delete-income').addEventListener('click', function() {
+                        if (confirm('کیا آپ واقعی اس آمدنی کو حذف کرنا چاہتے ہیں؟')) {
+                            deleteIncome(parseInt(this.getAttribute('data-id')));
+                        }
+                    });
+                });
+            };
+        }
+        
+        // Load teachers for dropdown
+        function loadTeachersForDropdown() {
+            const transaction = db.transaction(['teachers'], 'readonly');
+            const store = transaction.objectStore('teachers');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const teachers = request.result;
+                const dropdown = document.getElementById('class-teacher');
+                dropdown.innerHTML = '<option value="">منتخب کریں</option>';
+                
+                teachers.forEach(teacher => {
+                    const option = document.createElement('option');
+                    option.value = teacher.id;
+                    option.textContent = teacher.name;
+                    dropdown.appendChild(option);
+                });
+            };
+        }
+        
+        // Load students for multiselect
+        function loadStudentsForMultiselect() {
+            const transaction = db.transaction(['students'], 'readonly');
+            const store = transaction.objectStore('students');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const students = request.result;
+                const multiselect = document.getElementById('class-students');
+                multiselect.innerHTML = '';
+                
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = `${student.name} (${student.fatherName}) - ${student.class}`;
+                    multiselect.appendChild(option);
+                });
+            };
+        }
+        
+        // Load students for attendance
+        function loadStudentsForAttendance(classId, date) {
+            // First get the class to get student IDs
+            const classTransaction = db.transaction(['classes'], 'readonly');
+            const classStore = classTransaction.objectStore('classes');
+            const classRequest = classStore.get(parseInt(classId));
+            
+            classRequest.onsuccess = function() {
+                const cls = classRequest.result;
+                if (!cls || !cls.studentIds || cls.studentIds.length === 0) {
+                    alert('اس جماعت میں کوئی طالب علم نہیں ہے');
+                    return;
+                }
+                
+                // Now get all students in this class
+                const studentTransaction = db.transaction(['students'], 'readonly');
+                const studentStore = studentTransaction.objectStore('students');
+                
+                const tbody = document.querySelector('#attendance-table tbody');
+                tbody.innerHTML = '';
+                
+                // Check if attendance already exists for this date and class
+                const attendanceTransaction = db.transaction(['attendance'], 'readonly');
+                const attendanceStore = attendanceTransaction.objectStore('attendance');
+                const index = attendanceStore.index('date');
+                const dateRange = IDBKeyRange.only(date);
+                const attendanceRequest = index.openCursor(dateRange);
+                
+                let existingAttendance = null;
+                
+                attendanceRequest.onsuccess = function(event) {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        if (cursor.value.classId === parseInt(classId)) {
+                            existingAttendance = cursor.value;
+                        }
+                        cursor.continue();
+                    } else {
+                        // No more records - proceed with loading students
+                        cls.studentIds.forEach(studentId => {
+                            const studentRequest = studentStore.get(studentId);
+                            
+                            studentRequest.onsuccess = function() {
+                                const student = studentRequest.result;
+                                if (student) {
+                                    const tr = document.createElement('tr');
+                                    tr.setAttribute('data-student-id', student.id);
+                                    
+                                    // Check if this student has attendance in existing record
+                                    let status = 'present';
+                                    let note = '';
+                                    
+                                    if (existingAttendance) {
+                                        const studentAttendance = existingAttendance.attendance.find(a => a.studentId === student.id);
+                                        if (studentAttendance) {
+                                            status = studentAttendance.status;
+                                            note = studentAttendance.note;
+                                        }
+                                    }
+                                    
+                                    tr.innerHTML = `
+                                        <td>${student.name} (${student.fatherName})</td>
+                                        <td>
+                                            <select class="form-select">
+                                                <option value="present" ${status === 'present' ? 'selected' : ''}>حاضر</option>
+                                                <option value="absent" ${status === 'absent' ? 'selected' : ''}>غائب</option>
+                                                <option value="leave" ${status === 'leave' ? 'selected' : ''}>چھٹی</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" value="${note}"></td>
+                                    `;
+                                    tbody.appendChild(tr);
+                                }
+                            };
+                        });
+                        
+                        document.getElementById('attendance-recording-section').style.display = 'block';
+                    }
+                };
+            };
+        }
+        
+        // Generate attendance report
+        function generateAttendanceReport(startDate, endDate, classId) {
+            const transaction = db.transaction(['attendance'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const index = store.index('date');
+            const dateRange = IDBKeyRange.bound(startDate, endDate);
+            const request = index.openCursor(dateRange);
+            
+            const reportData = [];
+            
+            request.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    if (!classId || cursor.value.classId === parseInt(classId)) {
+                        reportData.push(cursor.value);
+                    }
+                    cursor.continue();
+                } else {
+                    // No more records - display the report
+                    displayAttendanceReport(reportData, startDate, endDate, classId);
+                }
+            };
+            
+            request.onerror = function() {
+                alert('حاضری کی رپورٹ بنانے میں خرابی');
+            };
+        }
+        
+        // Display attendance report
+        function displayAttendanceReport(reportData, startDate, endDate, classId) {
+            const resultDiv = document.getElementById('attendance-report-result');
+            
+            if (reportData.length === 0) {
+                resultDiv.innerHTML = '<p>منتخب کردہ مدت کے لیے کوئی حاضری کا ریکارڈ نہیں ملا</p>';
+                return;
+            }
+            
+            // Get class names for display
+            const classTransaction = db.transaction(['classes'], 'readonly');
+            const classStore = classTransaction.objectStore('classes');
+            
+            // Get student names for display
+            const studentTransaction = db.transaction(['students'], 'readonly');
+            const studentStore = studentTransaction.objectStore('students');
+            
+            let html = '<h5>حاضری کی رپورٹ</h5>';
+            html += `<p>تاریخ: ${startDate} سے ${endDate}</p>`;
+            
+            if (classId) {
+                const classRequest = classStore.get(parseInt(classId));
+                
+                classRequest.onsuccess = function() {
+                    const cls = classRequest.result;
+                    if (cls) {
+                        html += `<p>جماعت: ${cls.name}</p>`;
+                    }
+                    
+                    // Now process the report data
+                    html += '<div class="table-responsive"><table class="table table-bordered"><thead><tr><th>تاریخ</th><th>جماعت</th><th>حاضر</th><th>غائب</th><th>چھٹی</th></tr></thead><tbody>';
+                    
+                    reportData.forEach(record => {
+                        let present = 0, absent = 0, leave = 0;
+                        
+                        record.attendance.forEach(att => {
+                            if (att.status === 'present') present++;
+                            else if (att.status === 'absent') absent++;
+                            else if (att.status === 'leave') leave++;
+                        });
+                        
+                        html += `<tr><td>${record.date}</td><td>${cls ? cls.name : 'نامعلوم'}</td><td>${present}</td><td>${absent}</td><td>${leave}</td></tr>`;
+                    });
+                    
+                    html += '</tbody></table></div>';
+                    resultDiv.innerHTML = html;
+                };
+            } else {
+                // For all classes, we need to group by class and date
+                const reportByClassDate = {};
+                
+                reportData.forEach(record => {
+                    if (!reportByClassDate[record.classId]) {
+                        reportByClassDate[record.classId] = {};
+                    }
+                    
+                    if (!reportByClassDate[record.classId][record.date]) {
+                        reportByClassDate[record.classId][record.date] = {
+                            present: 0,
+                            absent: 0,
+                            leave: 0
+                        };
+                    }
+                    
+                    record.attendance.forEach(att => {
+                        if (att.status === 'present') reportByClassDate[record.classId][record.date].present++;
+                        else if (att.status === 'absent') reportByClassDate[record.classId][record.date].absent++;
+                        else if (att.status === 'leave') reportByClassDate[record.classId][record.date].leave++;
+                    });
+                });
+                
+                // Now get all class names
+                const classRequest = classStore.getAll();
+                
+                classRequest.onsuccess = function() {
+                    const classes = classRequest.result;
+                    const classMap = {};
+                    classes.forEach(cls => {
+                        classMap[cls.id] = cls.name;
+                    });
+                    
+                    html += '<div class="table-responsive"><table class="table table-bordered"><thead><tr><th>تاریخ</th><th>جماعت</th><th>حاضر</th><th>غائب</th><th>چھٹی</th></tr></thead><tbody>';
+                    
+                    Object.keys(reportByClassDate).forEach(classId => {
+                        const className = classMap[classId] || 'نامعلوم';
+                        const dates = reportByClassDate[classId];
+                        
+                        Object.keys(dates).forEach(date => {
+                            const stats = dates[date];
+                            html += `<tr><td>${date}</td><td>${className}</td><td>${stats.present}</td><td>${stats.absent}</td><td>${stats.leave}</td></tr>`;
+                        });
+                    });
+                    
+                    html += '</tbody></table></div>';
+                    resultDiv.innerHTML = html;
+                };
+            }
+        }
+        
+        // Load fees report
+        function loadFeesReport() {
+            // First get all students
+            const studentTransaction = db.transaction(['students'], 'readonly');
+            const studentStore = studentTransaction.objectStore('students');
+            const studentRequest = studentStore.getAll();
+            
+            studentRequest.onsuccess = function() {
+                const students = studentRequest.result;
+                
+                // Then get all fee payments
+                const feeTransaction = db.transaction(['fees'], 'readonly');
+                const feeStore = feeTransaction.objectStore('fees');
+                const feeRequest = feeStore.getAll();
+                
+                feeRequest.onsuccess = function() {
+                    const fees = feeRequest.result;
+                    
+                    // Calculate fee summary for each student
+                    const feeSummary = students.map(student => {
+                        const studentFees = fees.filter(fee => fee.studentId === student.id);
+                        const totalPaid = studentFees.reduce((sum, fee) => sum + parseFloat(fee.amount), 0);
+                        const lastPayment = studentFees.length > 0 ? 
+                            studentFees[studentFees.length - 1].date : 'کوئی ادائیگی نہیں';
+                        
+                        // Assuming each student has a fixed fee amount (this should be enhanced)
+                        const feeAmount = 1000; // Default value, should be configurable per student
+                        const balance = feeAmount - totalPaid;
+                        
+                        return {
+                            studentId: student.id,
+                            name: student.name,
+                            class: student.class,
+                            totalPaid: totalPaid,
+                            lastPayment: lastPayment,
+                            balance: balance
+                        };
+                    });
+                    
+                    // Display the report
+                    const tbody = document.querySelector('#fees-report-table tbody');
+                    tbody.innerHTML = '';
+                    
+                    feeSummary.forEach(summary => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${summary.name}</td>
+                            <td>${summary.class}</td>
+                            <td>${summary.lastPayment}</td>
+                            <td>${summary.totalPaid}</td>
+                            <td class="${summary.balance > 0 ? 'text-danger' : 'text-success'}">${summary.balance}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info view-fee-details" data-id="${summary.studentId}">تفصیلات</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                        
+                        // Add event listener to view details button
+                        tr.querySelector('.view-fee-details').addEventListener('click', function() {
+                            viewFeeDetails(parseInt(this.getAttribute('data-id')));
+                        });
+                    });
+                    
+                    // Also update the student dropdown in fee payment form
+                    const feeStudentDropdown = document.getElementById('fee-student');
+                    feeStudentDropdown.innerHTML = '<option value="">منتخب کریں</option>';
+                    
+                    students.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.id;
+                        option.textContent = `${student.name} (${student.class})`;
+                        feeStudentDropdown.appendChild(option);
+                    });
+                };
+            };
+        }
+        
+        // View fee details for a student
+        function viewFeeDetails(studentId) {
+            // Get student info
+            const studentTransaction = db.transaction(['students'], 'readonly');
+            const studentStore = studentTransaction.objectStore('students');
+            const studentRequest = studentStore.get(studentId);
+            
+            studentRequest.onsuccess = function() {
+                const student = studentRequest.result;
+                
+                // Get all fee payments for this student
+                const feeTransaction = db.transaction(['fees'], 'readonly');
+                const feeStore = feeTransaction.objectStore('fees');
+                const index = feeStore.index('studentId');
+                const feeRequest = index.getAll(studentId);
+                
+                feeRequest.onsuccess = function() {
+                    const fees = feeRequest.result;
+                    
+                    // Display the details in the reports section
+                    document.getElementById('reports-section').style.display = 'block';
+                    document.getElementById('fees-section').style.display = 'none';
+                    
+                    // Update active link
+                    document.querySelectorAll('.sidebar a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    document.getElementById('reports-link').classList.add('active');
+                    
+                    const reportResult = document.getElementById('report-result-section');
+                    const reportTable = document.getElementById('report-result-table');
+                    
+                    reportTable.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th colspan="4">${student.name} (${student.class}) کی فیس کی تفصیلات</th>
+                            </tr>
+                            <tr>
+                                <th>تاریخ</th>
+                                <th>رقم</th>
+                                <th>نوٹ</th>
+                                <th>عمل</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${fees.map(fee => `
+                                <tr>
+                                    <td>${fee.date}</td>
+                                    <td>${fee.amount}</td>
+                                    <td>${fee.notes || ''}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger delete-fee" data-id="${fee.id}">حذف</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    `;
+                    
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-fee').forEach(button => {
+                        button.addEventListener('click', function() {
+                            if (confirm('کیا آپ واقعی یہ فیس ریکارڈ حذف کرنا چاہتے ہیں؟')) {
+                                deleteFeeRecord(parseInt(this.getAttribute('data-id')));
+                            }
+                        });
+                    });
+                    
+                    reportResult.style.display = 'block';
+                };
+            };
+        }
+        
+        // Load salaries report
+        function loadSalariesReport() {
+            // First get all teachers
+            const teacherTransaction = db.transaction(['teachers'], 'readonly');
+            const teacherStore = teacherTransaction.objectStore('teachers');
+            const teacherRequest = teacherStore.getAll();
+            
+            teacherRequest.onsuccess = function() {
+                const teachers = teacherRequest.result;
+                
+                // Then get all salary payments
+                const salaryTransaction = db.transaction(['salaries'], 'readonly');
+                const salaryStore = salaryTransaction.objectStore('salaries');
+                const salaryRequest = salaryStore.getAll();
+                
+                salaryRequest.onsuccess = function() {
+                    const salaries = salaryRequest.result;
+                    
+                    // Calculate salary summary for each teacher
+                    const salarySummary = teachers.map(teacher => {
+                        const teacherSalaries = salaries.filter(salary => salary.teacherId === teacher.id);
+                        const totalPaid = teacherSalaries.reduce((sum, salary) => sum + parseFloat(salary.amount), 0);
+                        const lastPayment = teacherSalaries.length > 0 ? 
+                            teacherSalaries[teacherSalaries.length - 1].date : 'کوئی ادائیگی نہیں';
+                        
+                        const balance = parseFloat(teacher.salary) - totalPaid;
+                        
+                        return {
+                            teacherId: teacher.id,
+                            name: teacher.name,
+                            salary: teacher.salary,
+                            totalPaid: totalPaid,
+                            lastPayment: lastPayment,
+                            balance: balance
+                        };
+                    });
+                    
+                    // Display the report
+                    const tbody = document.querySelector('#salary-report-table tbody');
+                    tbody.innerHTML = '';
+                    
+                    salarySummary.forEach(summary => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${summary.name}</td>
+                            <td>${summary.salary}</td>
+                            <td>${summary.lastPayment}</td>
+                            <td>${summary.totalPaid}</td>
+                            <td class="${summary.balance > 0 ? 'text-danger' : 'text-success'}">${summary.balance}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info view-salary-details" data-id="${summary.teacherId}">تفصیلات</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                        
+                        // Add event listener to view details button
+                        tr.querySelector('.view-salary-details').addEventListener('click', function() {
+                            viewSalaryDetails(parseInt(this.getAttribute('data-id')));
+                        });
+                    });
+                    
+                    // Also update the teacher dropdown in salary payment form
+                    const salaryTeacherDropdown = document.getElementById('salary-teacher');
+                    salaryTeacherDropdown.innerHTML = '<option value="">منتخب کریں</option>';
+                    
+                    teachers.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = teacher.id;
+                        option.textContent = `${teacher.name} (${teacher.salary})`;
+                        salaryTeacherDropdown.appendChild(option);
+                    });
+                };
+            };
+        }
+        
+        // View salary details for a teacher
+        function viewSalaryDetails(teacherId) {
+            // Get teacher info
+            const teacherTransaction = db.transaction(['teachers'], 'readonly');
+            const teacherStore = teacherTransaction.objectStore('teachers');
+            const teacherRequest = teacherStore.get(teacherId);
+            
+            teacherRequest.onsuccess = function() {
+                const teacher = teacherRequest.result;
+                
+                // Get all salary payments for this teacher
+                const salaryTransaction = db.transaction(['salaries'], 'readonly');
+                const salaryStore = salaryTransaction.objectStore('salaries');
+                const index = salaryStore.index('teacherId');
+                const salaryRequest = index.getAll(teacherId);
+                
+                salaryRequest.onsuccess = function() {
+                    const salaries = salaryRequest.result;
+                    
+                    // Display the details in the reports section
+                    document.getElementById('reports-section').style.display = 'block';
+                    document.getElementById('fees-section').style.display = 'none';
+                    
+                    // Update active link
+                    document.querySelectorAll('.sidebar a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    document.getElementById('reports-link').classList.add('active');
+                    
+                    const reportResult = document.getElementById('report-result-section');
+                    const reportTable = document.getElementById('report-result-table');
+                    
+                    reportTable.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th colspan="4">${teacher.name} کی تنخواہ کی تفصیلات</th>
+                            </tr>
+                            <tr>
+                                <th>تاریخ</th>
+                                <th>رقم</th>
+                                <th>نوٹ</th>
+                                <th>عمل</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${salaries.map(salary => `
+                                <tr>
+                                    <td>${salary.date}</td>
+                                    <td>${salary.amount}</td>
+                                    <td>${salary.notes || ''}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger delete-salary" data-id="${salary.id}">حذف</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    `;
+                    
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-salary').forEach(button => {
+                        button.addEventListener('click', function() {
+                            if (confirm('کیا آپ واقعی یہ تنخواہ ریکارڈ حذف کرنا چاہتے ہیں؟')) {
+                                deleteSalaryRecord(parseInt(this.getAttribute('data-id')));
+                            }
+                        });
+                    });
+                    
+                    reportResult.style.display = 'block';
+                };
+            };
+        }
+        
+        // Generate students report
+        function generateStudentsReport() {
+            const transaction = db.transaction(['students'], 'readonly');
+            const store = transaction.objectStore('students');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const students = request.result;
+                
+                const reportResult = document.getElementById('report-result-section');
+                const reportTable = document.getElementById('report-result-table');
+                
+                reportTable.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>والد کا نام</th>
+                            <th>عمر</th>
+                            <th>جماعت</th>
+                            <th>تاریخ داخلہ</th>
+                            <th>رابطہ نمبر</th>
+                            <th>پتہ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${students.map(student => `
+                            <tr>
+                                <td>${student.name}</td>
+                                <td>${student.fatherName}</td>
+                                <td>${student.age}</td>
+                                <td>${student.class}</td>
+                                <td>${student.admissionDate}</td>
+                                <td>${student.contact}</td>
+                                <td>${student.address}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                
+                reportResult.style.display = 'block';
+            };
+        }
+        
+        // Generate teachers report
+        function generateTeachersReport() {
+            const transaction = db.transaction(['teachers'], 'readonly');
+            const store = transaction.objectStore('teachers');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const teachers = request.result;
+                
+                const reportResult = document.getElementById('report-result-section');
+                const reportTable = document.getElementById('report-result-table');
+                
+                reportTable.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>والد کا نام</th>
+                            <th>عمر</th>
+                            <th>قابلیت</th>
+                            <th>تنخواہ</th>
+                            <th>تاریخ تقرری</th>
+                            <th>رابطہ نمبر</th>
+                            <th>پتہ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${teachers.map(teacher => `
+                            <tr>
+                                <td>${teacher.name}</td>
+                                <td>${teacher.fatherName}</td>
+                                <td>${teacher.age}</td>
+                                <td>${teacher.qualification}</td>
+                                <td>${teacher.salary}</td>
+                                <td>${teacher.joiningDate}</td>
+                                <td>${teacher.contact}</td>
+                                <td>${teacher.address}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                
+                reportResult.style.display = 'block';
+            };
+        }
+        
+        // Generate classes report
+        function generateClassesReport() {
+            const transaction = db.transaction(['classes'], 'readonly');
+            const store = transaction.objectStore('classes');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const classes = request.result;
+                
+                // We need to get teacher names and student names
+                const teacherTransaction = db.transaction(['teachers'], 'readonly');
+                const teacherStore = teacherTransaction.objectStore('teachers');
+                
+                const studentTransaction = db.transaction(['students'], 'readonly');
+                const studentStore = studentTransaction.objectStore('students');
+                
+                const reportResult = document.getElementById('report-result-section');
+                const reportTable = document.getElementById('report-result-table');
+                
+                reportTable.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>جماعت کا نام</th>
+                            <th>استاد</th>
+                            <th>طلبہ</th>
+                            <th>تفصیل</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${classes.map(cls => `
+                            <tr>
+                                <td>${cls.name}</td>
+                                <td>${cls.teacherId ? 'نامعلوم' : ''}</td>
+                                <td>${cls.studentIds ? cls.studentIds.length : 0}</td>
+                                <td>${cls.description || ''}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                
+                // Now fill in teacher names
+                classes.forEach((cls, index) => {
+                    if (cls.teacherId) {
+                        const teacherRequest = teacherStore.get(cls.teacherId);
+                        
+                        teacherRequest.onsuccess = function() {
+                            const teacher = teacherRequest.result;
+                            if (teacher) {
+                                const row = reportTable.querySelector(`tbody tr:nth-child(${index + 1})`);
+                                if (row) {
+                                    row.cells[1].textContent = teacher.name;
+                                }
+                            }
+                        };
+                    }
+                });
+                
+                reportResult.style.display = 'block';
+            };
+        }
+        
+        // Export report to CSV
+        function exportReportToCSV() {
+            const table = document.getElementById('report-result-table');
+            const rows = table.querySelectorAll('tr');
+            
+            let csv = '';
+            
+            rows.forEach(row => {
+                const rowData = [];
+                row.querySelectorAll('th, td').forEach(cell => {
+                    rowData.push(cell.textContent);
+                });
+                csv += rowData.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'report.csv';
+            link.click();
+        }
+        
+        // Edit student
+        function editStudent(studentId) {
+            const transaction = db.transaction(['students'], 'readonly');
+            const store = transaction.objectStore('students');
+            const request = store.get(studentId);
+            
+            request.onsuccess = function() {
+                const student = request.result;
+                if (student) {
+                    document.getElementById('student-name').value = student.name;
+                    document.getElementById('father-name').value = student.fatherName;
+                    document.getElementById('student-age').value = student.age;
+                    document.getElementById('student-class').value = student.class;
+                    document.getElementById('admission-date').value = student.admissionDate;
+                    document.getElementById('student-contact').value = student.contact;
+                    document.getElementById('student-address').value = student.address;
+                    document.getElementById('student-id').value = student.id;
+                    
+                    // Load custom fields
+                    const customFieldsDiv = document.getElementById('student-custom-fields');
+                    customFieldsDiv.innerHTML = '';
+                    
+                    if (student.customFields && student.customFields.length > 0) {
+                        student.customFields.forEach(field => {
+                            const fieldId = Date.now();
+                            const fieldHtml = `
+                                <div class="row mb-3" id="student-field-${fieldId}">
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control urdu-input" placeholder="فیلڈ کا نام" value="${field.name}" required>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control urdu-input" placeholder="قدر" value="${field.value}" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger w-100" onclick="document.getElementById('student-field-${fieldId}').remove()">حذف کریں</button>
+                                    </div>
+                                </div>
+                            `;
+                            customFieldsDiv.insertAdjacentHTML('beforeend', fieldHtml);
+                        });
+                    }
+                    
+                    document.getElementById('add-student-form').style.display = 'block';
+                }
+            };
+        }
+        
+        // Edit teacher
+        function editTeacher(teacherId) {
+            const transaction = db.transaction(['teachers'], 'readonly');
+            const store = transaction.objectStore('teachers');
+            const request = store.get(teacherId);
+            
+            request.onsuccess = function() {
+                const teacher = request.result;
+                if (teacher) {
+                    document.getElementById('teacher-name').value = teacher.name;
+                    document.getElementById('teacher-father-name').value = teacher.fatherName;
+                    document.getElementById('teacher-age').value = teacher.age;
+                    document.getElementById('teacher-qualification').value = teacher.qualification;
+                    document.getElementById('teacher-joining-date').value = teacher.joiningDate;
+                    document.getElementById('teacher-contact').value = teacher.contact;
+                    document.getElementById('teacher-salary').value = teacher.salary;
+                    document.getElementById('teacher-address').value = teacher.address;
+                    document.getElementById('teacher-id').value = teacher.id;
+                    
+                    // Load custom fields
+                    const customFieldsDiv = document.getElementById('teacher-custom-fields');
+                    customFieldsDiv.innerHTML = '';
+                    
+                    if (teacher.customFields && teacher.customFields.length > 0) {
+                        teacher.customFields.forEach(field => {
+                            const fieldId = Date.now();
+                            const fieldHtml = `
+                                <div class="row mb-3" id="teacher-field-${fieldId}">
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control urdu-input" placeholder="فیلڈ کا نام" value="${field.name}" required>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control urdu-input" placeholder="قدر" value="${field.value}" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger w-100" onclick="document.getElementById('teacher-field-${fieldId}').remove()">حذف کریں</button>
+                                    </div>
+                                </div>
+                            `;
+                            customFieldsDiv.insertAdjacentHTML('beforeend', fieldHtml);
+                        });
+                    }
+                    
+                    document.getElementById('add-teacher-form').style.display = 'block';
+                }
+            };
+        }
+        
+        // Edit class
+        function editClass(classId) {
+            const transaction = db.transaction(['classes'], 'readonly');
+            const store = transaction.objectStore('classes');
+            const request = store.get(classId);
+            
+            request.onsuccess = function() {
+                const cls = request.result;
+                if (cls) {
+                    document.getElementById('class-name').value = cls.name;
+                    document.getElementById('class-teacher').value = cls.teacherId;
+                    document.getElementById('class-description').value = cls.description || '';
+                    document.getElementById('class-id').value = cls.id;
+                    
+                    // Load students for multiselect
+                    loadStudentsForMultiselect();
+                    
+                    // Select the students in this class
+                    if (cls.studentIds && cls.studentIds.length > 0) {
+                        const studentSelect = document.getElementById('class-students');
+                        Array.from(studentSelect.options).forEach(option => {
+                            if (cls.studentIds.includes(parseInt(option.value))) {
+                                option.selected = true;
+                            }
+                        });
+                    }
+                    
+                    document.getElementById('add-class-form').style.display = 'block';
+                }
+            };
+        }
+        
+        // Edit inventory item
+        function editInventoryItem(itemId) {
+            const transaction = db.transaction(['inventory'], 'readonly');
+            const store = transaction.objectStore('inventory');
+            const request = store.get(itemId);
+            
+            request.onsuccess = function() {
+                const item = request.result;
+                if (item) {
+                    document.getElementById('inventory-item').value = item.item;
+                    document.getElementById('inventory-quantity').value = item.quantity;
+                    document.getElementById('inventory-price').value = item.price;
+                    document.getElementById('inventory-date').value = item.date;
+                    document.getElementById('inventory-notes').value = item.notes || '';
+                    document.getElementById('inventory-id').value = item.id;
+                    
+                    document.getElementById('inventory-modal-title').textContent = 'انوینٹری آئٹم ترمیم کریں';
+                    const modal = new bootstrap.Modal(document.getElementById('inventory-modal'));
+                    modal.show();
+                }
+            };
+        }
+        
+        // Edit expense
+        function editExpense(expenseId) {
+            const transaction = db.transaction(['expenses'], 'readonly');
+            const store = transaction.objectStore('expenses');
+            const request = store.get(expenseId);
+            
+            request.onsuccess = function() {
+                const expense = request.result;
+                if (expense) {
+                    document.getElementById('expense-type').value = expense.type;
+                    document.getElementById('expense-amount').value = expense.amount;
+                    document.getElementById('expense-date').value = expense.date;
+                    document.getElementById('expense-description').value = expense.description || '';
+                    document.getElementById('expense-id').value = expense.id;
+                    
+                    document.getElementById('expense-modal-title').textContent = 'خرچہ ترمیم کریں';
+                    const modal = new bootstrap.Modal(document.getElementById('expense-modal'));
+                    modal.show();
+                }
+            };
+        }
+        
+        // Edit income
+        function editIncome(incomeId) {
+            const transaction = db.transaction(['income'], 'readonly');
+            const store = transaction.objectStore('income');
+            const request = store.get(incomeId);
+            
+            request.onsuccess = function() {
+                const income = request.result;
+                if (income) {
+                    document.getElementById('income-type').value = income.type;
+                    document.getElementById('income-amount').value = income.amount;
+                    document.getElementById('income-date').value = income.date;
+                    document.getElementById('income-description').value = income.description || '';
+                    document.getElementById('income-id').value = income.id;
+                    
+                    document.getElementById('income-modal-title').textContent = 'آمدنی ترمیم کریں';
+                    const modal = new bootstrap.Modal(document.getElementById('income-modal'));
+                    modal.show();
+                }
+            };
+        }
+        
+        // Delete student
+        function deleteStudent(studentId) {
+            const transaction = db.transaction(['students'], 'readwrite');
+            const store = transaction.objectStore('students');
+            const request = store.delete(studentId);
+            
+            request.onsuccess = function() {
+                alert('طالب علم کامیابی سے حذف ہو گیا');
+                loadStudents();
+                updateDashboard();
+            };
+            
+            request.onerror = function() {
+                alert('طالب علم حذف کرنے میں خرابی');
+            };
+        }
+        
+        // Delete teacher
+        function deleteTeacher(teacherId) {
+            const transaction = db.transaction(['teachers'], 'readwrite');
+            const store = transaction.objectStore('teachers');
+            const request = store.delete(teacherId);
+            
+            request.onsuccess = function() {
+                alert('استاد کامیابی سے حذف ہو گیا');
+                loadTeachers();
+                updateDashboard();
+            };
+            
+            request.onerror = function() {
+                alert('استاد حذف کرنے میں خرابی');
+            };
+        }
+        
+        // Delete class
+        function deleteClass(classId) {
+            const transaction = db.transaction(['classes'], 'readwrite');
+            const store = transaction.objectStore('classes');
+            const request = store.delete(classId);
+            
+            request.onsuccess = function() {
+                alert('جماعت کامیابی سے حذف ہو گئی');
+                loadClasses();
+                updateDashboard();
+            };
+            
+            request.onerror = function() {
+                alert('جماعت حذف کرنے میں خرابی');
+            };
+        }
+        
+        // Delete inventory item
+        function deleteInventoryItem(itemId) {
+            const transaction = db.transaction(['inventory'], 'readwrite');
+            const store = transaction.objectStore('inventory');
+            const request = store.delete(itemId);
+            
+            request.onsuccess = function() {
+                alert('انوینٹری آئٹم کامیابی سے حذف ہو گیا');
+                loadInventory();
+            };
+            
+            request.onerror = function() {
+                alert('انوینٹری آئٹم حذف کرنے میں خرابی');
+            };
+        }
+        
+        // Delete expense
+        function deleteExpense(expenseId) {
+            const transaction = db.transaction(['expenses'], 'readwrite');
+            const store = transaction.objectStore('expenses');
+            const request = store.delete(expenseId);
+            
+            request.onsuccess = function() {
+                alert('خرچہ کامیابی سے حذف ہو گیا');
+                loadExpenses();
+            };
+            
+            request.onerror = function() {
+                alert('خرچہ حذف کرنے میں خرابی');
+            };
+        }
+        
+        // Delete income
+        function deleteIncome(incomeId) {
+            const transaction = db.transaction(['income'], 'readwrite');
+            const store = transaction.objectStore('income');
+            const request = store.delete(incomeId);
+            
+            request.onsuccess = function() {
+                alert('آمدنی کامیابی سے حذف ہو گئی');
+                loadIncome();
+            };
+            
+            request.onerror = function() {
+                alert('آمدنی حذف کرنے میں خرابی');
+            };
+        }
+        
+        // Delete fee record
+        function deleteFeeRecord(feeId) {
+            const transaction = db.transaction(['fees'], 'readwrite');
+            const store = transaction.objectStore('fees');
+            const request = store.delete(feeId);
+            
+            request.onsuccess = function() {
+                alert('فیس ریکارڈ کامیابی سے حذف ہو گیا');
+                loadFeesReport();
+            };
+            
+            request.onerror = function() {
+                alert('فیس ریکارڈ حذف کرنے میں خرابی');
+            };
+        }
+        
+        // Delete salary record
+        function deleteSalaryRecord(salaryId) {
+            const transaction = db.transaction(['salaries'], 'readwrite');
+            const store = transaction.objectStore('salaries');
+            const request = store.delete(salaryId);
+            
+            request.onsuccess = function() {
+                alert('تنخواہ ریکارڈ کامیابی سے حذف ہو گیا');
+                loadSalariesReport();
+            };
+            
+            request.onerror = function() {
+                alert('تنخواہ ریکارڈ حذف کرنے میں خرابی');
+            };
+        }
+        
+        // Update student dropdowns in other sections
+        function updateStudentDropdowns() {
+            const transaction = db.transaction(['students'], 'readonly');
+            const store = transaction.objectStore('students');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const students = request.result;
+                
+                // Update student dropdown in fee payment form
+                const feeStudentDropdown = document.getElementById('fee-student');
+                feeStudentDropdown.innerHTML = '<option value="">منتخب کریں</option>';
+                
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = `${student.name} (${student.class})`;
+                    feeStudentDropdown.appendChild(option);
+                });
+                
+                // Update student dropdown in attendance report form
+                const reportClassDropdown = document.getElementById('report-class');
+                reportClassDropdown.innerHTML = '<option value="">تمام جماعتیں</option>';
+                
+                // Get unique classes from students
+                const classes = [...new Set(students.map(student => student.class))];
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls;
+                    option.textContent = cls;
+                    reportClassDropdown.appendChild(option);
+                });
+            };
+        }
+        
+        // Update teacher dropdowns in other sections
+        function updateTeacherDropdowns() {
+            const transaction = db.transaction(['teachers'], 'readonly');
+            const store = transaction.objectStore('teachers');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const teachers = request.result;
+                
+                // Update teacher dropdown in salary payment form
+                const salaryTeacherDropdown = document.getElementById('salary-teacher');
+                salaryTeacherDropdown.innerHTML = '<option value="">منتخب کریں</option>';
+                
+                teachers.forEach(teacher => {
+                    const option = document.createElement('option');
+                    option.value = teacher.id;
+                    option.textContent = `${teacher.name} (${teacher.salary})`;
+                    salaryTeacherDropdown.appendChild(option);
+                });
+            };
+        }
+        
+        // Update class dropdowns in other sections
+        function updateClassDropdowns() {
+            const transaction = db.transaction(['classes'], 'readonly');
+            const store = transaction.objectStore('classes');
+            const request = store.getAll();
+            
+            request.onsuccess = function() {
+                const classes = request.result;
+                
+                // Update class dropdown in student form
+                const studentClassDropdown = document.getElementById('student-class');
+                studentClassDropdown.innerHTML = '<option value="">منتخب کریں</option>';
+                
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls.name;
+                    option.textContent = cls.name;
+                    studentClassDropdown.appendChild(option);
+                });
+                
+                // Update class dropdown in attendance form
+                const attendanceClassDropdown = document.getElementById('attendance-class');
+                attendanceClassDropdown.innerHTML = '<option value="">منتخب کریں</option>';
+                
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls.id;
+                    option.textContent = cls.name;
+                    attendanceClassDropdown.appendChild(option);
+                });
+            };
+        }
+        
+        // Update dashboard with latest stats
+        function updateDashboard() {
+            // Count students
+            const studentTransaction = db.transaction(['students'], 'readonly');
+            const studentStore = studentTransaction.objectStore('students');
+            const studentCountRequest = studentStore.count();
+            
+            studentCountRequest.onsuccess = function() {
+                document.getElementById('total-students').textContent = studentCountRequest.result;
+                
+                // Get recent students
+                const studentRequest = studentStore.getAll();
+                
+                studentRequest.onsuccess = function() {
+                    const students = studentRequest.result;
+                    const recentStudents = students.slice(-5).reverse(); // Get last 5 and reverse for latest first
+                    const tbody = document.querySelector('#recent-students-table tbody');
+                    tbody.innerHTML = '';
+                    
+                    recentStudents.forEach(student => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${student.name}</td>
+                            <td>${student.class}</td>
+                            <td>${student.admissionDate}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                };
+            };
+            
+            // Count teachers
+            const teacherTransaction = db.transaction(['teachers'], 'readonly');
+            const teacherStore = teacherTransaction.objectStore('teachers');
+            const teacherCountRequest = teacherStore.count();
+            
+            teacherCountRequest.onsuccess = function() {
+                document.getElementById('total-teachers').textContent = teacherCountRequest.result;
+            };
+            
+            // Count classes
+            const classTransaction = db.transaction(['classes'], 'readonly');
+            const classStore = classTransaction.objectStore('classes');
+            const classCountRequest = classStore.count();
+            
+            classCountRequest.onsuccess = function() {
+                document.getElementById('total-classes').textContent = classCountRequest.result;
+            };
+            
+            // Get today's attendance summary
+            const today = new Date().toISOString().split('T')[0];
+            const attendanceTransaction = db.transaction(['attendance'], 'readonly');
+            const attendanceStore = attendanceTransaction.objectStore('attendance');
+            const index = attendanceStore.index('date');
+            const dateRange = IDBKeyRange.only(today);
+            const attendanceRequest = index.openCursor(dateRange);
+            
+            const todayAttendance = {};
+            
+            attendanceRequest.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    const classId = cursor.value.classId;
+                    
+                    if (!todayAttendance[classId]) {
+                        todayAttendance[classId] = {
+                            present: 0,
+                            absent: 0,
+                            leave: 0
+                        };
+                    }
+                    
+                    cursor.value.attendance.forEach(att => {
+                        if (att.status === 'present') todayAttendance[classId].present++;
+                        else if (att.status === 'absent') todayAttendance[classId].absent++;
+                        else if (att.status === 'leave') todayAttendance[classId].leave++;
+                    });
+                    
+                    cursor.continue();
+                } else {
+                    // No more records - display the summary
+                    const tbody = document.querySelector('#today-attendance-table tbody');
+                    tbody.innerHTML = '';
+                    
+                    // Get class names
+                    const classTransaction = db.transaction(['classes'], 'readonly');
+                    const classStore = classTransaction.objectStore('classes');
+                    
+                    Object.keys(todayAttendance).forEach(classId => {
+                        const classRequest = classStore.get(parseInt(classId));
+                        
+                        classRequest.onsuccess = function() {
+                            const cls = classRequest.result;
+                            const stats = todayAttendance[classId];
+                            
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${cls ? cls.name : 'نامعلوم'}</td>
+                                <td>${stats.present}</td>
+                                <td>${stats.absent + stats.leave}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        };
+                    });
+                }
+            };
+        }
+        
+        // Backup all data
+        function backupData() {
+            const backup = {};
+            const objectStores = ['students', 'teachers', 'classes', 'attendance', 'fees', 'salaries', 'inventory', 'expenses', 'income'];
+            
+            let storesProcessed = 0;
+            
+            objectStores.forEach(storeName => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                
+                request.onsuccess = function() {
+                    backup[storeName] = request.result;
+                    storesProcessed++;
+                    
+                    if (storesProcessed === objectStores.length) {
+                        // All stores processed, create download
+                        const dataStr = JSON.stringify(backup, null, 2);
+                        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                        const url = URL.createObjectURL(dataBlob);
+                        
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `DeeniMadrasaBackup_${new Date().toISOString().split('T')[0]}.json`;
+                        link.click();
+                        
+                        alert('بیک اپ ڈاؤن لوڈ ہو گیا');
+                    }
+                };
+                
+                request.onerror = function() {
+                    storesProcessed++;
+                    console.error(`Error backing up ${storeName}`);
+                    
+                    if (storesProcessed === objectStores.length) {
+                        // Still try to create download with whatever data we have
+                        const dataStr = JSON.stringify(backup, null, 2);
+                        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                        const url = URL.createObjectURL(dataBlob);
+                        
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `DeeniMadrasaBackup_${new Date().toISOString().split('T')[0]}.json`;
+                        link.click();
+                        
+                        alert('بیک اپ ڈاؤن لوڈ ہو گیا (کچھ ڈیٹا غائب ہو سکتا ہے)');
+                    }
+                };
+            });
+        }
+        
+        // Restore data from backup
+        function restoreData(backup) {
+            if (!confirm('کیا آپ واقعی ڈیٹا بحال کرنا چاہتے ہیں؟ موجودہ ڈیٹا اوور رائٹ ہو جائے گا۔')) {
+                return;
+            }
+            
+            const objectStores = ['students', 'teachers', 'classes', 'attendance', 'fees', 'salaries', 'inventory', 'expenses', 'income'];
+            
+            let storesProcessed = 0;
+            let success = true;
+            
+            objectStores.forEach(storeName => {
+                if (backup[storeName]) {
+                    const transaction = db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    
+                    // Clear existing data
+                    const clearRequest = store.clear();
+                    
+                    clearRequest.onsuccess = function() {
+                        // Add backup data
+                        backup[storeName].forEach(item => {
+                            store.add(item);
+                        });
+                        
+                        storesProcessed++;
+                        
+                        if (storesProcessed === objectStores.length) {
+                            if (success) {
+                                alert('ڈیٹا کامیابی سے بحال ہو گیا');
+                                location.reload(); // Refresh to update all views
+                            } else {
+                                alert('ڈیٹا جزوی طور پر بحال ہوا (کچھ ڈیٹا غائب ہو سکتا ہے)');
+                                location.reload();
+                            }
+                        }
+                    };
+                    
+                    clearRequest.onerror = function() {
+                        console.error(`Error clearing ${storeName}`);
+                        success = false;
+                        storesProcessed++;
+                        
+                        if (storesProcessed === objectStores.length) {
+                            alert('ڈیٹا جزوی طور پر بحال ہوا (کچھ ڈیٹا غائب ہو سکتا ہے)');
+                            location.reload();
+                        }
+                    };
+                } else {
+                    storesProcessed++;
+                    
+                    if (storesProcessed === objectStores.length) {
+                        if (success) {
+                            alert('ڈیٹا کامیابی سے بحال ہو گیا');
+                            location.reload();
+                        } else {
+                            alert('ڈیٹا جزوی طور پر بحال ہوا (کچھ ڈیٹا غائب ہو سکتا ہے)');
+                            location.reload();
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Clear all data
+        function clearAllData() {
+            const objectStores = ['students', 'teachers', 'classes', 'attendance', 'fees', 'salaries', 'inventory', 'expenses', 'income'];
+            
+            let storesProcessed = 0;
+            let success = true;
+            
+            objectStores.forEach(storeName => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.clear();
+                
+                request.onsuccess = function() {
+                    storesProcessed++;
+                    
+                    if (storesProcessed === objectStores.length) {
+                        if (success) {
+                            alert('تمام ڈیٹا کامیابی سے صاف ہو گیا');
+                            location.reload();
+                        } else {
+                            alert('ڈیٹا جزوی طور پر صاف ہوا (کچھ ڈیٹا غائب ہو سکتا ہے)');
+                            location.reload();
+                        }
+                    }
+                };
+                
+                request.onerror = function() {
+                    console.error(`Error clearing ${storeName}`);
+                    success = false;
+                    storesProcessed++;
+                    
+                    if (storesProcessed === objectStores.length) {
+                        alert('ڈیٹا جزوی طور پر صاف ہوا (کچھ ڈیٹا غائب ہو سکتا ہے)');
+                        location.reload();
+                    }
+                };
+            });
+        }
+    </script>
+</body>
+</html>

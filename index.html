@@ -171,6 +171,12 @@
 * {
     font-family: 'Jameel Noori Nastaleeq', Arial, sans-serif;
 }
+
+#dm_modal_trigger span:first-child {
+  font-size: 42px;
+  margin: 0 -30px;
+}
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -5943,6 +5949,482 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 	
 	
-	
+	<script>
+(function() {
+    const dm_uniquePrefix = 'dm_modal_';
+    const dm_easypaisaNumber = '03139842219';
+
+    const dm_content = {
+        ur: {
+            langCode: 'ur',
+            dir: 'rtl',
+            title: 'عطیات کی اپیل',
+            instructionsTitle: 'عطیہ کیسے بھیجیں:',
+            instructionsText: `اپنے EasyPaisa اکاؤنٹ سے ہمارے EasyPaisa نمبر ${dm_easypaisaNumber} پر رقم بھیجیں۔`,
+            projectMessage: 'آپ کے تمام عطیات صرف اسی پروجیکٹ کو بڑھانے کے لیے استعمال ہوں گے، کسی اور مقصد کے لیے نہیں۔ آپ کا تعاون ہمارے لیے قیمتی ہے۔',
+            closeButton: 'X',
+                       verses: [
+                { text: 'جو لوگ اللہ کی راہ میں اپنے مال خرچ کرتے ہیں ان کی مثال اس دانے کی سی ہے جس سے سات بالیں اگیں، ہر بال میں سو دانے ہوں، اور اللہ جس کے لئے چاہتا ہے بڑھا دیتا ہے، اور اللہ وسعت والا، علم والا ہے۔', source: 'القرآن - البقرۃ 2:261' },
+                { text: 'رسول اللہ ﷺ نے فرمایا: "جب انسان مر جاتا ہے تو اس کے اعمال کا سلسلہ منقطع ہو جاتا ہے سوائے تین چیزوں کے: صدقہ جاریہ، یا علم جس سے نفع اٹھایا جائے، یا نیک اولاد جو اس کے لیے دعا کرے۔"', source: 'صحیح مسلم' },
+                { text: 'تم نیکی کو ہرگز نہیں پا سکو گے جب تک تم اپنی پسندیدہ چیزوں میں سے خرچ نہ کرو۔', source: 'القرآن - آل عمران 3:92' },
+                { text: 'رسول اللہ ﷺ نے فرمایا: "صدقہ گناہوں کو اس طرح مٹا دیتا ہے جس طرح پانی آگ کو بجھا دیتا ہے۔"', source: 'سنن الترمذی' },
+                { text: 'اور جو کچھ تم خرچ کرتے ہو وہ اس کا بدلہ دے گا اور وہ سب سے بہتر رزق دینے والا ہے۔', source: 'القرآن - سبا 34:39' },
+                { text: 'ان کے مال میں سے صدقہ (زکوٰۃ) وصول کرو جس کے ذریعہ سے تم انہیں پاک صاف کردو گے اور ان کے حق میں دعائے خیر کرو، بے شک تمہاری دعا ان کیلئے باعث تسکین ہے، اور اللہ سب کچھ سننے والا، سب کچھ جاننے والا ہے۔', source: 'القرآن - التوبۃ 9:103' },
+                { text: 'اگر تم اللہ کو قرضِ حسنہ دو گے تو وہ اُسے تمہارے لیے کئی گنا بڑھا دے گا اور تمہیں معاف فرما دے گا، اور اللہ بڑا قدردان، بڑا بردبار ہے۔', source: 'القرآن - التغابن 64:17' },
+                { text: 'بے شک جو لوگ ایمان لائے اور انہوں نے نیک عمل کئے اور نماز قائم رکھی اور زکوٰۃ ادا کرتے رہے اُن کے لئے اُن کے رب کے پاس اُن کا اجر ہے، ان پر نہ کوئی خوف ہوگا اور نہ وہ رنجیدہ ہوں گے۔', source: 'القرآن - البقرۃ 2:277' },
+                { text: 'رسول اللہ ﷺ نے فرمایا: "جہنم کی آگ سے بچو چاہے کھجور کے ایک ٹکڑے (صدقہ کرنے) کے ذریعے ہی ہو۔"', source: 'صحیح البخاری' },
+                { text: 'رسول اللہ ﷺ نے فرمایا: "صدقہ مال میں کمی نہیں کرتا..."', source: 'صحیح مسلم' },
+                { text: 'رسول اللہ ﷺ نے فرمایا: "قیامت کے دن مومن کا سایہ اس کا صدقہ ہوگا۔"', source: 'سنن الترمذی' }
+            ]
+        },
+        en: {
+            langCode: 'en',
+            dir: 'ltr',
+            title: 'Donation Appeal',
+            instructionsTitle: 'How to Donate:',
+            instructionsText: `Send your donation via EasyPaisa to our number: ${dm_easypaisaNumber}.`,
+            projectMessage: 'All your donations will be used exclusively for growing this project and not for any other purpose. Your support is valuable to us.',
+            closeButton: 'X',
+            verses: [
+                { text: 'The example of those who spend their wealth in the way of Allah is like a seed [of grain] which grows seven spikes; in each spike is a hundred grains. And Allah multiplies [His reward] for whom He wills. And Allah is all-Encompassing and Knowing.', source: 'Quran - Al-Baqarah 2:261' },
+                { text: 'The Messenger of Allah (ﷺ) said: "When a man dies, his deeds come to an end except for three things: Sadaqah Jariyah (ceaseless charity); knowledge which is beneficial; or a virtuous descendant who prays for him."', source: 'Sahih Muslim' },
+                { text: 'Never will you attain the good [reward] until you spend [in the way of Allah ] from that which you love.', source: 'Quran - Aal-E-Imran 3:92' },
+                { text: 'The Prophet (ﷺ) said: "Charity extinguishes sins just as water extinguishes fire."', source: 'Sunan al-Tirmidhi' },
+                { text: 'And whatever you spend of anything (in Allah’s Cause), He will replace it. And He is the Best of providers.', source: 'Quran - Saba 34:39' },
+                { text: 'Take, [O, Muhammad], from their wealth a charity by which you purify them and cause them increase, and invoke [ Allah \'s blessings] upon them. Indeed, your invocations are reassurance for them. And Allah is Hearing and Knowing.', source: 'Quran - At-Tawbah 9:103' },
+                { text: 'If you loan Allah a goodly loan, He will multiply it for you and forgive you. And Allah is Most Appreciative and Forbearing.', source: 'Quran - At-Taghabun 64:17' },
+                { text: 'Indeed, those who believe and do righteous deeds and establish prayer and give zakah will have their reward with their Lord, and there will be no fear concerning them, nor will they grieve.', source: 'Quran - Al-Baqarah 2:277' },
+                { text: 'The Prophet (ﷺ) said: "Protect yourself from hell-fire even by giving a piece of a date as charity."', source: 'Sahih al-Bukhari' },
+                { text: 'The Prophet (ﷺ) said: "Charity does not in any way decrease the wealth..."', source: 'Sahih Muslim' },
+                { text: 'The Prophet (ﷺ) said: "The believer\'s shade on the Day of Resurrection will be his charity."', source: 'Tirmidhi' }
+            ]
+        },
+        ar: {
+            langCode: 'ar',
+            dir: 'rtl',
+            title: 'نداء للتبرع',
+            instructionsTitle: 'كيفية التبرع:',
+            instructionsText: `أرسل تبرعك عبر EasyPaisa إلى رقمنا: ${dm_easypaisaNumber}.`,
+            projectMessage: 'سيتم استخدام جميع تبرعاتكم حصريًا لتنمية هذا المشروع وليس لأي غرض آخر. دعمكم قيم بالنسبة لنا.',
+            closeButton: 'X',
+            verses: [
+                { text: 'مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ فِي كُلِّ سُنبُلَةٍ مِّائَةُ حَبَّةٍ ۗ وَاللَّهُ يُضَاعِفُ لِمَن يَشَاءُ ۗ وَاللَّهُ وَاسِعٌ عَلِيمٌ', source: 'القرآن - البقرة 2:261' },
+                { text: 'قال رسول الله صلى الله عليه وسلم: "إِذَا مَاتَ الْإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلَّا مِنْ ثَلَاثَةٍ: إِلَّا مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ"', source: 'صحيح مسلم' },
+                { text: 'لَن تَنَالُوا الْبِرَّ حَتَّىٰ تُنفِقُوا مِمَّا تُحِبُّونَ ۚ وَمَا تُنفِقُوا مِن شَيْءٍ فَإِنَّ اللَّهَ بِهِ عَلِيمٌ', source: 'القرآن - آل عمران 3:92' },
+                { text: 'قال النبي صلى الله عليه وسلم: "الصَّدَقَةُ تُطْفِئُ الْخَطِيئَةَ كَمَا يُطْفِئُ الْمَاءُ النَّارَ"', source: 'سنن الترمذي' },
+                { text: 'وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ ۖ وَهُوَ خَيْرُ الرَّازِقِينَ', source: 'القرآن - سبأ 34:39' },
+                { text: 'خُذْ مِنْ أَمْوَالِهِمْ صَدَقَةً تُطَهِّرُهُمْ وَتُزَكِّيهِم بِهَا وَصَلِّ عَلَيْهِمْ ۖ إِنَّ صَلَاتَكَ سَكَنٌ لَّهُمْ ۗ وَاللَّهُ سَمِيعٌ عَلِيمٌ', source: 'القرآن - التوبة 9:103' },
+                { text: 'إِن تُقْرِضُوا اللَّهَ قَرْضًا حَسَنًا يُضَاعِفْهُ لَكُمْ وَيَغْفِرْ لَكُمْ ۚ وَاللَّهُ شَكُورٌ حَلِيمٌ', source: 'القرآن - التغابن 64:17' },
+                { text: 'إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَأَقَامُوا الصَّلَاةَ وَآتَوُا الزَّكَاةَ لَهُمْ أَجْرُهُمْ عِندَ رَبِّهِمْ وَلَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ', source: 'القرآن - البقرة 2:277' },
+                { text: 'قال رسول الله صلى الله عليه وسلم: "اتَّقُوا النَّارَ وَلَوْ بِشِقِّ تَمْرَةٍ"', source: 'صحيح البخاري' },
+                { text: 'قال رسول الله صلى الله عليه وسلم: "مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ..."', source: 'صحيح مسلم' },
+                { text: 'قال رسول الله صلى الله عليه وسلم: "ظِلُّ الْمُؤْمِنِ يَوْمَ الْقِيَامَةِ صَدَقَتُهُ"', source: 'سنن الترمذي' }
+            ]
+        }
+    };
+
+    let dm_currentLang = 'ur';
+    let dm_modalElement = null;
+    let dm_modalContentElement = null;
+    let dm_titleElement = null;
+    let dm_instructionsTitleElement = null;
+    let dm_instructionsTextElement = null;
+    let dm_projectMessageElement = null;
+    let dm_verseElement = null;
+    let dm_verseSourceElement = null;
+    let dm_closeButtonElement = null;
+    let dm_triggerButton = null;
+
+    function dm_applyStyles() {
+        const styles = `
+            .${dm_uniquePrefix}trigger {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                z-index: 9999;
+                transition: background-color 0.3s ease;
+            }
+            .${dm_uniquePrefix}trigger:hover {
+                background-color: #0056b3;
+            }
+             .${dm_uniquePrefix}trigger span {
+                 margin: 0 -13px;
+             }
+            .${dm_uniquePrefix}modal {
+                display: none;
+                position: fixed;
+                z-index: 10000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.8);
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+            }
+            .${dm_uniquePrefix}modal.active {
+                display: flex;
+                opacity: 1;
+                align-items: center;
+                justify-content: center;
+            }
+            .${dm_uniquePrefix}content {
+                background-color: #fefefe;
+                margin: auto;
+                padding: 30px;
+                border: 1px solid #888;
+                width: 90%;
+                max-width: 78%;
+                max-height: 98vh;
+                overflow-y: auto;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                position: relative;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+            }
+            .${dm_uniquePrefix}content[dir="rtl"] {
+                text-align: right;
+            }
+             .${dm_uniquePrefix}content[dir="ltr"] {
+                text-align: left;
+            }
+            .${dm_uniquePrefix}header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 15px;
+                margin-bottom: 20px;
+            }
+            .${dm_uniquePrefix}title {
+                margin: 0;
+                font-size: 1.8em;
+                font-weight: 600;
+            }
+            .${dm_uniquePrefix}lang-switcher button {
+                background: green;
+                border: 1px solid #ccc;
+                padding: 5px 10px;
+                margin: 0 3px;
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 0.9em;
+                transition: background-color 0.2s ease, color 0.2s ease;
+            }
+            .${dm_uniquePrefix}lang-switcher button:hover {
+                background-color: #f0f0f0;
+            }
+            .${dm_uniquePrefix}lang-switcher button.active {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+            .${dm_uniquePrefix}close {
+                background: none;
+                border: none;
+                font-size: 2.5em;
+                font-weight: bold;
+                cursor: pointer;
+                color: #aaa;
+                padding: 0 10px;
+                line-height: 1;
+            }
+            .${dm_uniquePrefix}close:hover,
+            .${dm_uniquePrefix}close:focus {
+                color: black;
+                text-decoration: none;
+            }
+             .${dm_uniquePrefix}section {
+                 margin-bottom: 25px;
+             }
+             .${dm_uniquePrefix}section h3 {
+                 font-size: 1.4em;
+                 margin-bottom: 10px;
+                 color: #0056b3;
+             }
+            .${dm_uniquePrefix}instructions-text {
+                font-size: 1.1em;
+                font-weight: bold;
+                color: #1a1a1a;
+                word-break: break-all; /* Ensure number doesn't overflow */
+            }
+            .${dm_uniquePrefix}project-message {
+                font-size: 1em;
+                color: #555;
+                 background-color: #f9f9f9;
+                 padding: 15px;
+                 border-left: 4px solid #007bff;
+                 border-right: 4px solid #007bff;
+                 border-radius: 4px;
+            }
+            .${dm_uniquePrefix}content[dir="rtl"] .${dm_uniquePrefix}project-message {
+                border-left: none;
+                border-right: 4px solid #007bff;
+            }
+            .${dm_uniquePrefix}content[dir="ltr"] .${dm_uniquePrefix}project-message {
+                border-right: none;
+                border-left: 4px solid #007bff;
+            }
+            .${dm_uniquePrefix}verse {
+                font-style: italic;
+                margin-top: 15px;
+                padding: 15px;
+                background-color: #eef;
+                border-radius: 4px;
+                border-left: 4px solid #6f42c1;
+                border-right: 4px solid #6f42c1;
+            }
+            .${dm_uniquePrefix}content[dir="rtl"] .${dm_uniquePrefix}verse {
+                border-left: none;
+                border-right: 4px solid #6f42c1;
+            }
+            .${dm_uniquePrefix}content[dir="ltr"] .${dm_uniquePrefix}verse {
+                border-right: none;
+                border-left: 4px solid #6f42c1;
+            }
+            .${dm_uniquePrefix}verse-text {
+                 display: block;
+                 margin-bottom: 8px;
+                 font-size: 1.1em;
+             }
+            .${dm_uniquePrefix}verse-source {
+                 display: block;
+                 text-align: end;
+                 font-size: 0.9em;
+                 color: #555;
+             }
+             .${dm_uniquePrefix}content[dir="ltr"] .${dm_uniquePrefix}verse-source {
+                 text-align: right;
+             }
+              .${dm_uniquePrefix}content[dir="rtl"] .${dm_uniquePrefix}verse-source {
+                 text-align: left;
+             }
+
+            @media (max-width: 600px) {
+                .${dm_uniquePrefix}trigger {
+                    width: 50px;
+                    height: 50px;
+                    font-size: 20px;
+                    bottom: 15px;
+                    left: 15px;
+                }
+                .${dm_uniquePrefix}content {
+                    width: 95%;
+                    padding: 20px;
+                    max-height: 95vh;
+                }
+                 .${dm_uniquePrefix}title {
+                     font-size: 1.5em;
+                 }
+                 .${dm_uniquePrefix}lang-switcher button {
+                     padding: 4px 8px;
+                     font-size: 0.8em;
+                 }
+                 .${dm_uniquePrefix}close {
+                     font-size: 2em;
+                 }
+                 .${dm_uniquePrefix}section h3 {
+                     font-size: 1.2em;
+                 }
+                 .${dm_uniquePrefix}instructions-text, .${dm_uniquePrefix}project-message, .${dm_uniquePrefix}verse-text {
+                     font-size: 1em;
+                 }
+            }
+        `;
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = styles;
+        document.head.appendChild(styleSheet);
+    }
+
+    function dm_getRandomVerse(lang) {
+        const verses = dm_content[lang].verses;
+        const randomIndex = Math.floor(Math.random() * verses.length);
+        return verses[randomIndex];
+    }
+
+    function dm_updateContent(lang) {
+        dm_currentLang = lang;
+        const contentData = dm_content[lang];
+        const verse = dm_getRandomVerse(lang);
+
+        if (!dm_modalContentElement) return;
+
+        dm_modalContentElement.lang = contentData.langCode;
+        dm_modalContentElement.dir = contentData.dir;
+
+        dm_titleElement.textContent = contentData.title;
+        dm_instructionsTitleElement.textContent = contentData.instructionsTitle;
+        dm_instructionsTextElement.textContent = contentData.instructionsText;
+        dm_projectMessageElement.textContent = contentData.projectMessage;
+        dm_verseElement.textContent = verse.text;
+        dm_verseSourceElement.textContent = `- ${verse.source}`;
+        dm_closeButtonElement.textContent = contentData.closeButton;
+        dm_closeButtonElement.setAttribute('aria-label', contentData.closeButton);
+
+        document.querySelectorAll(`.${dm_uniquePrefix}lang-switcher button`).forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-lang') === lang) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    function dm_createModal() {
+        dm_modalElement = document.createElement('div');
+        dm_modalElement.id = `${dm_uniquePrefix}modal`;
+        dm_modalElement.className = `${dm_uniquePrefix}modal`;
+        dm_modalElement.setAttribute('role', 'dialog');
+        dm_modalElement.setAttribute('aria-modal', 'true');
+        dm_modalElement.setAttribute('aria-labelledby', `${dm_uniquePrefix}title`);
+        dm_modalElement.setAttribute('aria-describedby', `${dm_uniquePrefix}desc`);
+
+        dm_modalContentElement = document.createElement('div');
+        dm_modalContentElement.className = `${dm_uniquePrefix}content`;
+
+        const header = document.createElement('div');
+        header.className = `${dm_uniquePrefix}header`;
+
+        dm_titleElement = document.createElement('h2');
+        dm_titleElement.id = `${dm_uniquePrefix}title`;
+        dm_titleElement.className = `${dm_uniquePrefix}title`;
+
+        const langSwitcher = document.createElement('div');
+        langSwitcher.className = `${dm_uniquePrefix}lang-switcher`;
+        ['ur', 'en', 'ar'].forEach(lang => {
+            const button = document.createElement('button');
+            button.textContent = lang.toUpperCase();
+            button.setAttribute('data-lang', lang);
+            button.setAttribute('aria-label', `Switch to ${dm_content[lang].title}`);
+            button.onclick = () => dm_updateContent(lang);
+            langSwitcher.appendChild(button);
+        });
+
+        dm_closeButtonElement = document.createElement('button');
+        dm_closeButtonElement.className = `${dm_uniquePrefix}close`;
+        dm_closeButtonElement.innerHTML = '&times;';
+        dm_closeButtonElement.onclick = dm_closeModal;
+
+
+        header.appendChild(dm_titleElement);
+        header.appendChild(langSwitcher);
+        header.appendChild(dm_closeButtonElement); // Moved close button to header for better structure
+
+        const descriptionDiv = document.createElement('div'); // Wrapper for aria-describedby
+        descriptionDiv.id = `${dm_uniquePrefix}desc`;
+
+        const instructionsSection = document.createElement('div');
+        instructionsSection.className = `${dm_uniquePrefix}section`;
+        dm_instructionsTitleElement = document.createElement('h3');
+        dm_instructionsTextElement = document.createElement('p');
+        dm_instructionsTextElement.className = `${dm_uniquePrefix}instructions-text`;
+        instructionsSection.appendChild(dm_instructionsTitleElement);
+        instructionsSection.appendChild(dm_instructionsTextElement);
+
+        const projectMessageSection = document.createElement('div');
+        projectMessageSection.className = `${dm_uniquePrefix}section`;
+        dm_projectMessageElement = document.createElement('p');
+        dm_projectMessageElement.className = `${dm_uniquePrefix}project-message`;
+        projectMessageSection.appendChild(dm_projectMessageElement);
+
+        const verseSection = document.createElement('div');
+        verseSection.className = `${dm_uniquePrefix}section`;
+        const verseBlock = document.createElement('blockquote');
+        verseBlock.className = `${dm_uniquePrefix}verse`;
+        dm_verseElement = document.createElement('span');
+        dm_verseElement.className = `${dm_uniquePrefix}verse-text`;
+        dm_verseSourceElement = document.createElement('cite');
+        dm_verseSourceElement.className = `${dm_uniquePrefix}verse-source`;
+        verseBlock.appendChild(dm_verseElement);
+        verseBlock.appendChild(dm_verseSourceElement);
+        verseSection.appendChild(verseBlock);
+
+
+        descriptionDiv.appendChild(instructionsSection);
+        descriptionDiv.appendChild(projectMessageSection);
+        descriptionDiv.appendChild(verseSection);
+
+        dm_modalContentElement.appendChild(header);
+        dm_modalContentElement.appendChild(descriptionDiv);
+        dm_modalElement.appendChild(dm_modalContentElement);
+        document.body.appendChild(dm_modalElement);
+
+        dm_modalElement.addEventListener('click', function(event) {
+             if (event.target === dm_modalElement) {
+                 dm_closeModal();
+             }
+        });
+
+        dm_updateContent(dm_currentLang);
+    }
+
+    function dm_createTriggerButton() {
+        dm_triggerButton = document.createElement('button');
+        dm_triggerButton.id = `${dm_uniquePrefix}trigger`;
+        dm_triggerButton.className = `${dm_uniquePrefix}trigger`;
+        dm_triggerButton.setAttribute('aria-label', dm_content[dm_currentLang].title || 'Open Donation Modal');
+        dm_triggerButton.innerHTML = '<span>❤️</span><span>💰</span>';
+        dm_triggerButton.onclick = dm_openModal;
+        document.body.appendChild(dm_triggerButton);
+    }
+
+    function dm_openModal() {
+        if (!dm_modalElement) {
+            dm_createModal();
+        }
+        dm_updateContent(dm_currentLang);
+        dm_modalElement.style.display = 'flex';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                 dm_modalElement.classList.add('active');
+                 dm_closeButtonElement.focus(); // Focus the close button for accessibility
+            });
+        });
+        document.body.style.overflow = 'hidden';
+        dm_triggerButton.setAttribute('aria-expanded', 'true');
+
+    }
+
+    function dm_closeModal() {
+        dm_modalElement.classList.remove('active');
+         dm_modalElement.addEventListener('transitionend', () => {
+                dm_modalElement.style.display = 'none';
+                 document.body.style.overflow = '';
+                 dm_triggerButton.focus(); // Return focus to the trigger button
+                 dm_triggerButton.setAttribute('aria-expanded', 'false');
+            }, { once: true });
+
+
+    }
+
+    function dm_init() {
+        dm_applyStyles();
+        dm_createTriggerButton();
+        dm_createModal(); // Pre-create modal structure but keep hidden
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', dm_init);
+    } else {
+        dm_init();
+    }
+
+})();
+</script>
 </body>
 </html>
