@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ڈینی مدرسہ مینجمنٹ سسٹم</title>
     <style>
+        html, body {
+    height: 100%;
+    overflow: hidden;
+}
         /* بنیادی اسٹائلز */
         * {
             box-sizing: border-box;
@@ -73,10 +77,12 @@
 
         /* مین کنٹینر */
         .main-container {
-            margin-right: 250px;
-            padding: 20px;
-            transition: all 0.3s;
-        }
+    margin-right: 250px;
+    padding: 20px;
+    transition: all 0.3s;
+    height: 100%;      /* ADD THIS LINE */
+    overflow-y: auto; /* ADD THIS LINE */
+}
 
         /* ڈیش بورڈ کارڈز */
         .dashboard-cards {
@@ -578,6 +584,9 @@
         .calendar-day.has-event {
             border: 2px solid #e74c3c;
         }
+        * {
+    font-family: calibri;
+}
     </style>
 </head>
 
@@ -2694,26 +2703,224 @@
             </div>
         </div>
 
-        <div class="table-container">
-            <div class="form-title">بیک اپ تاریخ</div>
-            <table class="table" id="backup-history-table">
-                <thead>
-                    <tr>
-                        <th>نمبر</th>
-                        <th>تاریخ</th>
-                        <th>وقت</th>
-                        <th>قسم</th>
-                        <th>سائز</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- یہاں ڈیٹا آئے گا -->
-                </tbody>
-            </table>
+                <!-- ... (all the code for the salaries section is here) ... -->
+
+        </div> <!-- This is the closing tag for id="salaries-view" -->
+
+        <!-- VVVV PASTE THE NEW BACKUP SECTION HERE VVVV -->
+        <div class="section-view" id="backup-view">
+            <h2>بیک اپ اور بحالی</h2>
+
+            <div class="form-container no-print">
+                <div class="form-title">دستی بیک اپ</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">بیک اپ کی قسم</label>
+                        <select class="form-control" id="backup-type">
+                            <option value="full">مکمل بیک اپ</option>
+                            <option value="students">صرف طلباء</option>
+                            <option value="teachers">صرف اساتذہ</option>
+                            <option value="staff">صرف عملہ</option>
+                            <option value="fees">صرف فیس</option>
+                            <option value="salaries">صرف تنخواہیں</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">بیک اپ فارمیٹ</label>
+                        <select class="form-control" id="backup-format">
+                            <option value="json">JSON</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button type="button" class="btn btn-primary" id="create-backup">بیک اپ بنائیں</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-container no-print">
+                <div class="form-title">ڈیٹا بحال کریں</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">بیک اپ فائل منتخب کریں</label>
+                        <input type="file" class="form-control" id="restore-file" accept=".json">
+                    </div>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button type="button" class="btn btn-danger" id="restore-backup">ڈیٹا بحال کریں</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-container no-print">
+                <div class="form-title">آٹومیٹک بیک اپ ترتیبات</div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 0 0 auto; align-items: center; display: flex;">
+                        <input type="checkbox" id="auto-backup-enable" style="width: 20px; height: 20px; margin-left: 10px;">
+                        <label class="form-label" for="auto-backup-enable" style="margin-bottom: 0;">آٹومیٹک بیک اپ فعال کریں</label>
+                    </div>
+                </div>
+                <div id="auto-backup-options" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">بیک اپ کی فریکوئنسی</label>
+                            <select class="form-control" id="auto-backup-frequency" required>
+                                <option value="daily">روزانہ</option>
+                                <option value="weekly">ہفتہ وار</option>
+                                <option value="monthly" selected>ماہانہ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">بیک اپ رکھنے کی مدت</label>
+                            <select class="form-control" id="auto-backup-retention" required>
+                                <option value="1">1 مہینہ</option>
+                                <option value="3" selected>3 مہینے</option>
+                                <option value="6">6 مہینے</option>
+                                <option value="12">1 سال</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <button type="button" class="btn btn-primary" id="save-auto-backup">ترتیبات محفوظ کریں</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="form-title">بیک اپ تاریخ</div>
+                <table class="table" id="backup-history-table">
+                    <thead>
+                        <tr>
+                            <th>نمبر</th>
+                            <th>تاریخ</th>
+                            <th>وقت</th>
+                            <th>قسم</th>
+                            <th>سائز</th>
+                            <th>عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- یہاں ڈیٹا آئے گا -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-    </div>
+        <!-- ^^^^ END OF THE NEW BACKUP SECTION ^^^^ -->
+        <!-- لائبریری -->
+        <div class="section-view" id="library-view">
+            <h2>لائبریری</h2>
+            <!-- Library content will go here. Add tabs, forms, and tables as needed. -->
+            <div class="form-container">
+                <div class="form-title">لائبریری کا سیکشن ابھی زیر تعمیر ہے۔</div>
+                <p>یہاں کتابیں شامل کرنے، جاری کرنے اور واپس لینے کی سہولت فراہم کی جائے گی۔</p>
+                <!-- Example book form for JS to find -->
+                <form id="book-form" style="display:none;"></form>
+                <form id="issue-form" style="display:none;"></form>
+                <form id="return-form" style="display:none;"></form>
+            </div>
+        </div>
+
+        <!-- صارفین -->
+        <div class="section-view" id="users-view">
+            <h2>صارفین اور رولز</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="users-list">صارفین کی فہرست</div>
+                <div class="tab" data-tab="add-user">نیا صارف</div>
+                <div class="tab" data-tab="user-roles">صارفین کے رولز</div>
+            </div>
+            <div class="tab-content active" id="users-list">
+                <div class="table-container">
+                    <table class="table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>صارف نام</th>
+                                <th>نام</th>
+                                <th>ای میل</th>
+                                <th>رول</th>
+                                <th>حیثیت</th>
+                                <th>عمل</th>
+                            </tr>
+                        </thead>
+                        <tbody><!-- User data here --></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-content" id="add-user">
+                <div class="form-container">
+                    <div class="form-title">نیا صارف بنائیں</div>
+                    <form id="user-form">
+                        <div class="form-row">
+                             <div class="form-group"><label class="form-label">نام</label><input type="text" class="form-control" id="user-name" required></div>
+                             <div class="form-group"><label class="form-label">صارف نام</label><input type="text" class="form-control" id="user-username" required></div>
+                        </div>
+                        <div class="form-row">
+                             <div class="form-group"><label class="form-label">پاس ورڈ</label><input type="password" class="form-control" id="user-password" required></div>
+                             <div class="form-group"><label class="form-label">پاس ورڈ کی تصدیق</label><input type="password" class="form-control" id="user-confirm-password" required></div>
+                        </div>
+                        <div class="form-row">
+                             <div class="form-group"><label class="form-label">ای میل</label><input type="email" class="form-control" id="user-email" required></div>
+                             <div class="form-group"><label class="form-label">موبائل</label><input type="tel" class="form-control" id="user-mobile"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">رول</label>
+                                <select class="form-control" id="user-role" required><option value="admin">ایڈمن</option><option value="teacher">استاد</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">حیثیت</label>
+                                <select class="form-control" id="user-status" required><option value="active">فعال</option><option value="inactive">غیر فعال</option></select>
+                            </div>
+                        </div>
+                         <div class="form-row"><button type="submit" class="btn btn-primary">صارف بنائیں</button></div>
+                    </form>
+                </div>
+            </div>
+            <div class="tab-content" id="user-roles">
+                <div class="form-container">
+                    <div class="form-title">نیا رول بنائیں</div>
+                    <form id="role-form">
+                         <div class="form-row">
+                            <div class="form-group"><label class="form-label">رول کا نام</label><input type="text" class="form-control" id="role-name" required></div>
+                            <div class="form-group"><label class="form-label">تفصیل</label><input type="text" class="form-control" id="role-description"></div>
+                         </div>
+                         <!-- Permissions checkboxes can be added here -->
+                         <div class="form-row"><button type="submit" class="btn btn-primary">رول بنائیں</button></div>
+                    </form>
+                </div>
+                <div class="table-container">
+                    <table class="table" id="roles-table">
+                        <thead><tr><th>رول نام</th><th>تفصیل</th><th>عمل</th></tr></thead>
+                        <tbody><!-- Roles data here --></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- رپورٹس -->
+        <div class="section-view" id="reports-view">
+            <h2>رپورٹس</h2>
+            <div class="form-container">
+                <div class="form-title">رپورٹ جنریشن کا سیکشن ابھی زیر تعمیر ہے۔</div>
+                 <!-- Example report form for JS to find -->
+                 <form id="report-form" style="display:none;">
+                    <select id="report-type"></select>
+                 </form>
+            </div>
+        </div>
+
+        <!-- ترتیبات -->
+        <div class="section-view" id="settings-view">
+            <h2>ترتیبات</h2>
+            <div class="form-container">
+                <div class="form-title">ترتیبات کا سیکشن ابھی زیر تعمیر ہے۔</div>
+                <!-- Example settings forms for JS to find -->
+                <form id="general-settings-form" style="display:none;"></form>
+                <form id="academic-settings-form" style="display:none;"></form>
+                <form id="theme-settings-form" style="display:none;">
+                    <button id="reset-theme"></button>
+                </form>
+            </div>
+        </div>
+    </div> <!-- This is the closing tag for id="mainContainer" -->
+
 
     <!-- جاوا اسکرپٹ کوڈ -->
     <script>
@@ -2795,7 +3002,7 @@
             });
 
             // رپورٹ ٹائپ چینج ہینڈلر
-            document.getElementById('report-type').addEventListener('change', function () {
+            /* document.getElementById('report-type').addEventListener('change', function () {
                 const reportType = this.value;
 
                 // تمام فلٹر کنٹینرز چھپائیں
@@ -2805,7 +3012,7 @@
 
                 // صرف منتخب رپورٹ ٹائپ کا فلٹر کنٹینر دکھائیں
                 document.getElementById(`${reportType}-report-filters`).style.display = 'flex';
-            });
+            }); */
 
             // بیک اپ سیٹنگز ہینڈلر
             document.getElementById('auto-backup-enable').addEventListener('change', function () {
@@ -3060,7 +3267,323 @@
 
             console.log('Application initialized successfully');
         }
+        // =======================================================
+        // ALL MISSING AND CORRECTED FUNCTIONS START HERE
+        // =======================================================
 
+        // Corrected setupFormHandlers
+        function setupFormHandlers() {
+            // طالب علم فارم
+            document.getElementById('student-form').addEventListener('submit', (e) => { e.preventDefault(); addStudent(); });
+            // استاد فارم
+            document.getElementById('teacher-form').addEventListener('submit', (e) => { e.preventDefault(); addTeacher(); });
+            // عملہ فارم
+            document.getElementById('staff-form').addEventListener('submit', (e) => { e.preventDefault(); addStaff(); });
+            // کلاس فارم
+            document.getElementById('class-form').addEventListener('submit', (e) => { e.preventDefault(); addClass(); });
+            // مضمون فارم
+            document.getElementById('subject-form').addEventListener('submit', (e) => { e.preventDefault(); addSubject(); });
+            // کلاس مضمون سیو بٹن
+            document.getElementById('save-class-subject').addEventListener('click', saveClassSubject);
+            // سیکشن سیو بٹن
+            document.getElementById('save-section').addEventListener('click', saveSection);
+            // حاضری فارم
+            document.getElementById('attendance-form').addEventListener('submit', (e) => { e.preventDefault(); saveAttendance(); });
+            // امتحان فارم
+            document.getElementById('exam-form').addEventListener('submit', (e) => { e.preventDefault(); addExam(); });
+            // مارکس فارم
+            document.getElementById('marks-form').addEventListener('submit', (e) => { e.preventDefault(); saveMarks(); });
+            // فیس فارم
+            document.getElementById('fee-form').addEventListener('submit', (e) => { e.preventDefault(); collectFee(); });
+            // فیس سٹرکچر فارم
+            document.getElementById('fee-structure-form').addEventListener('submit', (e) => { e.preventDefault(); saveFeeStructure(); });
+            // تنخواہ فارم
+            document.getElementById('salary-form').addEventListener('submit', (e) => { e.preventDefault(); paySalary(); });
+            // تنخواہ سٹرکچر سیو بٹن
+            document.getElementById('save-salary-structure').addEventListener('click', saveSalaryStructure);
+            // کتاب فارم
+            document.getElementById('book-form').addEventListener('submit', (e) => { e.preventDefault(); addBook(); });
+            // کتاب اجراء فارم
+            document.getElementById('issue-form').addEventListener('submit', (e) => { e.preventDefault(); issueBook(); });
+            // کتاب واپسی فارم
+            document.getElementById('return-form').addEventListener('submit', (e) => { e.preventDefault(); returnBook(); });
+            // صارف فارم
+            document.getElementById('user-form').addEventListener('submit', (e) => { e.preventDefault(); addUser(); });
+            // رول فارم
+            document.getElementById('role-form').addEventListener('submit', (e) => { e.preventDefault(); addRole(); });
+        }
+        
+        // Corrected setupEventListeners
+        function setupEventListeners() {
+            document.querySelector('[data-tab="students-list"]').addEventListener('click', loadStudentsTable);
+            document.querySelector('[data-tab="teachers-list"]').addEventListener('click', loadTeachersTable);
+            document.querySelector('[data-tab="staff-list"]').addEventListener('click', loadStaffTable);
+            document.querySelector('[data-tab="classes-list"]').addEventListener('click', loadClassesTable);
+            document.querySelector('[data-tab="sections"]').addEventListener('click', loadSectionsTable);
+            document.querySelector('[data-tab="subjects-list"]').addEventListener('click', loadSubjectsTable);
+            document.querySelector('[data-tab="class-subjects"]').addEventListener('click', loadClassSubjectsTable);
+            document.querySelector('[data-tab="exams-list"]').addEventListener('click', loadExamsTable);
+            document.querySelector('[data-view="library"]').addEventListener('click', loadBooksTable);
+            document.querySelector('[data-view="users"]').addEventListener('click', loadUsersTable);
+            document.querySelector('[data-tab="user-roles"]').addEventListener('click', loadRolesTable);
+            document.querySelector('[data-tab="fee-structure"]').addEventListener('click', loadFeeStructureTable);
+            document.querySelector('[data-tab="salary-structure"]').addEventListener('click', loadSalaryStructureTable);
+            document.querySelector('[data-view="backup"]').addEventListener('click', loadBackupHistoryTable);
+
+            document.getElementById('search-student-btn').addEventListener('click', searchStudents);
+            document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
+            document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
+            
+            document.getElementById('load-attendance').addEventListener('click', loadStudentsForAttendance);
+            document.getElementById('view-attendance-btn').addEventListener('click', viewAttendance);
+            document.getElementById('generate-attendance-report').addEventListener('click', generateAttendanceReport);
+            document.getElementById('load-students-marks').addEventListener('click', loadStudentsForMarks);
+            document.getElementById('generate-result-cards').addEventListener('click', generateResultCards);
+            document.getElementById('search-student-fee').addEventListener('click', searchStudentForFee);
+            document.getElementById('generate-fee-report').addEventListener('click', generateFeeReport);
+            document.getElementById('generate-defaulters').addEventListener('click', generateDefaultersReport);
+            document.getElementById('search-employee-salary').addEventListener('click', searchEmployeeForSalary);
+            document.getElementById('generate-salary-report').addEventListener('click', generateSalaryReport);
+            document.getElementById('generate-report').addEventListener('click', generateReport);
+            
+            document.getElementById('create-backup').addEventListener('click', createBackup);
+            document.getElementById('restore-backup').addEventListener('click', restoreBackup);
+            document.getElementById('save-auto-backup').addEventListener('click', saveAutoBackupSettings);
+            document.getElementById('auto-backup-enable').addEventListener('change', function() { document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none'; });
+
+            document.getElementById('fee-report-type').addEventListener('change', toggleFeeReportFields);
+            document.getElementById('salary-report-type').addEventListener('change', toggleSalaryReportFields);
+            document.getElementById('structure-employee-type').addEventListener('change', loadEmployeesForSalaryStructure);
+
+            // Settings buttons might not exist if you haven't added the full settings page, but good to have
+            const themeForm = document.getElementById('theme-settings-form');
+            if (themeForm) themeForm.addEventListener('submit', saveThemeSettings);
+            const resetBtn = document.getElementById('reset-theme');
+            if (resetBtn) resetBtn.addEventListener('click', resetThemeSettings);
+            const generalForm = document.getElementById('general-settings-form');
+            if (generalForm) generalForm.addEventListener('submit', saveGeneralSettings);
+            const academicForm = document.getElementById('academic-settings-form');
+            if (academicForm) academicForm.addEventListener('submit', saveAcademicSettings);
+        }
+
+        // عملہ کی فہرست لوڈ کریں
+        async function loadStaffTable() {
+            try {
+                const staffList = await getAllFromStore(STORES.STAFF);
+                const tbody = document.querySelector('#staff-table tbody');
+                tbody.innerHTML = '';
+                if (!staffList || staffList.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی عملہ موجود نہیں ہے۔</td></tr>';
+                    return;
+                }
+                staffList.forEach(staff => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${staff.employeeId}</td>
+                        <td>${staff.name}</td>
+                        <td>${staff.designation}</td>
+                        <td>${staff.department}</td>
+                        <td>${staff.contact}</td>
+                        <td>${formatDate(staff.joiningDate)}</td>
+                        <td>${staff.basicSalary ? formatCurrency(staff.basicSalary) : 'N/A'}</td>
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm">ترمیم</button>
+                            <button class="btn btn-danger btn-sm">حذف کریں</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading staff table:', error);
+            }
+        }
+
+        // کلاسز کی فہرست لوڈ کریں
+        async function loadClassesTable() {
+            try {
+                const classes = await getAllFromStore(STORES.CLASSES);
+                const tbody = document.querySelector('#classes-table tbody');
+                tbody.innerHTML = '';
+                if (!classes || classes.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">کوئی کلاس موجود نہیں ہے۔</td></tr>';
+                    return;
+                }
+                for (const cls of classes) {
+                    const row = document.createElement('tr');
+                    const teacher = cls.inChargeId ? await getFromStore(STORES.TEACHERS, cls.inChargeId) : null;
+                    const studentsCount = (await getAllFromIndex(STORES.STUDENTS, 'classId', cls.id)).length;
+                    
+                    row.innerHTML = `
+                        <td>${cls.id}</td>
+                        <td>${cls.name}</td>
+                        <td>${teacher ? teacher.name : 'N/A'}</td>
+                        <td>${(await getAllFromIndex(STORES.SECTIONS, 'classId', cls.id)).map(s => s.name).join(', ')}</td>
+                        <td>${studentsCount}</td>
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm">ترمیم</button>
+                            <button class="btn btn-danger btn-sm">حذف کریں</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error loading classes table:', error);
+            }
+        }
+
+        // سیکشنز کی فہرست لوڈ کریں
+        async function loadSectionsTable() {
+            try {
+                const sections = await getAllFromStore(STORES.SECTIONS);
+                const tbody = document.querySelector('#sections-table tbody');
+                tbody.innerHTML = '';
+                if (!sections || sections.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">کوئی سیکشن موجود نہیں ہے۔</td></tr>';
+                    return;
+                }
+                for (const section of sections) {
+                    const row = document.createElement('tr');
+                    const classData = await getFromStore(STORES.CLASSES, section.classId);
+                    const teacher = section.inChargeId ? await getFromStore(STORES.TEACHERS, section.inChargeId) : null;
+                    const studentsCount = (await getAllFromIndex(STORES.STUDENTS, 'sectionId', section.id)).length;
+                    row.innerHTML = `
+                        <td>${section.id}</td>
+                        <td>${classData ? classData.name : 'N/A'}</td>
+                        <td>${section.name}</td>
+                        <td>${teacher ? teacher.name : 'N/A'}</td>
+                        <td>${studentsCount}</td>
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm">ترمیم</button>
+                            <button class="btn btn-danger btn-sm">حذف کریں</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error loading sections table:', error);
+            }
+        }
+
+        // مضامین کی فہرست لوڈ کریں
+        async function loadSubjectsTable() {
+            try {
+                const subjects = await getAllFromStore(STORES.SUBJECTS);
+                const tbody = document.querySelector('#subjects-table tbody');
+                tbody.innerHTML = '';
+                if (!subjects || subjects.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">کوئی مضمون موجود نہیں ہے۔</td></tr>';
+                    return;
+                }
+                subjects.forEach(subject => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${subject.id}</td>
+                        <td>${subject.name}</td>
+                        <td>${subject.code}</td>
+                        <td>${subject.type}</td>
+                        <td>${subject.details || '-'}</td>
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm">ترمیم</button>
+                            <button class="btn btn-danger btn-sm">حذف کریں</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading subjects table:', error);
+            }
+        }
+        
+        // کلاس کے مضامین کی فہرست لوڈ کریں
+        async function loadClassSubjectsTable() {
+            const tbody = document.querySelector('#class-subjects-table tbody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Functionality to be implemented.</td></tr>';
+        }
+
+        // امتحانات کی فہرست لوڈ کریں
+        async function loadExamsTable() {
+            try {
+                const exams = await getAllFromStore(STORES.EXAMS);
+                const tbody = document.querySelector('#exams-table tbody');
+                tbody.innerHTML = '';
+                if (!exams || exams.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">کوئی امتحان موجود نہیں ہے۔</td></tr>';
+                    return;
+                }
+                 for (const exam of exams) {
+                    const row = document.createElement('tr');
+                     const classNames = exam.classes ? (await Promise.all(exam.classes.map(id => getFromStore(STORES.CLASSES, id)))).map(c => c ? c.name : '').join(', ') : 'N/A';
+                    row.innerHTML = `
+                        <td>${exam.id}</td>
+                        <td>${exam.name}</td>
+                        <td>${formatDate(exam.startDate)}</td>
+                        <td>${formatDate(exam.endDate)}</td>
+                        <td>${classNames}</td>
+                        <td>${exam.status}</td>
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm">ترمیم</button>
+                            <button class="btn btn-danger btn-sm">حذف کریں</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error loading exams table:', error);
+            }
+        }
+        
+        async function loadBooksTable() {
+            const container = document.getElementById('library-view');
+            if (container) container.innerHTML = '<h2>لائبریری</h2><p>Functionality to be implemented.</p>';
+        }
+
+        async function loadUsersTable() {
+             const tbody = document.querySelector('#users-table tbody');
+             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Functionality to be implemented.</td></tr>';
+        }
+
+        async function loadRolesTable() {
+             const tbody = document.querySelector('#roles-table tbody');
+             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Functionality to be implemented.</td></tr>';
+        }
+
+        async function loadFeeStructureTable(){
+             const tbody = document.querySelector('#fee-structure-table tbody');
+             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Functionality to be implemented.</td></tr>';
+        }
+
+        async function loadSalaryStructureTable(){
+             const tbody = document.querySelector('#salary-structure-table tbody');
+             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Functionality to be implemented.</td></tr>';
+        }
+        
+        async function loadBackupHistoryTable(){
+             const tbody = document.querySelector('#backup-history-table tbody');
+             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Functionality to be implemented.</td></tr>';
+        }
+
+        // Placeholder for other missing functions to prevent future errors
+        function searchStudents() { console.log("searchStudents called"); }
+        function searchTeachers() { console.log("searchTeachers called"); }
+        function searchStaff() { console.log("searchStaff called"); }
+        function loadStudentsForAttendance() { console.log("loadStudentsForAttendance called"); }
+        function viewAttendance() { console.log("viewAttendance called"); }
+        function generateAttendanceReport() { console.log("generateAttendanceReport called"); }
+        function loadStudentsForMarks() { console.log("loadStudentsForMarks called"); }
+        function generateResultCards() { console.log("generateResultCards called"); }
+        function searchStudentForFee() { console.log("searchStudentForFee called"); }
+        function generateFeeReport() { console.log("generateFeeReport called"); }
+        function generateDefaultersReport() { console.log("generateDefaultersReport called"); }
+        function searchEmployeeForSalary() { console.log("searchEmployeeForSalary called"); }
+        function generateSalaryReport() { console.log("generateSalaryReport called"); }
+        function generateReport() { console.log("generateReport called"); }
+        function toggleFeeReportFields() { console.log("toggleFeeReportFields called"); }
+        function toggleSalaryReportFields() { console.log("toggleSalaryReportFields called"); }
+        function loadEmployeesForSalaryStructure() { console.log("loadEmployeesForSalaryStructure called"); }
+        function saveThemeSettings() { console.log("saveThemeSettings called"); }
+        function resetThemeSettings() { console.log("resetThemeSettings called"); }
+        function saveGeneralSettings() { console.log("saveGeneralSettings called"); }
+        function saveAcademicSettings() { console.log("saveAcademicSettings called"); }
         // ڈیش بورڈ ڈیٹا لوڈ کریں
         async function loadDashboardData() {
             try {
@@ -3413,7 +3936,7 @@
                 const classes = await getAllFromStore(STORES.CLASSES);
 
                 // ہر کلاس ڈراپ ڈاؤن میں کلاسز شامل کریں
-                const classDropdowns = document.querySelectorAll('[id$="-class"]');
+                const classDropdowns = document.querySelectorAll('select[id$="-class"]');
 
                 classDropdowns.forEach(dropdown => {
                     // پہلے سے موجود آپشنز کو ریٹین کریں (جیسے "all" وغیرہ)
@@ -3451,7 +3974,7 @@
                 const subjects = await getAllFromStore(STORES.SUBJECTS);
 
                 // ہر سبجیکٹ ڈراپ ڈاؤن میں مضامین شامل کریں
-                const subjectDropdowns = document.querySelectorAll('[id$="-subject"]');
+                const subjectDropdowns = document.querySelectorAll('select[id$="-subject"]');
 
                 subjectDropdowns.forEach(dropdown => {
                     // پہلے سے موجود آپشنز کو ریٹین کریں (جیسے "all" وغیرہ)
@@ -3482,14 +4005,37 @@
                 console.error('Error loading subject dropdowns:', error);
             }
         }
+        async function loadStudentsTable() {
+            try {
+                const students = await getAllFromStore(STORES.STUDENTS);
+                const tbody = document.querySelector('#students-table tbody');
+                tbody.innerHTML = ''; // Clear existing rows
 
+                students.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>${student.rollNumber}</td>
+                <td>${student.name}</td>
+                <td>${student.fatherName}</td>
+                <td>${student.className}</td>
+                <td>${student.sectionName}</td>
+                <td>${student.contact}</td>
+                <td>${formatDate(student.admissionDate)}</td>
+                <td><!-- Actions buttons here --></td>
+            `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading students table:', error);
+            }
+        }
         // اساتذہ ڈراپ ڈاؤن لوڈ کریں
         async function loadTeacherDropdowns() {
             try {
                 const teachers = await getAllFromStore(STORES.TEACHERS);
 
                 // ہر ٹیچر ڈراپ ڈاؤن میں اساتذہ شامل کریں
-                const teacherDropdowns = document.querySelectorAll('[id$="-teacher"], [id$="-incharge"]');
+                const teacherDropdowns = document.querySelectorAll('select[id$="-teacher"], select[id$="-incharge"]');
 
                 teacherDropdowns.forEach(dropdown => {
                     // پہلے سے موجود آپشنز کو ریٹین کریں (جیسے "all" وغیرہ)
@@ -4481,141 +5027,68 @@
         }
 
         // ایونٹ لسنرز سیٹ اپ کریں
+                // Corrected setupEventListeners
         function setupEventListeners() {
-            // طلباء ٹیبل لوڈنگ
-            const studentsTab = document.querySelector('[data-tab="students-list"]');
-            studentsTab.addEventListener('click', loadStudentsTable);
+            // Tab click handlers to load tables
+            document.querySelector('[data-tab="students-list"]').addEventListener('click', loadStudentsTable);
+            document.querySelector('[data-tab="teachers-list"]').addEventListener('click', loadTeachersTable);
+            document.querySelector('[data-tab="staff-list"]').addEventListener('click', loadStaffTable);
+            document.querySelector('[data-tab="classes-list"]').addEventListener('click', loadClassesTable);
+            document.querySelector('[data-tab="sections"]').addEventListener('click', loadSectionsTable);
+            document.querySelector('[data-tab="subjects-list"]').addEventListener('click', loadSubjectsTable);
+            document.querySelector('[data-tab="class-subjects"]').addEventListener('click', loadClassSubjectsTable);
+            document.querySelector('[data-tab="exams-list"]').addEventListener('click', loadExamsTable);
+            document.querySelector('[data-view="library"]').addEventListener('click', loadBooksTable);
+            document.querySelector('[data-view="users"]').addEventListener('click', loadUsersTable);
+            document.querySelector('[data-tab="user-roles"]').addEventListener('click', loadRolesTable);
+            document.querySelector('[data-tab="fee-structure"]').addEventListener('click', loadFeeStructureTable);
+            document.querySelector('[data-tab="salary-structure"]').addEventListener('click', loadSalaryStructureTable);
+            document.querySelector('[data-view="backup"]').addEventListener('click', loadBackupHistoryTable);
 
-            // اساتذہ ٹیبل لوڈنگ
-            const teachersTab = document.querySelector('[data-tab="teachers-list"]');
-            teachersTab.addEventListener('click', loadTeachersTable);
-
-            // عملہ ٹیبل لوڈنگ
-            const staffTab = document.querySelector('[data-tab="staff-list"]');
-            staffTab.addEventListener('click', loadStaffTable);
-
-            // کلاسز ٹیبل لوڈنگ
-            const classesTab = document.querySelector('[data-tab="classes-list"]');
-            classesTab.addEventListener('click', loadClassesTable);
-
-            // سیکشنز ٹیبل لوڈنگ
-            const sectionsTab = document.querySelector('[data-tab="sections"]');
-            sectionsTab.addEventListener('click', loadSectionsTable);
-
-            // مضامین ٹیبل لوڈنگ
-            const subjectsTab = document.querySelector('[data-tab="subjects-list"]');
-            subjectsTab.addEventListener('click', loadSubjectsTable);
-
-            // کلاس مضامین ٹیبل لوڈنگ
-            const classSubjectsTab = document.querySelector('[data-tab="class-subjects"]');
-            classSubjectsTab.addEventListener('click', loadClassSubjectsTable);
-
-            // امتحانات ٹیبل لوڈنگ
-            const examsTab = document.querySelector('[data-tab="exams-list"]');
-            examsTab.addEventListener('click', loadExamsTable);
-
-            // کتابیں ٹیبل لوڈنگ
-            const booksTab = document.querySelector('[data-tab="books-list"]');
-            booksTab.addEventListener('click', loadBooksTable);
-
-            // صارفین ٹیبل لوڈنگ
-            const usersTab = document.querySelector('[data-tab="users-list"]');
-            usersTab.addEventListener('click', loadUsersTable);
-
-            // رولز ٹیبل لوڈنگ
-            const rolesTab = document.querySelector('[data-tab="user-roles"]');
-            rolesTab.addEventListener('click', loadRolesTable);
-
-            // فیس سٹرکچر ٹیبل لوڈنگ
-            const feeStructureTab = document.querySelector('[data-tab="fee-structure"]');
-            feeStructureTab.addEventListener('click', loadFeeStructureTable);
-
-            // تنخواہ سٹرکچر ٹیبل لوڈنگ
-            const salaryStructureTab = document.querySelector('[data-tab="salary-structure"]');
-            salaryStructureTab.addEventListener('click', loadSalaryStructureTable);
-
-            // بیک اپ ہسٹری ٹیبل لوڈنگ
-            document.getElementById('backup-view').addEventListener('click', loadBackupHistoryTable);
-
-            // سرچ بٹنز
+            // Search Buttons
             document.getElementById('search-student-btn').addEventListener('click', searchStudents);
             document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
             document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
-            document.getElementById('search-book-btn').addEventListener('click', searchBooks);
-
-            // طلباء لوڈنگ حاضری کے لیے
+            
+            // Button Listeners for loading data
             document.getElementById('load-attendance').addEventListener('click', loadStudentsForAttendance);
-
-            // حاضری دیکھنے کا بٹن
             document.getElementById('view-attendance-btn').addEventListener('click', viewAttendance);
-
-            // حاضری رپورٹ جنریٹ کرنے کا بٹن
             document.getElementById('generate-attendance-report').addEventListener('click', generateAttendanceReport);
-
-            // طلباء لوڈنگ نمبر داخل کرنے کے لیے
             document.getElementById('load-students-marks').addEventListener('click', loadStudentsForMarks);
-
-            // رزلٹ کارڈز جنریٹ کرنے کا بٹن
             document.getElementById('generate-result-cards').addEventListener('click', generateResultCards);
-
-            // فیس کے لیے طالب علم کی تلاش کا بٹن
             document.getElementById('search-student-fee').addEventListener('click', searchStudentForFee);
-
-            // فیس رپورٹس جنریٹ کرنے کا بٹن
             document.getElementById('generate-fee-report').addEventListener('click', generateFeeReport);
-
-            // بقایا فیس رپورٹ جنریٹ کرنے کا بٹن
             document.getElementById('generate-defaulters').addEventListener('click', generateDefaultersReport);
-
-            // تنخواہ کے لیے ملازم کی تلاش کا بٹن
             document.getElementById('search-employee-salary').addEventListener('click', searchEmployeeForSalary);
-
-            // تنخواہ رپورٹ جنریٹ کرنے کا بٹن
             document.getElementById('generate-salary-report').addEventListener('click', generateSalaryReport);
-
-            // کتاب جاری کرنے کے لیے کتاب کی تلاش کا بٹن
-            document.getElementById('search-issue-book').addEventListener('click', searchBookForIssue);
-
-            // کتاب جاری کرنے کے لیے ممبر کی تلاش کا بٹن
-            document.getElementById('search-issue-member').addEventListener('click', searchMemberForIssue);
-
-            // کتاب واپسی کی تلاش کا بٹن
-            document.getElementById('search-return').addEventListener('click', searchBookIssueForReturn);
-
-            // رپورٹ جنریٹ کرنے کا بٹن
-            document.getElementById('generate-report').addEventListener('click', generateReport);
-
-            // بیک اپ بنانے کا بٹن
+            
+            // **FIX IS HERE**: Check if the button exists before adding a listener
+            const generateReportBtn = document.getElementById('generate-report');
+            if (generateReportBtn) {
+                generateReportBtn.addEventListener('click', generateReport);
+            }
+            
+            // Backup and Restore Buttons
             document.getElementById('create-backup').addEventListener('click', createBackup);
-
-            // ڈیٹا بحال کرنے کا بٹن
             document.getElementById('restore-backup').addEventListener('click', restoreBackup);
-
-            // آٹو بیک اپ سیٹنگز سیو کرنے کا بٹن
             document.getElementById('save-auto-backup').addEventListener('click', saveAutoBackupSettings);
-
-            // تھیم سیٹنگز سیو کرنے کا بٹن
-            document.getElementById('theme-settings-form').addEventListener('submit', saveThemeSettings);
-
-            // تھیم ری سیٹ کرنے کا بٹن
-            document.getElementById('reset-theme').addEventListener('click', resetThemeSettings);
-
-            // جنرل سیٹنگز فارم سبمٹ
-            document.getElementById('general-settings-form').addEventListener('submit', saveGeneralSettings);
-
-            // اکیڈمک سیٹنگز فارم سبمٹ
-            document.getElementById('academic-settings-form').addEventListener('submit', saveAcademicSettings);
-
-            // فیس رپورٹ ٹائپ چینج ہینڈلر
+            document.getElementById('auto-backup-enable').addEventListener('change', function() { document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none'; });
+            
+            // Report Type Changers
             document.getElementById('fee-report-type').addEventListener('change', toggleFeeReportFields);
-
-            // سیلری رپورٹ ٹائپ چینج ہینڈلر
             document.getElementById('salary-report-type').addEventListener('change', toggleSalaryReportFields);
-
-            // سیلری ایمپلائی ٹائپ چینج ہینڈلر
             document.getElementById('structure-employee-type').addEventListener('change', loadEmployeesForSalaryStructure);
-        }
 
+            // Settings buttons with safety checks
+            const themeForm = document.getElementById('theme-settings-form');
+            if (themeForm) themeForm.addEventListener('submit', saveThemeSettings);
+            const resetBtn = document.getElementById('reset-theme');
+            if (resetBtn) resetBtn.addEventListener('click', resetThemeSettings);
+            const generalForm = document.getElementById('general-settings-form');
+            if (generalForm) generalForm.addEventListener('submit', saveGeneralSettings);
+            const academicForm = document.getElementById('academic-settings-form');
+            if (academicForm) academicForm.addEventListener('submit', saveAcademicSettings);
+        }
         // فارم ہینڈلرز سیٹ اپ کریں
         function setupFormHandlers() {
             // طالب علم فارم
@@ -6901,7 +7374,50 @@
                 hideLoading();
             }
         }
+        // اساتذہ کی فہرست لوڈ کریں
+        async function loadTeachersTable() {
+            try {
+                const teachers = await getAllFromStore(STORES.TEACHERS);
+                const tbody = document.querySelector('#teachers-table tbody');
+                tbody.innerHTML = ''; // Clear existing rows
 
+                if (teachers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی استاد موجود نہیں ہے۔</td></tr>';
+                    return;
+                }
+
+                for (const teacher of teachers) {
+                    const row = document.createElement('tr');
+
+                    // Fetch subject names
+                    let subjectNames = '-';
+                    if (teacher.subjects && teacher.subjects.length > 0) {
+                        const subjectPromises = teacher.subjects.map(id => getFromStore(STORES.SUBJECTS, parseInt(id)));
+                        const subjectObjects = await Promise.all(subjectPromises);
+                        subjectNames = subjectObjects.map(s => s ? s.name : '').join(', ');
+                    }
+
+                    row.innerHTML = `
+                        <td>${teacher.employeeId}</td>
+                        <td>${teacher.name}</td>
+                        <td>${teacher.qualification}</td>
+                        <td>${subjectNames}</td>
+                        <td>${teacher.contact}</td>
+                        <td>${formatDate(teacher.joiningDate)}</td>
+                        <td>${teacher.basicSalary ? formatCurrency(teacher.basicSalary) : 'N/A'}</td>
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm" onclick="editTeacher(${teacher.id})">ترمیم</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteTeacher(${teacher.id})">حذف کریں</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error loading teachers table:', error);
+                const tbody = document.querySelector('#teachers-table tbody');
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">اساتذہ کی فہرست لوڈ کرنے میں خرابی ہوئی۔</td></tr>';
+            }
+        }
         async function restoreBackup() {
             try {
                 showLoading();
