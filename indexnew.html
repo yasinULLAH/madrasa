@@ -79,17 +79,23 @@
 
         /* مین کنٹینر */
         .main-container {
-    margin-right: 250px;
-    transition: all 0.3s;
-    height: 100vh;      /* Use viewport height */
-    overflow-y: auto;   /* Make this container scroll */
-    direction: ltr;     /* Force its scrollbar to the RIGHT */
-    width: 81%;
-}
-.main-content-inner {
-    direction: rtl; /* Reset the content direction back to RTL */
-    padding: 20px;  /* Move the padding from the container to here */
-}
+            margin-right: 250px;
+            transition: all 0.3s;
+            height: 100vh;
+            /* Use viewport height */
+            overflow-y: auto;
+            /* Make this container scroll */
+            direction: ltr;
+            /* Force its scrollbar to the RIGHT */
+            width: 81%;
+        }
+
+        .main-content-inner {
+            direction: rtl;
+            /* Reset the content direction back to RTL */
+            padding: 20px;
+            /* Move the padding from the container to here */
+        }
 
         /* ڈیش بورڈ کارڈز */
         .dashboard-cards {
@@ -2714,7 +2720,7 @@
 
         <!-- ... (all the code for the salaries section is here) ... -->
 
-        </div> 
+    </div>
     </div> <!-- This is the closing tag for id="salaries-view" -->
 
     <!-- VVVV PASTE THE NEW BACKUP SECTION HERE VVVV -->
@@ -3276,25 +3282,18 @@
         }
 
         // ڈیٹا بیس اور ایپلیکیشن کو انیشیلائز کریں
-        async function initializeApp() {
+                async function initializeApp() {
             console.log('Initializing application...');
 
-            // بنیادی ترتیبات لوڈ کریں
             await loadSettings();
-
-            // ڈیش بورڈ ڈیٹا لوڈ کریں
             await loadDashboardData();
-
-            // ڈراپ ڈاؤنز کے لیے ڈیٹا لوڈ کریں
             await loadDropdownData();
-
-            // سیمپل ڈیٹا چیک کریں اور ضرورت ہونے پر اسے لوڈ کریں
             await checkAndLoadSampleData();
 
-            // ایونٹس اور فارم سبمشنز سیٹ اپ کریں
             setupEventListeners();
+            initializeDynamicViews();
+            attachDynamicEventListeners(); // No timeout needed now
 
-            // پہلی ویو دکھائیں (ڈیفالٹ طور پر ڈیش بورڈ)
             showView('dashboard');
 
             console.log('Application initialized successfully');
@@ -4423,28 +4422,71 @@
                 console.error('Error loading subject dropdowns:', error);
             }
         }
-        async function loadStudentsTable() {
+                async function loadStudentsTable() {
             try {
                 const students = await getAllFromStore(STORES.STUDENTS);
                 const tbody = document.querySelector('#students-table tbody');
-                tbody.innerHTML = ''; // Clear existing rows
+                tbody.innerHTML = ''; 
 
-                students.forEach(student => {
+                if (!students || students.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی طالب علم موجود نہیں ہے۔</td></tr>';
+                    return;
+                }
+
+                for (const student of students) {
                     const row = document.createElement('tr');
+                    // Fetch related data names
+                    const classData = student.classId ? await getFromStore(STORES.CLASSES, student.classId) : null;
+                    const sectionData = student.sectionId ? await getFromStore(STORES.SECTIONS, student.sectionId) : null;
+
                     row.innerHTML = `
-                <td>${student.rollNumber}</td>
-                <td>${student.name}</td>
-                <td>${student.fatherName}</td>
-                <td>${student.className}</td>
-                <td>${student.sectionName}</td>
-                <td>${student.contact}</td>
-                <td>${formatDate(student.admissionDate)}</td>
-                <td><!-- Actions buttons here --></td>
-            `;
+                        <td>${student.rollNumber}</td>
+                        <td>${student.name}</td>
+                        <td>${student.fatherName}</td>
+                        <td>${classData ? classData.name : 'N/A'}</td>
+                        <td>${sectionData ? sectionData.name : 'N/A'}</td>
+                        <td>${student.contact}</td>
+                        <td>${formatDate(student.admissionDate)}</td>
+                        <td class="no-print">
+                            <button class="btn btn-primary btn-sm" onclick="editStudent(${student.id})">ترمیم</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.id})">حذف کریں</button>
+                        </td>
+                    `;
                     tbody.appendChild(row);
-                });
+                }
             } catch (error) {
                 console.error('Error loading students table:', error);
+                const tbody = document.querySelector('#students-table tbody');
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">طلباء کی فہرست لوڈ کرنے میں خرابی ہوئی۔</td></tr>';
+            }
+        }
+
+                // Placeholder functions for edit/delete to prevent errors
+        function editStudent(id) {
+            console.log('Editing student with ID:', id);
+            showNotification('ترمیم کا فنکشن ابھی زیر تعمیر ہے۔', 'info');
+        }
+
+        async function deleteStudent(id) {
+            if (confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟')) {
+                console.log('Deleting student with ID:', id);
+                await deleteFromStore(STORES.STUDENTS, id);
+                loadStudentsTable();
+                showNotification('طالب علم کو حذف کر دیا گیا ہے۔', 'success');
+            }
+        }
+
+        function editTeacher(id) {
+            console.log('Editing teacher with ID:', id);
+            showNotification('ترمیم کا فنکشن ابھی زیر تعمیر ہے۔', 'info');
+        }
+
+        async function deleteTeacher(id) {
+            if (confirm('کیا آپ واقعی اس استاد کو حذف کرنا چاہتے ہیں؟')) {
+                console.log('Deleting teacher with ID:', id);
+                await deleteFromStore(STORES.TEACHERS, id);
+                loadTeachersTable();
+                showNotification('استاد کو حذف کر دیا گیا ہے۔', 'success');
             }
         }
         // اساتذہ ڈراپ ڈاؤن لوڈ کریں
@@ -8041,6 +8083,704 @@
             const date = new Date(dateString);
             return date.toLocaleDateString('ur-PK') + ' ' + date.toLocaleTimeString('ur-PK');
         }
+
+
+
+
+
+
+
+        // ========================================================================
+// START: FULL IMPLEMENTATION FOR PLACEHOLDER SECTIONS
+// ========================================================================
+
+// Call this function inside your main initializeApp() function
+// to build the HTML for the sections that are currently empty.
+function initializeDynamicViews() {
+    initializeLibraryView();
+    initializeReportsView();
+    initializeSettingsView();
+    // Users view is mostly complete, but we'll ensure role permissions are there.
+    initializeUserRolesForm();
+}
+
+// Call this function inside your main initializeApp() function
+// to attach event listeners to the dynamically created elements.
+function attachDynamicEventListeners() {
+    const mainContainer = document.getElementById('mainContainer');
+
+    // Consolidated CLICK event listener
+    mainContainer.addEventListener('click', function(e) {
+        const target = e.target;
+
+        // Library Buttons
+        if (target.matches('#issue-book-search-btn')) searchBookForIssue();
+        if (target.matches('#issue-member-search-btn')) searchMemberForIssue();
+        if (target.matches('#issue-book-btn')) issueBook();
+        if (target.matches('#return-search-btn')) searchIssueForReturn();
+        if (target.matches('#return-book-btn')) {
+            const issueId = parseInt(target.dataset.issueId);
+            const bookId = parseInt(target.dataset.bookId);
+            returnBook(issueId, bookId);
+        }
+
+        // Report Buttons
+        if (target.matches('#generate-report-btn')) generateReport();
+
+        // Settings Buttons
+        if (target.matches('#reset-theme-btn')) resetThemeSettings();
+    });
+
+    // Consolidated SUBMIT event listener for forms
+    mainContainer.addEventListener('submit', function(e) {
+        if (e.target.matches('form')) {
+            e.preventDefault(); // Prevent default for all handled forms
+        }
+
+        const formId = e.target.id;
+        switch (formId) {
+            case 'add-book-form':
+                addBook();
+                break;
+            case 'general-settings-form':
+                saveGeneralSettings();
+                break;
+            case 'academic-settings-form':
+                saveAcademicSettings();
+                break;
+            case 'theme-settings-form':
+                saveThemeSettings();
+                break;
+            // Note: The 'role-form' listener can now be safely removed from
+            // its original 'setupFormHandlers' if you wish, and managed here.
+            // For now, we'll assume it's still in the static listeners.
+        }
+    });
+    
+    // Consolidated CHANGE event listener
+    mainContainer.addEventListener('change', function(e) {
+        if (e.target.matches('#report-type')) {
+            toggleReportFilters();
+        }
+    });
+
+    console.log("Delegated event listeners attached to main container.");
+}
+// ---- 1. LIBRARY SECTION IMPLEMENTATION ----
+
+function initializeLibraryView() {
+    const container = document.getElementById('library-view');
+    container.innerHTML = `
+        <h2>لائبریری</h2>
+        <div class="tabs">
+            <div class="tab active" data-tab="books-list">کتابوں کی فہرست</div>
+            <div class="tab" data-tab="add-book-tab">نئی کتاب شامل کریں</div>
+            <div class="tab" data-tab="issue-book-tab">کتاب جاری کریں</div>
+            <div class="tab" data-tab="return-book-tab">کتاب واپس لیں</div>
+        </div>
+
+        <!-- Book List -->
+        <div class="tab-content active" id="books-list">
+            <div class="table-container">
+                <table class="table" id="books-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>کتاب کا نام</th>
+                            <th>مصنف</th>
+                            <th>کیٹیگری</th>
+                            <th>کل کاپیاں</th>
+                            <th>دستیاب کاپیاں</th>
+                            <th>عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Book Form -->
+        <div class="tab-content" id="add-book-tab">
+            <div class="form-container">
+                <form id="add-book-form">
+                    <div class="form-title">نئی کتاب کی تفصیلات</div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">کتاب کا نام</label><input type="text" class="form-control" id="book-name" required></div>
+                        <div class="form-group"><label class="form-label">مصنف</label><input type="text" class="form-control" id="book-author" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">کیٹیگری</label><input type="text" class="form-control" id="book-category" required></div>
+                        <div class="form-group"><label class="form-label">ISBN</label><input type="text" class="form-control" id="book-isbn"></div>
+                    </div>
+                     <div class="form-row">
+                        <div class="form-group"><label class="form-label">کل کاپیاں</label><input type="number" class="form-control" id="book-copies" required min="1"></div>
+                        <div class="form-group"><label class="form-label">شیلف نمبر</label><input type="text" class="form-control" id="book-shelf"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">کتاب شامل کریں</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Issue Book -->
+        <div class="tab-content" id="issue-book-tab">
+            <div class="form-container">
+                <div class="form-title">کتاب جاری کریں</div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">کتاب کا ID یا نام</label><input type="text" class="form-control" id="issue-book-search"></div>
+                    <div class="form-group" style="align-self: flex-end;"><button class="btn btn-primary" id="issue-book-search-btn">تلاش</button></div>
+                </div>
+                <div id="issue-book-details" style="display:none; margin-top:1rem; border-top:1px solid #ddd; padding-top:1rem;"></div>
+                
+                <div class="form-row" style="margin-top:1rem;">
+                    <div class="form-group"><label class="form-label">ممبر کا ID یا نام</label><input type="text" class="form-control" id="issue-member-search"></div>
+                    <div class="form-group" style="align-self: flex-end;"><button class="btn btn-primary" id="issue-member-search-btn">تلاش</button></div>
+                </div>
+                <div id="issue-member-details" style="display:none; margin-top:1rem; border-top:1px solid #ddd; padding-top:1rem;"></div>
+                <button class="btn btn-success" id="issue-book-btn" style="display:none; margin-top:1rem;">کتاب جاری کریں</button>
+            </div>
+        </div>
+        
+        <!-- Return Book -->
+        <div class="tab-content" id="return-book-tab">
+            <div class="form-container">
+                <div class="form-title">کتاب واپس لیں</div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">کتاب کا ID یا ممبر کا ID</label><input type="text" class="form-control" id="return-search"></div>
+                    <div class="form-group" style="align-self: flex-end;"><button class="btn btn-primary" id="return-search-btn">تلاش</button></div>
+                </div>
+                <div id="return-details" style="display:none; margin-top:1rem;"></div>
+            </div>
+        </div>
+    `;
+    // Re-attach tab switch functionality for newly created tabs
+    container.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabGroup = this.parentElement;
+            const tabContentId = this.getAttribute('data-tab');
+            tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tabGroup.parentElement.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById(tabContentId).classList.add('active');
+        });
+    });
+}
+
+async function loadBooksTable() {
+    const tbody = document.querySelector('#books-table tbody');
+    tbody.innerHTML = '';
+    const books = await getAllFromStore(STORES.BOOKS);
+    if (!books || books.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">کوئی کتاب موجود نہیں ہے۔</td></tr>';
+        return;
+    }
+    books.forEach(book => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${book.id}</td>
+            <td>${book.name}</td>
+            <td>${book.author}</td>
+            <td>${book.category}</td>
+            <td>${book.copies}</td>
+            <td>${book.availableCopies}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteBook(${book.id})">حذف کریں</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function addBook() {
+    const bookData = {
+        name: document.getElementById('book-name').value,
+        author: document.getElementById('book-author').value,
+        category: document.getElementById('book-category').value,
+        isbn: document.getElementById('book-isbn').value,
+        copies: parseInt(document.getElementById('book-copies').value),
+        availableCopies: parseInt(document.getElementById('book-copies').value),
+        shelf: document.getElementById('book-shelf').value,
+    };
+    await addToStore(STORES.BOOKS, bookData);
+    showNotification('کتاب کامیابی سے شامل ہو گئی', 'success');
+    document.getElementById('add-book-form').reset();
+    loadBooksTable();
+    document.querySelector('[data-tab="books-list"]').click();
+}
+
+async function deleteBook(id) {
+    if(confirm('کیا آپ واقعی اس کتاب کو حذف کرنا چاہتے ہیں؟')) {
+        await deleteFromStore(STORES.BOOKS, id);
+        showNotification('کتاب حذف کر دی گئی', 'success');
+        loadBooksTable();
+    }
+}
+
+async function searchBookForIssue() {
+    const searchTerm = document.getElementById('issue-book-search').value.toLowerCase();
+    const books = await getAllFromStore(STORES.BOOKS);
+    const book = books.find(b => String(b.id) === searchTerm || b.name.toLowerCase().includes(searchTerm));
+    const detailsDiv = document.getElementById('issue-book-details');
+    if (book) {
+        if(book.availableCopies > 0) {
+            detailsDiv.innerHTML = `<p><b>کتاب:</b> ${book.name} (ID: ${book.id})<br><b>دستیاب:</b> ${book.availableCopies}</p>`;
+            detailsDiv.dataset.bookId = book.id;
+        } else {
+             detailsDiv.innerHTML = `<p class="text-danger">کتاب "${book.name}" دستیاب نہیں ہے</p>`;
+             detailsDiv.dataset.bookId = '';
+        }
+        detailsDiv.style.display = 'block';
+    } else {
+        detailsDiv.innerHTML = `<p class="text-danger">کوئی کتاب نہیں ملی</p>`;
+        detailsDiv.style.display = 'block';
+        detailsDiv.dataset.bookId = '';
+    }
+    checkIssueReady();
+}
+
+async function searchMemberForIssue() {
+    const searchTerm = document.getElementById('issue-member-search').value.toLowerCase();
+    const students = await getAllFromStore(STORES.STUDENTS);
+    const member = students.find(s => String(s.rollNumber) === searchTerm || s.name.toLowerCase().includes(searchTerm));
+    const detailsDiv = document.getElementById('issue-member-details');
+    if (member) {
+        detailsDiv.innerHTML = `<p><b>ممبر:</b> ${member.name} (ID: ${member.id}, ${member.className})</p>`;
+        detailsDiv.dataset.memberId = member.id;
+        detailsDiv.dataset.memberType = 'student';
+    } else {
+        detailsDiv.innerHTML = `<p class="text-danger">کوئی ممبر نہیں ملا</p>`;
+        detailsDiv.dataset.memberId = '';
+    }
+    detailsDiv.style.display = 'block';
+    checkIssueReady();
+}
+
+function checkIssueReady() {
+    const bookId = document.getElementById('issue-book-details').dataset.bookId;
+    const memberId = document.getElementById('issue-member-details').dataset.memberId;
+    document.getElementById('issue-book-btn').style.display = (bookId && memberId) ? 'block' : 'none';
+}
+
+async function issueBook() {
+    const bookId = parseInt(document.getElementById('issue-book-details').dataset.bookId);
+    const memberId = parseInt(document.getElementById('issue-member-details').dataset.memberId);
+    const memberType = document.getElementById('issue-member-details').dataset.memberType;
+
+    const book = await getFromStore(STORES.BOOKS, bookId);
+    
+    const issueData = {
+        bookId: bookId,
+        memberId: memberId,
+        memberType: memberType,
+        issueDate: new Date().toISOString(),
+        returnDate: null, 
+        status: 'issued'
+    };
+
+    await addToStore(STORES.BOOK_ISSUES, issueData);
+    await updateInStore(STORES.BOOKS, bookId, { availableCopies: book.availableCopies - 1 });
+
+    showNotification(`کتاب "${book.name}" جاری کر دی گئی`, 'success');
+    document.getElementById('issue-book-search').value = '';
+    document.getElementById('issue-member-search').value = '';
+    document.getElementById('issue-book-details').style.display = 'none';
+    document.getElementById('issue-member-details').style.display = 'none';
+    document.getElementById('issue-book-btn').style.display = 'none';
+}
+
+async function searchIssueForReturn() {
+    const searchTerm = document.getElementById('return-search').value;
+    const issues = await getAllFromStore(STORES.BOOK_ISSUES);
+    const activeIssues = issues.filter(i => i.status === 'issued');
+    const issue = activeIssues.find(i => String(i.bookId) === searchTerm || String(i.memberId) === searchTerm);
+    const detailsDiv = document.getElementById('return-details');
+
+    if (issue) {
+        const book = await getFromStore(STORES.BOOKS, issue.bookId);
+        const member = await getFromStore(STORES.STUDENTS, issue.memberId);
+        detailsDiv.innerHTML = `
+            <p><b>کتاب:</b> ${book.name}</p>
+            <p><b>ممبر:</b> ${member.name}</p>
+            <p><b>جاری شدہ تاریخ:</b> ${formatDate(issue.issueDate)}</p>
+            <button class="btn btn-success" id="return-book-btn" data-issue-id="${issue.id}" data-book-id="${issue.bookId}">کتاب واپس کریں</button>
+        `;
+    } else {
+        detailsDiv.innerHTML = `<p class="text-danger">کوئی فعال اجراء نہیں ملا</p>`;
+    }
+    detailsDiv.style.display = 'block';
+}
+async function returnBook(issueId, bookId) {
+    await updateInStore(STORES.BOOK_ISSUES, issueId, { status: 'returned', returnDate: new Date().toISOString() });
+    const book = await getFromStore(STORES.BOOKS, bookId);
+    await updateInStore(STORES.BOOKS, bookId, { availableCopies: book.availableCopies + 1 });
+    showNotification('کتاب کامیابی سے واپس ہو گئی', 'success');
+    document.getElementById('return-search').value = '';
+    document.getElementById('return-details').style.display = 'none';
+}
+
+// ---- 2. USERS & ROLES SECTION IMPLEMENTATION ----
+
+function initializeUserRolesForm() {
+    const container = document.querySelector('#add-user .form-container'); // Find existing form
+    const roleForm = document.getElementById('role-form');
+    const permsHTML = `
+        <div class="form-title">اجازتیں</div>
+        <div class="form-row" id="permissions-container" style="flex-direction: column; align-items: start; gap: 5px;">
+            <!-- Permissions will be loaded here by JS -->
+        </div>`;
+    roleForm.querySelector('.form-row:last-child').insertAdjacentHTML('beforebegin', permsHTML);
+    
+    const permissions = ['dashboard', 'students', 'teachers', 'staff', 'classes', 'subjects', 'attendance', 'exams', 'fees', 'salaries', 'library', 'users', 'reports', 'settings', 'backup'];
+    const permsContainer = document.getElementById('permissions-container');
+    permissions.forEach(p => {
+        permsContainer.innerHTML += `
+            <label><input type="checkbox" id="perm-${p}" value="${p}"> ${p.charAt(0).toUpperCase() + p.slice(1)}</label>
+        `;
+    });
+}
+
+async function loadUsersTable() {
+    const tbody = document.querySelector('#users-table tbody');
+    tbody.innerHTML = '';
+    const users = await getAllFromStore(STORES.USERS);
+    if (!users || users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">کوئی صارف موجود نہیں ہے۔</td></tr>';
+        return;
+    }
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.username}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.role}</td>
+            <td><span class="badge ${user.status === 'active' ? 'bg-success' : 'bg-danger'}">${user.status}</span></td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">حذف کریں</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function deleteUser(id) {
+     if(confirm('کیا آپ واقعی اس صارف کو حذف کرنا چاہتے ہیں؟')) {
+        await deleteFromStore(STORES.USERS, id);
+        showNotification('صارف حذف کر دیا گیا', 'success');
+        loadUsersTable();
+    }
+}
+
+async function addRole() {
+    const permissions = {};
+    document.querySelectorAll('#permissions-container input[type="checkbox"]').forEach(cb => {
+        permissions[cb.value] = cb.checked;
+    });
+
+    const roleData = {
+        name: document.getElementById('role-name').value,
+        description: document.getElementById('role-description').value,
+        permissions: permissions
+    };
+
+    await addToStore(STORES.ROLES, roleData);
+    showNotification('رول کامیابی سے شامل ہو گیا', 'success');
+    document.getElementById('role-form').reset();
+    loadRolesTable();
+}
+
+async function loadRolesTable() {
+    const tbody = document.querySelector('#roles-table tbody');
+    tbody.innerHTML = '';
+    const roles = await getAllFromStore(STORES.ROLES);
+    if (!roles || roles.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">کوئی رول موجود نہیں ہے۔</td></tr>';
+        return;
+    }
+    roles.forEach(role => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${role.name}</td>
+            <td>${role.description}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteRole(${role.id})">حذف کریں</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function deleteRole(id) {
+    if(confirm('کیا آپ واقعی اس رول کو حذف کرنا چاہتے ہیں؟')) {
+        await deleteFromStore(STORES.ROLES, id);
+        showNotification('رول حذف کر دیا گیا', 'success');
+        loadRolesTable();
+    }
+}
+
+// ---- 3. REPORTS SECTION IMPLEMENTATION ----
+
+function initializeReportsView() {
+    const container = document.getElementById('reports-view');
+    container.innerHTML = `
+        <h2>رپورٹس</h2>
+        <div class="form-container">
+            <div class="form-title">رپورٹ منتخب کریں</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">رپورٹ کی قسم</label>
+                    <select id="report-type" class="form-control">
+                        <option value="">منتخب کریں...</option>
+                        <option value="student_strength">طلباء کی تعداد</option>
+                        <option value="class_list">کلاس لسٹ</option>
+                        <option value="fee_defaulters">فیس ڈیفالٹرز</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Filters will appear here based on selection -->
+            <div id="report-filters"></div>
+            <button id="generate-report-btn" class="btn btn-primary" style="margin-top: 1rem;">رپورٹ بنائیں</button>
+        </div>
+        <div id="report-output" class="table-container" style="margin-top: 1.5rem; display: none;"></div>
+    `;
+}
+
+function toggleReportFilters() {
+    const type = document.getElementById('report-type').value;
+    const filtersDiv = document.getElementById('report-filters');
+    filtersDiv.innerHTML = '';
+    switch(type) {
+        case 'class_list':
+        case 'fee_defaulters':
+             filtersDiv.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">کلاس منتخب کریں</label>
+                    <select id="report-filter-class" class="form-control"></select>
+                </div>
+             `;
+             loadClassDropdownsForReport();
+             break;
+    }
+}
+
+async function loadClassDropdownsForReport() {
+    const select = document.getElementById('report-filter-class');
+    select.innerHTML = '<option value="all">تمام کلاسز</option>';
+    const classes = await getAllFromStore(STORES.CLASSES);
+    classes.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+}
+
+async function generateReport() {
+    const type = document.getElementById('report-type').value;
+    const outputDiv = document.getElementById('report-output');
+    if (!type) {
+        showNotification('براہ کرم رپورٹ کی قسم منتخب کریں', 'error');
+        return;
+    }
+
+    outputDiv.style.display = 'block';
+    outputDiv.innerHTML = '<div class="spinner"></div>';
+
+    let html = '';
+    switch(type) {
+        case 'student_strength':
+            html = await generateStudentStrengthReport();
+            break;
+        case 'class_list':
+            html = await generateClassListReport();
+            break;
+        case 'fee_defaulters':
+             html = await generateDefaultersReport(); // Use existing function
+             break;
+    }
+    outputDiv.innerHTML = html;
+}
+
+async function generateStudentStrengthReport() {
+    const classes = await getAllFromStore(STORES.CLASSES);
+    let table = `<table class="table"><thead><tr><th>کلاس</th><th>طلباء کی تعداد</th></tr></thead><tbody>`;
+    let totalStudents = 0;
+    for (const cls of classes) {
+        const students = await getAllFromIndex(STORES.STUDENTS, 'classId', cls.id);
+        table += `<tr><td>${cls.name}</td><td>${students.length}</td></tr>`;
+        totalStudents += students.length;
+    }
+    table += `</tbody><tfoot><tr><th>کل تعداد</th><th>${totalStudents}</th></tr></tfoot></table>`;
+    return `<h3>طلباء کی تعداد کی رپورٹ</h3>` + table;
+}
+
+async function generateClassListReport() {
+    const classId = document.getElementById('report-filter-class').value;
+    let students = await getAllFromStore(STORES.STUDENTS);
+    if(classId !== 'all') {
+        students = students.filter(s => s.classId === parseInt(classId));
+    }
+    let table = `<table class="table"><thead><tr><th>رول نمبر</th><th>نام</th><th>والد کا نام</th><th>کلاس</th></tr></thead><tbody>`;
+    students.forEach(s => {
+        table += `<tr><td>${s.rollNumber}</td><td>${s.name}</td><td>${s.fatherName}</td><td>${s.className}</td></tr>`;
+    });
+    table += `</tbody></table>`;
+    const className = classId !== 'all' ? (await getFromStore(STORES.CLASSES, parseInt(classId))).name : 'تمام کلاسز';
+    return `<h3>${className} کی لسٹ</h3>` + table;
+}
+
+// ---- 4. SETTINGS SECTION IMPLEMENTATION ----
+
+function initializeSettingsView() {
+    const container = document.getElementById('settings-view');
+    container.innerHTML = `
+        <h2>ترتیبات</h2>
+        <div class="tabs">
+            <div class="tab active" data-tab="general-settings">عمومی ترتیبات</div>
+            <div class="tab" data-tab="academic-settings">تعلیمی ترتیبات</div>
+            <div class="tab" data-tab="theme-settings">تھیم ترتیبات</div>
+        </div>
+        
+        <!-- General Settings -->
+        <div class="tab-content active" id="general-settings">
+            <div class="form-container">
+                <form id="general-settings-form">
+                    <div class="form-title">ادارے کی معلومات</div>
+                    <div class="form-row"><div class="form-group"><label>ادارے کا نام</label><input type="text" class="form-control" id="setting-school-name"></div></div>
+                    <div class="form-row"><div class="form-group"><label>پتہ</label><input type="text" class="form-control" id="setting-school-address"></div></div>
+                    <div class="form-row"><div class="form-group"><label>فون</label><input type="text" class="form-control" id="setting-school-phone"></div></div>
+                    <div class="form-row"><div class="form-group"><label>ای میل</label><input type="email" class="form-control" id="setting-school-email"></div></div>
+                    <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Academic Settings -->
+        <div class="tab-content" id="academic-settings">
+            <div class="form-container">
+                <form id="academic-settings-form">
+                     <div class="form-title">تعلیمی سال</div>
+                     <div class="form-row"><div class="form-group"><label>موجودہ سیشن</label><input type="text" class="form-control" id="setting-current-session" placeholder="e.g., 2023-2024"></div></div>
+                     <div class="form-title">فیس</div>
+                     <div class="form-row"><div class="form-group"><label>فیس جمع کرانے کی آخری تاریخ (مہینے کا دن)</label><input type="number" class="form-control" id="setting-fee-due-day" min="1" max="28"></div></div>
+                     <div class="form-row"><div class="form-group"><label>تاخیر سے فیس پر جرمانہ</label><input type="number" class="form-control" id="setting-fee-late-fine"></div></div>
+                     <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Theme Settings -->
+        <div class="tab-content" id="theme-settings">
+            <div class="form-container">
+                <form id="theme-settings-form">
+                     <div class="form-title">تھیم</div>
+                     <div class="form-row"><div class="form-group"><label>پرائمری رنگ</label><input type="color" class="form-control" id="setting-primary-color"></div></div>
+                     <button type="submit" class="btn btn-primary">محفوظ کریں</button>
+                     <button type="button" id="reset-theme-btn" class="btn btn-danger" style="margin-right: 10px;">ڈیفالٹ پر ری سیٹ کریں</button>
+                </form>
+            </div>
+        </div>
+    `;
+    // Re-attach tab switch functionality
+    container.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabGroup = this.parentElement;
+            const tabContentId = this.getAttribute('data-tab');
+            tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tabGroup.parentElement.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById(tabContentId).classList.add('active');
+        });
+    });
+    // Load settings into the new forms
+    loadAllSettings();
+}
+
+async function loadAllSettings() {
+    const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
+    // General
+    document.getElementById('setting-school-name').value = settings.schoolName || '';
+    document.getElementById('setting-school-address').value = settings.schoolAddress || '';
+    document.getElementById('setting-school-phone').value = settings.schoolPhone || '';
+    document.getElementById('setting-school-email').value = settings.schoolEmail || '';
+    // Academic
+    document.getElementById('setting-current-session').value = settings.currentSession || '';
+    document.getElementById('setting-fee-due-day').value = settings.feeDueDay || 10;
+    document.getElementById('setting-fee-late-fine').value = settings.feeLateFine || 100;
+    // Theme
+    document.getElementById('setting-primary-color').value = settings.primaryColor || '#3498db';
+}
+
+async function saveGeneralSettings() {
+    const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
+    const updated = {
+        ...existing,
+        schoolName: document.getElementById('setting-school-name').value,
+        schoolAddress: document.getElementById('setting-school-address').value,
+        schoolPhone: document.getElementById('setting-school-phone').value,
+        schoolEmail: document.getElementById('setting-school-email').value,
+    };
+    await addToStore(STORES.SETTINGS, updated, true); // Using upsert
+    showNotification('عمومی ترتیبات محفوظ ہو گئیں', 'success');
+}
+
+async function saveAcademicSettings() {
+    const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
+    const updated = {
+        ...existing,
+        currentSession: document.getElementById('setting-current-session').value,
+        feeDueDay: parseInt(document.getElementById('setting-fee-due-day').value),
+        feeLateFine: parseFloat(document.getElementById('setting-fee-late-fine').value),
+    };
+    await addToStore(STORES.SETTINGS, updated, true);
+    showNotification('تعلیمی ترتیبات محفوظ ہو گئیں', 'success');
+}
+
+async function saveThemeSettings() {
+    const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
+    const primaryColor = document.getElementById('setting-primary-color').value;
+    const updated = { ...existing, primaryColor: primaryColor };
+    
+    await addToStore(STORES.SETTINGS, updated, true);
+    applyTheme(primaryColor);
+    showNotification('تھیم کی ترتیبات محفوظ ہو گئیں', 'success');
+}
+
+function applyTheme(color) {
+     document.documentElement.style.setProperty('--primary-color', color);
+     // Apply to more elements if needed
+     document.querySelector('.header').style.backgroundColor = color;
+}
+
+async function resetThemeSettings() {
+    const defaultColor = '#2c3e50';
+    document.getElementById('setting-primary-color').value = defaultColor;
+    const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
+    const updated = { ...existing, primaryColor: defaultColor };
+    await addToStore(STORES.SETTINGS, updated, true);
+    applyTheme(defaultColor);
+    showNotification('تھیم ڈیفالٹ پر ری سیٹ ہو گیا', 'success');
+}
+
+// Helper to "upsert" data into a store
+async function addToStore(storeName, data, upsert = false) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = upsert ? store.put(data) : store.add(data);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+
+// --- Final step: Modify your initializeApp to call these new functions ---
+// Find your existing initializeApp and add these two lines inside it,
+// preferably before you show the first view.
+/*
+    async function initializeApp() {
+        // ... your existing code ...
+        
+        initializeDynamicViews(); // <-- ADD THIS
+        attachDynamicEventListeners(); // <-- ADD THIS
+
+        // ... your existing code ...
+    }
+*/
+
+// ========================================================================
+// END: FULL IMPLEMENTATION FOR PLACEHOLDER SECTIONS
+// ========================================================================
     </script>
 </body>
 
