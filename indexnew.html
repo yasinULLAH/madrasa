@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ڈینی مدرسہ مینجمنٹ سسٹم</title>
     <style>
-        html, body {
-    height: 100%;
-    overflow: hidden;
-}
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         /* بنیادی اسٹائلز */
         * {
             box-sizing: border-box;
@@ -78,10 +80,14 @@
         /* مین کنٹینر */
         .main-container {
     margin-right: 250px;
-    padding: 20px;
     transition: all 0.3s;
-    height: 100%;      /* ADD THIS LINE */
-    overflow-y: auto; /* ADD THIS LINE */
+    height: 100vh;      /* Use viewport height */
+    overflow-y: auto;   /* Make this container scroll */
+    direction: ltr;     /* Force its scrollbar to the RIGHT */
+}
+.main-content-inner {
+    direction: rtl; /* Reset the content direction back to RTL */
+    padding: 20px;  /* Move the padding from the container to here */
 }
 
         /* ڈیش بورڈ کارڈز */
@@ -584,9 +590,10 @@
         .calendar-day.has-event {
             border: 2px solid #e74c3c;
         }
+
         * {
-    font-family: calibri;
-}
+            font-family: calibri;
+        }
     </style>
 </head>
 
@@ -627,6 +634,7 @@
 
     <!-- مین کنٹینر -->
     <div class="main-container" id="mainContainer">
+        <div class="main-content-inner"></div>
         <div class="header">
             <h1>ڈینی مدرسہ مینجمنٹ سسٹم</h1>
         </div>
@@ -2703,222 +2711,245 @@
             </div>
         </div>
 
-                <!-- ... (all the code for the salaries section is here) ... -->
+        <!-- ... (all the code for the salaries section is here) ... -->
 
-        </div> <!-- This is the closing tag for id="salaries-view" -->
+        </div> 
+    </div> <!-- This is the closing tag for id="salaries-view" -->
 
-        <!-- VVVV PASTE THE NEW BACKUP SECTION HERE VVVV -->
-        <div class="section-view" id="backup-view">
-            <h2>بیک اپ اور بحالی</h2>
+    <!-- VVVV PASTE THE NEW BACKUP SECTION HERE VVVV -->
+    <div class="section-view" id="backup-view">
+        <h2>بیک اپ اور بحالی</h2>
 
-            <div class="form-container no-print">
-                <div class="form-title">دستی بیک اپ</div>
+        <div class="form-container no-print">
+            <div class="form-title">دستی بیک اپ</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">بیک اپ کی قسم</label>
+                    <select class="form-control" id="backup-type">
+                        <option value="full">مکمل بیک اپ</option>
+                        <option value="students">صرف طلباء</option>
+                        <option value="teachers">صرف اساتذہ</option>
+                        <option value="staff">صرف عملہ</option>
+                        <option value="fees">صرف فیس</option>
+                        <option value="salaries">صرف تنخواہیں</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">بیک اپ فارمیٹ</label>
+                    <select class="form-control" id="backup-format">
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+                <div class="form-group" style="align-self: flex-end;">
+                    <button type="button" class="btn btn-primary" id="create-backup">بیک اپ بنائیں</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container no-print">
+            <div class="form-title">ڈیٹا بحال کریں</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">بیک اپ فائل منتخب کریں</label>
+                    <input type="file" class="form-control" id="restore-file" accept=".json">
+                </div>
+                <div class="form-group" style="align-self: flex-end;">
+                    <button type="button" class="btn btn-danger" id="restore-backup">ڈیٹا بحال کریں</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container no-print">
+            <div class="form-title">آٹومیٹک بیک اپ ترتیبات</div>
+            <div class="form-row">
+                <div class="form-group" style="flex: 0 0 auto; align-items: center; display: flex;">
+                    <input type="checkbox" id="auto-backup-enable"
+                        style="width: 20px; height: 20px; margin-left: 10px;">
+                    <label class="form-label" for="auto-backup-enable" style="margin-bottom: 0;">آٹومیٹک بیک اپ فعال
+                        کریں</label>
+                </div>
+            </div>
+            <div id="auto-backup-options" style="display: none;">
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">بیک اپ کی قسم</label>
-                        <select class="form-control" id="backup-type">
-                            <option value="full">مکمل بیک اپ</option>
-                            <option value="students">صرف طلباء</option>
-                            <option value="teachers">صرف اساتذہ</option>
-                            <option value="staff">صرف عملہ</option>
-                            <option value="fees">صرف فیس</option>
-                            <option value="salaries">صرف تنخواہیں</option>
+                        <label class="form-label">بیک اپ کی فریکوئنسی</label>
+                        <select class="form-control" id="auto-backup-frequency" required>
+                            <option value="daily">روزانہ</option>
+                            <option value="weekly">ہفتہ وار</option>
+                            <option value="monthly" selected>ماہانہ</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">بیک اپ فارمیٹ</label>
-                        <select class="form-control" id="backup-format">
-                            <option value="json">JSON</option>
+                        <label class="form-label">بیک اپ رکھنے کی مدت</label>
+                        <select class="form-control" id="auto-backup-retention" required>
+                            <option value="1">1 مہینہ</option>
+                            <option value="3" selected>3 مہینے</option>
+                            <option value="6">6 مہینے</option>
+                            <option value="12">1 سال</option>
                         </select>
                     </div>
-                    <div class="form-group" style="align-self: flex-end;">
-                        <button type="button" class="btn btn-primary" id="create-backup">بیک اپ بنائیں</button>
-                    </div>
                 </div>
-            </div>
-
-            <div class="form-container no-print">
-                <div class="form-title">ڈیٹا بحال کریں</div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">بیک اپ فائل منتخب کریں</label>
-                        <input type="file" class="form-control" id="restore-file" accept=".json">
-                    </div>
-                    <div class="form-group" style="align-self: flex-end;">
-                        <button type="button" class="btn btn-danger" id="restore-backup">ڈیٹا بحال کریں</button>
-                    </div>
+                    <button type="button" class="btn btn-primary" id="save-auto-backup">ترتیبات محفوظ کریں</button>
                 </div>
             </div>
+        </div>
 
-            <div class="form-container no-print">
-                <div class="form-title">آٹومیٹک بیک اپ ترتیبات</div>
-                <div class="form-row">
-                    <div class="form-group" style="flex: 0 0 auto; align-items: center; display: flex;">
-                        <input type="checkbox" id="auto-backup-enable" style="width: 20px; height: 20px; margin-left: 10px;">
-                        <label class="form-label" for="auto-backup-enable" style="margin-bottom: 0;">آٹومیٹک بیک اپ فعال کریں</label>
-                    </div>
-                </div>
-                <div id="auto-backup-options" style="display: none;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">بیک اپ کی فریکوئنسی</label>
-                            <select class="form-control" id="auto-backup-frequency" required>
-                                <option value="daily">روزانہ</option>
-                                <option value="weekly">ہفتہ وار</option>
-                                <option value="monthly" selected>ماہانہ</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">بیک اپ رکھنے کی مدت</label>
-                            <select class="form-control" id="auto-backup-retention" required>
-                                <option value="1">1 مہینہ</option>
-                                <option value="3" selected>3 مہینے</option>
-                                <option value="6">6 مہینے</option>
-                                <option value="12">1 سال</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <button type="button" class="btn btn-primary" id="save-auto-backup">ترتیبات محفوظ کریں</button>
-                    </div>
-                </div>
-            </div>
+        <div class="table-container">
+            <div class="form-title">بیک اپ تاریخ</div>
+            <table class="table" id="backup-history-table">
+                <thead>
+                    <tr>
+                        <th>نمبر</th>
+                        <th>تاریخ</th>
+                        <th>وقت</th>
+                        <th>قسم</th>
+                        <th>سائز</th>
+                        <th>عمل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- یہاں ڈیٹا آئے گا -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- ^^^^ END OF THE NEW BACKUP SECTION ^^^^ -->
+    <!-- لائبریری -->
+    <div class="section-view" id="library-view">
+        <h2>لائبریری</h2>
+        <!-- Library content will go here. Add tabs, forms, and tables as needed. -->
+        <div class="form-container">
+            <div class="form-title">لائبریری کا سیکشن ابھی زیر تعمیر ہے۔</div>
+            <p>یہاں کتابیں شامل کرنے، جاری کرنے اور واپس لینے کی سہولت فراہم کی جائے گی۔</p>
+            <!-- Example book form for JS to find -->
+            <form id="book-form" style="display:none;"></form>
+            <form id="issue-form" style="display:none;"></form>
+            <form id="return-form" style="display:none;"></form>
+        </div>
+    </div>
 
+    <!-- صارفین -->
+    <div class="section-view" id="users-view">
+        <h2>صارفین اور رولز</h2>
+        <div class="tabs">
+            <div class="tab active" data-tab="users-list">صارفین کی فہرست</div>
+            <div class="tab" data-tab="add-user">نیا صارف</div>
+            <div class="tab" data-tab="user-roles">صارفین کے رولز</div>
+        </div>
+        <div class="tab-content active" id="users-list">
             <div class="table-container">
-                <div class="form-title">بیک اپ تاریخ</div>
-                <table class="table" id="backup-history-table">
+                <table class="table" id="users-table">
                     <thead>
                         <tr>
-                            <th>نمبر</th>
-                            <th>تاریخ</th>
-                            <th>وقت</th>
-                            <th>قسم</th>
-                            <th>سائز</th>
+                            <th>صارف نام</th>
+                            <th>نام</th>
+                            <th>ای میل</th>
+                            <th>رول</th>
+                            <th>حیثیت</th>
                             <th>عمل</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- یہاں ڈیٹا آئے گا -->
-                    </tbody>
+                    <tbody><!-- User data here --></tbody>
                 </table>
             </div>
         </div>
-        <!-- ^^^^ END OF THE NEW BACKUP SECTION ^^^^ -->
-        <!-- لائبریری -->
-        <div class="section-view" id="library-view">
-            <h2>لائبریری</h2>
-            <!-- Library content will go here. Add tabs, forms, and tables as needed. -->
+        <div class="tab-content" id="add-user">
             <div class="form-container">
-                <div class="form-title">لائبریری کا سیکشن ابھی زیر تعمیر ہے۔</div>
-                <p>یہاں کتابیں شامل کرنے، جاری کرنے اور واپس لینے کی سہولت فراہم کی جائے گی۔</p>
-                <!-- Example book form for JS to find -->
-                <form id="book-form" style="display:none;"></form>
-                <form id="issue-form" style="display:none;"></form>
-                <form id="return-form" style="display:none;"></form>
-            </div>
-        </div>
-
-        <!-- صارفین -->
-        <div class="section-view" id="users-view">
-            <h2>صارفین اور رولز</h2>
-            <div class="tabs">
-                <div class="tab active" data-tab="users-list">صارفین کی فہرست</div>
-                <div class="tab" data-tab="add-user">نیا صارف</div>
-                <div class="tab" data-tab="user-roles">صارفین کے رولز</div>
-            </div>
-            <div class="tab-content active" id="users-list">
-                <div class="table-container">
-                    <table class="table" id="users-table">
-                        <thead>
-                            <tr>
-                                <th>صارف نام</th>
-                                <th>نام</th>
-                                <th>ای میل</th>
-                                <th>رول</th>
-                                <th>حیثیت</th>
-                                <th>عمل</th>
-                            </tr>
-                        </thead>
-                        <tbody><!-- User data here --></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="tab-content" id="add-user">
-                <div class="form-container">
-                    <div class="form-title">نیا صارف بنائیں</div>
-                    <form id="user-form">
-                        <div class="form-row">
-                             <div class="form-group"><label class="form-label">نام</label><input type="text" class="form-control" id="user-name" required></div>
-                             <div class="form-group"><label class="form-label">صارف نام</label><input type="text" class="form-control" id="user-username" required></div>
+                <div class="form-title">نیا صارف بنائیں</div>
+                <form id="user-form">
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">نام</label><input type="text"
+                                class="form-control" id="user-name" required></div>
+                        <div class="form-group"><label class="form-label">صارف نام</label><input type="text"
+                                class="form-control" id="user-username" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">پاس ورڈ</label><input type="password"
+                                class="form-control" id="user-password" required></div>
+                        <div class="form-group"><label class="form-label">پاس ورڈ کی تصدیق</label><input type="password"
+                                class="form-control" id="user-confirm-password" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">ای میل</label><input type="email"
+                                class="form-control" id="user-email" required></div>
+                        <div class="form-group"><label class="form-label">موبائل</label><input type="tel"
+                                class="form-control" id="user-mobile"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">رول</label>
+                            <select class="form-control" id="user-role" required>
+                                <option value="admin">ایڈمن</option>
+                                <option value="teacher">استاد</option>
+                            </select>
                         </div>
-                        <div class="form-row">
-                             <div class="form-group"><label class="form-label">پاس ورڈ</label><input type="password" class="form-control" id="user-password" required></div>
-                             <div class="form-group"><label class="form-label">پاس ورڈ کی تصدیق</label><input type="password" class="form-control" id="user-confirm-password" required></div>
+                        <div class="form-group">
+                            <label class="form-label">حیثیت</label>
+                            <select class="form-control" id="user-status" required>
+                                <option value="active">فعال</option>
+                                <option value="inactive">غیر فعال</option>
+                            </select>
                         </div>
-                        <div class="form-row">
-                             <div class="form-group"><label class="form-label">ای میل</label><input type="email" class="form-control" id="user-email" required></div>
-                             <div class="form-group"><label class="form-label">موبائل</label><input type="tel" class="form-control" id="user-mobile"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">رول</label>
-                                <select class="form-control" id="user-role" required><option value="admin">ایڈمن</option><option value="teacher">استاد</option></select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">حیثیت</label>
-                                <select class="form-control" id="user-status" required><option value="active">فعال</option><option value="inactive">غیر فعال</option></select>
-                            </div>
-                        </div>
-                         <div class="form-row"><button type="submit" class="btn btn-primary">صارف بنائیں</button></div>
-                    </form>
-                </div>
-            </div>
-            <div class="tab-content" id="user-roles">
-                <div class="form-container">
-                    <div class="form-title">نیا رول بنائیں</div>
-                    <form id="role-form">
-                         <div class="form-row">
-                            <div class="form-group"><label class="form-label">رول کا نام</label><input type="text" class="form-control" id="role-name" required></div>
-                            <div class="form-group"><label class="form-label">تفصیل</label><input type="text" class="form-control" id="role-description"></div>
-                         </div>
-                         <!-- Permissions checkboxes can be added here -->
-                         <div class="form-row"><button type="submit" class="btn btn-primary">رول بنائیں</button></div>
-                    </form>
-                </div>
-                <div class="table-container">
-                    <table class="table" id="roles-table">
-                        <thead><tr><th>رول نام</th><th>تفصیل</th><th>عمل</th></tr></thead>
-                        <tbody><!-- Roles data here --></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- رپورٹس -->
-        <div class="section-view" id="reports-view">
-            <h2>رپورٹس</h2>
-            <div class="form-container">
-                <div class="form-title">رپورٹ جنریشن کا سیکشن ابھی زیر تعمیر ہے۔</div>
-                 <!-- Example report form for JS to find -->
-                 <form id="report-form" style="display:none;">
-                    <select id="report-type"></select>
-                 </form>
-            </div>
-        </div>
-
-        <!-- ترتیبات -->
-        <div class="section-view" id="settings-view">
-            <h2>ترتیبات</h2>
-            <div class="form-container">
-                <div class="form-title">ترتیبات کا سیکشن ابھی زیر تعمیر ہے۔</div>
-                <!-- Example settings forms for JS to find -->
-                <form id="general-settings-form" style="display:none;"></form>
-                <form id="academic-settings-form" style="display:none;"></form>
-                <form id="theme-settings-form" style="display:none;">
-                    <button id="reset-theme"></button>
+                    </div>
+                    <div class="form-row"><button type="submit" class="btn btn-primary">صارف بنائیں</button></div>
                 </form>
             </div>
         </div>
+        <div class="tab-content" id="user-roles">
+            <div class="form-container">
+                <div class="form-title">نیا رول بنائیں</div>
+                <form id="role-form">
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">رول کا نام</label><input type="text"
+                                class="form-control" id="role-name" required></div>
+                        <div class="form-group"><label class="form-label">تفصیل</label><input type="text"
+                                class="form-control" id="role-description"></div>
+                    </div>
+                    <!-- Permissions checkboxes can be added here -->
+                    <div class="form-row"><button type="submit" class="btn btn-primary">رول بنائیں</button></div>
+                </form>
+            </div>
+            <div class="table-container">
+                <table class="table" id="roles-table">
+                    <thead>
+                        <tr>
+                            <th>رول نام</th>
+                            <th>تفصیل</th>
+                            <th>عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody><!-- Roles data here --></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- رپورٹس -->
+    <div class="section-view" id="reports-view">
+        <h2>رپورٹس</h2>
+        <div class="form-container">
+            <div class="form-title">رپورٹ جنریشن کا سیکشن ابھی زیر تعمیر ہے۔</div>
+            <!-- Example report form for JS to find -->
+            <form id="report-form" style="display:none;">
+                <select id="report-type"></select>
+            </form>
+        </div>
+    </div>
+
+    <!-- ترتیبات -->
+    <div class="section-view" id="settings-view">
+        <h2>ترتیبات</h2>
+        <div class="form-container">
+            <div class="form-title">ترتیبات کا سیکشن ابھی زیر تعمیر ہے۔</div>
+            <!-- Example settings forms for JS to find -->
+            <form id="general-settings-form" style="display:none;"></form>
+            <form id="academic-settings-form" style="display:none;"></form>
+            <form id="theme-settings-form" style="display:none;">
+                <button id="reset-theme"></button>
+            </form>
+        </div>
+    </div>
     </div> <!-- This is the closing tag for id="mainContainer" -->
 
 
@@ -3312,7 +3343,7 @@
             // رول فارم
             document.getElementById('role-form').addEventListener('submit', (e) => { e.preventDefault(); addRole(); });
         }
-        
+
         // Corrected setupEventListeners
         function setupEventListeners() {
             document.querySelector('[data-tab="students-list"]').addEventListener('click', loadStudentsTable);
@@ -3333,7 +3364,7 @@
             document.getElementById('search-student-btn').addEventListener('click', searchStudents);
             document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
             document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
-            
+
             document.getElementById('load-attendance').addEventListener('click', loadStudentsForAttendance);
             document.getElementById('view-attendance-btn').addEventListener('click', viewAttendance);
             document.getElementById('generate-attendance-report').addEventListener('click', generateAttendanceReport);
@@ -3345,11 +3376,11 @@
             document.getElementById('search-employee-salary').addEventListener('click', searchEmployeeForSalary);
             document.getElementById('generate-salary-report').addEventListener('click', generateSalaryReport);
             document.getElementById('generate-report').addEventListener('click', generateReport);
-            
+
             document.getElementById('create-backup').addEventListener('click', createBackup);
             document.getElementById('restore-backup').addEventListener('click', restoreBackup);
             document.getElementById('save-auto-backup').addEventListener('click', saveAutoBackupSettings);
-            document.getElementById('auto-backup-enable').addEventListener('change', function() { document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none'; });
+            document.getElementById('auto-backup-enable').addEventListener('change', function () { document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none'; });
 
             document.getElementById('fee-report-type').addEventListener('change', toggleFeeReportFields);
             document.getElementById('salary-report-type').addEventListener('change', toggleSalaryReportFields);
@@ -3412,7 +3443,7 @@
                     const row = document.createElement('tr');
                     const teacher = cls.inChargeId ? await getFromStore(STORES.TEACHERS, cls.inChargeId) : null;
                     const studentsCount = (await getAllFromIndex(STORES.STUDENTS, 'classId', cls.id)).length;
-                    
+
                     row.innerHTML = `
                         <td>${cls.id}</td>
                         <td>${cls.name}</td>
@@ -3493,7 +3524,7 @@
                 console.error('Error loading subjects table:', error);
             }
         }
-        
+
         // کلاس کے مضامین کی فہرست لوڈ کریں
         async function loadClassSubjectsTable() {
             const tbody = document.querySelector('#class-subjects-table tbody');
@@ -3510,9 +3541,9 @@
                     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">کوئی امتحان موجود نہیں ہے۔</td></tr>';
                     return;
                 }
-                 for (const exam of exams) {
+                for (const exam of exams) {
                     const row = document.createElement('tr');
-                     const classNames = exam.classes ? (await Promise.all(exam.classes.map(id => getFromStore(STORES.CLASSES, id)))).map(c => c ? c.name : '').join(', ') : 'N/A';
+                    const classNames = exam.classes ? (await Promise.all(exam.classes.map(id => getFromStore(STORES.CLASSES, id)))).map(c => c ? c.name : '').join(', ') : 'N/A';
                     row.innerHTML = `
                         <td>${exam.id}</td>
                         <td>${exam.name}</td>
@@ -3531,39 +3562,39 @@
                 console.error('Error loading exams table:', error);
             }
         }
-        
+
         async function loadBooksTable() {
             const container = document.getElementById('library-view');
             if (container) container.innerHTML = '<h2>لائبریری</h2><p>Functionality to be implemented.</p>';
         }
 
         async function loadUsersTable() {
-             const tbody = document.querySelector('#users-table tbody');
-             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Functionality to be implemented.</td></tr>';
+            const tbody = document.querySelector('#users-table tbody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Functionality to be implemented.</td></tr>';
         }
 
         async function loadRolesTable() {
-             const tbody = document.querySelector('#roles-table tbody');
-             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Functionality to be implemented.</td></tr>';
+            const tbody = document.querySelector('#roles-table tbody');
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Functionality to be implemented.</td></tr>';
         }
 
-        async function loadFeeStructureTable(){
-             const tbody = document.querySelector('#fee-structure-table tbody');
-             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Functionality to be implemented.</td></tr>';
+        async function loadFeeStructureTable() {
+            const tbody = document.querySelector('#fee-structure-table tbody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Functionality to be implemented.</td></tr>';
         }
 
-        async function loadSalaryStructureTable(){
-             const tbody = document.querySelector('#salary-structure-table tbody');
-             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Functionality to be implemented.</td></tr>';
+        async function loadSalaryStructureTable() {
+            const tbody = document.querySelector('#salary-structure-table tbody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Functionality to be implemented.</td></tr>';
         }
-        
-        async function loadBackupHistoryTable(){
-             const tbody = document.querySelector('#backup-history-table tbody');
-             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Functionality to be implemented.</td></tr>';
+
+        async function loadBackupHistoryTable() {
+            const tbody = document.querySelector('#backup-history-table tbody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Functionality to be implemented.</td></tr>';
         }
 
         // Placeholder for other missing functions to prevent future errors
-                // =======================================================
+        // =======================================================
         // COMPLETE IMPLEMENTATIONS FOR ALL FUNCTIONS START HERE
         // =======================================================
 
@@ -3574,13 +3605,13 @@
             try {
                 const searchTerm = document.getElementById('student-search').value.toLowerCase();
                 const allStudents = await getAllFromStore(STORES.STUDENTS);
-                
+
                 const filteredStudents = allStudents.filter(student => {
                     return student.name.toLowerCase().includes(searchTerm) ||
-                           String(student.rollNumber).includes(searchTerm) ||
-                           student.className.toLowerCase().includes(searchTerm);
+                        String(student.rollNumber).includes(searchTerm) ||
+                        student.className.toLowerCase().includes(searchTerm);
                 });
-                
+
                 // Re-populate the table with filtered data
                 const tbody = document.querySelector('#students-table tbody');
                 tbody.innerHTML = '';
@@ -3618,8 +3649,8 @@
 
                 const filteredTeachers = allTeachers.filter(teacher => {
                     return teacher.name.toLowerCase().includes(searchTerm) ||
-                           teacher.specialization.toLowerCase().includes(searchTerm) ||
-                           teacher.qualification.toLowerCase().includes(searchTerm);
+                        teacher.specialization.toLowerCase().includes(searchTerm) ||
+                        teacher.qualification.toLowerCase().includes(searchTerm);
                 });
 
                 // Re-populate the table with filtered data
@@ -3640,8 +3671,8 @@
 
                 const filteredStaff = allStaff.filter(staff => {
                     return staff.name.toLowerCase().includes(searchTerm) ||
-                           staff.designation.toLowerCase().includes(searchTerm) ||
-                           staff.department.toLowerCase().includes(searchTerm);
+                        staff.designation.toLowerCase().includes(searchTerm) ||
+                        staff.department.toLowerCase().includes(searchTerm);
                 });
 
                 // Re-populate the table with filtered data
@@ -3653,7 +3684,7 @@
                 hideLoading();
             }
         }
-        
+
         // --- Attendance Functions ---
 
         async function loadStudentsForAttendance() {
@@ -3669,12 +3700,12 @@
             try {
                 const allStudents = await getAllFromStore(STORES.STUDENTS);
                 const classStudents = allStudents.filter(s => s.classId === classId && s.sectionId === sectionId);
-                
+
                 const attendanceTableBody = document.querySelector('#attendance-table tbody');
                 attendanceTableBody.innerHTML = '';
 
                 if (classStudents.length === 0) {
-                     attendanceTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اس کلاس میں کوئی طالب علم نہیں ہے۔</td></tr>';
+                    attendanceTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اس کلاس میں کوئی طالب علم نہیں ہے۔</td></tr>';
                 }
 
                 classStudents.forEach(student => {
@@ -3703,9 +3734,9 @@
         }
 
         async function viewAttendance() {
-             const tbody = document.querySelector('#view-attendance-table tbody');
-             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">'View Attendance' functionality to be fully implemented.</td></tr>`;
-             document.getElementById('view-attendance-table-container').style.display = 'block';
+            const tbody = document.querySelector('#view-attendance-table tbody');
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">'View Attendance' functionality to be fully implemented.</td></tr>`;
+            document.getElementById('view-attendance-table-container').style.display = 'block';
         }
 
         async function generateAttendanceReport() {
@@ -3720,7 +3751,7 @@
             const classId = parseInt(document.getElementById('marks-class').value);
             const sectionId = parseInt(document.getElementById('marks-section').value);
 
-             if (!classId || !sectionId) {
+            if (!classId || !sectionId) {
                 showNotification('براہ کرم کلاس اور سیکشن منتخب کریں۔', 'error');
                 return;
             }
@@ -3731,8 +3762,8 @@
                 const marksTbody = document.querySelector('#marks-table tbody');
                 marksTbody.innerHTML = '';
 
-                 if (classStudents.length === 0) {
-                     marksTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اس کلاس میں کوئی طالب علم نہیں ہے۔</td></tr>';
+                if (classStudents.length === 0) {
+                    marksTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اس کلاس میں کوئی طالب علم نہیں ہے۔</td></tr>';
                 }
 
                 classStudents.forEach(student => {
@@ -3749,8 +3780,8 @@
                     marksTbody.appendChild(row);
                 });
                 document.getElementById('marks-table-container').style.display = 'block';
-            } catch(error) {
-                 console.error("Error loading students for marks entry:", error);
+            } catch (error) {
+                console.error("Error loading students for marks entry:", error);
             } finally {
                 hideLoading();
             }
@@ -3760,7 +3791,7 @@
             document.getElementById('result-cards-container').innerHTML = `<div class="form-container"><p>Result card generation is a complex feature and needs full implementation.</p></div>`;
             document.getElementById('result-cards-container').style.display = 'block';
         }
-        
+
         // --- Fees Functions ---
 
         async function searchStudentForFee() {
@@ -3777,7 +3808,7 @@
                     document.getElementById('fee-payment-form').style.display = 'none';
                     return;
                 }
-                
+
                 document.getElementById('fee-roll-number').value = student.rollNumber;
                 document.getElementById('fee-roll-number').dataset.studentId = student.id;
                 document.getElementById('fee-student-name').value = student.name;
@@ -3797,14 +3828,14 @@
                 hideLoading();
             }
         }
-        
+
         async function loadFeeHistory(studentId) {
             const allFees = await getAllFromIndex(STORES.FEES, 'studentId', studentId);
             const historyTbody = document.querySelector('#fee-history-table tbody');
             historyTbody.innerHTML = '';
             if (allFees.length === 0) {
-                 historyTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی فیس ہسٹری موجود نہیں ہے۔</td></tr>';
-                 return;
+                historyTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی فیس ہسٹری موجود نہیں ہے۔</td></tr>';
+                return;
             }
             allFees.forEach(fee => {
                 const row = document.createElement('tr');
@@ -3834,15 +3865,15 @@
             reportTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">'Defaulters Report' functionality to be fully implemented.</td></tr>`;
             document.getElementById('defaulters-table-container').style.display = 'block';
         }
-        
+
         // --- Salary Functions ---
 
         async function searchEmployeeForSalary() {
-             const searchTerm = document.getElementById('salary-employee-search').value;
-             const employeeType = document.getElementById('salary-employee-type').value;
-             if (!searchTerm) return;
-             showLoading();
-             try {
+            const searchTerm = document.getElementById('salary-employee-search').value;
+            const employeeType = document.getElementById('salary-employee-type').value;
+            if (!searchTerm) return;
+            showLoading();
+            try {
                 const storeName = employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
                 const allEmployees = await getAllFromStore(storeName);
                 const employee = allEmployees.find(e => e.employeeId === searchTerm || e.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -3852,7 +3883,7 @@
                     document.getElementById('salary-employee-details').style.display = 'none';
                     return;
                 }
-                
+
                 document.getElementById('salary-employee-id').value = employee.employeeId;
                 document.getElementById('salary-employee-id').dataset.employeeId = employee.id;
                 document.getElementById('salary-employee-name').value = employee.name;
@@ -3863,22 +3894,22 @@
 
                 document.getElementById('salary-employee-details').style.display = 'block';
                 document.getElementById('salary-payment-form').style.display = 'block';
-             } catch (error) {
+            } catch (error) {
                 console.error("Error searching employee:", error);
-             } finally {
+            } finally {
                 hideLoading();
-             }
+            }
         }
 
         async function generateSalaryReport() {
-             const reportTbody = document.querySelector('#salary-report-table tbody');
-             reportTbody.innerHTML = `<tr><td colspan="9" style="text-align:center;">'Salary Report' functionality to be fully implemented.</td></tr>`;
-             document.getElementById('salary-report-summary').style.display = 'block';
-             document.getElementById('salary-report-table-container').style.display = 'block';
+            const reportTbody = document.querySelector('#salary-report-table tbody');
+            reportTbody.innerHTML = `<tr><td colspan="9" style="text-align:center;">'Salary Report' functionality to be fully implemented.</td></tr>`;
+            document.getElementById('salary-report-summary').style.display = 'block';
+            document.getElementById('salary-report-table-container').style.display = 'block';
         }
 
         // --- Generic Report Functions ---
-        
+
         async function generateReport() {
             showNotification("Report generation feature is under development.", "info");
         }
@@ -3895,7 +3926,7 @@
                 case 'daily': document.getElementById('fee-report-date-row').style.display = 'flex'; break;
                 case 'monthly':
                 case 'yearly':
-                     document.getElementById('fee-report-month-row').style.display = 'flex'; break;
+                    document.getElementById('fee-report-month-row').style.display = 'flex'; break;
                 case 'class': document.getElementById('fee-report-class-row').style.display = 'flex'; break;
             }
         }
@@ -3904,7 +3935,7 @@
             const reportType = document.getElementById('salary-report-type').value;
             document.getElementById('salary-report-month-row').style.display = 'none';
             document.getElementById('salary-report-employee-row').style.display = 'none';
-            
+
             switch (reportType) {
                 case 'monthly':
                 case 'yearly':
@@ -3916,12 +3947,12 @@
                     break;
             }
         }
-        
+
         async function loadEmployeesForSalaryReport() {
             // This helper function needs to be created to populate the dropdown
             console.log("loadEmployeesForSalaryReport needs implementation.");
         }
-        
+
         async function loadEmployeesForSalaryStructure() {
             const employeeType = document.getElementById('structure-employee-type').value;
             const storeName = employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
@@ -3932,7 +3963,7 @@
                 select.innerHTML += `<option value="${e.id}">${e.name} (${e.employeeId})</option>`;
             });
         }
-        
+
         // --- Settings Functions ---
         // Note: These require a full settings page HTML to work correctly.
         // They are written to work if you add the corresponding form elements.
@@ -3949,17 +3980,17 @@
             try {
                 // Fetch only the sections belonging to the selected class
                 const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
-                
+
                 if (sections && sections.length > 0) {
                     sections.forEach(section => {
                         const option = document.createElement('option');
                         // IMPORTANT: Use the numeric 'id' for the value
-                        option.value = section.id; 
+                        option.value = section.id;
                         option.textContent = section.name;
                         sectionDropdown.appendChild(option);
                     });
                 } else {
-                     sectionDropdown.innerHTML = '<option value="">اس کلاس میں کوئی سیکشن نہیں</option>';
+                    sectionDropdown.innerHTML = '<option value="">اس کلاس میں کوئی سیکشن نہیں</option>';
                 }
             } catch (error) {
                 console.error('Error populating sections dropdown:', error);
@@ -5413,7 +5444,7 @@
         }
 
         // ایونٹ لسنرز سیٹ اپ کریں
-                // Corrected setupEventListeners
+        // Corrected setupEventListeners
         function setupEventListeners() {
             // Tab click handlers to load tables
             document.getElementById('student-class').addEventListener('change', populateSectionsForStudentForm);
@@ -5436,7 +5467,7 @@
             document.getElementById('search-student-btn').addEventListener('click', searchStudents);
             document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
             document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
-            
+
             // Button Listeners for loading data
             document.getElementById('load-attendance').addEventListener('click', loadStudentsForAttendance);
             document.getElementById('view-attendance-btn').addEventListener('click', viewAttendance);
@@ -5448,19 +5479,19 @@
             document.getElementById('generate-defaulters').addEventListener('click', generateDefaultersReport);
             document.getElementById('search-employee-salary').addEventListener('click', searchEmployeeForSalary);
             document.getElementById('generate-salary-report').addEventListener('click', generateSalaryReport);
-            
+
             // **FIX IS HERE**: Check if the button exists before adding a listener
             const generateReportBtn = document.getElementById('generate-report');
             if (generateReportBtn) {
                 generateReportBtn.addEventListener('click', generateReport);
             }
-            
+
             // Backup and Restore Buttons
             document.getElementById('create-backup').addEventListener('click', createBackup);
             document.getElementById('restore-backup').addEventListener('click', restoreBackup);
             document.getElementById('save-auto-backup').addEventListener('click', saveAutoBackupSettings);
-            document.getElementById('auto-backup-enable').addEventListener('change', function() { document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none'; });
-            
+            document.getElementById('auto-backup-enable').addEventListener('change', function () { document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none'; });
+
             // Report Type Changers
             document.getElementById('fee-report-type').addEventListener('change', toggleFeeReportFields);
             document.getElementById('salary-report-type').addEventListener('change', toggleSalaryReportFields);
@@ -6096,7 +6127,7 @@
         // CRUD فنکشنز
 
         // طالب علم شامل کریں
-                // طالب علم شامل کریں (Corrected and Validated)
+        // طالب علم شامل کریں (Corrected and Validated)
         async function addStudent() {
             showLoading();
             try {
@@ -6111,26 +6142,26 @@
                     hideLoading();
                     return; // Stop the function here
                 }
-                
+
                 const classId = parseInt(classIdValue);
                 const sectionId = parseInt(sectionIdValue);
-                
+
                 // Get other form data
                 const name = document.getElementById('student-name').value;
                 const fatherName = document.getElementById('student-father').value;
                 //... (the rest of your getElementById calls) ...
                 const admissionDate = document.getElementById('student-admission-date').value;
-                
+
                 // Fetch related data using the now-validated IDs
                 const classData = await getFromStore(STORES.CLASSES, classId);
                 const sectionData = await getFromStore(STORES.SECTIONS, sectionId);
 
                 if (!classData || !sectionData) {
-                     showNotification('کلاس یا سیکشن کا ڈیٹا نہیں ملا۔', 'error');
-                     hideLoading();
-                     return;
+                    showNotification('کلاس یا سیکشن کا ڈیٹا نہیں ملا۔', 'error');
+                    hideLoading();
+                    return;
                 }
-                
+
                 // Continue with the rest of your student creation logic...
                 const studentsCount = await getCount(STORES.STUDENTS);
                 const rollNumber = studentsCount + 1;
@@ -6159,7 +6190,7 @@
                 };
 
                 await addToStore(STORES.STUDENTS, studentData);
-                
+
                 showNotification('طالب علم کامیابی سے داخل کر لیا گیا ہے', 'success');
                 document.getElementById('student-form').reset();
                 document.querySelector('[data-tab="students-list"]').click(); // Switch to the list view
@@ -7900,15 +7931,70 @@
             });
         }
 
+        // ویو دکھائیں (Corrected to load data on view change)
         function showView(viewName) {
-            const views = document.querySelectorAll('.section-view');
-            views.forEach(view => view.style.display = 'none');
+            // Hide all views
+            document.querySelectorAll('.section-view').forEach(view => {
+                view.style.display = 'none';
+            });
 
-            const targetView = document.getElementById(`${viewName}-view`);
-            if (targetView) {
-                targetView.style.display = 'block';
+            // Show the selected view
+            const selectedView = document.getElementById(viewName + '-view');
+            if (selectedView) {
+                selectedView.style.display = 'block';
             }
 
+            // --- THIS IS THE FIX ---
+            // Load the primary data for the selected view immediately
+            switch (viewName) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'students':
+                    loadStudentsTable();
+                    break;
+                case 'teachers':
+                    loadTeachersTable();
+                    break;
+                case 'staff':
+                    loadStaffTable();
+                    break;
+                case 'classes':
+                    loadClassesTable();
+                    break;
+                case 'subjects':
+                    loadSubjectsTable();
+                    break;
+                case 'attendance':
+                    // Attendance is interactive, so no initial table load is needed
+                    break;
+                case 'exams':
+                    loadExamsTable();
+                    break;
+                case 'fees':
+                    // Fees is interactive, so no initial table load is needed
+                    break;
+                case 'salaries':
+                    // Salaries is interactive, so no initial table load is needed
+                    break;
+                case 'library':
+                    loadBooksTable();
+                    break;
+                case 'users':
+                    loadUsersTable();
+                    break;
+                case 'reports':
+                    // Reports are interactive
+                    break;
+                case 'settings':
+                    // Settings are interactive
+                    break;
+                case 'backup':
+                    loadBackupHistoryTable();
+                    break;
+            }
+
+            // Hide sidebar on mobile after clicking an item
             if (window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('active');
                 document.getElementById('mainContainer').classList.remove('sidebar-active');
