@@ -2882,37 +2882,29 @@
             }); */
             document.getElementById('school-settings-form').addEventListener('submit', async function (e) {
     e.preventDefault();
-    try {
-        const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
-        const updated = {
-            ...existing,
-            schoolName: document.getElementById('school-name').value,
-            principalName: document.getElementById('principal-name').value,
-            schoolAddress: document.getElementById('school-address').value,
-            schoolPhone: document.getElementById('school-contact').value,
-            schoolEmail: document.getElementById('school-email').value,
-        };
-        await addToStore(STORES.SETTINGS, updated, true);
-        showNotification('ترتیبات کامیابی سے محفوظ کر لی گئیں', 'success');
-    } catch (err) {
-        console.error("Error saving settings:", err);
-    }
+    const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
+    const updated = {
+        ...existing,
+        schoolName: document.getElementById('school-name').value,
+        principalName: document.getElementById('principal-name').value,
+        schoolAddress: document.getElementById('school-address').value,
+        schoolPhone: document.getElementById('school-contact').value,
+        schoolEmail: document.getElementById('school-email').value,
+    };
+    await addToStore(STORES.SETTINGS, updated, true);
+    showNotification('ترتیبات کامیابی سے محفوظ کر لی گئیں', 'success');
 });
 
 document.getElementById('system-settings-form').addEventListener('submit', async function (e) {
     e.preventDefault();
-    try {
-        const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
-        const updated = {
-            ...existing,
-            autoBackupFrequency: document.getElementById('auto-backup-freq').value,
-            language: document.getElementById('system-language').value,
-        };
-        await addToStore(STORES.SETTINGS, updated, true);
-        showNotification('سسٹم ترتیبات کامیابی سے محفوظ کر لی گئیں', 'success');
-    } catch (err) {
-        console.error("Error saving settings:", err);
-    }
+    const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
+    const updated = {
+        ...existing,
+        autoBackupFrequency: document.getElementById('auto-backup-freq').value,
+        language: document.getElementById('system-language').value,
+    };
+    await addToStore(STORES.SETTINGS, updated, true);
+    showNotification('سسٹم ترتیبات کامیابی سے محفوظ کر لی گئیں', 'success');
 });
             document.getElementById('auto-backup-enable').addEventListener('change', function () {
                 document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none';
@@ -3102,6 +3094,56 @@ document.getElementById('system-settings-form').addEventListener('submit', async
             showView('dashboard');
             console.log('Application initialized successfully');
         }
+        function showView(viewName) {
+    document.querySelectorAll('.section-view').forEach(view => {
+        view.style.display = 'none';
+    });
+
+    const selectedView = document.getElementById(viewName + '-view');
+    if (selectedView) {
+        selectedView.style.display = 'block';
+    } else {
+        console.error(`View not found for: ${viewName}`);
+        return;
+    }
+
+    try {
+        switch (viewName) {
+            case 'dashboard': loadDashboardData(); break;
+            case 'students': loadStudentsTable(); break;
+            case 'teachers': loadTeachersTable(); break;
+            case 'staff': loadStaffTable(); break;
+            case 'classes': loadClassesTable(); break;
+            case 'subjects': loadSubjectsTable(); break;
+            case 'exams': loadExamsTable(); break;
+            case 'fees': loadFeeStructureTable(); break;
+            case 'salaries': loadSalaryStructureTable(); break;
+            case 'library':
+                loadBooksTable();
+                populateLibraryDropdowns();
+                break;
+            case 'users':
+                loadUsersTable();
+                loadRolesTable();
+                break;
+            case 'reports':
+                loadClassDropdowns();
+                break;
+            case 'settings':
+                loadSchoolSettings();
+                break;
+            case 'backup':
+                loadBackupHistoryTable();
+                break;
+        }
+    } catch (e) {
+        console.error(`Error loading data for view '${viewName}':`, e);
+    }
+
+    if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('active')) {
+        toggleSidebar();
+    }
+}
         function setupFormHandlers() {
             document.getElementById('student-form').addEventListener('submit', (e) => { e.preventDefault(); addStudent(); });
             document.getElementById('teacher-form').addEventListener('submit', (e) => { e.preventDefault(); addTeacher(); });
@@ -5661,72 +5703,55 @@ document.getElementById('system-settings-form').addEventListener('submit', async
                 }
             });
         }
-       function showView(viewName) {
-    document.querySelectorAll('.section-view').forEach(view => {
-        view.style.display = 'none';
-    });
-
-    const selectedView = document.getElementById(viewName + '-view');
-    if (selectedView) {
-        selectedView.style.display = 'block';
-    } else {
-        console.error(`View not found for: ${viewName}`);
-        return;
-    }
-
+async function loadSchoolSettings() {
     try {
-        switch (viewName) {
-            case 'dashboard':
-                loadDashboardData();
-                break;
-            case 'students':
-                loadStudentsTable();
-                break;
-            case 'teachers':
-                loadTeachersTable();
-                break;
-            case 'staff':
-                loadStaffTable();
-                break;
-            case 'classes':
-                loadClassesTable();
-                break;
-            case 'subjects':
-                loadSubjectsTable();
-                break;
-            case 'exams':
-                loadExamsTable();
-                break;
-            case 'fees':
-                loadFeeStructureTable();
-                break;
-            case 'salaries':
-                loadSalaryStructureTable();
-                break;
-            case 'library':
-                loadBooksTable();
-                populateLibraryDropdowns();
-                break;
-            case 'users':
-                loadUsersTable();
-                loadRolesTable();
-                break;
-            case 'reports':
-                loadClassDropdowns();
-                break;
-            case 'settings':
-                loadSchoolSettings();
-                break;
-            case 'backup':
-                loadBackupHistoryTable();
-                break;
+        const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
+        // General Settings Tab
+        document.getElementById('school-name').value = settings.schoolName || '';
+        document.getElementById('principal-name').value = settings.principalName || '';
+        document.getElementById('school-address').value = settings.schoolAddress || '';
+        document.getElementById('school-contact').value = settings.schoolPhone || '';
+        document.getElementById('school-email').value = settings.schoolEmail || '';
+        // System Settings Tab
+        document.getElementById('auto-backup-freq').value = settings.autoBackupFrequency || 'daily';
+        document.getElementById('system-language').value = settings.language || 'ur';
+    } catch(e) {
+        console.error("Error loading school settings:", e);
+    }
+}
+
+async function populateLibraryDropdowns() {
+    try {
+        const books = await getAllFromStore(STORES.BOOKS);
+        const students = await getAllFromStore(STORES.STUDENTS);
+        const issued = await getAllFromStore(STORES.BOOK_ISSUES);
+
+        const bookSelect = document.getElementById('issue-book-select');
+        bookSelect.innerHTML = '<option value="">کتاب منتخب کریں</option>';
+        books.forEach(book => {
+            if (book.availableCopies > 0) {
+                bookSelect.innerHTML += `<option value="${book.id}">${book.name}</option>`;
+            }
+        });
+
+        const studentSelect = document.getElementById('issue-student-select');
+        studentSelect.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
+        students.forEach(student => {
+            studentSelect.innerHTML += `<option value="${student.id}">${student.name} (${student.rollNumber})</option>`;
+        });
+
+        const returnSelect = document.getElementById('return-book-select');
+        returnSelect.innerHTML = '<option value="">جاری شدہ کتاب منتخب کریں</option>';
+        const activeIssues = issued.filter(i => i.status === 'issued');
+        for (const issue of activeIssues) {
+            const book = books.find(b => b.id === issue.bookId);
+            const student = students.find(s => s.id === issue.studentId);
+            if(book && student) {
+               returnSelect.innerHTML += `<option value="${issue.id}">${book.name} - جاری: ${student.name}</option>`;
+            }
         }
     } catch (e) {
-        console.error(`Error during loading for ${viewName}:`, e);
-    }
-
-    if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('active')) {
-        toggleSidebar();
+        console.error("Error populating library dropdowns:", e);
     }
 }
 async function loadSchoolSettings() {
