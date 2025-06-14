@@ -870,12 +870,12 @@
                                 delete: 'confirmDeleteBook'
                             },
                             users: { edit: 'showForm', delete: 'confirmDelete' },
-                            salary: { 
-    pay: 'showPaymentForm', 
-    payslip: 'generatePayslip',
-    edit: 'showStaffForm',        // Function for editing staff
-    delete: 'confirmDeleteStaff'  // Function for deleting staff
-},
+                            salary: {
+                                pay: 'showPaymentForm',
+                                payslip: 'generatePayslip',
+                                edit: 'showStaffForm',
+                                delete: 'confirmDeleteStaff'
+                            },
                             exams: { edit: 'showExamForm', delete: 'confirmDeleteExam', 'marks-entry': () => this.Exams.renderMarksEntrySheet(id), 'view-card': () => this.Exams.renderResultCard(studentId, examId) },
                             accounts: { edit: () => this.Accounts.showTransactionForm(type, id), delete: () => this.Accounts.confirmDeleteTransaction(type, id) },
                             transport: { edit: 'showRouteForm', delete: 'confirmDeleteRoute', unassign: 'unassignStudentFromRoute' },
@@ -960,7 +960,7 @@
                         return;
                     }
                     try {
-                        const user = await this.dbAction('users', 'get', 'username', username);
+                        const user = await this.dbAction('users', 'get', username, 'username');
                         if (user && user.password === password) {
                             this.currentUser = user;
                             sessionStorage.setItem('currentUser', JSON.stringify(user));
@@ -1793,14 +1793,20 @@
                         const contentEl = document.getElementById('accounts-content');
                         App.showLoader();
                         switch (tab) {
-                            case 'overview': contentEl.innerHTML = await this.getOverviewHtml(); break;
+                            case 'overview':
+                                contentEl.innerHTML = await this.getOverviewHtml();
+                                break;
                             case 'income':
-                                contentEl.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h4>آمدنی کا ریکارڈ</h4><button class="btn btn-primary" onclick="App.Accounts.showTransactionForm('income')">نئی آمدنی شامل کریں</button></div><div class="table-responsive"><table id="income-table"><thead><tr><th>تاریخ</th><th>زمرہ</th><th>رقم</th><th>تفصیل</th><th>کارروائیاں</th></tr></thead><tbody></tbody></table></div>`;
+                                contentEl.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h4>آمدنی کا ریکارڈ</h4><button class="btn btn-primary" id="add-income-btn">نئی آمدنی شامل کریں</button></div><div class="table-responsive"><table id="income-table"><thead><tr><th>تاریخ</th><th>زمرہ</th><th>رقم</th><th>تفصیل</th><th>کارروائیاں</th></tr></thead><tbody></tbody></table></div>`;
                                 await this.renderIncomeTable();
+                                const addIncomeBtn = document.getElementById('add-income-btn');
+                                if (addIncomeBtn) addIncomeBtn.onclick = () => this.showTransactionForm('income');
                                 break;
                             case 'expenses':
-                                contentEl.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h4>اخراجات کا ریکارڈ</h4><button class="btn btn-primary" onclick="App.Accounts.showTransactionForm('expenses')">نیا خرچ شامل کریں</button></div><div class="table-responsive"><table id="expenses-table"><thead><tr><th>تاریخ</th><th>زمرہ</th><th>رقم</th><th>تفصیل</th><th>کارروائیاں</th></tr></thead><tbody></tbody></table></div>`;
+                                contentEl.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h4>اخراجات کا ریکارڈ</h4><button class="btn btn-primary" id="add-expense-btn">نیا خرچ شامل کریں</button></div><div class="table-responsive"><table id="expenses-table"><thead><tr><th>تاریخ</th><th>زمرہ</th><th>رقم</th><th>تفصیل</th><th>کارروائیاں</th></tr></thead><tbody></tbody></table></div>`;
                                 await this.renderExpensesTable();
+                                const addExpenseBtn = document.getElementById('add-expense-btn');
+                                if (addExpenseBtn) addExpenseBtn.onclick = () => this.showTransactionForm('expenses');
                                 break;
                         }
                         App.hideLoader();
@@ -1815,52 +1821,110 @@
                     },
                     async renderIncomeTable() {
                         const income = await App.dbAction('income', 'getAll');
-                        document.querySelector('#income-table tbody').innerHTML = income.sort((a, b) => new Date(b.date) - new Date(a.date)).map(i => `<tr><td>${new Date(i.date).toLocaleDateString('ur-PK')}</td><td>${i.category}</td><td>${i.amount.toLocaleString()}</td><td>${i.description}</td><td class="action-btns"><button class="btn btn-primary btn-icon" data-action="edit" data-module="accounts" data-type="income" data-id="${i.id}">✏️</button><button class="btn btn-danger btn-icon" data-action="delete" data-module="accounts" data-type="income" data-id="${i.id}">🗑️</button></td></tr>`).join('');
+                        const incomeTableBody = document.querySelector('#income-table tbody');
+                        if (incomeTableBody) {
+                            incomeTableBody.innerHTML = income.sort((a, b) => new Date(b.date) - new Date(a.date)).map(i => `<tr><td>${App.formatDate(i.date)}</td><td>${i.category}</td><td>${i.amount.toLocaleString()}</td><td>${i.description || 'N/A'}</td><td class="action-btns"><button class="btn btn-primary btn-icon" data-action="edit" data-module="accounts" data-type="income" data-id="${i.id}">✏️</button><button class="btn btn-danger btn-icon" data-action="delete" data-module="accounts" data-type="income" data-id="${i.id}">🗑️</button></td></tr>`).join('');
+                        }
                     },
                     async renderExpensesTable() {
                         const expenses = await App.dbAction('expenses', 'getAll');
-                        document.querySelector('#expenses-table tbody').innerHTML = expenses.sort((a, b) => new Date(b.date) - new Date(a.date)).map(e => `<tr><td>${new Date(e.date).toLocaleDateString('ur-PK')}</td><td>${e.category}</td><td>${e.amount.toLocaleString()}</td><td>${e.description}</td><td class="action-btns"><button class="btn btn-primary btn-icon" data-action="edit" data-module="accounts" data-type="expenses" data-id="${e.id}">✏️</button><button class="btn btn-danger btn-icon" data-action="delete" data-module="accounts" data-type="expenses" data-id="${e.id}">🗑️</button></td></tr>`).join('');
+                        const expensesTableBody = document.querySelector('#expenses-table tbody');
+                        if (expensesTableBody) {
+                            expensesTableBody.innerHTML = expenses.sort((a, b) => new Date(b.date) - new Date(a.date)).map(e => `<tr><td>${App.formatDate(e.date)}</td><td>${e.category}</td><td>${e.amount.toLocaleString()}</td><td>${e.description || 'N/A'}</td><td class="action-btns"><button class="btn btn-primary btn-icon" data-action="edit" data-module="accounts" data-type="expenses" data-id="${e.id}">✏️</button><button class="btn btn-danger btn-icon" data-action="delete" data-module="accounts" data-type="expenses" data-id="${e.id}">🗑️</button></td></tr>`).join('');
+                        }
                     },
                     async showTransactionForm(type, id = null) {
-                        const item = id ? await App.dbAction(type, 'get', parseInt(id)) : {};
+                        let item = {};
+                        if (id) {
+                            const itemId = parseInt(id);
+                            if (!isNaN(itemId)) {
+                                item = await App.dbAction(type, 'get', itemId) || {};
+                            } else {
+                                App.showToast("غلط ریکارڈ ID", "error");
+                                return;
+                            }
+                        }
                         const isIncome = type === 'income';
-                        const title = `${id ? 'ترمیم' : 'نیا'} ${isIncome ? 'آمدنی' : 'خرچ'}`;
+                        const title = `${item.id ? 'ترمیم' : 'نیا'} ${isIncome ? 'آمدنی' : 'خرچ'}`;
                         const catListId = `${type}-cats`;
-                        const catOptions = isIncome ? `<option value="فیس"><option value="عطیات">` : `<option value="تنخواہیں"><option value="یوٹیلیٹی بلز"><option value="مرمت">`;
+                        const catOptions = isIncome
+                            ? `<option value="فیس"><option value="عطیات"><option value="دیگر آمدنی">`
+                            : `<option value="تنخواہیں"><option value="یوٹیلیٹی بلز"><option value="مرمت"><option value="خریداری"><option value="دیگر اخراجات">`;
                         const formHtml = `<form id="transaction-form">
                         <input type="hidden" name="id" value="${item.id || ''}"><input type="hidden" name="type" value="${type}">
                         <div class="form-group"><label>تاریخ</label><input type="date" name="date" class="form-control" value="${item.date || new Date().toISOString().split('T')[0]}" required></div>
                         <div class="form-group"><label>زمرہ</label><input type="text" name="category" list="${catListId}" class="form-control" value="${item.category || ''}" required><datalist id="${catListId}">${catOptions}</datalist></div>
-                        <div class="form-group"><label>رقم</label><input type="number" name="amount" class="form-control" value="${item.amount || ''}" required></div>
+                        <div class="form-group"><label>رقم</label><input type="number" name="amount" class="form-control" value="${item.amount || ''}" min="0" required></div>
                         <div class="form-group"><label>تفصیل</label><input type="text" name="description" class="form-control" value="${item.description || ''}"></div>
                     </form>`;
                         const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">منسوخ</button><button class="btn btn-primary" id="save-transaction-btn">محفوظ کریں</button>`;
                         App.showModal(title, formHtml, footer);
-                        document.getElementById('save-transaction-btn').onclick = () => this.saveTransactionForm();
+                        const saveBtn = document.getElementById('save-transaction-btn');
+                        if (saveBtn) saveBtn.onclick = () => this.saveTransactionForm();
                     },
                     async saveTransactionForm() {
                         const form = document.getElementById('transaction-form');
                         if (!form.checkValidity()) { form.reportValidity(); return; }
-                        const data = Object.fromEntries(new FormData(form).entries());
+                        const formData = new FormData(form);
+                        const data = Object.fromEntries(formData.entries());
                         const type = data.type;
                         delete data.type;
-                        data.id = data.id ? parseInt(data.id) : undefined;
+                        const formIdString = data.id;
+                        if (formIdString && formIdString !== "") {
+                            data.id = parseInt(formIdString);
+                            if (isNaN(data.id)) {
+                                App.showToast('ٹرانزیکشن ID میں خرابی: ID غیر عددی ہے۔', 'error');
+                                return;
+                            }
+                        } else {
+                            delete data.id;
+                        }
                         data.amount = parseFloat(data.amount);
-                        await App.dbAction(type, 'put', data);
-                        App.showToast('ریکارڈ محفوظ ہوگیا!', 'success'); App.closeModal();
-                        if (type === 'income') this.renderIncomeTable(); else this.renderExpensesTable();
+                        if (isNaN(data.amount) || data.amount <= 0) {
+                            App.showToast('رقم درست ہونی چاہئے اور صفر سے زیادہ۔', 'error');
+                            return;
+                        }
+                        try {
+                            await App.dbAction(type, 'put', data);
+                            App.showToast('ریکارڈ محفوظ ہوگیا!', 'success');
+                            App.closeModal();
+                            if (type === 'income') {
+                                this.renderIncomeTable();
+                            } else {
+                                this.renderExpensesTable();
+                            }
+                            if (document.querySelector('#accounts-tabs .tab-btn[data-tab="overview"].active')) {
+                                this.renderTabContent('overview');
+                            }
+                        } catch (err) {
+                            console.error(`Error saving ${type}:`, err);
+                            App.showToast(`${type} کو محفوظ کرنے میں ناکامی! (${err.message || err.name})`, 'error');
+                        }
                     },
                     confirmDeleteTransaction(type, id) {
                         const body = '<p>کیا آپ واقعی اس ریکارڈ کو حذف کرنا چاہتے ہیں؟</p>';
-                        const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">نہیں</button><button class="btn btn-danger" id="confirm-delete-btn">ہاں، حذف کریں</button>`;
+                        const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">نہیں</button><button class="btn btn-danger" id="confirm-delete-transaction-btn">ہاں، حذف کریں</button>`;
                         App.showModal('ریکارڈ حذف کریں', body, footer);
-                        document.getElementById('confirm-delete-btn').onclick = () => this.deleteTransaction(type, id);
+                        const confirmBtn = document.getElementById('confirm-delete-transaction-btn');
+                        if (confirmBtn) confirmBtn.onclick = () => this.deleteTransaction(type, id);
                     },
                     async deleteTransaction(type, id) {
-                        await App.dbAction(type, 'delete', parseInt(id));
-                        App.showToast('ریکارڈ حذف کر دیا گیا!', 'success');
-                        App.closeModal();
-                        if (type === 'income') this.renderIncomeTable(); else this.renderExpensesTable();
+                        try {
+                            await App.dbAction(type, 'delete', parseInt(id));
+                            App.showToast('ریکارڈ حذف کر دیا گیا!', 'success');
+                            App.closeModal();
+                            if (type === 'income') {
+                                this.renderIncomeTable();
+                            } else {
+                                this.renderExpensesTable();
+                            }
+                            if (document.querySelector('#accounts-tabs .tab-btn[data-tab="overview"].active')) {
+                                this.renderTabContent('overview');
+                            }
+                        } catch (err) {
+                            console.error(`Error deleting ${type}:`, err);
+                            App.showToast(`${type} کو حذف کرنے میں ناکامی! (${err.message || err.name})`, 'error');
+                        }
                     }
                 },
                 Attendance: {
