@@ -4975,6 +4975,1066 @@
     
 })();
 
+
+
+
+
+// Complete Messaging Module with WhatsApp Integration - Add at bottom of existing code
+(function() {
+    
+    // =================== MESSAGING MODULE SETUP ===================
+    
+    // Add messaging module to sidebar
+    const sidebar = document.querySelector('.nav-menu');
+    const messagingNavItem = document.createElement('div');
+    messagingNavItem.className = 'nav-item';
+    messagingNavItem.dataset.module = 'messaging';
+    messagingNavItem.innerHTML = `
+        <span class="nav-icon">💬</span>
+        <span class="nav-text">پیغامات</span>
+    `;
+    sidebar.appendChild(messagingNavItem);
+    
+    messagingNavItem.addEventListener('click', () => {
+        app.loadModule('messaging');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        messagingNavItem.classList.add('active');
+    });
+    
+    // Add messaging module container
+    const mainContent = document.querySelector('.content');
+    const messagingModuleHTML = `
+        <div id="messaging" class="module">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>پیغامات کا نظام</h2>
+                    <button class="btn btn-primary" onclick="openMessageModal()">نیا پیغام</button>
+                </div>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="send-message">پیغام بھیجیں</div>
+                    <div class="tab" data-tab="bulk-messages">بلک میسجز</div>
+                    <div class="tab" data-tab="templates">ٹیمپلیٹس</div>
+                    <div class="tab" data-tab="message-history">پیغامات کی تاریخ</div>
+                    <div class="tab" data-tab="auto-messages">خودکار پیغامات</div>
+                </div>
+                
+                <div class="tab-content active" id="send-message">
+                    <div class="grid">
+                        <div class="card">
+                            <h3>انفرادی پیغام</h3>
+                            <form id="individualMessageForm">
+                                <div class="form-group">
+                                    <label class="form-label">وصول کنندہ کی قسم</label>
+                                    <select class="form-control" id="recipientType" onchange="app.loadRecipients()" required>
+                                        <option value="">منتخب کریں</option>
+                                        <option value="student">طالب علم</option>
+                                        <option value="parent">والدین</option>
+                                        <option value="teacher">استاد</option>
+                                        <option value="staff">عملہ</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">وصول کنندہ</label>
+                                    <select class="form-control" id="individualRecipient" required>
+                                        <option value="">پہلے قسم منتخب کریں</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">پیغام کی قسم</label>
+                                    <select class="form-control" id="messageType" onchange="app.loadMessageTemplate()">
+                                        <option value="custom">خود لکھیں</option>
+                                        <option value="fee_reminder">فیس کی یاد دہانی</option>
+                                        <option value="attendance_alert">حاضری کی اطلاع</option>
+                                        <option value="exam_notice">امتحان کی اطلاع</option>
+                                        <option value="result_notification">نتائج کی اطلاع</option>
+                                        <option value="salary_slip">تنخواہ کی پرچی</option>
+                                        <option value="event_invitation">تقریب کی دعوت</option>
+                                        <option value="holiday_notice">چھٹی کی اطلاع</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">پیغام</label>
+                                    <textarea class="form-control" id="messageContent" rows="5" required 
+                                        placeholder="یہاں اپنا پیغام لکھیں..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">بھیجنے کا طریقہ</label>
+                                    <select class="form-control" id="sendMethod">
+                                        <option value="whatsapp">واٹس ایپ</option>
+                                        <option value="sms">SMS</option>
+                                        <option value="both">دونوں</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success">پیغام بھیجیں</button>
+                            </form>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>فوری ایکشن</h3>
+                            <div class="quick-actions">
+                                <button class="btn btn-warning" onclick="app.sendFeeRemindersToAll()">
+                                    تمام بقایا والوں کو فیس کی یاد دہانی
+                                </button>
+                                <button class="btn btn-info" onclick="app.sendAttendanceAlerts()">
+                                    کم حاضری والوں کو اطلاع
+                                </button>
+                                <button class="btn btn-primary" onclick="app.sendExamNotifications()">
+                                    آنے والے امتحانات کی اطلاع
+                                </button>
+                                <button class="btn btn-success" onclick="app.sendSalarySlips()">
+                                    تنخواہ کی پرچیاں بھیجیں
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="bulk-messages">
+                    <div class="card">
+                        <h3>بلک میسجز</h3>
+                        <form id="bulkMessageForm">
+                            <div class="form-group">
+                                <label class="form-label">ہدف گروپ</label>
+                                <select class="form-control" id="bulkTargetGroup" onchange="app.loadBulkRecipients()" required>
+                                    <option value="">گروپ منتخب کریں</option>
+                                    <option value="all_parents">تمام والدین</option>
+                                    <option value="class_parents">کلاس کے والدین</option>
+                                    <option value="all_teachers">تمام اساتذہ</option>
+                                    <option value="all_staff">تمام عملہ</option>
+                                    <option value="fee_defaulters">بقایا والے</option>
+                                    <option value="low_attendance">کم حاضری والے</option>
+                                    <option value="custom">اپنی پسند</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="classSelection" style="display: none;">
+                                <label class="form-label">کلاس منتخب کریں</label>
+                                <select class="form-control" id="selectedClass">
+                                    <option value="">کلاس منتخب کریں</option>
+                                    <option value="نرسری">نرسری</option>
+                                    <option value="کے جی">کے جی</option>
+                                    <option value="پہلی">پہلی</option>
+                                    <option value="دوسری">دوسری</option>
+                                    <option value="تیسری">تیسری</option>
+                                    <option value="چوتھی">چوتھی</option>
+                                    <option value="پانچویں">پانچویں</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">وصول کنندگان کی تعداد: <span id="recipientCount">0</span></label>
+                                <div id="recipientsList"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">پیغام</label>
+                                <textarea class="form-control" id="bulkMessageContent" rows="5" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">بھیجنے کا وقت</label>
+                                <select class="form-control" id="scheduleTime">
+                                    <option value="now">ابھی بھیجیں</option>
+                                    <option value="schedule">وقت مقرر کریں</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="scheduleDateTime" style="display: none;">
+                                <label class="form-label">تاریخ اور وقت</label>
+                                <input type="datetime-local" class="form-control" id="scheduledDateTime">
+                            </div>
+                            <button type="submit" class="btn btn-primary">بلک میسج بھیجیں</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="templates">
+                    <div class="card">
+                        <h3>پیغامات کے ٹیمپلیٹس</h3>
+                        <div id="messageTemplates">
+                            <div class="template-item">
+                                <h4>فیس کی یاد دہانی</h4>
+                                <p>عزیز والدین، {student_name} کی {month} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منظوری سسٹم</p>
+                                <button class="btn btn-secondary" onclick="app.useTemplate('fee_reminder')">استعمال کریں</button>
+                            </div>
+                            
+                            <div class="template-item">
+                                <h4>حاضری کی اطلاع</h4>
+                                <p>عزیز والدین، {student_name} کی حاضری کم ہے ({attendance_percentage}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منظوری سسٹم</p>
+                                <button class="btn btn-secondary" onclick="app.useTemplate('attendance_alert')">استعمال کریں</button>
+                            </div>
+                            
+                            <div class="template-item">
+                                <h4>امتحان کی اطلاع</h4>
+                                <p>محترم والدین، {student_name} کا {subject} کا امتحان {exam_date} کو {exam_time} بجے ہے۔ - مدرسہ منظوری سسٹم</p>
+                                <button class="btn btn-secondary" onclick="app.useTemplate('exam_notice')">استعمال کریں</button>
+                            </div>
+                            
+                            <div class="template-item">
+                                <h4>نتائج کی اطلاع</h4>
+                                <p>مبارک ہو! {student_name} نے {exam_name} میں {marks}/{total_marks} حاصل کیے ہیں۔ - مدرسہ منظوری سسٹم</p>
+                                <button class="btn btn-secondary" onclick="app.useTemplate('result_notification')">استعمال کریں</button>
+                            </div>
+                            
+                            <div class="template-item">
+                                <h4>تنخواہ کی پرچی</h4>
+                                <p>عزیز {employee_name}، آپ کی {month} کی تنخواہ {amount} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منظوری سسٹم</p>
+                                <button class="btn btn-secondary" onclick="app.useTemplate('salary_slip')">استعمال کریں</button>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="app.createCustomTemplate()">نیا ٹیمپلیٹ بنائیں</button>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="message-history">
+                    <div class="card">
+                        <h3>پیغامات کی تاریخ</h3>
+                        <table class="table" id="messageHistoryTable">
+                            <thead>
+                                <tr><th>تاریخ</th><th>وقت</th><th>وصول کنندہ</th><th>قسم</th><th>طریقہ</th><th>حالت</th><th>اعمال</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="auto-messages">
+                    <div class="card">
+                        <h3>خودکار پیغامات کی ترتیبات</h3>
+                        <form id="autoMessageSettings">
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="autoFeeReminders"> 
+                                    ماہانہ فیس کی خودکار یاد دہانی (ہر مہینے 25 تاریخ کو)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="autoAttendanceAlerts"> 
+                                    کم حاضری کی خودکار اطلاع (ہفتہ وار)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="autoExamReminders"> 
+                                    امتحان کی خودکار یاد دہانی (3 دن پہلے)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="autoSalaryNotifications"> 
+                                    تنخواہ کی خودکار اطلاع (ادائیگی کے فوراً بعد)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="autoLibraryReminders"> 
+                                    کتاب واپسی کی خودکار یاد دہانی (واپسی سے 1 دن پہلے)
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">ترتیبات محفوظ کریں</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    mainContent.insertAdjacentHTML('beforeend', messagingModuleHTML);
+    
+    // Add messaging modal
+    const messagingModal = document.createElement('div');
+    messagingModal.className = 'modal';
+    messagingModal.id = 'messageModal';
+    messagingModal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>نیا پیغام</h3>
+                <button class="close-btn" onclick="closeModal('messageModal')">&times;</button>
+            </div>
+            <form id="quickMessageForm">
+                <div class="form-group">
+                    <label class="form-label">فون نمبر</label>
+                    <input type="tel" class="form-control" id="quickPhoneNumber" 
+                           placeholder="03001234567" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">پیغام</label>
+                    <textarea class="form-control" id="quickMessage" rows="4" required></textarea>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" class="btn btn-success">واٹس ایپ پر بھیجیں</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('messageModal')">منسوخ</button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(messagingModal);
+    
+    // =================== MESSAGING CORE FUNCTIONS ===================
+    
+    app.loadMessaging = async function() {
+        try {
+            const messageHistory = await this.getAllData('messages') || [];
+            this.renderMessageHistory(messageHistory);
+            this.loadAutoMessageSettings();
+        } catch (error) {
+            console.error('Load messaging error:', error);
+        }
+    };
+    
+    app.loadRecipients = async function() {
+        try {
+            const recipientType = document.getElementById('recipientType').value;
+            const recipientSelect = document.getElementById('individualRecipient');
+            
+            recipientSelect.innerHTML = '<option value="">انتخاب کریں...</option>';
+            
+            let data = [];
+            switch (recipientType) {
+                case 'student':
+                case 'parent':
+                    data = await this.getAllData('students');
+                    break;
+                case 'teacher':
+                    data = await this.getAllData('teachers');
+                    break;
+                case 'staff':
+                    data = await this.getAllData('users');
+                    break;
+            }
+            
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                
+                if (recipientType === 'student' || recipientType === 'parent') {
+                    option.textContent = `${item.name} - ${item.rollNumber} (${item.contact})`;
+                    option.dataset.phone = item.contact;
+                    option.dataset.name = item.name;
+                } else if (recipientType === 'teacher') {
+                    option.textContent = `${item.name} - ${item.subject} (${item.contact})`;
+                    option.dataset.phone = item.contact;
+                    option.dataset.name = item.name;
+                } else if (recipientType === 'staff') {
+                    option.textContent = `${item.name} - ${item.role}`;
+                    option.dataset.phone = item.contact || '03000000000';
+                    option.dataset.name = item.name;
+                }
+                
+                recipientSelect.appendChild(option);
+            });
+            
+        } catch (error) {
+            console.error('Load recipients error:', error);
+        }
+    };
+    
+    app.loadMessageTemplate = function() {
+        const messageType = document.getElementById('messageType').value;
+        const messageContent = document.getElementById('messageContent');
+        
+        const templates = {
+            fee_reminder: 'عزیز والدین، {student_name} کی {month} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منظوری سسٹم',
+            attendance_alert: 'عزیز والدین، {student_name} کی حاضری کم ہے ({attendance_percentage}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منظوری سسٹم',
+            exam_notice: 'محترم والدین، {student_name} کا {subject} کا امتحان {exam_date} کو {exam_time} بجے ہے۔ - مدرسہ منظوری سسٹم',
+            result_notification: 'مبارک ہو! {student_name} نے {exam_name} میں {marks}/{total_marks} حاصل کیے ہیں۔ - مدرسہ منظوری سسٹم',
+            salary_slip: 'عزیز {employee_name}، آپ کی {month} کی تنخواہ {amount} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منظوری سسٹم',
+            event_invitation: 'آپ کو {event_name} میں شرکت کی دعوت دی جاتی ہے۔ تاریخ: {event_date}، وقت: {event_time}۔ - مدرسہ منظوری سسٹم',
+            holiday_notice: 'اطلاع: {holiday_date} سے {end_date} تک مدرسہ بند رہے گا۔ وجہ: {reason}۔ - مدرسہ منظوری سسٹم'
+        };
+        
+        if (templates[messageType]) {
+            messageContent.value = templates[messageType];
+        } else {
+            messageContent.value = '';
+        }
+    };
+    
+    app.sendWhatsAppMessage = function(phoneNumber, message) {
+        // Clean phone number (remove spaces, dashes, etc.)
+        const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+        
+        // Add country code if not present (Pakistan +92)
+        let formattedNumber = cleanNumber;
+        if (cleanNumber.startsWith('0')) {
+            formattedNumber = '92' + cleanNumber.substring(1);
+        } else if (!cleanNumber.startsWith('92')) {
+            formattedNumber = '92' + cleanNumber;
+        }
+        
+        // Encode message for URL
+        const encodedMessage = encodeURIComponent(message);
+        
+        // Create WhatsApp Web URL
+        const whatsappURL = `https://web.whatsapp.com/send?phone=${formattedNumber}&text=${encodedMessage}`;
+        
+        // Open WhatsApp Web in new tab
+        window.open(whatsappURL, '_blank');
+        
+        // Log message for history
+        this.logMessage(phoneNumber, message, 'whatsapp', 'بھیجا گیا');
+        
+        return true;
+    };
+    
+    app.sendSMSMessage = function(phoneNumber, message) {
+        // For SMS, we'll create a tel: link (works on mobile devices)
+        const smsURL = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
+        window.open(smsURL, '_blank');
+        
+        // Log message for history
+        this.logMessage(phoneNumber, message, 'sms', 'بھیجا گیا');
+        
+        return true;
+    };
+    
+    app.logMessage = async function(phoneNumber, message, method, status) {
+        try {
+            const messageData = {
+                phoneNumber: phoneNumber,
+                message: message,
+                method: method,
+                status: status,
+                date: new Date().toISOString().split('T')[0],
+                time: new Date().toLocaleTimeString(),
+                timestamp: new Date().getTime()
+            };
+            
+            await this.addData('messages', messageData);
+            
+        } catch (error) {
+            console.error('Log message error:', error);
+        }
+    };
+    
+    app.sendIndividualMessage = async function() {
+        try {
+            const recipientSelect = document.getElementById('individualRecipient');
+            const selectedOption = recipientSelect.options[recipientSelect.selectedIndex];
+            const phoneNumber = selectedOption.dataset.phone;
+            const recipientName = selectedOption.dataset.name;
+            const message = document.getElementById('messageContent').value;
+            const sendMethod = document.getElementById('sendMethod').value;
+            
+            if (!phoneNumber || !message) {
+                throw new Error('فون نمبر اور پیغام ضروری ہیں');
+            }
+            
+            // Replace placeholders in message
+            let personalizedMessage = message
+                .replace('{student_name}', recipientName)
+                .replace('{month}', new Date().toLocaleDateString('ur-PK', { month: 'long' }))
+                .replace('{date}', new Date().toLocaleDateString('ur-PK'));
+            
+            this.showLoading();
+            
+            if (sendMethod === 'whatsapp' || sendMethod === 'both') {
+                this.sendWhatsAppMessage(phoneNumber, personalizedMessage);
+            }
+            
+            if (sendMethod === 'sms' || sendMethod === 'both') {
+                this.sendSMSMessage(phoneNumber, personalizedMessage);
+            }
+            
+            this.showNotification('پیغام بھیج دیا گیا', 'success');
+            document.getElementById('individualMessageForm').reset();
+            
+        } catch (error) {
+            this.showNotification('خرابی: ' + error.message, 'error');
+        } finally {
+            this.hideLoading();
+        }
+    };
+    
+    app.loadBulkRecipients = async function() {
+        try {
+            const targetGroup = document.getElementById('bulkTargetGroup').value;
+            const classSelection = document.getElementById('classSelection');
+            const recipientsList = document.getElementById('recipientsList');
+            const recipientCount = document.getElementById('recipientCount');
+            
+            classSelection.style.display = targetGroup === 'class_parents' ? 'block' : 'none';
+            
+            let recipients = [];
+            
+            switch (targetGroup) {
+                case 'all_parents':
+                    const allStudents = await this.getAllData('students');
+                    recipients = allStudents.map(s => ({
+                        name: s.name + ' کے والدین',
+                        phone: s.contact,
+                        type: 'parent'
+                    }));
+                    break;
+                    
+                case 'class_parents':
+                    const selectedClass = document.getElementById('selectedClass').value;
+                    if (selectedClass) {
+                        const classStudents = await this.getAllData('students');
+                        recipients = classStudents
+                            .filter(s => s.class === selectedClass)
+                            .map(s => ({
+                                name: s.name + ' کے والدین',
+                                phone: s.contact,
+                                type: 'parent'
+                            }));
+                    }
+                    break;
+                    
+                case 'all_teachers':
+                    const teachers = await this.getAllData('teachers');
+                    recipients = teachers.map(t => ({
+                        name: t.name,
+                        phone: t.contact,
+                        type: 'teacher'
+                    }));
+                    break;
+                    
+                case 'all_staff':
+                    const staff = await this.getAllData('users');
+                    recipients = staff.map(s => ({
+                        name: s.name,
+                        phone: s.contact || '03000000000',
+                        type: 'staff'
+                    }));
+                    break;
+                    
+                case 'fee_defaulters':
+                    const [students, fees] = await Promise.all([
+                        this.getAllData('students'),
+                        this.getAllData('fees')
+                    ]);
+                    const currentMonth = new Date().toLocaleDateString('ur-PK', { month: 'long' });
+                    const paidStudents = fees.filter(f => f.month === currentMonth).map(f => f.studentId);
+                    recipients = students
+                        .filter(s => !paidStudents.includes(s.id))
+                        .map(s => ({
+                            name: s.name + ' کے والدین (بقایا)',
+                            phone: s.contact,
+                            type: 'defaulter'
+                        }));
+                    break;
+                    
+                case 'low_attendance':
+                    const [studentsAtt, attendance] = await Promise.all([
+                        this.getAllData('students'),
+                        this.getAllData('attendance')
+                    ]);
+                    recipients = studentsAtt
+                        .filter(s => {
+                            const studentAttendance = attendance.filter(a => a.studentId === s.id);
+                            const totalDays = studentAttendance.length;
+                            const presentDays = studentAttendance.filter(a => a.status === 'حاضر').length;
+                            const percentage = totalDays > 0 ? ((presentDays / totalDays) * 100) : 0;
+                            return percentage < 75;
+                        })
+                        .map(s => ({
+                            name: s.name + ' کے والدین (کم حاضری)',
+                            phone: s.contact,
+                            type: 'low_attendance'
+                        }));
+                    break;
+            }
+            
+            recipientCount.textContent = recipients.length;
+            recipientsList.innerHTML = recipients.map(r => `
+                <div class="recipient-item">
+                    <span>${r.name}</span>
+                    <span>${r.phone}</span>
+                </div>
+            `).join('');
+            
+            // Store recipients for bulk sending
+            app.currentBulkRecipients = recipients;
+            
+        } catch (error) {
+            console.error('Load bulk recipients error:', error);
+        }
+    };
+    
+    app.sendBulkMessages = async function() {
+        try {
+            if (!app.currentBulkRecipients || app.currentBulkRecipients.length === 0) {
+                throw new Error('کوئی وصول کنندہ منتخب نہیں');
+            }
+            
+            const message = document.getElementById('bulkMessageContent').value;
+            const scheduleTime = document.getElementById('scheduleTime').value;
+            
+            if (!message) {
+                throw new Error('پیغام لکھیں');
+            }
+            
+            if (scheduleTime === 'schedule') {
+                const scheduledDateTime = document.getElementById('scheduledDateTime').value;
+                if (!scheduledDateTime) {
+                    throw new Error('وقت مقرر کریں');
+                }
+                
+                // Store for scheduled sending
+                await this.scheduleMessage(app.currentBulkRecipients, message, scheduledDateTime);
+                this.showNotification('پیغام شیڈول ہو گیا', 'success');
+                return;
+            }
+            
+            this.showLoading();
+            
+            let successCount = 0;
+            const total = app.currentBulkRecipients.length;
+            
+            for (const recipient of app.currentBulkRecipients) {
+                try {
+                    // Personalize message
+                    let personalizedMessage = message
+                        .replace('{name}', recipient.name.replace(' کے والدین', ''))
+                        .replace('{phone}', recipient.phone);
+                    
+                    // Send WhatsApp message (with delay to avoid being blocked)
+                    setTimeout(() => {
+                        this.sendWhatsAppMessage(recipient.phone, personalizedMessage);
+                    }, successCount * 2000); // 2 second delay between messages
+                    
+                    successCount++;
+                    
+                } catch (error) {
+                    console.error(`Message failed for ${recipient.name}:`, error);
+                }
+            }
+            
+            this.showNotification(`${successCount}/${total} پیغامات بھیجے گئے`, 'success');
+            document.getElementById('bulkMessageForm').reset();
+            
+        } catch (error) {
+            this.showNotification('خرابی: ' + error.message, 'error');
+        } finally {
+            this.hideLoading();
+        }
+    };
+    
+    // =================== QUICK ACTION FUNCTIONS ===================
+    
+    app.sendFeeRemindersToAll = async function() {
+        if (!confirm('کیا آپ تمام بقایا والوں کو فیس کی یاد دہانی بھیجنا چاہتے ہیں؟')) return;
+        
+        try {
+            const [students, fees] = await Promise.all([
+                this.getAllData('students'),
+                this.getAllData('fees')
+            ]);
+            
+            const currentMonth = new Date().toLocaleDateString('ur-PK', { month: 'long' });
+            const paidStudents = fees.filter(f => f.month === currentMonth).map(f => f.studentId);
+            const defaulters = students.filter(s => !paidStudents.includes(s.id));
+            
+            this.showLoading();
+            
+            for (let i = 0; i < defaulters.length; i++) {
+                const student = defaulters[i];
+                const message = `عزیز والدین، ${student.name} کی ${currentMonth} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منظوری سسٹم`;
+                
+                setTimeout(() => {
+                    this.sendWhatsAppMessage(student.contact, message);
+                }, i * 2000);
+            }
+            
+            this.showNotification(`${defaulters.length} والدین کو فیس کی یاد دہانی بھیجی گئی`, 'success');
+            
+        } catch (error) {
+            this.showNotification('خرابی: ' + error.message, 'error');
+        } finally {
+            this.hideLoading();
+        }
+    };
+    
+    app.sendAttendanceAlerts = async function() {
+        if (!confirm('کیا آپ کم حاضری والوں کو اطلاع بھیجنا چاہتے ہیں؟')) return;
+        
+        try {
+            const [students, attendance] = await Promise.all([
+                this.getAllData('students'),
+                this.getAllData('attendance')
+            ]);
+            
+            this.showLoading();
+            let alertCount = 0;
+            
+            for (let i = 0; i < students.length; i++) {
+                const student = students[i];
+                const studentAttendance = attendance.filter(a => a.studentId === student.id);
+                const totalDays = studentAttendance.length;
+                const presentDays = studentAttendance.filter(a => a.status === 'حاضر').length;
+                const percentage = totalDays > 0 ? ((presentDays / totalDays) * 100) : 0;
+                
+                if (percentage < 75) {
+                    const message = `عزیز والدین، ${student.name} کی حاضری کم ہے (${percentage.toFixed(1)}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منظوری سسٹم`;
+                    
+                    setTimeout(() => {
+                        this.sendWhatsAppMessage(student.contact, message);
+                    }, alertCount * 2000);
+                    
+                    alertCount++;
+                }
+            }
+            
+            this.showNotification(`${alertCount} والدین کو حاضری کی اطلاع بھیجی گئی`, 'success');
+            
+        } catch (error) {
+            this.showNotification('خرابی: ' + error.message, 'error');
+        } finally {
+            this.hideLoading();
+        }
+    };
+    
+    app.sendExamNotifications = async function() {
+        if (!confirm('کیا آپ آنے والے امتحانات کی اطلاع بھیجنا چاہتے ہیں؟')) return;
+        
+        try {
+            const [students, exams] = await Promise.all([
+                this.getAllData('students'),
+                this.getAllData('exams')
+            ]);
+            
+            const upcomingExams = exams.filter(exam => {
+                const examDate = new Date(exam.date);
+                const today = new Date();
+                const diffDays = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                return diffDays >= 0 && diffDays <= 7; // Next 7 days
+            });
+            
+            if (upcomingExams.length === 0) {
+                this.showNotification('اگلے 7 دنوں میں کوئی امتحان نہیں', 'info');
+                return;
+            }
+            
+            this.showLoading();
+            let notificationCount = 0;
+            
+            for (const exam of upcomingExams) {
+                const classStudents = students.filter(s => s.class === exam.class);
+                
+                for (let i = 0; i < classStudents.length; i++) {
+                    const student = classStudents[i];
+                    const message = `محترم والدین، ${student.name} کا ${exam.subject} کا امتحان ${exam.date} کو ${exam.time} بجے ہے۔ - مدرسہ منظوری سسٹم`;
+                    
+                    setTimeout(() => {
+                        this.sendWhatsAppMessage(student.contact, message);
+                    }, notificationCount * 2000);
+                    
+                    notificationCount++;
+                }
+            }
+            
+            this.showNotification(`${notificationCount} والدین کو امتحان کی اطلاع بھیجی گئی`, 'success');
+            
+        } catch (error) {
+            this.showNotification('خرابی: ' + error.message, 'error');
+        } finally {
+            this.hideLoading();
+        }
+    };
+    
+    app.sendSalarySlips = async function() {
+        if (!confirm('کیا آپ تمام ملازمین کو تنخواہ کی پرچی بھیجنا چاہتے ہیں؟')) return;
+        
+        try {
+            const salaries = await this.getAllData('salaries');
+            const currentMonth = new Date().toLocaleDateString('ur-PK', { month: 'long' });
+            const currentMonthSalaries = salaries.filter(s => s.month.includes(new Date().getFullYear()));
+            
+            this.showLoading();
+            
+            for (let i = 0; i < currentMonthSalaries.length; i++) {
+                const salary = currentMonthSalaries[i];
+                const totalAmount = salary.basicSalary + salary.allowance;
+                const message = `عزیز ${salary.employeeName}، آپ کی ${currentMonth} کی تنخواہ ${totalAmount.toLocaleString()} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منظوری سسٹم`;
+                
+                // Assuming we have phone numbers in employee data
+                const phoneNumber = '03000000000'; // You'd get this from employee record
+                
+                setTimeout(() => {
+                    this.sendWhatsAppMessage(phoneNumber, message);
+                }, i * 2000);
+            }
+            
+            this.showNotification(`${currentMonthSalaries.length} ملازمین کو تنخواہ کی پرچی بھیجی گئی`, 'success');
+            
+        } catch (error) {
+            this.showNotification('خرابی: ' + error.message, 'error');
+        } finally {
+            this.hideLoading();
+        }
+    };
+    
+    // =================== MESSAGE HISTORY ===================
+    
+    app.renderMessageHistory = function(messages) {
+        const tbody = document.querySelector('#messageHistoryTable tbody');
+        tbody.innerHTML = '';
+        
+        // Sort by most recent first
+        const sortedMessages = messages.sort((a, b) => b.timestamp - a.timestamp);
+        
+        sortedMessages.forEach(msg => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${msg.date}</td>
+                <td>${msg.time}</td>
+                <td>${msg.phoneNumber}</td>
+                <td>${msg.method}</td>
+                <td>${msg.method === 'whatsapp' ? 'واٹس ایپ' : 'SMS'}</td>
+                <td><span class="status-badge ${msg.status}">${msg.status}</span></td>
+                <td>
+                    <button class="btn btn-info btn-sm" onclick="app.viewMessage('${msg.id}')">دیکھیں</button>
+                    <button class="btn btn-secondary btn-sm" onclick="app.resendMessage('${msg.id}')">دوبارہ بھیجیں</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    };
+    
+    // =================== AUTO MESSAGE SETTINGS ===================
+    
+    app.loadAutoMessageSettings = async function() {
+        try {
+            const settings = await this.getData('settings', 'autoMessages') || {};
+            
+            document.getElementById('autoFeeReminders').checked = settings.autoFeeReminders || false;
+            document.getElementById('autoAttendanceAlerts').checked = settings.autoAttendanceAlerts || false;
+            document.getElementById('autoExamReminders').checked = settings.autoExamReminders || false;
+            document.getElementById('autoSalaryNotifications').checked = settings.autoSalaryNotifications || false;
+            document.getElementById('autoLibraryReminders').checked = settings.autoLibraryReminders || false;
+            
+        } catch (error) {
+            console.log('No auto message settings found');
+        }
+    };
+    
+    app.saveAutoMessageSettings = async function() {
+        try {
+            const settings = {
+                autoFeeReminders: document.getElementById('autoFeeReminders').checked,
+                autoAttendanceAlerts: document.getElementById('autoAttendanceAlerts').checked,
+                autoExamReminders: document.getElementById('autoExamReminders').checked,
+                autoSalaryNotifications: document.getElementById('autoSalaryNotifications').checked,
+                autoLibraryReminders: document.getElementById('autoLibraryReminders').checked,
+                updatedDate: new Date().toISOString()
+            };
+            
+            await this.updateData('settings', { key: 'autoMessages', ...settings });
+            this.showNotification('خودکار پیغامات کی ترتیبات محفوظ ہو گئیں', 'success');
+            
+            // Setup automated messaging based on settings
+            this.setupAutomatedMessaging(settings);
+            
+        } catch (error) {
+            this.showNotification('خرابی: ' + error.message, 'error');
+        }
+    };
+    
+    // =================== ADD TO LOAD MODULE FUNCTION ===================
+    
+    // Update loadModule function to include messaging
+    const originalLoadModule = app.loadModule;
+    app.loadModule = function(module) {
+        originalLoadModule.call(this, module);
+        
+        if (module === 'messaging') {
+            this.loadMessaging();
+        }
+    };
+    
+    // =================== EVENT LISTENERS ===================
+    
+    setTimeout(() => {
+        // Individual message form
+        document.getElementById('individualMessageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            app.sendIndividualMessage();
+        });
+        
+        // Bulk message form
+        document.getElementById('bulkMessageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            app.sendBulkMessages();
+        });
+        
+        // Quick message form
+        document.getElementById('quickMessageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const phoneNumber = document.getElementById('quickPhoneNumber').value;
+            const message = document.getElementById('quickMessage').value;
+            
+            app.sendWhatsAppMessage(phoneNumber, message);
+            app.showNotification('پیغام بھیج دیا گیا', 'success');
+            app.closeModal('messageModal');
+        });
+        
+        // Auto message settings form
+        document.getElementById('autoMessageSettings').addEventListener('submit', function(e) {
+            e.preventDefault();
+            app.saveAutoMessageSettings();
+        });
+        
+        // Class selection change handler
+        document.getElementById('selectedClass').addEventListener('change', function() {
+            app.loadBulkRecipients();
+        });
+        
+        // Schedule time change handler
+        document.getElementById('scheduleTime').addEventListener('change', function() {
+            const scheduleDateTime = document.getElementById('scheduleDateTime');
+            scheduleDateTime.style.display = this.value === 'schedule' ? 'block' : 'none';
+        });
+        
+    }, 1000);
+    
+    // =================== GLOBAL FUNCTIONS ===================
+    
+    window.openMessageModal = function() {
+        app.openModal('messageModal');
+    };
+    
+    // =================== ADDITIONAL STYLES ===================
+    
+    const messagingStyles = document.createElement('style');
+    messagingStyles.textContent = `
+        .template-item {
+            background: var(--darker);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .template-item h4 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        
+        .template-item p {
+            background: var(--dark);
+            padding: 10px;
+            border-radius: 5px;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        
+        .recipient-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--dark);
+            border-radius: 5px;
+            margin: 5px 0;
+            border: 1px solid #333;
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .quick-actions button {
+            text-align: right;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-badge.بھیجا_گیا {
+            background: var(--success);
+            color: white;
+        }
+        
+        .status-badge.ناکام {
+            background: var(--error);
+            color: white;
+        }
+        
+        .status-badge.منتظر {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .message-preview {
+            background: var(--dark);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        #recipientCount {
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .messaging-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .messaging-stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .messaging-stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .messaging-stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .quick-actions {
+                gap: 5px;
+            }
+            
+            .quick-actions button {
+                padding: 8px;
+                font-size: 12px;
+            }
+            
+            .recipient-item {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    `;
+    document.head.appendChild(messagingStyles);
+    
+    console.log('📱 Complete Messaging Module with WhatsApp Integration Added Successfully!');
+    console.log('✅ Features included:');
+    console.log('- Individual & Bulk Messaging');
+    console.log('- WhatsApp Web Auto-launch');
+    console.log('- SMS Integration');
+    console.log('- Message Templates');
+    console.log('- Scheduled Messages');
+    console.log('- Auto Reminders');
+    console.log('- Message History');
+    console.log('- Fee/Attendance/Exam/Salary Notifications');
+    console.log('- Bulk messaging with smart delays');
+    
+})();
+
     </script>
 </body>
 

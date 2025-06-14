@@ -12,19 +12,14 @@
     <title>مدرسہ انتظامی نظام - جامعہ اسلامیہ</title>
     <link rel="icon"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90' fill='%234CAF50'%3E🕌%3C/text%3E%3C/svg%3E">
-
     <style>
-        /* --- General Setup & Theming --- */
-
         :root {
             --bg-dark: #121212;
             --bg-surface: #1e1e1e;
             --bg-surface-2: #2a2a2a;
             --primary: #28a745;
-            /* Green */
             --primary-light: #34c759;
             --secondary: #d4af37;
-            /* Gold */
             --text-primary: #e0e0e0;
             --text-secondary: #a0a0a0;
             --border-color: #333;
@@ -46,7 +41,6 @@
         @font-face {
             font-family: 'Noto Nastaliq Urdu';
             src: url('data:font/woff2;base64,d09GMgABAAAAA...');
-            /* A real implementation would embed a font here, but it's too large for this format. We rely on system fonts. */
         }
 
         * {
@@ -73,7 +67,6 @@
             padding-right: var(--sidebar-width-collapsed);
         }
 
-        /* --- Sidebar Navigation --- */
         .sidebar {
             overflow-y: scroll;
             position: fixed;
@@ -180,7 +173,6 @@
             display: none;
         }
 
-        /* --- Main Content Area --- */
         .main-content {
             padding: 20px;
             min-height: 100vh;
@@ -235,7 +227,6 @@
             margin-left: 8px;
         }
 
-        /* --- Page specific styles --- */
         .page {
             display: none;
         }
@@ -257,7 +248,6 @@
             }
         }
 
-        /* --- Cards, Tables, Forms, Buttons (Generic Components) --- */
         .card {
             background-color: var(--bg-surface);
             border-radius: 8px;
@@ -417,7 +407,6 @@
             min-width: 200px;
         }
 
-        /* --- Modal --- */
         .modal {
             display: none;
             position: fixed;
@@ -432,7 +421,7 @@
 
         .modal-content {
             background-color: var(--bg-surface);
-            margin: 10% auto;
+            margin: 1% auto;
             padding: 0;
             border: 1px solid var(--border-color);
             width: 80%;
@@ -483,7 +472,6 @@
             text-align: left;
         }
 
-        /* --- Notification / Toast --- */
         #notification-container {
             position: fixed;
             top: 20px;
@@ -521,7 +509,6 @@
             border-color: var(--secondary);
         }
 
-        /* --- Loader --- */
         #loader {
             display: none;
             position: fixed;
@@ -550,7 +537,6 @@
             }
         }
 
-        /* --- Login Screen --- */
         #login-screen {
             position: fixed;
             top: 0;
@@ -584,7 +570,6 @@
             color: var(--text-secondary);
         }
 
-        /* --- Print Specific Styles --- */
         @media print {
             body {
                 padding-right: 0 !important;
@@ -669,7 +654,6 @@
             display: inline-block;
         }
 
-        /* --- Responsive Design --- */
         @media (max-width: 768px) {
             body {
                 padding-right: 0;
@@ -691,7 +675,6 @@
 
             .toggle-sidebar-btn {
                 display: block !important;
-                /* Make sure it's always visible on mobile */
             }
 
             .grid-container {
@@ -710,13 +693,37 @@
             border-radius: 7px;
             background: #e1ffe1;
             font-size: 15px;
+            cursor: pointer;
+        }
+
+        button.tab-btn:hover {
+            padding: 8px;
+            border-radius: 0px;
+            background: #000000;
+            font-size: 15px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            margin: 0;
+            padding-right: var(--sidebar-width);
+            transition: padding-right 0.3s ease;
+            overflow: hidden;
+        }
+
+        .main-content {
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
         }
     </style>
 </head>
 
 <body>
-
-    <!-- Login Screen -->
     <div id="login-screen">
         <div class="login-box">
             <h2>مدرسہ انتظامی نظام</h2>
@@ -736,10 +743,7 @@
             <p style="margin-top: 20px; font-size: 0.8em;">(ایڈمن: admin/admin123 | استاد: teacher/teacher123)</p>
         </div>
     </div>
-
-    <!-- App Structure (hidden until login) -->
     <div id="app-container" style="display: none;">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <span class="icon-only">🕌</span>
@@ -770,8 +774,6 @@
                 <p>ورژن 1.0</p>
             </div>
         </aside>
-
-        <!-- Main Content -->
         <main class="main-content">
             <header class="header">
                 <div class="header-left">
@@ -783,14 +785,10 @@
                             class="user-icon">👤</span></button>
                 </div>
             </header>
-
             <div id="content-area">
-                <!-- Content for each page will be injected here -->
             </div>
         </main>
     </div>
-
-    <!-- Modal Structure -->
     <div id="appModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -798,39 +796,25 @@
                 <span class="close-btn">&times;</span>
             </div>
             <div id="modal-body" class="modal-body">
-                <!-- Modal content goes here -->
             </div>
             <div id="modal-footer" class="modal-footer">
                 <button id="modal-close-btn" class="btn btn-secondary">بند کریں</button>
             </div>
         </div>
     </div>
-
-    <!-- Notification Container -->
     <div id="notification-container"></div>
-
-    <!-- Loader -->
     <div id="loader">
         <div class="spinner"></div>
     </div>
-
-    <!-- Printable Areas -->
     <div id="printable-content" class="printable-area"></div>
-
     <script>
-        // Author: Yasin Ullah, Pakistani
-        // Madrasa Management System v4.0 (Definitive & Complete)
-        // All modules are fully implemented and integrated. No placeholders.
-
         document.addEventListener('DOMContentLoaded', () => {
             const App = {
                 db: null,
-                dbName: 'MadrasaDB_v4_0', // New DB name for a clean slate
+                dbName: 'MadrasaDB_v4_0',
                 dbVersion: 1,
                 currentUser: null,
                 settings: {},
-
-                // --- INITIALIZATION & CORE --- //
                 init() {
                     this.initDB().then(() => {
                         console.log('Database initialized successfully.');
@@ -843,18 +827,12 @@
                         this.showToast('ڈیٹا بیس شروع کرنے میں ناکامی!', 'error');
                     });
                 },
-
                 setupEventListeners() {
-                    // Login
                     document.getElementById('login-form').addEventListener('submit', (e) => {
                         e.preventDefault();
                         this.handleLogin();
                     });
-
-                    // Logout
                     document.getElementById('logout-btn').addEventListener('click', () => this.handleLogout());
-
-                    // Sidebar Navigation
                     document.querySelector('.sidebar-nav').addEventListener('click', (e) => {
                         const link = e.target.closest('a');
                         if (link && link.getAttribute('href')) {
@@ -863,8 +841,6 @@
                             this.navigateTo(targetPage);
                         }
                     });
-
-                    // Sidebar Toggle
                     document.querySelector('.toggle-sidebar-btn').addEventListener('click', () => {
                         const body = document.body;
                         if (window.innerWidth <= 768) {
@@ -873,8 +849,6 @@
                             body.classList.toggle('sidebar-collapsed');
                         }
                     });
-
-                    // Modal Close Buttons
                     document.querySelector('.modal .close-btn').addEventListener('click', () => this.closeModal());
                     document.getElementById('modal-close-btn').addEventListener('click', () => this.closeModal());
                     window.addEventListener('click', (e) => {
@@ -882,21 +856,26 @@
                             this.closeModal();
                         }
                     });
-
-                    // General content area click handler for delegated events
                     document.getElementById('content-area').addEventListener('click', (e) => {
                         const actionTarget = e.target.closest('[data-action]');
                         if (!actionTarget) return;
-
                         const { action, id, module, studentId, examId, type } = actionTarget.dataset;
                         const handlerMap = {
                             students: { edit: 'showForm', delete: 'confirmDelete', view: 'viewProfile', 'generate-id': 'generateIdCard' },
                             fees: { collect: 'showCollectionForm', 'view-history': 'viewStudentFeeHistory' },
-                            books: { edit: 'showBookForm', delete: 'confirmDeleteBook' },
-                            library: { issue: 'showIssueForm', return: 'returnBook' },
+                            library: {
+                                issue: 'showIssueForm',
+                                return: 'returnBook',
+                                edit: 'showBookForm',
+                                delete: 'confirmDeleteBook'
+                            },
                             users: { edit: 'showForm', delete: 'confirmDelete' },
-                            staff: { edit: 'showStaffForm', delete: 'confirmDeleteStaff' },
-                            salary: { pay: 'showPaymentForm', payslip: 'generatePayslip' },
+                            salary: { 
+    pay: 'showPaymentForm', 
+    payslip: 'generatePayslip',
+    edit: 'showStaffForm',        // Function for editing staff
+    delete: 'confirmDeleteStaff'  // Function for deleting staff
+},
                             exams: { edit: 'showExamForm', delete: 'confirmDeleteExam', 'marks-entry': () => this.Exams.renderMarksEntrySheet(id), 'view-card': () => this.Exams.renderResultCard(studentId, examId) },
                             accounts: { edit: () => this.Accounts.showTransactionForm(type, id), delete: () => this.Accounts.confirmDeleteTransaction(type, id) },
                             transport: { edit: 'showRouteForm', delete: 'confirmDeleteRoute', unassign: 'unassignStudentFromRoute' },
@@ -904,37 +883,31 @@
                             syllabus: { delete: 'confirmDeleteSyllabus' },
                             noticeboard: { edit: 'showForm', delete: 'confirmDelete' }
                         };
-
                         if (handlerMap[module] && handlerMap[module][action]) {
                             const func = handlerMap[module][action];
                             const moduleObject = this[module.charAt(0).toUpperCase() + module.slice(1)];
                             if (typeof func === 'string') {
                                 moduleObject[func](id);
                             } else {
-                                func(); // For special cases
+                                func();
                             }
                         }
                     });
                 },
-
                 showLoader() { document.getElementById('loader').style.display = 'flex'; },
                 hideLoader() { document.getElementById('loader').style.display = 'none'; },
-
                 showToast(message, type = 'info') {
                     const container = document.getElementById('notification-container');
                     const toast = document.createElement('div');
                     toast.className = `toast ${type}`;
                     toast.textContent = message;
                     container.appendChild(toast);
-
                     setTimeout(() => toast.classList.add('show'), 10);
                     setTimeout(() => {
                         toast.classList.remove('show');
                         setTimeout(() => container.removeChild(toast), 300);
                     }, 3000);
                 },
-
-                // --- NAVIGATION --- //
                 navigateTo(page) {
                     document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => link.classList.remove('active'));
                     const activeLink = document.querySelector(`.sidebar-nav a[href="#${page}"]`);
@@ -945,7 +918,6 @@
                     } else {
                         document.getElementById('page-title').textContent = 'ڈیش بورڈ';
                     }
-
                     this.showLoader();
                     setTimeout(async () => {
                         try {
@@ -968,8 +940,6 @@
                         }
                     }, 100);
                 },
-
-                // --- LOGIN & AUTHENTICATION --- //
                 checkLoginState() {
                     const user = sessionStorage.getItem('currentUser');
                     if (user) {
@@ -984,16 +954,14 @@
                     const password = document.getElementById('password').value;
                     const errorEl = document.getElementById('login-error');
                     errorEl.style.display = 'none';
-
                     if (!username || !password) {
                         errorEl.textContent = 'صارف نام اور پاس ورڈ درکار ہیں۔';
                         errorEl.style.display = 'block';
                         return;
                     }
-
                     try {
                         const user = await this.dbAction('users', 'get', 'username', username);
-                        if (user && user.password === password) { // In a real app, use hashed passwords!
+                        if (user && user.password === password) {
                             this.currentUser = user;
                             sessionStorage.setItem('currentUser', JSON.stringify(user));
                             this.showApp();
@@ -1016,9 +984,7 @@
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('app-container').style.display = 'block';
                     document.getElementById('currentUserDisplay').textContent = `${this.currentUser.name || this.currentUser.username} (${this.currentUser.role})`;
-
                     this.injectSidebarLinks();
-
                     document.querySelectorAll('[data-role]').forEach(el => {
                         const roles = el.dataset.role.split(',');
                         if (!roles.includes(this.currentUser.role)) {
@@ -1027,7 +993,6 @@
                             el.style.display = '';
                         }
                     });
-
                     this.navigateTo('dashboard');
                 },
                 showLogin() {
@@ -1036,10 +1001,8 @@
                 },
                 injectSidebarLinks() {
                     if (document.querySelector('a[href="#salary"]')) return;
-
                     const sidebarNav = document.querySelector('.sidebar-nav');
                     const reportsLink = sidebarNav.querySelector('a[href="#reports"]').parentElement;
-
                     const newLinks = [
                         { href: '#salary', icon: '💵', text: 'تنخواہ', role: 'admin' },
                         { href: '#accounts', icon: '🧾', text: 'آمدنی و اخراجات', role: 'admin' },
@@ -1049,7 +1012,6 @@
                         { href: '#syllabus', icon: '📚', text: 'نصاب', role: 'admin,teacher' },
                         { href: '#noticeboard', icon: '📢', text: 'نوٹس بورڈ', role: 'admin,teacher,staff' },
                     ];
-
                     newLinks.forEach(linkInfo => {
                         const li = document.createElement('li');
                         li.dataset.role = linkInfo.role;
@@ -1057,8 +1019,6 @@
                         sidebarNav.insertBefore(li, reportsLink);
                     });
                 },
-
-                // --- DATABASE --- //
                 initDB() {
                     return new Promise((resolve, reject) => {
                         const request = indexedDB.open(this.dbName, this.dbVersion);
@@ -1091,14 +1051,12 @@
                                 { name: 'hostelAssignments', key: 'studentId' },
                                 { name: 'syllabus', key: 'id', autoIncrement: true, indexes: [['class_subject', ['classId', 'subjectId'], { unique: true }]] }
                             ];
-
                             objectStores.forEach(s => {
                                 if (!this.db.objectStoreNames.contains(s.name)) {
                                     const store = this.db.createObjectStore(s.name, { keyPath: s.key, autoIncrement: s.autoIncrement });
                                     if (s.indexes) s.indexes.forEach(idx => store.createIndex(...idx));
                                 }
                             });
-
                             const transaction = e.target.transaction;
                             transaction.oncomplete = () => this.seedData().then(() => console.log('Seeding complete.')).catch(err => console.error('Seeding error:', err));
                         };
@@ -1166,7 +1124,6 @@
                         'hostelAssignments': [{ studentId: 2, roomId: 1 }],
                         'syllabus': [{ classId: 2, subjectId: 2, title: 'عربی گرامر - ششماہی', details: 'ابواب 1 تا 5' }]
                     };
-
                     for (const storeName in storesToSeed) {
                         try {
                             const count = await this.dbAction(storeName, 'count');
@@ -1186,11 +1143,26 @@
                         const transaction = this.db.transaction(storeName, mode);
                         const store = transaction.objectStore(storeName);
                         let request;
-                        if (action === 'bulkAdd') { const [data] = args; data.forEach(item => store.add(item)); request = {}; }
-                        else if (action === 'get' && args.length === 2) { const [indexName, key] = args; request = store.index(indexName).get(key); }
-                        else { request = store[action](...args); }
+                        let indexName = null;
+                        if (args.length > 0 && typeof args[args.length - 1] === 'string') {
+                            const potentialIndexName = args[args.length - 1];
+                            if (store.indexNames.contains(potentialIndexName)) {
+                                indexName = args.pop();
+                            }
+                        }
+                        const target = indexName ? store.index(indexName) : store;
+                        if (action === 'bulkAdd') {
+                            const [data] = args;
+                            data.forEach(item => store.add(item));
+                            request = {};
+                        } else {
+                            request = target[action](...args);
+                        }
                         transaction.oncomplete = () => action === 'bulkAdd' ? resolve() : resolve(request.result);
-                        transaction.onerror = (e) => { console.error(`DB Action Error (${storeName}, ${action}):`, e.target.error); reject(e.target.error); };
+                        transaction.onerror = (e) => {
+                            console.error(`DB Action Error (${storeName}, ${action}):`, e.target.error);
+                            reject(e.target.error);
+                        };
                     });
                 },
                 async loadSettings() {
@@ -1218,9 +1190,6 @@
                     document.getElementById('appModal').style.display = 'none';
                     document.getElementById('modal-body').innerHTML = '';
                 },
-
-                // --- ALL MODULES (COMPLETE) --- //
-
                 Dashboard: {
                     async render() {
                         const [studentCount, staffCount, allFees, allAttendance, lastNotice] = await Promise.all([
@@ -1230,13 +1199,10 @@
                             App.dbAction('attendance', 'getAll'),
                             App.dbAction('notices', 'getAll').then(notices => notices.sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate))[0])
                         ]);
-
                         const dueFees = allFees.filter(f => f.status !== 'paid');
                         const totalDue = dueFees.reduce((sum, fee) => sum + (fee.amount - fee.paidAmount), 0);
-
                         const todayStr = new Date().toISOString().split('T')[0];
                         const presentToday = allAttendance.filter(a => a.date === todayStr && a.status === 'present').length;
-
                         return `
                         <div class="grid-container">
                             <div class="stats-card"><div class="stats-card-icon">👨‍🎓</div><div class="stats-card-info"><h4>${studentCount}</h4><p>کل طلباء</p></div></div>
@@ -1253,13 +1219,10 @@
                     async postRender() {
                         const currentMonth = new Date().getMonth() + 1;
                         const currentYear = new Date().getFullYear();
-
                         const allIncome = await App.dbAction('income', 'getAll');
                         const allExpenses = await App.dbAction('expenses', 'getAll');
-
                         const monthlyIncome = allIncome.filter(i => new Date(i.date).getMonth() + 1 === currentMonth && new Date(i.date).getFullYear() === currentYear).reduce((sum, i) => sum + i.amount, 0);
                         const monthlyExpense = allExpenses.filter(e => new Date(e.date).getMonth() + 1 === currentMonth && new Date(e.date).getFullYear() === currentYear).reduce((sum, e) => sum + e.amount, 0);
-
                         const chartData = { labels: ['آمدنی', 'اخراجات'], datasets: [{ data: [monthlyIncome, monthlyExpense], colors: ['#28a745', '#dc3545'] }] };
                         this.createBarChart('income-expense-chart-container', chartData);
                     },
@@ -1275,7 +1238,6 @@
                         container.innerHTML = `<div style="padding: 10px;">${bars}</div>`;
                     }
                 },
-
                 Students: {
                     render() {
                         return `
@@ -1309,38 +1271,44 @@
                     },
                     async postRender() {
                         await this.renderTable();
+                        const searchInput = document.getElementById('student-search');
+                        const classFilterSelect = document.getElementById('student-class-filter');
+                        if (searchInput && !searchInput.dataset.listenerAttached) {
+                            searchInput.addEventListener('input', (e) => this.renderTable(e.target.value, classFilterSelect.value));
+                            searchInput.dataset.listenerAttached = 'true';
+                        }
+                        if (classFilterSelect && !classFilterSelect.dataset.listenerAttached) {
+                            classFilterSelect.addEventListener('change', (e) => this.renderTable(searchInput.value, e.target.value));
+                            classFilterSelect.dataset.listenerAttached = 'true';
+                        }
                     },
                     async renderTable(searchTerm = '', classIdFilter = '') {
                         App.showLoader();
                         const tableBody = document.querySelector('#students-table tbody');
                         const classFilter = document.getElementById('student-class-filter');
-
-                        if (classFilter.options.length <= 1) {
+                        if (classFilter && classFilter.options.length <= 1) {
                             const classes = await App.dbAction('classes', 'getAll');
                             classFilter.innerHTML = `<option value="">تمام کلاسز</option>` + classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
                         }
-
                         let students = await App.dbAction('students', 'getAll');
                         const classes = await App.dbAction('classes', 'getAll');
                         const classMap = new Map(classes.map(c => [c.id, c.name]));
-
                         if (searchTerm) {
                             students = students.filter(s =>
-                                s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                s.rollNo.includes(searchTerm)
+                                (s.name && s.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                (s.rollNo && s.rollNo.includes(searchTerm))
                             );
                         }
-                        if (classIdFilter) {
+                        if (classIdFilter && classIdFilter !== "") {
                             students = students.filter(s => s.classId == classIdFilter);
                         }
-
                         tableBody.innerHTML = students.map(student => `
                         <tr>
                             <td>${student.rollNo}</td>
                             <td>${student.name}</td>
                             <td>${student.fatherName}</td>
                             <td>${classMap.get(student.classId) || 'N/A'}</td>
-                            <td>${student.contact}</td>
+                            <td>${student.contact || 'N/A'}</td>
                             <td class="action-btns">
                                 <button class="btn btn-secondary btn-icon" data-action="view" data-module="students" data-id="${student.id}" title="پروفائل دیکھیں">👁️</button>
                                 <button class="btn btn-primary btn-icon" data-action="edit" data-module="students" data-id="${student.id}" title="ترمیم کریں">✏️</button>
@@ -1349,16 +1317,22 @@
                         </tr>
                     `).join('');
                         App.hideLoader();
-
-                        document.getElementById('student-search').oninput = (e) => this.renderTable(e.target.value, document.getElementById('student-class-filter').value);
-                        document.getElementById('student-class-filter').onchange = (e) => this.renderTable(document.getElementById('student-search').value, e.target.value);
                     },
                     async showForm(id = null) {
-                        const student = id ? await App.dbAction('students', 'get', parseInt(id)) : {};
+                        let student = {};
                         const classes = await App.dbAction('classes', 'getAll');
+                        if (id) {
+                            const studentId = parseInt(id);
+                            if (!isNaN(studentId)) {
+                                student = await App.dbAction('students', 'get', studentId) || {};
+                            } else {
+                                console.error("Invalid ID passed to showForm for student:", id);
+                                App.showToast("غلط طالب علم ID۔ ترمیم کے لیے لوڈ نہیں کیا جا سکا۔", "error");
+                                return;
+                            }
+                        }
                         const classOptions = classes.map(c => `<option value="${c.id}" ${student.classId == c.id ? 'selected' : ''}>${c.name}</option>`).join('');
-
-                        const title = id ? 'طالب علم کی معلومات میں ترمیم' : 'نیا طالب علم شامل کریں';
+                        const title = student.id ? 'طالب علم کی معلومات میں ترمیم' : 'نیا طالب علم شامل کریں';
                         const formHtml = `
                         <form id="student-form">
                             <input type="hidden" name="id" value="${student.id || ''}">
@@ -1380,20 +1354,43 @@
                         if (!form.checkValidity()) { form.reportValidity(); return; }
                         const formData = new FormData(form);
                         const studentData = Object.fromEntries(formData.entries());
-                        studentData.id = studentData.id ? parseInt(studentData.id) : undefined;
-                        studentData.classId = parseInt(studentData.classId);
-
+                        const formIdString = studentData.id;
+                        if (formIdString && formIdString !== "") {
+                            studentData.id = parseInt(formIdString);
+                            if (isNaN(studentData.id)) {
+                                console.error("Student ID from form ('" + formIdString + "') is invalid after parsing.");
+                                App.showToast('طالب علم ID میں خرابی: ID غیر عددی ہے۔', 'error');
+                                return;
+                            }
+                        } else {
+                            delete studentData.id;
+                        }
+                        if (studentData.classId && studentData.classId !== "") {
+                            studentData.classId = parseInt(studentData.classId);
+                            if (isNaN(studentData.classId)) {
+                                console.error("Class ID from form ('" + studentData.classId + "') is invalid after parsing.");
+                                App.showToast('کلاس ID میں خرابی: ID غیر عددی ہے۔', 'error');
+                                return;
+                            }
+                        } else {
+                            console.error("Class ID is missing or empty.");
+                            App.showToast('کلاس منتخب کرنا ضروری ہے۔', 'error');
+                            return;
+                        }
                         try {
                             await App.dbAction('students', 'put', studentData);
-                            App.showToast(`طالب علم کی معلومات ${studentData.id ? 'اپ ڈیٹ' : 'محفوظ'} ہو گئیں!`, 'success');
+                            const actionType = (formIdString && formIdString !== "") ? 'اپ ڈیٹ' : 'محفوظ';
+                            App.showToast(`طالب علم کی معلومات ${actionType} ہو گئیں!`, 'success');
                             App.closeModal();
-                            this.renderTable();
+                            const searchVal = document.getElementById('student-search')?.value || '';
+                            const filterVal = document.getElementById('student-class-filter')?.value || '';
+                            this.renderTable(searchVal, filterVal);
                         } catch (err) {
                             console.error('Error saving student:', err);
                             if (err.name === 'ConstraintError') {
                                 App.showToast('یہ رول نمبر پہلے سے موجود ہے۔', 'error');
                             } else {
-                                App.showToast('طالب علم کو محفوظ کرنے میں ناکامی!', 'error');
+                                App.showToast(`طالب علم کو محفوظ کرنے میں ناکامی! (${err.message || err.name})`, 'error');
                             }
                         }
                     },
@@ -1408,7 +1405,9 @@
                             await App.dbAction('students', 'delete', parseInt(id));
                             App.showToast('طالب علم کو کامیابی سے حذف کر دیا گیا!', 'success');
                             App.closeModal();
-                            this.renderTable();
+                            const searchVal = document.getElementById('student-search')?.value || '';
+                            const filterVal = document.getElementById('student-class-filter')?.value || '';
+                            this.renderTable(searchVal, filterVal);
                         } catch (err) {
                             console.error('Error deleting student:', err);
                             App.showToast('طالب علم کو حذف کرنے میں ناکامی!', 'error');
@@ -1416,14 +1415,12 @@
                     },
                     async viewProfile(id) {
                         const student = await App.dbAction('students', 'get', parseInt(id));
-                        if (!student) return;
-
+                        if (!student) { App.showToast('طالب علم نہیں ملا!', 'error'); return; }
                         const studentClass = await App.dbAction('classes', 'get', student.classId);
-
                         const profileHtml = `
                         <div class="card">
                             <div class="card-header"><h3 class="card-title">طالب علم پروفائل</h3><div><button class="btn btn-secondary" data-action="generate-id" data-module="students" data-id="${student.id}">ID کارڈ بنائیں</button><button class="btn btn-primary" onclick="App.navigateTo('students')">واپس</button></div></div>
-                            <h4>${student.name}</h4><p>والد کا نام: ${student.fatherName}</p><p>کلاس: ${studentClass.name}</p><p>رول نمبر: ${student.rollNo}</p><p>رابطہ نمبر: ${student.contact}</p><p>پتہ: ${student.address}</p><p>داخلہ کی تاریخ: ${new Date(student.admissionDate).toLocaleDateString('ur-PK')}</p>
+                            <h4>${student.name}</h4><p>والد کا نام: ${student.fatherName}</p><p>کلاس: ${studentClass ? studentClass.name : 'N/A'}</p><p>رول نمبر: ${student.rollNo}</p><p>رابطہ نمبر: ${student.contact || 'N/A'}</p><p>پتہ: ${student.address || 'N/A'}</p><p>داخلہ کی تاریخ: ${student.admissionDate ? new Date(student.admissionDate).toLocaleDateString('ur-PK') : 'N/A'}</p>
                         </div>
                         <div class="card"><div class="card-header"><h3 class="card-title">فیس کی تاریخ</h3></div><div id="student-fee-history"></div></div>
                         <div class="card"><div class="card-header"><h3 class="card-title">لائبریری کی تاریخ</h3></div><div id="student-library-history"></div></div>`;
@@ -1433,6 +1430,7 @@
                     },
                     async generateIdCard(id) {
                         const student = await App.dbAction('students', 'get', parseInt(id));
+                        if (!student) { App.showToast('طالب علم نہیں ملا!', 'error'); return; }
                         const studentClass = await App.dbAction('classes', 'get', student.classId);
                         const cardHtml = `
                         <div id="printable-id-card">
@@ -1440,14 +1438,13 @@
                                 <h3 style="background: #28a745; color: white; padding: 5px; margin: -15px -15px 10px -15px;">${App.settings.schoolName || ''}</h3>
                                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E👤%3C/text%3E%3C/svg%3E" width="80" height="80" alt="Photo" style="border: 2px solid #ccc; border-radius: 50%;">
                                 <h4 style="margin: 10px 0 5px 0;">${student.name}</h4>
-                                <p style="font-size: 0.9em;">والد: ${student.fatherName}</p><p style="font-size: 0.9em;">کلاس: ${studentClass.name}</p><p style="font-size: 0.9em;">رول نمبر: ${student.rollNo}</p><hr style="margin: 10px 0;">
+                                <p style="font-size: 0.9em;">والد: ${student.fatherName}</p><p style="font-size: 0.9em;">کلاس: ${studentClass ? studentClass.name : 'N/A'}</p><p style="font-size: 0.9em;">رول نمبر: ${student.rollNo}</p><hr style="margin: 10px 0;">
                                 <p style="font-size: 0.8em;"><b>پتہ:</b> ${App.settings.schoolAddress || ''}</p><p style="font-size: 0.8em;"><b>رابطہ:</b> ${App.settings.schoolContact || ''}</p><p style="font-size: 0.8em; margin-top: 10px;"><b>سال:</b> ${App.settings.academicYear || ''}</p>
                             </div>
                         </div>`;
                         App.printContent(cardHtml, 'ID کارڈ');
                     }
                 },
-
                 Fees: {
                     render() {
                         return `
@@ -1474,16 +1471,13 @@
                             const classes = await App.dbAction('classes', 'getAll');
                             classFilterEl.innerHTML = `<option value="">تمام کلاسز</option>` + classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
                         }
-
                         const searchTerm = document.getElementById('fee-student-search').value;
                         const classId = document.getElementById('fee-class-filter').value;
                         const status = document.getElementById('fee-status-filter').value;
-
                         let fees = await App.dbAction('fees', 'getAll');
                         const [students, classes] = await Promise.all([App.dbAction('students', 'getAll'), App.dbAction('classes', 'getAll')]);
                         const studentMap = new Map(students.map(s => [s.id, s]));
                         const classMap = new Map(classes.map(c => [c.id, c.name]));
-
                         if (status) fees = fees.filter(f => f.status === status);
                         if (classId) fees = fees.filter(f => f.classId == classId);
                         if (searchTerm) {
@@ -1492,7 +1486,6 @@
                                 return student && (student.name.includes(searchTerm) || student.rollNo.includes(searchTerm));
                             });
                         }
-
                         const tableBody = document.querySelector('#fees-table tbody');
                         tableBody.innerHTML = fees.map(fee => {
                             const student = studentMap.get(fee.studentId);
@@ -1505,12 +1498,10 @@
                                 <td class="action-btns"><button class="btn btn-primary" data-action="collect" data-module="fees" data-id="${fee.id}">فیس وصول کریں</button><button class="btn btn-secondary" data-action="view-history" data-module="fees" data-id="${fee.studentId}">تاریخ دیکھیں</button></td>
                             </tr>`;
                         }).join('');
-
                         document.getElementById('fee-student-search').oninput = () => this.renderTable();
                         document.getElementById('fee-class-filter').onchange = () => this.renderTable();
                         document.getElementById('fee-status-filter').onchange = () => this.renderTable();
                         document.getElementById('generate-monthly-fees').onclick = () => this.confirmGenerateMonthlyFees();
-
                         App.hideLoader();
                     },
                     getFeeStatusUrdu(status) {
@@ -1519,7 +1510,6 @@
                     async showCollectionForm(feeId) {
                         const fee = await App.dbAction('fees', 'get', parseInt(feeId));
                         const student = await App.dbAction('students', 'get', fee.studentId);
-
                         const title = `فیس وصولی - ${student.name}`;
                         const formHtml = `
                         <form id="fee-collection-form">
@@ -1534,24 +1524,17 @@
                     async collectFee(feeId) {
                         const form = document.getElementById('fee-collection-form');
                         if (!form.checkValidity()) { form.reportValidity(); return; }
-
                         const amountToPay = parseFloat(document.getElementById('amount-to-pay').value);
                         const paymentMethod = document.getElementById('payment-method').value;
-
                         const fee = await App.dbAction('fees', 'get', feeId);
                         fee.paidAmount += amountToPay;
                         fee.paymentDate = new Date().toISOString().split('T')[0];
                         fee.paymentMethod = paymentMethod;
-
                         if (fee.paidAmount >= fee.amount) { fee.status = 'paid'; }
                         else if (fee.paidAmount > 0) { fee.status = 'partial'; }
-
                         await App.dbAction('fees', 'put', fee);
-
-                        // Add to income
                         const incomeRecord = { category: 'فیس', amount: amountToPay, date: fee.paymentDate, description: `Student ${fee.studentId} fee for ${fee.month}/${fee.year}` };
                         await App.dbAction('income', 'add', incomeRecord);
-
                         App.showToast('فیس کامیابی سے وصول کی گئی!', 'success');
                         App.closeModal();
                         this.renderTable();
@@ -1560,7 +1543,6 @@
                     async printReceipt(feeId, paidNow) {
                         const fee = await App.dbAction('fees', 'get', feeId);
                         const [student, sClass] = await Promise.all([App.dbAction('students', 'get', fee.studentId), App.dbAction('classes', 'get', fee.classId)]);
-
                         const receiptHtml = `
                         <div id="printable-receipt">
                             <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;"><h2 style="margin:0;">${App.settings.schoolName || 'جامعہ اسلامیہ'}</h2><p style="margin:5px 0;">${App.settings.schoolAddress || ''}</p><p style="margin:5px 0;">رابطہ: ${App.settings.schoolContact || ''}</p><h3 style="margin-top: 10px;">فیس کی رسید</h3></div>
@@ -1573,8 +1555,8 @@
                     async viewStudentFeeHistory(studentId, containerId = null) {
                         const fees = await App.dbAction('fees', 'getAll', IDBKeyRange.only(parseInt(studentId)), 'studentId');
                         const historyHtml = `<div class="table-responsive"><table style="width: 100%;"><thead><tr><th>مہینہ/سال</th><th>کل فیس</th><th>ادا شدہ</th><th>بقایا</th><th>حیثیت</th><th>ادائیگی کی تاریخ</th></tr></thead><tbody>
-                        ${fees.map(f => `<tr><td>${f.month}/${f.year}</td><td>${f.amount}</td><td>${f.paidAmount}</td><td>${f.amount - f.paidAmount}</td><td>${this.getFeeStatusUrdu(f.status)}</td><td>${f.paymentDate ? new Date(f.paymentDate).toLocaleDateString('ur-PK') : 'N/A'}</td></tr>`).join('')}
-                    </tbody></table></div>`;
+        ${fees.map(f => `<tr><td>${f.month}/${f.year}</td><td>${f.amount}</td><td>${f.paidAmount}</td><td>${f.amount - f.paidAmount}</td><td>${this.getFeeStatusUrdu(f.status)}</td><td>${f.paymentDate ? new Date(f.paymentDate).toLocaleDateString('ur-PK') : 'N/A'}</td></tr>`).join('')}
+    </tbody></table></div>`;
                         if (containerId) {
                             document.getElementById(containerId).innerHTML = historyHtml;
                         } else {
@@ -1612,7 +1594,6 @@
                         this.renderTable();
                     }
                 },
-
                 Salary: {
                     render() {
                         return `<div class="card">
@@ -1642,65 +1623,125 @@
                             const year = today.getFullYear();
                             contentEl.innerHTML = `<div class="search-filter-box"><label>مہینہ منتخب کریں:</label><input type="month" id="salary-month-selector" class="form-control" value="${year}-${String(month).padStart(2, '0')}"></div><div class="table-responsive"><table id="salary-payments-table"><thead><tr><th>اسٹاف کا نام</th><th>تنخواہ</th><th>حیثیت</th><th>ادائیگی کی تاریخ</th><th>کارروائیاں</th></tr></thead><tbody></tbody></table></div>`;
                             await this.renderPaymentsTable();
-                            document.getElementById('salary-month-selector').onchange = () => this.renderPaymentsTable();
+                            const monthSelector = document.getElementById('salary-month-selector');
+                            if (monthSelector) monthSelector.onchange = () => this.renderPaymentsTable();
                         } else if (tab === 'staff') {
                             contentEl.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h4>اسٹاف کی فہرست</h4><button class="btn btn-primary" id="add-staff-btn">نیا اسٹاف شامل کریں</button></div><div class="table-responsive"><table id="staff-table"><thead><tr><th>نام</th><th>عہدہ</th><th>تنخواہ</th><th>رابطہ</th><th>کارروائیاں</th></tr></thead><tbody></tbody></table></div>`;
                             await this.renderStaffTable();
-                            document.getElementById('add-staff-btn').onclick = () => this.showStaffForm();
+                            const addStaffBtn = document.getElementById('add-staff-btn');
+                            if (addStaffBtn) addStaffBtn.onclick = () => this.showStaffForm();
                         }
                         App.hideLoader();
                     },
                     async renderStaffTable() {
                         const staff = await App.dbAction('staff', 'getAll');
                         const tableBody = document.querySelector('#staff-table tbody');
-                        tableBody.innerHTML = staff.map(s => `<tr><td>${s.name}</td><td>${s.designation}</td><td>${s.salary.toLocaleString()}</td><td>${s.contact}</td><td class="action-btns"><button class="btn btn-primary btn-icon" data-action="edit" data-module="staff" data-id="${s.id}">✏️</button><button class="btn btn-danger btn-icon" data-action="delete" data-module="staff" data-id="${s.id}">🗑️</button></td></tr>`).join('');
+                        if (tableBody) {
+                            tableBody.innerHTML = staff.map(s => `<tr><td>${s.name}</td><td>${s.designation}</td><td>${s.salary ? s.salary.toLocaleString() : 'N/A'}</td><td>${s.contact || 'N/A'}</td><td class="action-btns"><button class="btn btn-primary btn-icon" data-action="edit" data-module="salary" data-id="${s.id}">✏️</button><button class="btn btn-danger btn-icon" data-action="delete" data-module="salary" data-id="${s.id}">🗑️</button></td></tr>`).join('');
+                        }
                     },
                     async renderPaymentsTable() {
-                        const [year, month] = document.getElementById('salary-month-selector').value.split('-').map(Number);
-                        const staffList = await App.dbAction('staff', 'getAll');
-                        const paidSalaries = await App.dbAction('salaries', 'getAll');
+                        const monthSelector = document.getElementById('salary-month-selector');
+                        if (!monthSelector || !monthSelector.value) {
+                            App.hideLoader();
+                            return;
+                        }
+                        const [year, month] = monthSelector.value.split('-').map(Number);
+                        const [staffList, paidSalaries] = await Promise.all([App.dbAction('staff', 'getAll'), App.dbAction('salaries', 'getAll')]);
                         const tableBody = document.querySelector('#salary-payments-table tbody');
-                        tableBody.innerHTML = staffList.map(staff => {
-                            const salaryRecord = paidSalaries.find(s => s.staffId === staff.id && s.month === month && s.year === year);
-                            const status = salaryRecord ? salaryRecord.status : 'unpaid';
-                            const statusText = status === 'paid' ? 'ادا شدہ' : 'واجب الادا';
-                            const statusColor = status === 'paid' ? 'var(--success)' : 'var(--danger)';
-                            return `<tr><td>${staff.name}</td><td>${staff.salary.toLocaleString()}</td><td style="color: ${statusColor};">${statusText}</td><td>${salaryRecord?.paymentDate || '---'}</td><td class="action-btns">${status === 'unpaid' ? `<button class="btn btn-primary" data-action="pay" data-module="salary" data-id="${staff.id}">تنخواہ ادا کریں</button>` : ''}${status === 'paid' ? `<button class="btn btn-secondary" data-action="payslip" data-module="salary" data-id="${salaryRecord.id}">پے سلپ</button>` : ''}</td></tr>`;
-                        }).join('');
+                        if (tableBody) {
+                            tableBody.innerHTML = staffList.map(staffMember => {
+                                const salaryRecord = paidSalaries.find(s => s.staffId === staffMember.id && s.month === month && s.year === year);
+                                const status = salaryRecord ? salaryRecord.status : 'unpaid';
+                                const statusText = status === 'paid' ? 'ادا شدہ' : 'واجب الادا';
+                                const statusColor = status === 'paid' ? 'var(--success)' : 'var(--danger)';
+                                const paymentDate = App.formatDate(salaryRecord?.paymentDate, '---', `Salary Record ID ${salaryRecord?.id}`);
+                                const actionBtn = status === 'unpaid'
+                                    ? `<button class="btn btn-primary" data-action="pay" data-module="salary" data-id="${staffMember.id}">تنخواہ ادا کریں</button>`
+                                    : `<button class="btn btn-secondary" data-action="payslip" data-module="salary" data-id="${salaryRecord.id}">پے سلپ</button>`;
+                                return `<tr>
+                                    <td>${staffMember.name}</td>
+                                    <td>${staffMember.salary ? staffMember.salary.toLocaleString() : 'N/A'}</td>
+                                    <td style="color: ${statusColor};">${statusText}</td>
+                                    <td>${paymentDate}</td>
+                                    <td class="action-btns">${actionBtn}</td>
+                                </tr>`;
+                            }).join('');
+                        }
                     },
                     async showStaffForm(id = null) {
-                        const staff = id ? await App.dbAction('staff', 'get', parseInt(id)) : {};
-                        const title = id ? 'اسٹاف میں ترمیم کریں' : 'نیا اسٹاف شامل کریں';
-                        const formHtml = `<form id="staff-form"><input type="hidden" name="id" value="${staff.id || ''}"><div class="form-group"><label>نام</label><input type="text" name="name" class="form-control" value="${staff.name || ''}" required></div><div class="form-group"><label>عہدہ</label><input type="text" name="designation" class="form-control" value="${staff.designation || ''}" required></div><div class="form-group"><label>بنیادی تنخواہ</label><input type="number" name="salary" class="form-control" value="${staff.salary || ''}" required></div><div class="form-group"><label>رابطہ</label><input type="text" name="contact" class="form-control" value="${staff.contact || ''}"></div><div class="form-group"><label>شمولیت کی تاریخ</label><input type="date" name="joinDate" class="form-control" value="${staff.joinDate || new Date().toISOString().split('T')[0]}" required></div></form>`;
+                        let staffMember = {};
+                        if (id) {
+                            const staffId = parseInt(id);
+                            if (!isNaN(staffId)) {
+                                staffMember = await App.dbAction('staff', 'get', staffId) || {};
+                            } else {
+                                App.showToast("غلط اسٹاف ID", "error");
+                                return;
+                            }
+                        }
+                        const title = staffMember.id ? 'اسٹاف میں ترمیم کریں' : 'نیا اسٹاف شامل کریں';
+                        const formHtml = `<form id="staff-form"><input type="hidden" name="id" value="${staffMember.id || ''}"><div class="form-group"><label>نام</label><input type="text" name="name" class="form-control" value="${staffMember.name || ''}" required></div><div class="form-group"><label>عہدہ</label><input type="text" name="designation" class="form-control" value="${staffMember.designation || ''}" required></div><div class="form-group"><label>بنیادی تنخواہ</label><input type="number" name="salary" class="form-control" value="${staffMember.salary || ''}" min="0" required></div><div class="form-group"><label>رابطہ</label><input type="text" name="contact" class="form-control" value="${staffMember.contact || ''}"></div><div class="form-group"><label>شمولیت کی تاریخ</label><input type="date" name="joinDate" class="form-control" value="${staffMember.joinDate || new Date().toISOString().split('T')[0]}" required></div></form>`;
                         const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">منسوخ</button><button class="btn btn-primary" id="save-staff-btn">محفوظ کریں</button>`;
                         App.showModal(title, formHtml, footer);
-                        document.getElementById('save-staff-btn').onclick = () => this.saveStaffForm();
+                        const saveBtn = document.getElementById('save-staff-btn');
+                        if (saveBtn) saveBtn.onclick = () => this.saveStaffForm();
                     },
                     async saveStaffForm() {
                         const form = document.getElementById('staff-form');
                         if (!form.checkValidity()) { form.reportValidity(); return; }
                         const formData = new FormData(form);
                         const data = Object.fromEntries(formData.entries());
-                        data.id = data.id ? parseInt(data.id) : undefined;
+                        const formIdString = data.id;
+                        if (formIdString && formIdString !== "") {
+                            data.id = parseInt(formIdString);
+                            if (isNaN(data.id)) {
+                                App.showToast('اسٹاف ID میں خرابی: ID غیر عددی ہے۔', 'error');
+                                return;
+                            }
+                        } else {
+                            delete data.id;
+                        }
                         data.salary = parseFloat(data.salary);
-                        await App.dbAction('staff', 'put', data);
-                        App.showToast('اسٹاف کی معلومات محفوظ ہوگئیں!', 'success');
-                        App.closeModal();
-                        this.renderStaffTable();
+                        if (isNaN(data.salary) || data.salary < 0) {
+                            App.showToast('تنخواہ درست ہونی چاہیے۔', 'error');
+                            return;
+                        }
+                        try {
+                            await App.dbAction('staff', 'put', data);
+                            App.showToast('اسٹاف کی معلومات محفوظ ہوگئیں!', 'success');
+                            App.closeModal();
+                            this.renderStaffTable();
+                            this.renderPaymentsTable();
+                        } catch (err) {
+                            console.error('Error saving staff:', err);
+                            App.showToast(`اسٹاف کو محفوظ کرنے میں ناکامی! (${err.message || err.name})`, 'error');
+                        }
                     },
                     async showPaymentForm(staffId) {
-                        const staff = await App.dbAction('staff', 'get', parseInt(staffId));
-                        const [year, month] = document.getElementById('salary-month-selector').value.split('-').map(Number);
-                        const title = `${staff.name} کی تنخواہ کی ادائیگی`;
-                        const body = `<p><strong>مہینہ:</strong> ${month}/${year}</p><p><strong>تنخواہ:</strong> ${staff.salary.toLocaleString()} PKR</p><p>کیا آپ اس تنخواہ کی ادائیگی کی تصدیق کرتے ہیں؟</p>`;
+                        const staffMember = await App.dbAction('staff', 'get', parseInt(staffId));
+                        if (!staffMember) { App.showToast("اسٹاف ممبر نہیں ملا!", "error"); return; }
+                        const monthSelector = document.getElementById('salary-month-selector');
+                        if (!monthSelector || !monthSelector.value) { App.showToast("مہینہ منتخب کریں!", "error"); return; }
+                        const [year, month] = monthSelector.value.split('-').map(Number);
+                        const title = `${staffMember.name} کی تنخواہ کی ادائیگی`;
+                        const body = `<p><strong>مہینہ:</strong> ${month}/${year}</p><p><strong>تنخواہ:</strong> ${staffMember.salary ? staffMember.salary.toLocaleString() : 'N/A'} PKR</p><p>کیا آپ اس تنخواہ کی ادائیگی کی تصدیق کرتے ہیں؟</p>`;
                         const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">منسوخ</button><button class="btn btn-primary" id="confirm-pay-btn">ہاں، ادائیگی کریں</button>`;
                         App.showModal(title, body, footer);
-                        document.getElementById('confirm-pay-btn').onclick = () => this.processPayment(staff.id, staff.salary, month, year);
+                        const confirmBtn = document.getElementById('confirm-pay-btn');
+                        if (confirmBtn) confirmBtn.onclick = () => this.processPayment(staffMember.id, staffMember.salary, month, year);
                     },
                     async processPayment(staffId, amount, month, year) {
-                        const salaryRecord = { staffId, amount, month, year, status: 'paid', paymentDate: new Date().toISOString().split('T')[0] };
+                        const paymentDate = new Date().toISOString().split('T')[0];
+                        const salaryRecord = { staffId, amount, month, year, status: 'paid', paymentDate: paymentDate };
                         await App.dbAction('salaries', 'add', salaryRecord);
-                        const expenseRecord = { category: 'تنخواہیں', amount, date: new Date().toISOString().split('T')[0], description: `Staff ID ${staffId} salary for ${month}/${year}` }
+                        const staffMember = await App.dbAction('staff', 'get', staffId);
+                        const expenseRecord = {
+                            category: 'تنخواہیں',
+                            amount,
+                            date: paymentDate,
+                            description: `Staff: ${staffMember ? staffMember.name : 'ID ' + staffId} salary for ${month}/${year}`
+                        };
                         await App.dbAction('expenses', 'add', expenseRecord);
                         App.showToast('تنخواہ کامیابی سے ادا کر دی گئی!', 'success');
                         App.closeModal();
@@ -1708,24 +1749,32 @@
                     },
                     async generatePayslip(salaryId) {
                         const salary = await App.dbAction('salaries', 'get', parseInt(salaryId));
-                        const staff = await App.dbAction('staff', 'get', salary.staffId);
-                        const payslipHtml = `<div id="printable-payslip"><h2 style="text-align:center;">${App.settings.schoolName || ''}</h2><h3 style="text-align:center;">پے سلپ</h3><p><strong>مہینہ:</strong> ${salary.month}/${salary.year}</p><p><strong>اسٹاف کا نام:</strong> ${staff.name}</p><p><strong>عہدہ:</strong> ${staff.designation}</p><hr><table style="width:100%"><tr><td>بنیادی تنخواہ:</td><td style="text-align:left;">${staff.salary.toLocaleString()} PKR</td></tr></table><hr><p><strong>کل ادا شدہ: ${salary.amount.toLocaleString()} PKR</strong></p><p><small>ادائیگی کی تاریخ: ${salary.paymentDate}</small></p></div>`;
+                        if (!salary) { App.showToast("تنخواہ کا ریکارڈ نہیں ملا!", "error"); return; }
+                        const staffMember = await App.dbAction('staff', 'get', salary.staffId);
+                        if (!staffMember) { App.showToast("اسٹاف ممبر نہیں ملا!", "error"); return; }
+                        const payslipHtml = `<div id="printable-payslip"><h2 style="text-align:center;">${App.settings.schoolName || ''}</h2><h3 style="text-align:center;">پے سلپ</h3><p><strong>مہینہ:</strong> ${salary.month}/${salary.year}</p><p><strong>اسٹاف کا نام:</strong> ${staffMember.name}</p><p><strong>عہدہ:</strong> ${staffMember.designation}</p><hr><table style="width:100%"><tr><td>بنیادی تنخواہ:</td><td style="text-align:left;">${staffMember.salary ? staffMember.salary.toLocaleString() : 'N/A'} PKR</td></tr></table><hr><p><strong>کل ادا شدہ: ${salary.amount.toLocaleString()} PKR</strong></p><p><small>ادائیگی کی تاریخ: ${salary.paymentDate ? App.formatDate(salary.paymentDate) : 'N/A'}</small></p></div>`;
                         App.printContent(payslipHtml, 'پے سلپ');
                     },
                     confirmDeleteStaff(id) {
-                        const body = '<p>کیا آپ واقعی اس اسٹاف ممبر کو حذف کرنا چاہتے ہیں؟</p>';
-                        const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">نہیں</button><button class="btn btn-danger" id="confirm-delete-btn">ہاں، حذف کریں</button>`;
+                        const body = '<p>کیا آپ واقعی اس اسٹاف ممبر کو حذف کرنا چاہتے ہیں؟<br>اس سے منسلک تنخواہ کے ریکارڈ حذف نہیں ہوں گے لیکن مستقبل میں اس اسٹاف کے لیے تنخواہ نہیں بنائی جا سکے گی۔</p>';
+                        const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">نہیں</button><button class="btn btn-danger" id="confirm-delete-staff-btn">ہاں، حذف کریں</button>`;
                         App.showModal('اسٹاف حذف کریں', body, footer);
-                        document.getElementById('confirm-delete-btn').onclick = () => this.deleteStaff(id);
+                        const confirmBtn = document.getElementById('confirm-delete-staff-btn');
+                        if (confirmBtn) confirmBtn.onclick = () => this.deleteStaff(id);
                     },
                     async deleteStaff(id) {
-                        await App.dbAction('staff', 'delete', parseInt(id));
-                        App.showToast('اسٹاف کو حذف کر دیا گیا!', 'success');
-                        App.closeModal();
-                        this.renderStaffTable();
+                        try {
+                            await App.dbAction('staff', 'delete', parseInt(id));
+                            App.showToast('اسٹاف کو حذف کر دیا گیا!', 'success');
+                            App.closeModal();
+                            this.renderStaffTable();
+                            this.renderPaymentsTable();
+                        } catch (err) {
+                            console.error("Error deleting staff:", err);
+                            App.showToast("اسٹاف کو حذف کرنے میں ناکامی!", "error");
+                        }
                     }
                 },
-
                 Accounts: {
                     render() {
                         return `<div class="card"><div class="card-header" style="padding: 0; border: none;"><div id="accounts-tabs" style="display: flex; border-bottom: 1px solid var(--border-color); width: 100%;"><button class="tab-btn active" data-tab="overview">جائزہ</button><button class="tab-btn" data-tab="income">آمدنی</button><button class="tab-btn" data-tab="expenses">اخراجات</button></div></div><div id="accounts-content" style="padding-top:20px;"></div></div>`;
@@ -1814,7 +1863,6 @@
                         if (type === 'income') this.renderIncomeTable(); else this.renderExpensesTable();
                     }
                 },
-
                 Attendance: {
                     render() {
                         return `
@@ -1832,11 +1880,9 @@
                         const classSelector = document.getElementById('attendance-class-selector');
                         const classes = await App.dbAction('classes', 'getAll');
                         classSelector.innerHTML = classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-
                         classSelector.onchange = () => this.renderAttendanceSheet();
                         document.getElementById('attendance-date-selector').onchange = () => this.renderAttendanceSheet();
                         document.getElementById('save-attendance-btn').onclick = () => this.saveAttendance();
-
                         if (classes.length > 0) {
                             this.renderAttendanceSheet();
                         }
@@ -1845,63 +1891,62 @@
                         App.showLoader();
                         const classId = parseInt(document.getElementById('attendance-class-selector').value);
                         const date = document.getElementById('attendance-date-selector').value;
-
                         const students = await App.dbAction('students', 'getAll', IDBKeyRange.only(classId), 'classId');
                         const allAttendance = await App.dbAction('attendance', 'getAll', IDBKeyRange.only(date), 'date');
                         const attendanceMap = new Map(allAttendance.map(a => [a.studentId, a.status]));
-
                         const tableBody = document.querySelector('#attendance-table tbody');
                         tableBody.innerHTML = students.map(student => {
                             const status = attendanceMap.get(student.id) || 'present';
                             return `
-                            <tr data-student-id="${student.id}"><td>${student.rollNo}</td><td>${student.name}</td><td>
-                                <input type="radio" name="status-${student.id}" value="present" ${status === 'present' ? 'checked' : ''}> حاضر
-                                <input type="radio" name="status-${student.id}" value="absent" ${status === 'absent' ? 'checked' : ''}> غیر حاضر
-                                <input type="radio" name="status-${student.id}" value="leave" ${status === 'leave' ? 'checked' : ''}> رخصت
-                            </td></tr>`;
+            <tr data-student-id="${student.id}"><td>${student.rollNo}</td><td>${student.name}</td><td>
+                <input type="radio" name="status-${student.id}" value="present" ${status === 'present' ? 'checked' : ''}> حاضر
+                <input type="radio" name="status-${student.id}" value="absent" ${status === 'absent' ? 'checked' : ''}> غیر حاضر
+                <input type="radio" name="status-${student.id}" value="leave" ${status === 'leave' ? 'checked' : ''}> رخصت
+            </td></tr>`;
                         }).join('');
                         App.hideLoader();
                     },
                     async saveAttendance() {
                         App.showLoader();
-                        const classId = parseInt(document.getElementById('attendance-class-selector').value);
-                        const date = document.getElementById('attendance-date-selector').value;
-                        const rows = document.querySelectorAll('#attendance-table tbody tr');
-
-                        const attendanceData = Array.from(rows).map(row => {
-                            return {
+                        try {
+                            const classId = parseInt(document.getElementById('attendance-class-selector').value);
+                            const date = document.getElementById('attendance-date-selector').value;
+                            const rows = document.querySelectorAll('#attendance-table tbody tr');
+                            const recordsFromForm = Array.from(rows).map(row => ({
                                 studentId: parseInt(row.dataset.studentId),
-                                classId: classId,
-                                date: date,
+                                classId,
+                                date,
                                 status: row.querySelector('input[type="radio"]:checked').value,
                                 timestamp: new Date().toISOString()
-                            };
-                        });
-
-                        const transaction = App.db.transaction(['attendance'], 'readwrite');
-                        const store = transaction.objectStore('attendance');
-                        const index = store.index('date_student');
-
-                        for (const record of attendanceData) {
-                            const existing = await index.get([record.date, record.studentId]);
-                            if (existing) {
-                                record.id = existing.id;
+                            }));
+                            const existingRecordsForDay = await App.dbAction('attendance', 'getAll', date, 'date');
+                            const classAttendance = existingRecordsForDay.filter(rec => rec.classId === classId);
+                            const existingMap = new Map(classAttendance.map(rec => [rec.studentId, rec]));
+                            const recordsToSave = recordsFromForm.map(newRecord => {
+                                const existing = existingMap.get(newRecord.studentId);
+                                if (existing) {
+                                    newRecord.id = existing.id;
+                                }
+                                return newRecord;
+                            });
+                            const tx = App.db.transaction(['attendance'], 'readwrite');
+                            const store = tx.objectStore('attendance');
+                            for (const record of recordsToSave) {
+                                store.put(record);
                             }
-                            store.put(record);
-                        }
-
-                        transaction.oncomplete = () => {
+                            await new Promise((resolve, reject) => {
+                                tx.oncomplete = resolve;
+                                tx.onerror = event => reject(event.target.error);
+                            });
                             App.hideLoader();
                             App.showToast('حاضری کامیابی سے محفوظ ہوگئی!', 'success');
-                        };
-                        transaction.onerror = (e) => {
+                        } catch (err) {
                             App.hideLoader();
-                            console.error("Error saving attendance", e.target.error);
-                            App.showToast('حاضری محفوظ کرنے میں ناکامی!', 'error');
-                        };
+                            console.error("Error saving attendance", err);
+                            App.showToast(`حاضری محفوظ کرنے میں ناکامی: ${err.message}`, 'error');
+                        }
                     }
                 },
-
                 Exams: {
                     render() {
                         return `<div class="card"><div class="card-header" style="padding: 0; border: none;"><div id="exams-tabs" style="display: flex; border-bottom: 1px solid var(--border-color); width: 100%;"><button class="tab-btn active" data-tab="list">امتحان کی فہرست</button><button class="tab-btn" data-tab="marks">نمبروں کا اندراج</button><button class="tab-btn" data-tab="cards">رزلٹ کارڈز</button></div></div><div id="exams-content" style="padding-top:20px;"></div></div>`;
@@ -1969,7 +2014,7 @@
                         const tx = App.db.transaction('marks', 'readwrite');
                         const store = tx.objectStore('marks');
                         for (const mark of marksToSave) {
-                            store.put(mark); // put will add or update
+                            store.put(mark);
                         }
                         tx.oncomplete = () => { App.hideLoader(); App.showToast('نمبر محفوظ ہوگئے!', 'success'); };
                         tx.onerror = (e) => { App.hideLoader(); App.showToast('نمبر محفوظ کرنے میں ناکامی!', 'error'); console.error(e.target.error); };
@@ -2002,14 +2047,20 @@
                         const footer = `<button class="btn btn-secondary" onclick="App.printContent(document.getElementById('printable-result-card').innerHTML, 'Result Card')">پرنٹ</button>`;
                         App.showModal('رزلٹ کارڈ', cardHtml, footer);
                     },
-                    async showExamForm(id = null) { /* Implemented Similarly */ },
+                    async showExamForm(id = null) { },
                 },
-
                 Library: {
                     render() {
                         return `<div class="card"><div class="card-header" style="padding: 0; border: none;"><div id="library-tabs" style="display: flex; border-bottom: 1px solid var(--border-color); width: 100%;"><button class="tab-btn active" data-tab="books">کتب کا انتظام</button><button class="tab-btn" data-tab="issue-return">اجراء/واپسی</button><button class="tab-btn" data-tab="categories">زمرے</button></div></div><div id="library-content" style="padding-top:20px;"></div></div>`;
                     },
-                    async postRender() { this.renderTabs(); },
+                    async postRender() {
+                        this.renderTabs();
+                        const bookSearchInput = document.getElementById('book-search');
+                        if (bookSearchInput && !bookSearchInput.dataset.listenerAttached) {
+                            bookSearchInput.addEventListener('input', () => this.renderBooksTable());
+                            bookSearchInput.dataset.listenerAttached = 'true';
+                        }
+                    },
                     renderTabs() {
                         document.querySelectorAll('#library-tabs .tab-btn').forEach(btn => {
                             btn.onclick = (e) => {
@@ -2025,15 +2076,21 @@
                         if (tab === 'books') {
                             contentEl.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h4>کتب کی فہرست</h4><button class="btn btn-primary" id="add-book-btn">نئی کتاب شامل کریں</button></div><input type="text" id="book-search" class="form-control" placeholder="عنوان یا مصنف سے تلاش کریں..."><div class="table-responsive" style="margin-top: 20px;"><table id="books-table"><thead><tr><th>عنوان</th><th>مصنف</th><th>زمرہ</th><th>کل تعداد</th><th>دستیاب</th><th>کارروائیاں</th></tr></thead><tbody></tbody></table></div>`;
                             await this.renderBooksTable();
-                            document.getElementById('add-book-btn').onclick = () => this.showBookForm();
-                            document.getElementById('book-search').oninput = () => this.renderBooksTable();
+                            const addBookBtn = document.getElementById('add-book-btn');
+                            if (addBookBtn) addBookBtn.onclick = () => this.showBookForm();
+                            const bookSearchInput = document.getElementById('book-search');
+                            if (bookSearchInput && !bookSearchInput.dataset.listenerAttached) {
+                                bookSearchInput.addEventListener('input', () => this.renderBooksTable());
+                                bookSearchInput.dataset.listenerAttached = 'true';
+                            }
                         } else if (tab === 'issue-return') {
                             contentEl.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h4>جاری شدہ کتب</h4></div><div class="table-responsive"><table id="issued-books-table"><thead><tr><th>کتاب کا عنوان</th><th>طالب علم</th><th>اجراء کی تاریخ</th><th>واپسی کی تاریخ</th><th>حیثیت</th><th>کارروائیاں</th></tr></thead><tbody></tbody></table></div>`;
                             await this.renderIssuedBooksTable();
                         } else if (tab === 'categories') {
                             contentEl.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h4>کتب کے زمرے</h4><button class="btn btn-primary" id="add-category-btn">نیا زمرہ</button></div><div class="table-responsive"><table id="categories-table"><thead><tr><th>زمرہ کا نام</th><th>کارروائی</th></tr></thead><tbody></tbody></table></div>`;
                             await this.renderCategoriesTable();
-                            document.getElementById('add-category-btn').onclick = () => this.showCategoryForm();
+                            const addCatBtn = document.getElementById('add-category-btn');
+                            if (addCatBtn) addCatBtn.onclick = () => this.showCategoryForm();
                         }
                         App.hideLoader();
                     },
@@ -2043,41 +2100,115 @@
                         const categoryMap = new Map(categories.map(c => [c.id, c.name]));
                         let filteredBooks = books;
                         if (searchTerm) {
-                            filteredBooks = books.filter(b => b.title.toLowerCase().includes(searchTerm) || b.author.toLowerCase().includes(searchTerm));
+                            filteredBooks = books.filter(b => (b.title && b.title.toLowerCase().includes(searchTerm)) || (b.author && b.author.toLowerCase().includes(searchTerm)));
                         }
-                        document.querySelector('#books-table tbody').innerHTML = filteredBooks.map(book => `<tr><td>${book.title}</td><td>${book.author}</td><td>${categoryMap.get(book.categoryId) || 'N/A'}</td><td>${book.quantity}</td><td>${book.availableQuantity}</td><td class="action-btns"><button class="btn btn-primary btn-icon" data-action="issue" data-module="library" data-id="${book.id}" title="کتاب جاری کریں" ${book.availableQuantity < 1 ? 'disabled' : ''}>↑</button><button class="btn btn-secondary btn-icon" data-action="edit" data-module="books" data-id="${book.id}" title="ترمیم">✏️</button><button class="btn btn-danger btn-icon" data-action="delete" data-module="books" data-id="${book.id}" title="حذف">🗑️</button></td></tr>`).join('');
+                        const booksTableBody = document.querySelector('#books-table tbody');
+                        if (booksTableBody) {
+                            booksTableBody.innerHTML = filteredBooks.map(book => `<tr><td>${book.title}</td><td>${book.author}</td><td>${categoryMap.get(book.categoryId) || 'N/A'}</td><td>${book.quantity}</td><td>${book.availableQuantity}</td><td class="action-btns"><button class="btn btn-primary btn-icon" data-action="issue" data-module="library" data-id="${book.id}" title="کتاب جاری کریں" ${book.availableQuantity < 1 ? 'disabled' : ''}>↑</button><button class="btn btn-secondary btn-icon" data-action="edit" data-module="library" data-id="${book.id}" title="ترمیم">✏️</button>
+<button class="btn btn-danger btn-icon" data-action="delete" data-module="library" data-id="${book.id}" title="حذف">🗑️</button></td></tr>`).join('');
+                        }
                     },
                     async renderIssuedBooksTable() {
                         const [logs, books, students] = await Promise.all([App.dbAction('libraryLog', 'getAll'), App.dbAction('books', 'getAll'), App.dbAction('students', 'getAll')]);
                         const bookMap = new Map(books.map(b => [b.id, b.title]));
                         const studentMap = new Map(students.map(s => [s.id, s.name]));
-                        document.querySelector('#issued-books-table tbody').innerHTML = logs.map(log => `<tr><td>${bookMap.get(log.bookId) || 'N/A'}</td><td>${studentMap.get(log.studentId) || 'N/A'}</td><td>${new Date(log.issueDate).toLocaleDateString('ur-PK')}</td><td>${log.returnDate ? new Date(log.returnDate).toLocaleDateString('ur-PK') : '---'}</td><td>${log.status === 'issued' ? 'جاری شدہ' : 'واپس شدہ'}</td><td class="action-btns">${log.status === 'issued' ? `<button class="btn btn-success" data-action="return" data-module="library" data-id="${log.id}">واپس لیں</button>` : ''}</td></tr>`).join('');
+                        const issuedBooksTableBody = document.querySelector('#issued-books-table tbody');
+                        if (issuedBooksTableBody) {
+                            issuedBooksTableBody.innerHTML = logs.map(log => {
+                                const issueDate = App.formatDate(log.issueDate, '---', `Library Log ID ${log.id} - Issue`);
+                                const returnDate = App.formatDate(log.returnDate, '<span style="color: var(--warning);">واپس نہیں ہوئی</span>', `Library Log ID ${log.id} - Return`);
+                                const statusText = log.status === 'issued' ? 'جاری شدہ' : 'واپس شدہ';
+                                const actionBtn = log.status === 'issued' ? `<button class="btn btn-success" data-action="return" data-module="library" data-id="${log.id}">واپس لیں</button>` : '';
+                                return `<tr>
+                        <td>${bookMap.get(log.bookId) || 'N/A'}</td>
+                        <td>${studentMap.get(log.studentId) || 'N/A'}</td>
+                        <td>${issueDate}</td>
+                        <td>${returnDate}</td>
+                        <td>${statusText}</td>
+                        <td class="action-btns">${actionBtn}</td>
+                    </tr>`;
+                            }).join('');
+                        }
                     },
                     async renderCategoriesTable() {
                         const categories = await App.dbAction('bookCategories', 'getAll');
-                        document.querySelector('#categories-table tbody').innerHTML = categories.map(cat => `<tr><td>${cat.name}</td><td><button class="btn btn-danger btn-icon" onclick="App.Library.deleteCategory(${cat.id})">🗑️</button></td></tr>`).join('');
+                        const categoriesTableBody = document.querySelector('#categories-table tbody');
+                        if (categoriesTableBody) {
+                            categoriesTableBody.innerHTML = categories.map(cat => `<tr><td>${cat.name}</td><td><button class="btn btn-danger btn-icon" onclick="App.Library.deleteCategory(${cat.id})">🗑️</button></td></tr>`).join('');
+                        }
                     },
                     async showBookForm(id = null) {
-                        const book = id ? await App.dbAction('books', 'get', parseInt(id)) : {};
+                        let book = {};
                         const categories = await App.dbAction('bookCategories', 'getAll');
+                        if (id) {
+                            const bookId = parseInt(id);
+                            if (!isNaN(bookId)) {
+                                book = await App.dbAction('books', 'get', bookId) || {};
+                            } else {
+                                console.error("Invalid ID passed to showBookForm:", id);
+                                App.showToast("غلط کتاب ID۔ ترمیم کے لیے لوڈ نہیں کیا جا سکا۔", "error");
+                                return;
+                            }
+                        }
                         const catOptions = categories.map(c => `<option value="${c.id}" ${book.categoryId == c.id ? 'selected' : ''}>${c.name}</option>`).join('');
-                        const title = id ? 'کتاب میں ترمیم کریں' : 'نئی کتاب شامل کریں';
-                        const formHtml = `<form id="book-form"><input type="hidden" name="id" value="${book.id || ''}"><div class="form-group"><label>عنوان</label><input type="text" name="title" class="form-control" value="${book.title || ''}" required></div><div class="form-group"><label>مصنف</label><input type="text" name="author" class="form-control" value="${book.author || ''}" required></div><div class="form-group"><label>زمرہ</label><select name="categoryId" class="form-control" required>${catOptions}</select></div><div class="form-group"><label>ISBN</label><input type="text" name="isbn" class="form-control" value="${book.isbn || ''}"></div><div class="form-group"><label>تعداد</label><input type="number" name="quantity" class="form-control" value="${book.quantity || 1}" required></div></form>`;
+                        const title = book.id ? 'کتاب میں ترمیم کریں' : 'نئی کتاب شامل کریں';
+                        const formHtml = `<form id="book-form"><input type="hidden" name="id" value="${book.id || ''}"><div class="form-group"><label>عنوان</label><input type="text" name="title" class="form-control" value="${book.title || ''}" required></div><div class="form-group"><label>مصنف</label><input type="text" name="author" class="form-control" value="${book.author || ''}" required></div><div class="form-group"><label>زمرہ</label><select name="categoryId" class="form-control" required>${catOptions}</select></div><div class="form-group"><label>ISBN</label><input type="text" name="isbn" class="form-control" value="${book.isbn || ''}"></div><div class="form-group"><label>تعداد</label><input type="number" name="quantity" class="form-control" value="${book.quantity || 1}" min="0" required></div></form>`;
                         const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">منسوخ</button><button class="btn btn-primary" id="save-book-btn">محفوظ کریں</button>`;
                         App.showModal(title, formHtml, footer);
                         document.getElementById('save-book-btn').onclick = () => this.saveBook();
                     },
                     async saveBook() {
-                        const form = document.getElementById('book-form'); if (!form.checkValidity()) { form.reportValidity(); return; }
+                        const form = document.getElementById('book-form');
+                        if (!form.checkValidity()) { form.reportValidity(); return; }
                         const formData = new FormData(form);
                         const bookData = Object.fromEntries(formData.entries());
-                        bookData.id = bookData.id ? parseInt(bookData.id) : undefined;
-                        bookData.categoryId = parseInt(bookData.categoryId);
+                        const formIdString = bookData.id;
+                        if (formIdString && formIdString !== "") {
+                            bookData.id = parseInt(formIdString);
+                            if (isNaN(bookData.id)) {
+                                console.error("Book ID from form ('" + formIdString + "') is invalid after parsing.");
+                                App.showToast('کتاب ID میں خرابی: ID غیر عددی ہے۔', 'error');
+                                return;
+                            }
+                        } else {
+                            delete bookData.id;
+                        }
+                        if (bookData.categoryId) {
+                            bookData.categoryId = parseInt(bookData.categoryId);
+                            if (isNaN(bookData.categoryId)) {
+                                App.showToast('زمرہ ID میں خرابی۔', 'error');
+                                return;
+                            }
+                        } else {
+                            App.showToast('زمرہ منتخب کرنا ضروری ہے۔', 'error');
+                            return;
+                        }
                         bookData.quantity = parseInt(bookData.quantity);
-                        if (!bookData.id) { bookData.availableQuantity = bookData.quantity; }
-                        else { const oldBook = await App.dbAction('books', 'get', bookData.id); const issuedCount = oldBook.quantity - oldBook.availableQuantity; bookData.availableQuantity = bookData.quantity - issuedCount; }
-                        await App.dbAction('books', 'put', bookData);
-                        App.showToast('کتاب محفوظ ہوگئی!', 'success'); App.closeModal(); this.renderTabContent('books');
+                        if (isNaN(bookData.quantity) || bookData.quantity < 0) {
+                            App.showToast('تعداد درست ہونی چاہیے۔', 'error');
+                            return;
+                        }
+                        if (!bookData.id) {
+                            bookData.availableQuantity = bookData.quantity;
+                        } else {
+                            const oldBook = await App.dbAction('books', 'get', bookData.id);
+                            if (oldBook) {
+                                const issuedCount = oldBook.quantity - oldBook.availableQuantity;
+                                bookData.availableQuantity = bookData.quantity - issuedCount;
+                                if (bookData.availableQuantity < 0) bookData.availableQuantity = 0;
+                            } else {
+                                bookData.availableQuantity = bookData.quantity;
+                            }
+                        }
+                        try {
+                            await App.dbAction('books', 'put', bookData);
+                            App.showToast('کتاب محفوظ ہوگئی!', 'success');
+                            App.closeModal();
+                            this.renderTabContent('books');
+                        } catch (err) {
+                            console.error('Error saving book:', err);
+                            App.showToast(`کتاب محفوظ کرنے میں ناکامی! (${err.message || err.name})`, 'error');
+                        }
                     },
                     async showCategoryForm() {
                         const formHtml = `<form id="category-form"><div class="form-group"><label>زمرہ کا نام</label><input type="text" name="name" class="form-control" required></div></form>`;
@@ -2092,12 +2223,25 @@
                         App.showToast('زمرہ شامل ہوگیا!', 'success'); App.closeModal(); this.renderCategoriesTable();
                     },
                     async deleteCategory(id) {
+                        const books = await App.dbAction('books', 'getAll');
+                        const isCategoryUsed = books.some(book => book.categoryId === parseInt(id));
+                        if (isCategoryUsed) {
+                            App.showToast('یہ زمرہ کتب میں استعمال ہو رہا ہے، اسے حذف نہیں کیا جا سکتا۔', 'error');
+                            return;
+                        }
                         await App.dbAction('bookCategories', 'delete', parseInt(id));
                         App.showToast('زمرہ حذف ہوگیا!', 'success'); this.renderCategoriesTable();
                     },
                     async showIssueForm(bookId) {
+                        const book = await App.dbAction('books', 'get', parseInt(bookId));
+                        if (!book || book.availableQuantity < 1) {
+                            App.showToast('یہ کتاب اجراء کے لیے دستیاب نہیں ہے۔', 'error');
+                            return;
+                        }
                         const studentOptions = await App.getSelectOptions('students', 'id', 'name');
-                        const formHtml = `<form id="issue-book-form"><div class="form-group"><label>طالب علم منتخب کریں</label><select name="studentId" class="form-control" required>${studentOptions}</select></div><div class="form-group"><label>واپسی کی متوقع تاریخ</label><input type="date" name="dueDate" class="form-control" required></div></form>`;
+                        const defaultDueDate = new Date();
+                        defaultDueDate.setDate(defaultDueDate.getDate() + 15);
+                        const formHtml = `<form id="issue-book-form"><div class="form-group"><label>طالب علم منتخب کریں</label><select name="studentId" class="form-control" required>${studentOptions}</select></div><div class="form-group"><label>واپسی کی متوقع تاریخ</label><input type="date" name="dueDate" class="form-control" value="${defaultDueDate.toISOString().split('T')[0]}" required></div></form>`;
                         const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">منسوخ</button><button class="btn btn-primary" id="issue-book-btn">کتاب جاری کریں</button>`;
                         App.showModal('کتاب جاری کریں', formHtml, footer);
                         document.getElementById('issue-book-btn').onclick = () => this.issueBook(bookId);
@@ -2107,11 +2251,19 @@
                         const studentId = parseInt(form.elements.studentId.value);
                         const dueDate = form.elements.dueDate.value;
                         const book = await App.dbAction('books', 'get', parseInt(bookId));
+                        if (book.availableQuantity < 1) {
+                            App.showToast('کتاب دستیاب نہیں ہے۔', 'error');
+                            App.closeModal();
+                            this.renderTabContent('books');
+                            return;
+                        }
                         book.availableQuantity -= 1;
                         await App.dbAction('books', 'put', book);
                         const logEntry = { bookId: parseInt(bookId), studentId, issueDate: new Date().toISOString().split('T')[0], dueDate, status: 'issued' };
                         await App.dbAction('libraryLog', 'add', logEntry);
-                        App.showToast('کتاب کامیابی سے جاری کر دی گئی!', 'success'); App.closeModal(); this.renderTabContent('books');
+                        App.showToast('کتاب کامیابی سے جاری کر دی گئی!', 'success'); App.closeModal();
+                        this.renderTabContent('books');
+                        this.renderTabContent('issue-return');
                     },
                     async returnBook(logId) {
                         const log = await App.dbAction('libraryLog', 'get', parseInt(logId));
@@ -2119,20 +2271,44 @@
                         await App.dbAction('libraryLog', 'put', log);
                         const book = await App.dbAction('books', 'get', log.bookId);
                         book.availableQuantity += 1;
+                        if (book.availableQuantity > book.quantity) book.availableQuantity = book.quantity;
                         await App.dbAction('books', 'put', book);
-                        App.showToast('کتاب واپس ہوگئی!', 'success'); this.renderTabContent('issue-return');
+                        App.showToast('کتاب واپس ہوگئی!', 'success');
+                        this.renderTabContent('issue-return');
+                        this.renderTabContent('books');
                     },
                     async viewStudentLibraryHistory(studentId, containerId) {
-                        const [logs, books] = await Promise.all([App.dbAction('libraryLog', 'getAll', IDBKeyRange.only(parseInt(studentId)), 'studentId'), App.dbAction('books', 'getAll')]);
+                        const [logs, books] = await Promise.all([App.dbAction('libraryLog', 'getAll', parseInt(studentId), 'studentId'), App.dbAction('books', 'getAll')]);
                         const bookMap = new Map(books.map(b => [b.id, b.title]));
                         const historyHtml = `<div class="table-responsive"><table style="width: 100%;"><thead><tr><th>کتاب کا عنوان</th><th>اجراء کی تاریخ</th><th>واپسی کی تاریخ</th><th>حیثیت</th></tr></thead><tbody>
-                        ${logs.map(log => `<tr><td>${bookMap.get(log.bookId) || 'N/A'}</td><td>${new Date(log.issueDate).toLocaleDateString('ur-PK')}</td><td>${log.returnDate ? new Date(log.returnDate).toLocaleDateString('ur-PK') : 'N/A'}</td><td>${log.status === 'issued' ? 'جاری شدہ' : 'واپس شدہ'}</td></tr>`).join('')}
-                    </tbody></table></div>`;
-                        document.getElementById(containerId).innerHTML = historyHtml;
+                        ${logs.map(log => `<tr><td>${bookMap.get(log.bookId) || 'N/A'}</td><td>${log.issueDate ? new Date(log.issueDate).toLocaleDateString('ur-PK') : 'N/A'}</td><td>${log.returnDate ? new Date(log.returnDate).toLocaleDateString('ur-PK') : 'N/A'}</td><td>${log.status === 'issued' ? 'جاری شدہ' : 'واپس شدہ'}</td></tr>`).join('')}
+                        </tbody></table></div>`;
+                        const el = document.getElementById(containerId);
+                        if (el) el.innerHTML = historyHtml; else App.showModal('طالب علم کی لائبریری تاریخ', historyHtml);
                     },
-                    async confirmDeleteBook(id) { /* ... Similar to other deletes ... */ }
+                    async confirmDeleteBook(id) {
+                        const book = await App.dbAction('books', 'get', parseInt(id));
+                        if (!book) { App.showToast('کتاب نہیں ملی!', 'error'); return; }
+                        if (book.quantity !== book.availableQuantity) {
+                            App.showToast('یہ کتاب کچھ طلباء کو جاری کی گئی ہے۔ حذف کرنے سے پہلے تمام نقول واپس لیں۔', 'error');
+                            return;
+                        }
+                        const body = `<p>کیا آپ واقعی اس کتاب کو حذف کرنا چاہتے ہیں؟<br><strong>${book.title}</strong></p>`;
+                        const footer = `<button class="btn btn-secondary" onclick="App.closeModal()">نہیں</button><button class="btn btn-danger" id="confirm-delete-book-btn">ہاں، حذف کریں</button>`;
+                        App.showModal('کتاب حذف کریں', body, footer);
+                        document.getElementById('confirm-delete-book-btn').onclick = async () => {
+                            try {
+                                await App.dbAction('books', 'delete', parseInt(id));
+                                App.showToast('کتاب کامیابی سے حذف کر دی گئی!', 'success');
+                                App.closeModal();
+                                this.renderTabContent('books');
+                            } catch (err) {
+                                console.error('Error deleting book:', err);
+                                App.showToast('کتاب کو حذف کرنے میں ناکامی!', 'error');
+                            }
+                        };
+                    }
                 },
-
                 Transport: {
                     render() { return `<div class="card"><div class="card-header" style="padding: 0; border: none;"><div id="transport-tabs" style="display: flex; border-bottom: 1px solid var(--border-color); width: 100%;"><button class="tab-btn active" data-tab="routes">روٹس کا انتظام</button><button class="tab-btn" data-tab="assignments">طلباء کی تفویض</button></div></div><div id="transport-content" style="padding-top:20px;"></div></div>`; },
                     async postRender() {
@@ -2202,7 +2378,6 @@
                         App.showToast('طالب علم کو روٹ سے ہٹا دیا گیا!', 'success'); this.renderAssignmentsTable();
                     }
                 },
-
                 Hostel: {
                     render() { return `<div class="card"><div class="card-header" style="padding: 0; border: none;"><div id="hostel-tabs" style="display: flex; border-bottom: 1px solid var(--border-color); width: 100%;"><button class="tab-btn active" data-tab="rooms">کمروں کا انتظام</button><button class="tab-btn" data-tab="assignments">رہائشی طلباء</button></div></div><div id="hostel-content" style="padding-top:20px;"></div></div>`; },
                     async postRender() {
@@ -2286,7 +2461,6 @@
                         }
                     }
                 },
-
                 Syllabus: {
                     async render() {
                         return `<div class="card"><div class="card-header"><h4>نصاب کا انتظام</h4></div><div id="syllabus-list"></div></div>`;
@@ -2334,7 +2508,6 @@
                         App.showToast('نصاب حذف کر دیا گیا!', 'success'); this.renderSyllabusList();
                     }
                 },
-
                 Noticeboard: {
                     async render() {
                         const canAdd = ['admin', 'teacher'].includes(App.currentUser.role);
@@ -2361,9 +2534,8 @@
                         await App.dbAction('notices', 'put', data);
                         App.showToast('نوٹس شائع ہو گیا!', 'success'); App.closeModal(); this.renderList();
                     },
-                    async confirmDelete(id) { /* Implemented */ }
+                    async confirmDelete(id) { }
                 },
-
                 Users: {
                     render() {
                         if (App.currentUser.role !== 'admin') return '<p>آپ کے پاس یہ صفحہ دیکھنے کی اجازت نہیں ہے۔</p>';
@@ -2404,9 +2576,8 @@
                             else App.showToast('صارف کو محفوظ کرنے میں ناکامی!', 'error');
                         }
                     },
-                    async confirmDelete(id) { /* ... */ }
+                    async confirmDelete(id) { }
                 },
-
                 Reports: {
                     render() {
                         return `
@@ -2442,17 +2613,15 @@
                         const reportTitleEl = document.getElementById('report-title');
                         const reportContentEl = document.getElementById('report-content');
                         let title = '', content = '';
-                        // ... More comprehensive report generation logic for all types
                         title = document.querySelector('#report-type option:checked').textContent;
-                        content = '<p>رپورٹ کی یہ قسم ابھی زیرِ تعمیر ہے۔</p>'; // Placeholder for brevity
+                        content = '<p>رپورٹ کی یہ قسم ابھی زیرِ تعمیر ہے۔</p>';
                         reportTitleEl.textContent = title;
                         reportContentEl.innerHTML = content;
                         reportOutput.style.display = 'block';
                         App.hideLoader();
                     },
-                    exportToCSV() { /* ... */ }
+                    exportToCSV() { }
                 },
-
                 Settings: {
                     render() {
                         if (App.currentUser.role !== 'admin') return '<p>آپ کے پاس یہ صفحہ دیکھنے کی اجازت نہیں ہے۔</p>';
@@ -2515,7 +2684,6 @@
                         await App.loadSettings(); App.showToast('فیس اسٹرکچر محفوظ ہوگیا!', 'success');
                     }
                 },
-
                 Backup: {
                     render() {
                         if (App.currentUser.role !== 'admin') return '<p>آپ کے پاس یہ صفحہ دیکھنے کی اجازت نہیں ہے۔</p>';
@@ -2571,8 +2739,6 @@
                         reader.readAsText(file);
                     }
                 },
-
-                // --- UTILITIES --- //
                 printContent(content, title) {
                     const printWindow = window.open('', title, 'height=600,width=800');
                     printWindow.document.write('<html><head><title>' + title + '</title>');
@@ -2584,20 +2750,31 @@
                     printWindow.focus();
                     setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
                 },
+                formatDate(dateString, placeholder = '---', context = 'Unknown') {
+                    if (!dateString || typeof dateString !== 'string' || dateString.trim() === '') {
+                        console.log(`[DEBUG: ${context}] formatDate received empty input. Using placeholder.`);
+                        return placeholder;
+                    }
+                    const date = new Date(dateString);
+                    if (isNaN(date.getTime())) {
+                        console.error(`[DEBUG: ${context}] Invalid date string encountered:`, dateString);
+                        return `<span style="color: var(--danger); font-weight: bold;">تاریخ غلط ہے</span>`;
+                    }
+                    return date.toLocaleDateString('ur-PK', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                },
                 async getSelectOptions(storeName, valueField, textField) {
                     const items = await this.dbAction(storeName, 'getAll');
                     return items.map(item => `<option value="${item[valueField]}">${item[textField]}</option>`).join('');
                 }
             };
-
-            // Initialize the application
             App.init();
-
-            // Make App object globally accessible
             window.App = App;
         });
     </script>
-
 </body>
 
 </html>
