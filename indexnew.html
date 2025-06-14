@@ -2994,35 +2994,35 @@
             });
         }
         async function initializeApp() {
-    console.log('Initializing application...');
+            console.log('Initializing application...');
 
-    await loadSettings();
-    await loadDashboardData();
-    await loadDropdownData();
-    await checkAndLoadSampleData();
+            await loadSettings();
+            await loadDashboardData();
+            await loadDropdownData();
+            await checkAndLoadSampleData();
 
-    // These functions set up the rest of the app's interactivity
-    setupEventListeners(); 
-    initializeDynamicViews();
-    attachDynamicEventListeners();
+            // These functions set up the rest of the app's interactivity
+            setupEventListeners();
+            initializeDynamicViews();
+            attachDynamicEventListeners();
 
-    // --- DIRECT FIX STARTS HERE ---
-    // This code directly attaches the listeners for the attendance module, ensuring it works.
-    console.log('[FIX] Directly attaching event listeners for attendance dropdowns...');
-    try {
-        document.getElementById('attendance-class').addEventListener('change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
-        document.getElementById('view-attendance-class').addEventListener('change', () => populateAttendanceSections('view-attendance-class', 'view-attendance-section'));
-        document.getElementById('report-attendance-class').addEventListener('change', () => populateAttendanceSections('report-attendance-class', 'report-attendance-section'));
-        console.log('[FIX] Attendance dropdown listeners attached successfully.');
-    } catch(e) {
-        console.error('[FIX] FAILED TO ATTACH ATTENDANCE LISTENERS:', e);
-    }
-    // --- DIRECT FIX ENDS HERE ---
+            // --- DIRECT FIX STARTS HERE ---
+            // This code directly attaches the listeners for the attendance module, ensuring it works.
+            console.log('[FIX] Directly attaching event listeners for attendance dropdowns...');
+            try {
+                document.getElementById('attendance-class').addEventListener('change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
+                document.getElementById('view-attendance-class').addEventListener('change', () => populateAttendanceSections('view-attendance-class', 'view-attendance-section'));
+                document.getElementById('report-attendance-class').addEventListener('change', () => populateAttendanceSections('report-attendance-class', 'report-attendance-section'));
+                console.log('[FIX] Attendance dropdown listeners attached successfully.');
+            } catch (e) {
+                console.error('[FIX] FAILED TO ATTACH ATTENDANCE LISTENERS:', e);
+            }
+            // --- DIRECT FIX ENDS HERE ---
 
-    showView('dashboard');
+            showView('dashboard');
 
-    console.log('Application initialized successfully');
-}
+            console.log('Application initialized successfully');
+        }
         function setupFormHandlers() {
             document.getElementById('student-form').addEventListener('submit', (e) => { e.preventDefault(); addStudent(); });
             document.getElementById('teacher-form').addEventListener('submit', (e) => { e.preventDefault(); addTeacher(); });
@@ -3045,77 +3045,77 @@
             document.getElementById('role-form').addEventListener('submit', (e) => { e.preventDefault(); addRole(); });
         }
         function setupEventListeners() {
-    // --- DEBUG 1: Confirm this function runs on page load ---
-    console.log('[DEBUG] Running setupEventListeners...');
+            // --- DEBUG 1: Confirm this function runs on page load ---
+            console.log('[DEBUG] Running setupEventListeners...');
 
-    // Listener for the main student form
-    document.getElementById('student-class').addEventListener('change', populateSectionsForStudentForm);
+            // Listener for the main student form
+            document.getElementById('student-class').addEventListener('change', populateSectionsForStudentForm);
 
-    // --- DEBUG 2: Attach listeners for the attendance class dropdowns ---
-    document.getElementById('attendance-class').addEventListener('change', () => {
-        // --- DEBUG 3: Confirm the event is triggered ---
-        console.log('[DEBUG] "Mark Attendance" class dropdown changed.');
-        populateAttendanceSections('attendance-class', 'attendance-section');
-    });
+            // --- DEBUG 2: Attach listeners for the attendance class dropdowns ---
+            document.getElementById('attendance-class').addEventListener('change', () => {
+                // --- DEBUG 3: Confirm the event is triggered ---
+                console.log('[DEBUG] "Mark Attendance" class dropdown changed.');
+                populateAttendanceSections('attendance-class', 'attendance-section');
+            });
 
-    document.getElementById('view-attendance-class').addEventListener('change', () => {
-        console.log('[DEBUG] "View Attendance" class dropdown changed.');
-        populateAttendanceSections('view-attendance-class', 'view-attendance-section');
-    });
-    
-    document.getElementById('report-attendance-class').addEventListener('change', () => {
-        console.log('[DEBUG] "Attendance Report" class dropdown changed.');
-        populateAttendanceSections('report-attendance-class', 'report-attendance-section');
-    });
+            document.getElementById('view-attendance-class').addEventListener('change', () => {
+                console.log('[DEBUG] "View Attendance" class dropdown changed.');
+                populateAttendanceSections('view-attendance-class', 'view-attendance-section');
+            });
 
-    // The rest of your listeners...
-    document.querySelector('[data-tab="students-list"]').addEventListener('click', loadStudentsTable);
-    document.querySelector('[data-tab="teachers-list"]').addEventListener('click', loadTeachersTable);
-    document.querySelector('[data-tab="staff-list"]').addEventListener('click', loadStaffTable);
-    document.querySelector('[data-tab="classes-list"]').addEventListener('click', loadClassesTable);
-    document.querySelector('[data-tab="sections"]').addEventListener('click', loadSectionsTable);
-    document.querySelector('[data-tab="subjects-list"]').addEventListener('click', loadSubjectsTable);
-    document.querySelector('[data-tab="class-subjects"]').addEventListener('click', loadClassSubjectsTable);
-    document.querySelector('[data-tab="exams-list"]').addEventListener('click', loadExamsTable);
-    document.querySelector('[data-view="library"]').addEventListener('click', loadBooksTable);
-    document.querySelector('[data-view="users"]').addEventListener('click', loadUsersTable);
-    document.querySelector('[data-tab="user-roles"]').addEventListener('click', loadRolesTable);
-    document.querySelector('[data-tab="fee-structure"]').addEventListener('click', loadFeeStructureTable);
-    document.querySelector('[data-tab="salary-structure"]').addEventListener('click', loadSalaryStructureTable);
-    document.querySelector('[data-view="backup"]').addEventListener('click', loadBackupHistoryTable);
-    document.getElementById('search-student-btn').addEventListener('click', searchStudents);
-    document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
-    document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
-    document.getElementById('load-attendance').addEventListener('click', loadStudentsForAttendance);
-    document.getElementById('view-attendance-btn').addEventListener('click', viewAttendance);
-    document.getElementById('generate-attendance-report').addEventListener('click', generateAttendanceReport);
-    document.getElementById('load-students-marks').addEventListener('click', loadStudentsForMarks);
-    document.getElementById('generate-result-cards').addEventListener('click', generateResultCards);
-    document.getElementById('search-student-fee').addEventListener('click', searchStudentForFee);
-    document.getElementById('generate-fee-report').addEventListener('click', generateFeeReport);
-    document.getElementById('generate-defaulters').addEventListener('click', generateDefaultersReport);
-    document.getElementById('search-employee-salary').addEventListener('click', searchEmployeeForSalary);
-    document.getElementById('generate-salary-report').addEventListener('click', generateSalaryReport);
-    const generateReportBtn = document.getElementById('generate-report');
-    if (generateReportBtn) { generateReportBtn.addEventListener('click', generateReport); }
-    document.getElementById('create-backup').addEventListener('click', createBackup);
-    document.getElementById('restore-backup').addEventListener('click', restoreBackup);
-    document.getElementById('save-auto-backup').addEventListener('click', saveAutoBackupSettings);
-    document.getElementById('auto-backup-enable').addEventListener('change', function () { document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none'; });
-    document.getElementById('fee-report-type').addEventListener('change', toggleFeeReportFields);
-    document.getElementById('salary-report-type').addEventListener('change', toggleSalaryReportFields);
-    document.getElementById('structure-employee-type').addEventListener('change', loadEmployeesForSalaryStructure);
-    const themeForm = document.getElementById('theme-settings-form');
-    if (themeForm) themeForm.addEventListener('submit', saveThemeSettings);
-    const resetBtn = document.getElementById('reset-theme');
-    if (resetBtn) resetBtn.addEventListener('click', resetThemeSettings);
-    const generalForm = document.getElementById('general-settings-form');
-    if (generalForm) generalForm.addEventListener('submit', saveGeneralSettings);
-    const academicForm = document.getElementById('academic-settings-form');
-    if (academicForm) academicForm.addEventListener('submit', saveAcademicSettings);
-    
-    console.log('[DEBUG] Event listener setup complete.');
-}
+            document.getElementById('report-attendance-class').addEventListener('change', () => {
+                console.log('[DEBUG] "Attendance Report" class dropdown changed.');
+                populateAttendanceSections('report-attendance-class', 'report-attendance-section');
+            });
+
+            // The rest of your listeners...
+            document.querySelector('[data-tab="students-list"]').addEventListener('click', loadStudentsTable);
+            document.querySelector('[data-tab="teachers-list"]').addEventListener('click', loadTeachersTable);
+            document.querySelector('[data-tab="staff-list"]').addEventListener('click', loadStaffTable);
+            document.querySelector('[data-tab="classes-list"]').addEventListener('click', loadClassesTable);
+            document.querySelector('[data-tab="sections"]').addEventListener('click', loadSectionsTable);
+            document.querySelector('[data-tab="subjects-list"]').addEventListener('click', loadSubjectsTable);
+            document.querySelector('[data-tab="class-subjects"]').addEventListener('click', loadClassSubjectsTable);
+            document.querySelector('[data-tab="exams-list"]').addEventListener('click', loadExamsTable);
+            document.querySelector('[data-view="library"]').addEventListener('click', loadBooksTable);
+            document.querySelector('[data-view="users"]').addEventListener('click', loadUsersTable);
+            document.querySelector('[data-tab="user-roles"]').addEventListener('click', loadRolesTable);
+            document.querySelector('[data-tab="fee-structure"]').addEventListener('click', loadFeeStructureTable);
+            document.querySelector('[data-tab="salary-structure"]').addEventListener('click', loadSalaryStructureTable);
+            document.querySelector('[data-view="backup"]').addEventListener('click', loadBackupHistoryTable);
+            document.getElementById('search-student-btn').addEventListener('click', searchStudents);
+            document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
+            document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
+            document.getElementById('load-attendance').addEventListener('click', loadStudentsForAttendance);
+            document.getElementById('view-attendance-btn').addEventListener('click', viewAttendance);
+            document.getElementById('generate-attendance-report').addEventListener('click', generateAttendanceReport);
+            document.getElementById('load-students-marks').addEventListener('click', loadStudentsForMarks);
+            document.getElementById('generate-result-cards').addEventListener('click', generateResultCards);
+            document.getElementById('search-student-fee').addEventListener('click', searchStudentForFee);
+            document.getElementById('generate-fee-report').addEventListener('click', generateFeeReport);
+            document.getElementById('generate-defaulters').addEventListener('click', generateDefaultersReport);
+            document.getElementById('search-employee-salary').addEventListener('click', searchEmployeeForSalary);
+            document.getElementById('generate-salary-report').addEventListener('click', generateSalaryReport);
+            const generateReportBtn = document.getElementById('generate-report');
+            if (generateReportBtn) { generateReportBtn.addEventListener('click', generateReport); }
+            document.getElementById('create-backup').addEventListener('click', createBackup);
+            document.getElementById('restore-backup').addEventListener('click', restoreBackup);
+            document.getElementById('save-auto-backup').addEventListener('click', saveAutoBackupSettings);
+            document.getElementById('auto-backup-enable').addEventListener('change', function () { document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none'; });
+            document.getElementById('fee-report-type').addEventListener('change', toggleFeeReportFields);
+            document.getElementById('salary-report-type').addEventListener('change', toggleSalaryReportFields);
+            document.getElementById('structure-employee-type').addEventListener('change', loadEmployeesForSalaryStructure);
+            const themeForm = document.getElementById('theme-settings-form');
+            if (themeForm) themeForm.addEventListener('submit', saveThemeSettings);
+            const resetBtn = document.getElementById('reset-theme');
+            if (resetBtn) resetBtn.addEventListener('click', resetThemeSettings);
+            const generalForm = document.getElementById('general-settings-form');
+            if (generalForm) generalForm.addEventListener('submit', saveGeneralSettings);
+            const academicForm = document.getElementById('academic-settings-form');
+            if (academicForm) academicForm.addEventListener('submit', saveAcademicSettings);
+
+            console.log('[DEBUG] Event listener setup complete.');
+        }
         async function loadStaffTable() {
             try {
                 const staffList = await getAllFromStore(STORES.STAFF);
@@ -3236,35 +3236,35 @@
             }
         }
         async function loadClassSubjectsTable() {
-    const tbody = document.querySelector('#class-subjects-table tbody');
-    tbody.innerHTML = '';
-    showLoading();
-    try {
-        const classSubjects = await getAllFromStore(STORES.CLASS_SUBJECTS);
-        if (classSubjects.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">کوئی کلاس مضمون تفویض نہیں کیا گیا ہے۔</td></tr>';
-            return;
-        }
-        for (const cs of classSubjects) {
-            const classData = await getFromStore(STORES.CLASSES, cs.classId);
-            const subjectData = await getFromStore(STORES.SUBJECTS, cs.subjectId);
-            const teacherData = await getFromStore(STORES.TEACHERS, cs.teacherId);
-            const row = document.createElement('tr');
-            row.innerHTML = `
+            const tbody = document.querySelector('#class-subjects-table tbody');
+            tbody.innerHTML = '';
+            showLoading();
+            try {
+                const classSubjects = await getAllFromStore(STORES.CLASS_SUBJECTS);
+                if (classSubjects.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">کوئی کلاس مضمون تفویض نہیں کیا گیا ہے۔</td></tr>';
+                    return;
+                }
+                for (const cs of classSubjects) {
+                    const classData = await getFromStore(STORES.CLASSES, cs.classId);
+                    const subjectData = await getFromStore(STORES.SUBJECTS, cs.subjectId);
+                    const teacherData = await getFromStore(STORES.TEACHERS, cs.teacherId);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                 <td>${cs.id}</td>
                 <td>${classData ? classData.name : 'N/A'}</td>
                 <td>${subjectData ? subjectData.name : 'N/A'}</td>
                 <td>${teacherData ? teacherData.name : 'N/A'}</td>
                 <td><button class="btn btn-danger btn-sm">حذف کریں</button></td>
             `;
-            tbody.appendChild(row);
+                    tbody.appendChild(row);
+                }
+            } catch (e) {
+                console.error("Error loading class subjects:", e);
+            } finally {
+                hideLoading();
+            }
         }
-    } catch(e) {
-        console.error("Error loading class subjects:", e);
-    } finally {
-        hideLoading();
-    }
-}
         async function loadExamsTable() {
             try {
                 const exams = await getAllFromStore(STORES.EXAMS);
@@ -3484,54 +3484,54 @@
             }
         }
         async function generateAttendanceReport() {
-    const classId = parseInt(document.getElementById('report-attendance-class').value);
-    const sectionId = document.getElementById('report-attendance-section').value; // Can be 'all'
-    const startDate = document.getElementById('report-start-date').value;
-    const endDate = document.getElementById('report-end-date').value;
-    const tbody = document.querySelector('#report-attendance-table tbody');
-    const container = document.getElementById('report-attendance-table-container');
+            const classId = parseInt(document.getElementById('report-attendance-class').value);
+            const sectionId = document.getElementById('report-attendance-section').value; // Can be 'all'
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
+            const tbody = document.querySelector('#report-attendance-table tbody');
+            const container = document.getElementById('report-attendance-table-container');
 
-    if (isNaN(classId) || !sectionId || !startDate || !endDate) {
-        showNotification('براہ کرم تمام فلٹرز منتخب کریں۔', 'error');
-        return;
-    }
+            if (isNaN(classId) || !sectionId || !startDate || !endDate) {
+                showNotification('براہ کرم تمام فلٹرز منتخب کریں۔', 'error');
+                return;
+            }
 
-    showLoading();
-    tbody.innerHTML = '';
-    container.style.display = 'none';
+            showLoading();
+            tbody.innerHTML = '';
+            container.style.display = 'none';
 
-    try {
-        let students = await getAllFromIndex(STORES.STUDENTS, 'classId', classId);
-        if (sectionId !== 'all') {
-            students = students.filter(s => s.sectionId === parseInt(sectionId));
-        }
+            try {
+                let students = await getAllFromIndex(STORES.STUDENTS, 'classId', classId);
+                if (sectionId !== 'all') {
+                    students = students.filter(s => s.sectionId === parseInt(sectionId));
+                }
 
-        if (students.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">اس کلاس/سیکشن میں کوئی طالب علم نہیں ہے۔</td></tr>';
-            container.style.display = 'block';
-            return;
-        }
+                if (students.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">اس کلاس/سیکشن میں کوئی طالب علم نہیں ہے۔</td></tr>';
+                    container.style.display = 'block';
+                    return;
+                }
 
-        const allAttendance = await getAllFromStore(STORES.ATTENDANCE);
-        
-        // Filter attendance records once by date for performance
-        const dateFilteredAttendance = allAttendance.filter(rec => {
-            const recDate = new Date(rec.date);
-            return recDate >= new Date(startDate) && recDate <= new Date(endDate);
-        });
+                const allAttendance = await getAllFromStore(STORES.ATTENDANCE);
 
-        for (const student of students) {
-            const studentAttendance = dateFilteredAttendance.filter(rec => rec.studentId === student.id);
-            
-            const totalDays = studentAttendance.length;
-            const present = studentAttendance.filter(r => r.status === 'present').length;
-            const absent = studentAttendance.filter(r => r.status === 'absent').length;
-            const leave = studentAttendance.filter(r => r.isLeave).length;
-            const late = studentAttendance.filter(r => r.isLate).length;
-            const percentage = totalDays > 0 ? ((present / totalDays) * 100).toFixed(2) : 0;
+                // Filter attendance records once by date for performance
+                const dateFilteredAttendance = allAttendance.filter(rec => {
+                    const recDate = new Date(rec.date);
+                    return recDate >= new Date(startDate) && recDate <= new Date(endDate);
+                });
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
+                for (const student of students) {
+                    const studentAttendance = dateFilteredAttendance.filter(rec => rec.studentId === student.id);
+
+                    const totalDays = studentAttendance.length;
+                    const present = studentAttendance.filter(r => r.status === 'present').length;
+                    const absent = studentAttendance.filter(r => r.status === 'absent').length;
+                    const leave = studentAttendance.filter(r => r.isLeave).length;
+                    const late = studentAttendance.filter(r => r.isLate).length;
+                    const percentage = totalDays > 0 ? ((present / totalDays) * 100).toFixed(2) : 0;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                 <td>${student.rollNumber}</td>
                 <td>${student.name}</td>
                 <td>${totalDays}</td>
@@ -3541,17 +3541,17 @@
                 <td>${leave}</td>
                 <td>${percentage}%</td>
             `;
-            tbody.appendChild(row);
-        }
+                    tbody.appendChild(row);
+                }
 
-        container.style.display = 'block';
-    } catch (error) {
-        console.error("Error generating attendance report:", error);
-        showNotification('حاضری رپورٹ بنانے میں خرابی ہوئی۔', 'error');
-    } finally {
-        hideLoading();
-    }
-}
+                container.style.display = 'block';
+            } catch (error) {
+                console.error("Error generating attendance report:", error);
+                showNotification('حاضری رپورٹ بنانے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
         async function loadStudentsForMarks() {
             const classId = parseInt(document.getElementById('marks-class').value);
             const sectionId = parseInt(document.getElementById('marks-section').value);
@@ -3589,49 +3589,49 @@
             }
         }
         async function generateResultCards() {
-    const examId = parseInt(document.getElementById('result-exam').value);
-    const classId = parseInt(document.getElementById('result-class').value);
-    const sectionId = parseInt(document.getElementById('result-section').value);
-    const container = document.getElementById('result-cards-container');
+            const examId = parseInt(document.getElementById('result-exam').value);
+            const classId = parseInt(document.getElementById('result-class').value);
+            const sectionId = parseInt(document.getElementById('result-section').value);
+            const container = document.getElementById('result-cards-container');
 
-    if (isNaN(examId) || isNaN(classId) || isNaN(sectionId)) {
-        showNotification('براہ کرم امتحان، کلاس اور سیکشن منتخب کریں۔', 'error');
-        return;
-    }
+            if (isNaN(examId) || isNaN(classId) || isNaN(sectionId)) {
+                showNotification('براہ کرم امتحان، کلاس اور سیکشن منتخب کریں۔', 'error');
+                return;
+            }
 
-    showLoading();
-    container.innerHTML = '';
-    container.style.display = 'none';
+            showLoading();
+            container.innerHTML = '';
+            container.style.display = 'none';
 
-    try {
-        const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.classId === classId && s.sectionId === sectionId);
-        const allMarks = (await getAllFromStore(STORES.MARKS)).filter(m => m.examId === examId);
-        const exam = await getFromStore(STORES.EXAMS, examId);
+            try {
+                const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.classId === classId && s.sectionId === sectionId);
+                const allMarks = (await getAllFromStore(STORES.MARKS)).filter(m => m.examId === examId);
+                const exam = await getFromStore(STORES.EXAMS, examId);
 
-        if (students.length === 0) {
-            container.innerHTML = `<div class="form-container"><p>اس کلاس/سیکشن میں کوئی طالب علم نہیں ہے۔</p></div>`;
-            container.style.display = 'block';
-            return;
-        }
+                if (students.length === 0) {
+                    container.innerHTML = `<div class="form-container"><p>اس کلاس/سیکشن میں کوئی طالب علم نہیں ہے۔</p></div>`;
+                    container.style.display = 'block';
+                    return;
+                }
 
-        for (const student of students) {
-            const studentMarks = allMarks.filter(m => m.studentId === student.id);
-            let totalObtained = 0;
-            let totalMarks = 0;
-            let resultStatus = 'کامیاب';
+                for (const student of students) {
+                    const studentMarks = allMarks.filter(m => m.studentId === student.id);
+                    let totalObtained = 0;
+                    let totalMarks = 0;
+                    let resultStatus = 'کامیاب';
 
-            let marksTable = `
+                    let marksTable = `
                 <table class="table" style="font-size: 14px; margin-top: 10px;">
                     <thead><tr><th>مضمون</th><th>کل نمبر</th><th>حاصل کردہ</th><th>نتیجہ</th></tr></thead>
                     <tbody>
             `;
 
-            for (const mark of studentMarks) {
-                const subject = await getFromStore(STORES.SUBJECTS, mark.subjectId);
-                totalObtained += mark.obtainedMarks;
-                totalMarks += mark.totalMarks;
-                if (!mark.isPassed) resultStatus = 'ناکام';
-                marksTable += `
+                    for (const mark of studentMarks) {
+                        const subject = await getFromStore(STORES.SUBJECTS, mark.subjectId);
+                        totalObtained += mark.obtainedMarks;
+                        totalMarks += mark.totalMarks;
+                        if (!mark.isPassed) resultStatus = 'ناکام';
+                        marksTable += `
                     <tr>
                         <td>${subject ? subject.name : 'N/A'}</td>
                         <td>${mark.totalMarks}</td>
@@ -3639,12 +3639,12 @@
                         <td>${mark.isPassed ? 'کامیاب' : 'ناکام'}</td>
                     </tr>
                 `;
-            }
-            marksTable += `</tbody></table>`;
-            
-            const percentage = totalMarks > 0 ? ((totalObtained / totalMarks) * 100).toFixed(2) : 0;
-            
-            const cardHTML = `
+                    }
+                    marksTable += `</tbody></table>`;
+
+                    const percentage = totalMarks > 0 ? ((totalObtained / totalMarks) * 100).toFixed(2) : 0;
+
+                    const cardHTML = `
                 <div class="card" style="margin-bottom: 20px; page-break-inside: avoid;">
                     <h4 class="card-title" style="text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">${exam.name} - رزلٹ کارڈ</h4>
                     <div style="display: flex; justify-content: space-between;">
@@ -3663,18 +3663,18 @@
                     </div>
                 </div>
             `;
-            container.innerHTML += cardHTML;
-        }
-        
-        container.style.display = 'block';
+                    container.innerHTML += cardHTML;
+                }
 
-    } catch (error) {
-        console.error("Error generating result cards:", error);
-        showNotification('رزلٹ کارڈ بنانے میں خرابی ہوئی۔', 'error');
-    } finally {
-        hideLoading();
-    }
-}
+                container.style.display = 'block';
+
+            } catch (error) {
+                console.error("Error generating result cards:", error);
+                showNotification('رزلٹ کارڈ بنانے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
         async function searchStudentForFee() {
             const searchTerm = document.getElementById('fee-student-search').value;
             if (!searchTerm) return;
@@ -3729,52 +3729,52 @@
             });
         }
         async function generateFeeReport() {
-    const reportType = document.getElementById('fee-report-type').value;
-    consttbody = document.querySelector('#fee-report-table tbody');
-    const container = document.getElementById('fee-report-table-container');
-    const summaryContainer = document.getElementById('fee-report-summary');
+            const reportType = document.getElementById('fee-report-type').value;
+            consttbody = document.querySelector('#fee-report-table tbody');
+            const container = document.getElementById('fee-report-table-container');
+            const summaryContainer = document.getElementById('fee-report-summary');
 
-    showLoading();
-    tbody.innerHTML = '';
-    container.style.display = 'none';
-    summaryContainer.style.display = 'none';
+            showLoading();
+            tbody.innerHTML = '';
+            container.style.display = 'none';
+            summaryContainer.style.display = 'none';
 
-    try {
-        let allFees = await getAllFromStore(STORES.FEES);
-        let filteredFees = [];
+            try {
+                let allFees = await getAllFromStore(STORES.FEES);
+                let filteredFees = [];
 
-        // Filter records based on report type
-        switch (reportType) {
-            case 'daily':
-                const date = document.getElementById('fee-report-date').value;
-                if (!date) { showNotification('براہ کرم تاریخ منتخب کریں۔', 'error'); return; }
-                filteredFees = allFees.filter(fee => fee.date === date);
-                break;
-            case 'monthly':
-                const month = document.getElementById('fee-report-month').value;
-                const year = parseInt(document.getElementById('fee-report-year').value);
-                if (!month || isNaN(year)) { showNotification('براہ کرم مہینہ اور سال منتخب کریں۔', 'error'); return; }
-                filteredFees = allFees.filter(fee => fee.month === month && fee.year === year);
-                break;
-            case 'class':
-                 const classId = parseInt(document.getElementById('fee-report-class').value);
-                 if (isNaN(classId)) { showNotification('براہ کرم کلاس منتخب کریں۔', 'error'); return; }
-                 const studentsInClass = (await getAllFromIndex(STORES.STUDENTS, 'classId', classId)).map(s => s.id);
-                 filteredFees = allFees.filter(fee => studentsInClass.includes(fee.studentId));
-                 break;
-            default:
-                filteredFees = allFees; // Show all for 'yearly' or other types
-        }
-        
-        let totalCollected = 0;
-        let paidStudents = new Set();
+                // Filter records based on report type
+                switch (reportType) {
+                    case 'daily':
+                        const date = document.getElementById('fee-report-date').value;
+                        if (!date) { showNotification('براہ کرم تاریخ منتخب کریں۔', 'error'); return; }
+                        filteredFees = allFees.filter(fee => fee.date === date);
+                        break;
+                    case 'monthly':
+                        const month = document.getElementById('fee-report-month').value;
+                        const year = parseInt(document.getElementById('fee-report-year').value);
+                        if (!month || isNaN(year)) { showNotification('براہ کرم مہینہ اور سال منتخب کریں۔', 'error'); return; }
+                        filteredFees = allFees.filter(fee => fee.month === month && fee.year === year);
+                        break;
+                    case 'class':
+                        const classId = parseInt(document.getElementById('fee-report-class').value);
+                        if (isNaN(classId)) { showNotification('براہ کرم کلاس منتخب کریں۔', 'error'); return; }
+                        const studentsInClass = (await getAllFromIndex(STORES.STUDENTS, 'classId', classId)).map(s => s.id);
+                        filteredFees = allFees.filter(fee => studentsInClass.includes(fee.studentId));
+                        break;
+                    default:
+                        filteredFees = allFees; // Show all for 'yearly' or other types
+                }
 
-        for (const fee of filteredFees) {
-            const student = await getFromStore(STORES.STUDENTS, fee.studentId);
-            totalCollected += fee.total;
-            paidStudents.add(fee.studentId);
-            const row = document.createElement('tr');
-            row.innerHTML = `
+                let totalCollected = 0;
+                let paidStudents = new Set();
+
+                for (const fee of filteredFees) {
+                    const student = await getFromStore(STORES.STUDENTS, fee.studentId);
+                    totalCollected += fee.total;
+                    paidStudents.add(fee.studentId);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                 <td>${fee.receiptNumber}</td>
                 <td>${student ? student.name : 'N/A'}</td>
                 <td>${student ? student.className : 'N/A'}</td>
@@ -3785,65 +3785,65 @@
                 <td>${formatCurrency(fee.discount)}</td>
                 <td>${formatCurrency(fee.total)}</td>
             `;
-            tbody.appendChild(row);
+                    tbody.appendChild(row);
+                }
+
+                if (filteredFees.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">اس مدت کے لیے کوئی فیس ریکارڈ نہیں ملا۔</td></tr>';
+                }
+
+                // Update summary
+                document.getElementById('fee-report-total-collected').value = formatCurrency(totalCollected);
+                document.getElementById('fee-report-total-students').value = (await getCount(STORES.STUDENTS)); // Or based on filter
+                document.getElementById('fee-report-paid-students').value = paidStudents.size;
+
+                summaryContainer.style.display = 'block';
+                container.style.display = 'block';
+
+            } catch (error) {
+                console.error("Error generating fee report:", error);
+                showNotification('فیس رپورٹ بنانے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
+            }
         }
-
-        if (filteredFees.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">اس مدت کے لیے کوئی فیس ریکارڈ نہیں ملا۔</td></tr>';
-        }
-
-        // Update summary
-        document.getElementById('fee-report-total-collected').value = formatCurrency(totalCollected);
-        document.getElementById('fee-report-total-students').value = (await getCount(STORES.STUDENTS)); // Or based on filter
-        document.getElementById('fee-report-paid-students').value = paidStudents.size;
-
-        summaryContainer.style.display = 'block';
-        container.style.display = 'block';
-
-    } catch (error) {
-        console.error("Error generating fee report:", error);
-        showNotification('فیس رپورٹ بنانے میں خرابی ہوئی۔', 'error');
-    } finally {
-        hideLoading();
-    }
-}
         async function generateDefaultersReport() {
-    const classId = document.getElementById('defaulter-class').value;
-    const month = document.getElementById('defaulter-month').value;
-    const year = parseInt(document.getElementById('defaulter-year').value);
-    const tbody = document.querySelector('#defaulters-table tbody');
-    const container = document.getElementById('defaulters-table-container');
+            const classId = document.getElementById('defaulter-class').value;
+            const month = document.getElementById('defaulter-month').value;
+            const year = parseInt(document.getElementById('defaulter-year').value);
+            const tbody = document.querySelector('#defaulters-table tbody');
+            const container = document.getElementById('defaulters-table-container');
 
-    if (!month || isNaN(year)) {
-        showNotification('براہ کرم مہینہ اور سال منتخب کریں۔', 'error');
-        return;
-    }
+            if (!month || isNaN(year)) {
+                showNotification('براہ کرم مہینہ اور سال منتخب کریں۔', 'error');
+                return;
+            }
 
-    showLoading();
-    tbody.innerHTML = '';
-    container.style.display = 'none';
+            showLoading();
+            tbody.innerHTML = '';
+            container.style.display = 'none';
 
-    try {
-        let students = await getAllFromStore(STORES.STUDENTS);
-        if (classId !== 'all') {
-            students = students.filter(s => s.classId === parseInt(classId));
-        }
+            try {
+                let students = await getAllFromStore(STORES.STUDENTS);
+                if (classId !== 'all') {
+                    students = students.filter(s => s.classId === parseInt(classId));
+                }
 
-        const feeRecords = await getAllFromStore(STORES.FEES);
-        // Create a quick lookup map for paid fees
-        const paidFees = new Map();
-        feeRecords.forEach(rec => {
-            const key = `${rec.studentId}-${rec.month}-${rec.year}`;
-            paidFees.set(key, true);
-        });
+                const feeRecords = await getAllFromStore(STORES.FEES);
+                // Create a quick lookup map for paid fees
+                const paidFees = new Map();
+                feeRecords.forEach(rec => {
+                    const key = `${rec.studentId}-${rec.month}-${rec.year}`;
+                    paidFees.set(key, true);
+                });
 
-        let hasDefaulters = false;
-        for (const student of students) {
-            const lookupKey = `${student.id}-${month}-${year}`;
-            if (!paidFees.has(lookupKey)) {
-                hasDefaulters = true;
-                const row = document.createElement('tr');
-                row.innerHTML = `
+                let hasDefaulters = false;
+                for (const student of students) {
+                    const lookupKey = `${student.id}-${month}-${year}`;
+                    if (!paidFees.has(lookupKey)) {
+                        hasDefaulters = true;
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
                     <td>${student.rollNumber}</td>
                     <td>${student.name}</td>
                     <td>${student.className}</td>
@@ -3853,22 +3853,22 @@
                     <td>${student.contact}</td>
                     <td><button class="btn btn-primary btn-sm">نوٹس بھیجیں</button></td>
                 `;
-                tbody.appendChild(row);
+                        tbody.appendChild(row);
+                    }
+                }
+
+                if (!hasDefaulters) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">اس مہینے کوئی ڈیفالٹر نہیں ہے۔</td></tr>';
+                }
+
+                container.style.display = 'block';
+            } catch (error) {
+                console.error("Error generating defaulters report:", error);
+                showNotification('ڈیفالٹرز رپورٹ بنانے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
             }
         }
-        
-        if (!hasDefaulters) {
-             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">اس مہینے کوئی ڈیفالٹر نہیں ہے۔</td></tr>';
-        }
-
-        container.style.display = 'block';
-    } catch (error) {
-        console.error("Error generating defaulters report:", error);
-        showNotification('ڈیفالٹرز رپورٹ بنانے میں خرابی ہوئی۔', 'error');
-    } finally {
-        hideLoading();
-    }
-}
         async function searchEmployeeForSalary() {
             const searchTerm = document.getElementById('salary-employee-search').value;
             const employeeType = document.getElementById('salary-employee-type').value;
@@ -3899,73 +3899,73 @@
             }
         }
         async function generateSalaryReport() {
-    const reportType = document.getElementById('salary-report-type').value;
-    const employeeTypeFilter = document.getElementById('salary-report-employee-type').value;
-    const tbody = document.querySelector('#salary-report-table tbody');
-    const container = document.getElementById('salary-report-table-container');
-    const summaryContainer = document.getElementById('salary-report-summary');
+            const reportType = document.getElementById('salary-report-type').value;
+            const employeeTypeFilter = document.getElementById('salary-report-employee-type').value;
+            const tbody = document.querySelector('#salary-report-table tbody');
+            const container = document.getElementById('salary-report-table-container');
+            const summaryContainer = document.getElementById('salary-report-summary');
 
-    showLoading();
-    tbody.innerHTML = '';
-    container.style.display = 'none';
-    summaryContainer.style.display = 'none';
+            showLoading();
+            tbody.innerHTML = '';
+            container.style.display = 'none';
+            summaryContainer.style.display = 'none';
 
-    try {
-        let allSalaries = await getAllFromStore(STORES.SALARY);
-        let filteredSalaries = [];
+            try {
+                let allSalaries = await getAllFromStore(STORES.SALARY);
+                let filteredSalaries = [];
 
-        // 1. Filter by Primary Criteria (Month, Year, or Employee)
-        switch (reportType) {
-            case 'monthly':
-                const month = document.getElementById('salary-report-month').value;
-                const year = parseInt(document.getElementById('salary-report-year').value);
-                if (!month || isNaN(year)) {
-                    showNotification('براہ کرم مہینہ اور سال منتخب کریں۔', 'error');
-                    return;
+                // 1. Filter by Primary Criteria (Month, Year, or Employee)
+                switch (reportType) {
+                    case 'monthly':
+                        const month = document.getElementById('salary-report-month').value;
+                        const year = parseInt(document.getElementById('salary-report-year').value);
+                        if (!month || isNaN(year)) {
+                            showNotification('براہ کرم مہینہ اور سال منتخب کریں۔', 'error');
+                            return;
+                        }
+                        filteredSalaries = allSalaries.filter(s => s.month === month && s.year === year);
+                        break;
+
+                    case 'employee':
+                        const employeeIdVal = document.getElementById('salary-report-employee').value;
+                        if (!employeeIdVal || employeeIdVal === 'all') {
+                            showNotification('براہ کرم ایک ملازم منتخب کریں۔', 'error');
+                            return;
+                        }
+                        const employeeId = parseInt(employeeIdVal.split('_').pop()); // Handles values like 'teacher_1'
+                        filteredSalaries = allSalaries.filter(s => s.employeeId === employeeId);
+                        break;
+
+                    case 'yearly':
+                        const reportYear = parseInt(document.getElementById('salary-report-year').value);
+                        if (isNaN(reportYear)) {
+                            showNotification('براہ کرم سال منتخب کریں۔', 'error');
+                            return;
+                        }
+                        filteredSalaries = allSalaries.filter(s => s.year === reportYear);
+                        break;
+
+                    default:
+                        filteredSalaries = allSalaries;
                 }
-                filteredSalaries = allSalaries.filter(s => s.month === month && s.year === year);
-                break;
 
-            case 'employee':
-                const employeeIdVal = document.getElementById('salary-report-employee').value;
-                if (!employeeIdVal || employeeIdVal === 'all') {
-                    showNotification('براہ کرم ایک ملازم منتخب کریں۔', 'error');
-                    return;
+                // 2. Further filter by Employee Type if specified
+                if (employeeTypeFilter !== 'all') {
+                    filteredSalaries = filteredSalaries.filter(s => s.employeeType === employeeTypeFilter);
                 }
-                const employeeId = parseInt(employeeIdVal.split('_').pop()); // Handles values like 'teacher_1'
-                filteredSalaries = allSalaries.filter(s => s.employeeId === employeeId);
-                break;
-            
-            case 'yearly':
-                const reportYear = parseInt(document.getElementById('salary-report-year').value);
-                if (isNaN(reportYear)) {
-                     showNotification('براہ کرم سال منتخب کریں۔', 'error');
-                     return;
-                }
-                filteredSalaries = allSalaries.filter(s => s.year === reportYear);
-                break;
-                
-            default:
-                filteredSalaries = allSalaries;
-        }
 
-        // 2. Further filter by Employee Type if specified
-        if (employeeTypeFilter !== 'all') {
-            filteredSalaries = filteredSalaries.filter(s => s.employeeType === employeeTypeFilter);
-        }
+                // 3. Process and display the filtered data
+                let totalPaid = 0;
+                let paidEmployees = new Set();
 
-        // 3. Process and display the filtered data
-        let totalPaid = 0;
-        let paidEmployees = new Set();
+                for (const salary of filteredSalaries) {
+                    const employeeStore = salary.employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
+                    const employee = await getFromStore(employeeStore, salary.employeeId);
+                    totalPaid += salary.total;
+                    paidEmployees.add(salary.employeeId);
 
-        for (const salary of filteredSalaries) {
-            const employeeStore = salary.employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
-            const employee = await getFromStore(employeeStore, salary.employeeId);
-            totalPaid += salary.total;
-            paidEmployees.add(salary.employeeId);
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                 <td>${salary.voucherNumber || '-'}</td>
                 <td>${salary.employeeName}</td>
                 <td>${employee ? (employee.designation || employee.specialization) : 'N/A'}</td>
@@ -3976,66 +3976,66 @@
                 <td>${formatCurrency(salary.deductions + salary.absenceDeduction + salary.tax)}</td>
                 <td>${formatCurrency(salary.total)}</td>
             `;
-            tbody.appendChild(row);
+                    tbody.appendChild(row);
+                }
+
+                if (filteredSalaries.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">اس معیار کے مطابق کوئی تنخواہ ریکارڈ نہیں ملا۔</td></tr>';
+                }
+
+                // 4. Update Summary Cards
+                document.getElementById('salary-report-total-paid').value = formatCurrency(totalPaid);
+                document.getElementById('salary-report-total-employees').value = (await getCount(STORES.TEACHERS)) + (await getCount(STORES.STAFF));
+                document.getElementById('salary-report-paid-employees').value = paidEmployees.size;
+
+                summaryContainer.style.display = 'block';
+                container.style.display = 'block';
+
+            } catch (error) {
+                console.error("Error generating salary report:", error);
+                showNotification('تنخواہ رپورٹ بنانے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
+            }
         }
+        async function generateReport() {
+            const type = document.getElementById('report-type').value;
+            const outputDiv = document.getElementById('report-output');
 
-        if (filteredSalaries.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">اس معیار کے مطابق کوئی تنخواہ ریکارڈ نہیں ملا۔</td></tr>';
+            if (!type) {
+                showNotification('براہ کرم رپورٹ کی قسم منتخب کریں', 'error');
+                return;
+            }
+
+            outputDiv.style.display = 'block';
+            outputDiv.innerHTML = '<div class="spinner"></div>'; // Show loader in output area
+
+            try {
+                let htmlContent = '';
+                switch (type) {
+                    case 'student_strength':
+                        htmlContent = await generateStudentStrengthReport();
+                        break;
+                    case 'class_list':
+                        htmlContent = await generateClassListReport();
+                        break;
+                    case 'fee_defaulters':
+                        // For this, we will reuse the logic from the dedicated fee defaulters tab.
+                        // It's better to show a message redirecting the user.
+                        showNotification('فیس ڈیفالٹرز رپورٹ کے لیے، براہ کرم "فیس" سیکشن میں "بقایا فیس والے" ٹیب استعمال کریں۔', 'info');
+                        htmlContent = '<p>یہ رپورٹ "فیس" سیکشن میں دستیاب ہے۔</p>';
+                        break;
+                    default:
+                        htmlContent = '<p>منتخب کردہ رپورٹ کی قسم کے لیے کوئی عمل درآمد نہیں ہے۔</p>';
+                }
+                outputDiv.innerHTML = htmlContent;
+            } catch (e) {
+                console.error("Error in generic report generation:", e);
+                outputDiv.innerHTML = '<p style="color:red;">رپورٹ بنانے میں خرابی ہوئی۔</p>';
+            } finally {
+                // The loader inside outputDiv is replaced by content, so no need to hide it separately.
+            }
         }
-
-        // 4. Update Summary Cards
-        document.getElementById('salary-report-total-paid').value = formatCurrency(totalPaid);
-        document.getElementById('salary-report-total-employees').value = (await getCount(STORES.TEACHERS)) + (await getCount(STORES.STAFF));
-        document.getElementById('salary-report-paid-employees').value = paidEmployees.size;
-
-        summaryContainer.style.display = 'block';
-        container.style.display = 'block';
-
-    } catch (error) {
-        console.error("Error generating salary report:", error);
-        showNotification('تنخواہ رپورٹ بنانے میں خرابی ہوئی۔', 'error');
-    } finally {
-        hideLoading();
-    }
-}
-async function generateReport() {
-    const type = document.getElementById('report-type').value;
-    const outputDiv = document.getElementById('report-output');
-    
-    if (!type) {
-        showNotification('براہ کرم رپورٹ کی قسم منتخب کریں', 'error');
-        return;
-    }
-
-    outputDiv.style.display = 'block';
-    outputDiv.innerHTML = '<div class="spinner"></div>'; // Show loader in output area
-
-    try {
-        let htmlContent = '';
-        switch (type) {
-            case 'student_strength':
-                htmlContent = await generateStudentStrengthReport();
-                break;
-            case 'class_list':
-                htmlContent = await generateClassListReport();
-                break;
-            case 'fee_defaulters':
-                // For this, we will reuse the logic from the dedicated fee defaulters tab.
-                // It's better to show a message redirecting the user.
-                showNotification('فیس ڈیفالٹرز رپورٹ کے لیے، براہ کرم "فیس" سیکشن میں "بقایا فیس والے" ٹیب استعمال کریں۔', 'info');
-                htmlContent = '<p>یہ رپورٹ "فیس" سیکشن میں دستیاب ہے۔</p>';
-                break;
-            default:
-                htmlContent = '<p>منتخب کردہ رپورٹ کی قسم کے لیے کوئی عمل درآمد نہیں ہے۔</p>';
-        }
-        outputDiv.innerHTML = htmlContent;
-    } catch (e) {
-        console.error("Error in generic report generation:", e);
-        outputDiv.innerHTML = '<p style="color:red;">رپورٹ بنانے میں خرابی ہوئی۔</p>';
-    } finally {
-        // The loader inside outputDiv is replaced by content, so no need to hide it separately.
-    }
-}
         function toggleFeeReportFields() {
             const reportType = document.getElementById('fee-report-type').value;
             document.getElementById('fee-report-date-row').style.display = 'none';
@@ -7869,35 +7869,35 @@ async function generateReport() {
             applyTheme(defaultColor);
             showNotification('تھیم ڈیفالٹ پر ری سیٹ ہو گیا', 'success');
         }
-       async function populateAttendanceSections(classDropdownId, sectionDropdownId) {
-    const classId = parseInt(document.getElementById(classDropdownId).value);
-    const sectionDropdown = document.getElementById(sectionDropdownId);
-    sectionDropdown.innerHTML = '<option value="">...</option>'; 
+        async function populateAttendanceSections(classDropdownId, sectionDropdownId) {
+            const classId = parseInt(document.getElementById(classDropdownId).value);
+            const sectionDropdown = document.getElementById(sectionDropdownId);
+            sectionDropdown.innerHTML = '<option value="">...</option>';
 
-    if (isNaN(classId)) {
-        sectionDropdown.innerHTML = '<option value="">پہلے کلاس منتخب کریں</option>';
-        return;
-    }
+            if (isNaN(classId)) {
+                sectionDropdown.innerHTML = '<option value="">پہلے کلاس منتخب کریں</option>';
+                return;
+            }
 
-    try {
-        const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
-        
-        if (sections && sections.length > 0) {
-            sectionDropdown.innerHTML = '<option value="">سیکشن منتخب کریں</option>';
-            sections.forEach(section => {
-                const option = document.createElement('option');
-                option.value = section.id;
-                option.textContent = section.name;
-                sectionDropdown.appendChild(option);
-            });
-        } else {
-            sectionDropdown.innerHTML = '<option value="">کوئی سیکشن نہیں ملا</option>';
+            try {
+                const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
+
+                if (sections && sections.length > 0) {
+                    sectionDropdown.innerHTML = '<option value="">سیکشن منتخب کریں</option>';
+                    sections.forEach(section => {
+                        const option = document.createElement('option');
+                        option.value = section.id;
+                        option.textContent = section.name;
+                        sectionDropdown.appendChild(option);
+                    });
+                } else {
+                    sectionDropdown.innerHTML = '<option value="">کوئی سیکشن نہیں ملا</option>';
+                }
+            } catch (error) {
+                console.error('Error populating sections:', error);
+                sectionDropdown.innerHTML = '<option value="">سیکشن لوڈ کرنے میں خرابی</option>';
+            }
         }
-    } catch (error) {
-        console.error('Error populating sections:', error);
-        sectionDropdown.innerHTML = '<option value="">سیکشن لوڈ کرنے میں خرابی</option>';
-    }
-}
 
 
         async function addToStore(storeName, data, upsert = false) {
