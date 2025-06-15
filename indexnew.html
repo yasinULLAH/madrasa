@@ -9,7 +9,6 @@
         html,
         body {
             height: 100%;
-            overflow: hidden;
         }
 
         * {
@@ -2461,360 +2460,411 @@
                 </div>
             </div>
         </div>
-    </div>
-    </div>
-    <div class="section-view" id="backup-view">
-        <h2>بیک اپ اور بحالی</h2>
-        <div class="form-container no-print">
-            <div class="form-title">دستی بیک اپ</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">بیک اپ کی قسم</label>
-                    <select class="form-control" id="backup-type">
-                        <option value="full">مکمل بیک اپ</option>
-                        <option value="students">صرف طلباء</option>
-                        <option value="teachers">صرف اساتذہ</option>
-                        <option value="staff">صرف عملہ</option>
-                        <option value="fees">صرف فیس</option>
-                        <option value="salaries">صرف تنخواہیں</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">بیک اپ فارمیٹ</label>
-                    <select class="form-control" id="backup-format">
-                        <option value="json">JSON</option>
-                    </select>
-                </div>
-                <div class="form-group" style="align-self: flex-end;">
-                    <button type="button" class="btn btn-primary" id="create-backup">بیک اپ بنائیں</button>
-                </div>
-            </div>
-        </div>
-        <div class="form-container no-print">
-            <div class="form-title">ڈیٹا بحال کریں</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">بیک اپ فائل منتخب کریں</label>
-                    <input type="file" class="form-control" id="restore-file" accept=".json">
-                </div>
-                <div class="form-group" style="align-self: flex-end;">
-                    <button type="button" class="btn btn-danger" id="restore-backup">ڈیٹا بحال کریں</button>
-                </div>
-            </div>
-        </div>
-        <div class="form-container no-print">
-            <div class="form-title">آٹومیٹک بیک اپ ترتیبات</div>
-            <div class="form-row">
-                <div class="form-group" style="flex: 0 0 auto; align-items: center; display: flex;">
-                    <input type="checkbox" id="auto-backup-enable"
-                        style="width: 20px; height: 20px; margin-left: 10px;">
-                    <label class="form-label" for="auto-backup-enable" style="margin-bottom: 0;">آٹومیٹک بیک اپ فعال
-                        کریں</label>
-                </div>
-            </div>
-            <div id="auto-backup-options" style="display: none;">
+
+        <div class="section-view" id="backup-view">
+            <h2>بیک اپ اور بحالی</h2>
+            <div class="form-container no-print">
+                <div class="form-title">دستی بیک اپ</div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">بیک اپ کی فریکوئنسی</label>
-                        <select class="form-control" id="auto-backup-frequency" required>
-                            <option value="daily">روزانہ</option>
-                            <option value="weekly">ہفتہ وار</option>
-                            <option value="monthly" selected>ماہانہ</option>
+                        <label class="form-label">بیک اپ کی قسم</label>
+                        <select class="form-control" id="backup-type">
+                            <option value="full">مکمل بیک اپ</option>
+                            <option value="students">صرف طلباء</option>
+                            <option value="teachers">صرف اساتذہ</option>
+                            <option value="staff">صرف عملہ</option>
+                            <option value="fees">صرف فیس</option>
+                            <option value="salaries">صرف تنخواہیں</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">بیک اپ رکھنے کی مدت</label>
-                        <select class="form-control" id="auto-backup-retention" required>
-                            <option value="1">1 مہینہ</option>
-                            <option value="3" selected>3 مہینے</option>
-                            <option value="6">6 مہینے</option>
-                            <option value="12">1 سال</option>
+                        <label class="form-label">بیک اپ فارمیٹ</label>
+                        <select class="form-control" id="backup-format">
+                            <option value="json">JSON</option>
                         </select>
                     </div>
-                </div>
-                <div class="form-row">
-                    <button type="button" class="btn btn-primary" id="save-auto-backup">ترتیبات محفوظ کریں</button>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button type="button" class="btn btn-primary" id="create-backup">بیک اپ بنائیں</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="table-container">
-            <div class="form-title">بیک اپ تاریخ</div>
-            <table class="table" id="backup-history-table">
-                <thead>
-                    <tr>
-                        <th>نمبر</th>
-                        <th>تاریخ</th>
-                        <th>وقت</th>
-                        <th>قسم</th>
-                        <th>سائز</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-<div class="section-view" id="library-view">
-    <h2>لائبریری</h2>
-    <div class="tabs">
-        <div class="tab active" data-tab="books-list">کتابوں کی فہرست</div>
-        <div class="tab" data-tab="add-book">نئی کتاب</div>
-        <div class="tab" data-tab="issue-book">کتاب جاری کریں</div>
-        <div class="tab" data-tab="return-book">کتاب واپس</div>
-    </div>
-    <div class="tab-content active" id="books-list">
-        <div class="table-container">
-            <table class="table" id="books-table">
-                <thead>
-                    <tr><th>کتاب آئی ڈی</th><th>کتاب کا نام</th><th>مصنف</th><th>کیٹیگری</th><th>دستیاب</th><th>عمل</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-    <div class="tab-content" id="add-book">
-        <div class="form-container">
-            <div class="form-title">نئی کتاب شامل کریں</div>
-            <form id="book-form">
+            <div class="form-container no-print">
+                <div class="form-title">ڈیٹا بحال کریں</div>
                 <div class="form-row">
-                    <div class="form-group"><label class="form-label">کتاب کا نام</label><input type="text" class="form-control" id="book-name" required></div>
-                    <div class="form-group"><label class="form-label">مصنف</label><input type="text" class="form-control" id="book-author" required></div>
+                    <div class="form-group">
+                        <label class="form-label">بیک اپ فائل منتخب کریں</label>
+                        <input type="file" class="form-control" id="restore-file" accept=".json">
+                    </div>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button type="button" class="btn btn-danger" id="restore-backup">ڈیٹا بحال کریں</button>
+                    </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">کیٹیگری</label><input type="text" class="form-control" id="book-category" required></div>
-                    <div class="form-group"><label class="form-label">ISBN</label><input type="text" class="form-control" id="book-isbn"></div>
-                </div>
-                <div class="form-row">
-                    <button type="submit" class="btn btn-primary">کتاب شامل کریں</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="tab-content" id="issue-book">
-        <div class="form-container">
-            <div class="form-title">کتاب جاری کریں</div>
-            <form id="issue-form">
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">کتاب</label><select class="form-control" id="issue-book-select" required></select></div>
-                    <div class="form-group"><label class="form-label">طالب علم</label><select class="form-control" id="issue-student-select" required></select></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">جاری کرنے کی تاریخ</label><input type="date" class="form-control" id="issue-date" required></div>
-                    <div class="form-group"><label class="form-label">واپسی کی تاریخ</label><input type="date" class="form-control" id="return-due-date" required></div>
-                </div>
-                <div class="form-row">
-                    <button type="submit" class="btn btn-primary">کتاب جاری کریں</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="tab-content" id="return-book">
-        <div class="form-container">
-            <div class="form-title">کتاب واپس کریں</div>
-            <form id="return-form">
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">جاری شدہ کتابیں</label><select class="form-control" id="return-book-select" required></select></div>
-                    <div class="form-group"><label class="form-label">واپسی کی تاریخ</label><input type="date" class="form-control" id="actual-return-date" required></div>
-                </div>
-                <div class="form-row">
-                    <button type="submit" class="btn btn-primary">کتاب واپس کریں</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-    <div class="section-view" id="users-view">
-        <h2>صارفین اور رولز</h2>
-        <div class="tabs">
-            <div class="tab active" data-tab="users-list">صارفین کی فہرست</div>
-            <div class="tab" data-tab="add-user">نیا صارف</div>
-            <div class="tab" data-tab="user-roles">صارفین کے رولز</div>
-        </div>
-        <div class="tab-content active" id="users-list">
-            <div class="table-container">
-                <table class="table" id="users-table">
-                    <thead>
-                        <tr>
-                            <th>صارف نام</th>
-                            <th>نام</th>
-                            <th>ای میل</th>
-                            <th>رول</th>
-                            <th>حیثیت</th>
-                            <th>عمل</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
             </div>
-        </div>
-        <div class="tab-content" id="add-user">
-            <div class="form-container">
-                <div class="form-title">نیا صارف بنائیں</div>
-                <form id="user-form">
-                    <div class="form-row">
-                        <div class="form-group"><label class="form-label">نام</label><input type="text"
-                                class="form-control" id="user-name" required></div>
-                        <div class="form-group"><label class="form-label">صارف نام</label><input type="text"
-                                class="form-control" id="user-username" required></div>
+            <div class="form-container no-print">
+                <div class="form-title">آٹومیٹک بیک اپ ترتیبات</div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 0 0 auto; align-items: center; display: flex;">
+                        <input type="checkbox" id="auto-backup-enable"
+                            style="width: 20px; height: 20px; margin-left: 10px;">
+                        <label class="form-label" for="auto-backup-enable" style="margin-bottom: 0;">آٹومیٹک بیک اپ فعال
+                            کریں</label>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group"><label class="form-label">پاس ورڈ</label><input type="password"
-                                class="form-control" id="user-password" required></div>
-                        <div class="form-group"><label class="form-label">پاس ورڈ کی تصدیق</label><input type="password"
-                                class="form-control" id="user-confirm-password" required></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label class="form-label">ای میل</label><input type="email"
-                                class="form-control" id="user-email" required></div>
-                        <div class="form-group"><label class="form-label">موبائل</label><input type="tel"
-                                class="form-control" id="user-mobile"></div>
-                    </div>
+                </div>
+                <div id="auto-backup-options" style="display: none;">
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">رول</label>
-                            <select class="form-control" id="user-role" required>
-                                <option value="admin">ایڈمن</option>
-                                <option value="teacher">استاد</option>
+                            <label class="form-label">بیک اپ کی فریکوئنسی</label>
+                            <select class="form-control" id="auto-backup-frequency" required>
+                                <option value="daily">روزانہ</option>
+                                <option value="weekly">ہفتہ وار</option>
+                                <option value="monthly" selected>ماہانہ</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">حیثیت</label>
-                            <select class="form-control" id="user-status" required>
-                                <option value="active">فعال</option>
-                                <option value="inactive">غیر فعال</option>
+                            <label class="form-label">بیک اپ رکھنے کی مدت</label>
+                            <select class="form-control" id="auto-backup-retention" required>
+                                <option value="1">1 مہینہ</option>
+                                <option value="3" selected>3 مہینے</option>
+                                <option value="6">6 مہینے</option>
+                                <option value="12">1 سال</option>
                             </select>
                         </div>
                     </div>
-                    <div class="form-row"><button type="submit" class="btn btn-primary">صارف بنائیں</button></div>
-                </form>
-            </div>
-        </div>
-        <div class="tab-content" id="user-roles">
-            <div class="form-container">
-                <div class="form-title">نیا رول بنائیں</div>
-                <form id="role-form">
                     <div class="form-row">
-                        <div class="form-group"><label class="form-label">رول کا نام</label><input type="text"
-                                class="form-control" id="role-name" required></div>
-                        <div class="form-group"><label class="form-label">تفصیل</label><input type="text"
-                                class="form-control" id="role-description"></div>
+                        <button type="button" class="btn btn-primary" id="save-auto-backup">ترتیبات محفوظ کریں</button>
                     </div>
-                    <div class="form-row"><button type="submit" class="btn btn-primary">رول بنائیں</button></div>
-                </form>
+                </div>
             </div>
             <div class="table-container">
-                <table class="table" id="roles-table">
+                <div class="form-title">بیک اپ تاریخ</div>
+                <table class="table" id="backup-history-table">
                     <thead>
                         <tr>
-                            <th>رول نام</th>
-                            <th>تفصیل</th>
+                            <th>نمبر</th>
+                            <th>تاریخ</th>
+                            <th>وقت</th>
+                            <th>قسم</th>
+                            <th>سائز</th>
                             <th>عمل</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
-    </div>
-<div class="section-view" id="reports-view">
-    <h2>رپورٹس</h2>
-    <div class="tabs">
-        <div class="tab active" data-tab="student-reports">طلباء کی رپورٹس</div>
-        <div class="tab" data-tab="fee-reports-tab">فیس رپورٹس</div>
-        <div class="tab" data-tab="attendance-reports-tab">حاضری رپورٹس</div>
-    </div>
-    <div class="tab-content active" id="student-reports">
-        <div class="form-container">
-            <div class="form-title">طلباء کی رپورٹ</div>
-            <div class="form-row">
-                <div class="form-group"><label class="form-label">کلاس</label><select class="form-control" id="report-class"></select></div>
-                <div class="form-group"><label class="form-label">رپورٹ کی قسم</label><select class="form-control" id="student-report-type"><option value="all">تمام طلباء</option><option value="present">موجودہ طلباء</option></select></div>
+        <div class="section-view" id="library-view">
+            <h2>لائبریری</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="books-list">کتابوں کی فہرست</div>
+                <div class="tab" data-tab="add-book">نئی کتاب</div>
+                <div class="tab" data-tab="issue-book">کتاب جاری کریں</div>
+                <div class="tab" data-tab="return-book">کتاب واپس</div>
             </div>
-            <div class="form-row">
-                <button type="button" class="btn btn-primary" id="generate-student-report">رپورٹ بنائیں</button>
+            <div class="tab-content active" id="books-list">
+                <div class="table-container">
+                    <table class="table" id="books-table">
+                        <thead>
+                            <tr>
+                                <th>کتاب آئی ڈی</th>
+                                <th>کتاب کا نام</th>
+                                <th>مصنف</th>
+                                <th>کیٹیگری</th>
+                                <th>دستیاب</th>
+                                <th>عمل</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-content" id="add-book">
+                <div class="form-container">
+                    <div class="form-title">نئی کتاب شامل کریں</div>
+                    <form id="book-form">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">کتاب کا نام</label><input type="text"
+                                    class="form-control" id="book-name" required></div>
+                            <div class="form-group"><label class="form-label">مصنف</label><input type="text"
+                                    class="form-control" id="book-author" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">کیٹیگری</label><input type="text"
+                                    class="form-control" id="book-category" required></div>
+                            <div class="form-group"><label class="form-label">ISBN</label><input type="text"
+                                    class="form-control" id="book-isbn"></div>
+                        </div>
+                        <div class="form-row">
+                            <button type="submit" class="btn btn-primary">کتاب شامل کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="tab-content" id="issue-book">
+                <div class="form-container">
+                    <div class="form-title">کتاب جاری کریں</div>
+                    <form id="issue-form">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">کتاب</label><select class="form-control"
+                                    id="issue-book-select" required></select></div>
+                            <div class="form-group"><label class="form-label">طالب علم</label><select
+                                    class="form-control" id="issue-student-select" required></select></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">جاری کرنے کی تاریخ</label><input
+                                    type="date" class="form-control" id="issue-date" required></div>
+                            <div class="form-group"><label class="form-label">واپسی کی تاریخ</label><input type="date"
+                                    class="form-control" id="return-due-date" required></div>
+                        </div>
+                        <div class="form-row">
+                            <button type="submit" class="btn btn-primary">کتاب جاری کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="tab-content" id="return-book">
+                <div class="form-container">
+                    <div class="form-title">کتاب واپس کریں</div>
+                    <form id="return-form">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">جاری شدہ کتابیں</label><select
+                                    class="form-control" id="return-book-select" required></select></div>
+                            <div class="form-group"><label class="form-label">واپسی کی تاریخ</label><input type="date"
+                                    class="form-control" id="actual-return-date" required></div>
+                        </div>
+                        <div class="form-row">
+                            <button type="submit" class="btn btn-primary">کتاب واپس کریں</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-        <div class="table-container" id="student-report-container" style="display: none;">
-            <table class="table" id="student-report-table">
-                <thead>
-                    <tr><th>رول نمبر</th><th>نام</th><th>والد کا نام</th><th>کلاس</th><th>رابطہ نمبر</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-    <div class="tab-content" id="fee-reports-tab">
-        <div class="form-container">
-            <div class="form-title">فیس رپورٹ</div>
-            <div class="form-row">
-                <div class="form-group"><label class="form-label">مہینہ</label><select class="form-control" id="fee-report-month2"><option value="1">جنوری</option><option value="2">فروری</option></select></div>
-                <div class="form-group"><label class="form-label">سال</label><input type="number" class="form-control" id="fee-report-year2"></div>
-            </div>
-            <div class="form-row">
-                <button type="button" class="btn btn-primary" id="generate-fee-report2">فیس رپورٹ بنائیں</button>
-            </div>
-        </div>
-    </div>
-    <div class="tab-content" id="attendance-reports-tab">
-        <div class="form-container">
-            <div class="form-title">حاضری رپورٹ</div>
-            <div class="form-row">
-                <div class="form-group"><label class="form-label">کلاس</label><select class="form-control" id="attendance-report-class2"></select></div>
-                <div class="form-group"><label class="form-label">مہینہ</label><select class="form-control" id="attendance-report-month2"><option value="1">جنوری</option></select></div>
-            </div>
-            <div class="form-row">
-                <button type="button" class="btn btn-primary" id="generate-attendance-report2">حاضری رپورٹ بنائیں</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="section-view" id="settings-view">
-    <h2>ترتیبات</h2>
-    <div class="tabs">
-        <div class="tab active" data-tab="general-settings">عمومی ترتیبات</div>
-        <div class="tab" data-tab="system-settings">سسٹم ترتیبات</div>
-    </div>
-    <div class="tab-content active" id="general-settings">
-        <div class="form-container">
-            <div class="form-title">مدرسہ کی معلومات</div>
-            <form id="school-settings-form">
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">مدرسہ کا نام</label><input type="text" class="form-control" id="school-name" required></div>
-                    <div class="form-group"><label class="form-label">پرنسپل کا نام</label><input type="text" class="form-control" id="principal-name" required></div>
+        <div class="section-view" id="users-view">
+            <h2>صارفین اور رولز</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="users-list">صارفین کی فہرست</div>
+                <div class="tab" data-tab="add-user">نیا صارف</div>
+                <div class="tab" data-tab="user-roles">صارفین کے رولز</div>
+            </div>
+            <div class="tab-content active" id="users-list">
+                <div class="table-container">
+                    <table class="table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>صارف نام</th>
+                                <th>نام</th>
+                                <th>ای میل</th>
+                                <th>رول</th>
+                                <th>حیثیت</th>
+                                <th>عمل</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">پتہ</label><textarea class="form-control" id="school-address" rows="3" required></textarea></div>
+            </div>
+            <div class="tab-content" id="add-user">
+                <div class="form-container">
+                    <div class="form-title">نیا صارف بنائیں</div>
+                    <form id="user-form">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">نام</label><input type="text"
+                                    class="form-control" id="user-name" required></div>
+                            <div class="form-group"><label class="form-label">صارف نام</label><input type="text"
+                                    class="form-control" id="user-username" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">پاس ورڈ</label><input type="password"
+                                    class="form-control" id="user-password" required></div>
+                            <div class="form-group"><label class="form-label">پاس ورڈ کی تصدیق</label><input
+                                    type="password" class="form-control" id="user-confirm-password" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">ای میل</label><input type="email"
+                                    class="form-control" id="user-email" required></div>
+                            <div class="form-group"><label class="form-label">موبائل</label><input type="tel"
+                                    class="form-control" id="user-mobile"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">رول</label>
+                                <select class="form-control" id="user-role" required>
+                                    <option value="admin">ایڈمن</option>
+                                    <option value="teacher">استاد</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">حیثیت</label>
+                                <select class="form-control" id="user-status" required>
+                                    <option value="active">فعال</option>
+                                    <option value="inactive">غیر فعال</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row"><button type="submit" class="btn btn-primary">صارف بنائیں</button></div>
+                    </form>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">رابطہ نمبر</label><input type="tel" class="form-control" id="school-contact" required></div>
-                    <div class="form-group"><label class="form-label">ای میل</label><input type="email" class="form-control" id="school-email"></div>
+            </div>
+            <div class="tab-content" id="user-roles">
+                <div class="form-container">
+                    <div class="form-title">نیا رول بنائیں</div>
+                    <form id="role-form">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">رول کا نام</label><input type="text"
+                                    class="form-control" id="role-name" required></div>
+                            <div class="form-group"><label class="form-label">تفصیل</label><input type="text"
+                                    class="form-control" id="role-description"></div>
+                        </div>
+                        <div class="form-row"><button type="submit" class="btn btn-primary">رول بنائیں</button></div>
+                    </form>
                 </div>
-                <div class="form-row">
-                    <button type="submit" class="btn btn-primary">ترتیبات محفوظ کریں</button>
+                <div class="table-container">
+                    <table class="table" id="roles-table">
+                        <thead>
+                            <tr>
+                                <th>رول نام</th>
+                                <th>تفصیل</th>
+                                <th>عمل</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
-    <div class="tab-content" id="system-settings">
-        <div class="form-container">
-            <div class="form-title">سسٹم کی ترتیبات</div>
-            <form id="system-settings-form">
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">ڈیٹابیس بیک اپ</label><select class="form-control" id="auto-backup-freq"><option value="daily">روزانہ</option><option value="weekly">ہفتہ وار</option></select></div>
-                    <div class="form-group"><label class="form-label">زبان</label><select class="form-control" id="system-language"><option value="ur">اردو</option><option value="en">انگریزی</option></select></div>
+        <div class="section-view" id="reports-view">
+            <h2>رپورٹس</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="student-reports">طلباء کی رپورٹس</div>
+                <div class="tab" data-tab="fee-reports-tab">فیس رپورٹس</div>
+                <div class="tab" data-tab="attendance-reports-tab">حاضری رپورٹس</div>
+            </div>
+            <div class="tab-content active" id="student-reports">
+                <div class="form-container">
+                    <div class="form-title">طلباء کی رپورٹ</div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">کلاس</label><select class="form-control"
+                                id="report-class"></select></div>
+                        <div class="form-group"><label class="form-label">رپورٹ کی قسم</label><select
+                                class="form-control" id="student-report-type">
+                                <option value="all">تمام طلباء</option>
+                                <option value="present">موجودہ طلباء</option>
+                            </select></div>
+                    </div>
+                    <div class="form-row">
+                        <button type="button" class="btn btn-primary" id="generate-student-report">رپورٹ بنائیں</button>
+                    </div>
                 </div>
-                <div class="form-row">
-                    <button type="submit" class="btn btn-primary">ترتیبات محفوظ کریں</button>
+                <div class="table-container" id="student-report-container" style="display: none;">
+                    <table class="table" id="student-report-table">
+                        <thead>
+                            <tr>
+                                <th>رول نمبر</th>
+                                <th>نام</th>
+                                <th>والد کا نام</th>
+                                <th>کلاس</th>
+                                <th>رابطہ نمبر</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
-            </form>
+            </div>
+            <div class="tab-content" id="fee-reports-tab">
+                <div class="form-container">
+                    <div class="form-title">فیس رپورٹ</div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">مہینہ</label><select class="form-control"
+                                id="fee-report-month2">
+                                <option value="1">جنوری</option>
+                                <option value="2">فروری</option>
+                            </select></div>
+                        <div class="form-group"><label class="form-label">سال</label><input type="number"
+                                class="form-control" id="fee-report-year2"></div>
+                    </div>
+                    <div class="form-row">
+                        <button type="button" class="btn btn-primary" id="generate-fee-report2">فیس رپورٹ
+                            بنائیں</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="attendance-reports-tab">
+                <div class="form-container">
+                    <div class="form-title">حاضری رپورٹ</div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">کلاس</label><select class="form-control"
+                                id="attendance-report-class2"></select></div>
+                        <div class="form-group"><label class="form-label">مہینہ</label><select class="form-control"
+                                id="attendance-report-month2">
+                                <option value="1">جنوری</option>
+                            </select></div>
+                    </div>
+                    <div class="form-row">
+                        <button type="button" class="btn btn-primary" id="generate-attendance-report2">حاضری رپورٹ
+                            بنائیں</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-</div>
+        <div class="section-view" id="settings-view">
+            <h2>ترتیبات</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="general-settings">عمومی ترتیبات</div>
+                <div class="tab" data-tab="system-settings">سسٹم ترتیبات</div>
+            </div>
+            <div class="tab-content active" id="general-settings">
+                <div class="form-container">
+                    <div class="form-title">مدرسہ کی معلومات</div>
+                    <form id="school-settings-form">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">مدرسہ کا نام</label><input type="text"
+                                    class="form-control" id="school-name" required></div>
+                            <div class="form-group"><label class="form-label">پرنسپل کا نام</label><input type="text"
+                                    class="form-control" id="principal-name" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">پتہ</label><textarea class="form-control"
+                                    id="school-address" rows="3" required></textarea></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">رابطہ نمبر</label><input type="tel"
+                                    class="form-control" id="school-contact" required></div>
+                            <div class="form-group"><label class="form-label">ای میل</label><input type="email"
+                                    class="form-control" id="school-email"></div>
+                        </div>
+                        <div class="form-row">
+                            <button type="submit" class="btn btn-primary">ترتیبات محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="tab-content" id="system-settings">
+                <div class="form-container">
+                    <div class="form-title">سسٹم کی ترتیبات</div>
+                    <form id="system-settings-form">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">ڈیٹابیس بیک اپ</label><select
+                                    class="form-control" id="auto-backup-freq">
+                                    <option value="daily">روزانہ</option>
+                                    <option value="weekly">ہفتہ وار</option>
+                                </select></div>
+                            <div class="form-group"><label class="form-label">زبان</label><select class="form-control"
+                                    id="system-language">
+                                    <option value="ur">اردو</option>
+                                    <option value="en">انگریزی</option>
+                                </select></div>
+                        </div>
+                        <div class="form-row">
+                            <button type="submit" class="btn btn-primary">ترتیبات محفوظ کریں</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
     <script>
         let db;
         const DB_NAME = 'DeeniMadrasaDB';
@@ -2881,31 +2931,31 @@
                 document.getElementById(`${reportType}-report-filters`).style.display = 'flex';
             }); */
             document.getElementById('school-settings-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
-    const updated = {
-        ...existing,
-        schoolName: document.getElementById('school-name').value,
-        principalName: document.getElementById('principal-name').value,
-        schoolAddress: document.getElementById('school-address').value,
-        schoolPhone: document.getElementById('school-contact').value,
-        schoolEmail: document.getElementById('school-email').value,
-    };
-    await addToStore(STORES.SETTINGS, updated, true);
-    showNotification('ترتیبات کامیابی سے محفوظ کر لی گئیں', 'success');
-});
+                e.preventDefault();
+                const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
+                const updated = {
+                    ...existing,
+                    schoolName: document.getElementById('school-name').value,
+                    principalName: document.getElementById('principal-name').value,
+                    schoolAddress: document.getElementById('school-address').value,
+                    schoolPhone: document.getElementById('school-contact').value,
+                    schoolEmail: document.getElementById('school-email').value,
+                };
+                await addToStore(STORES.SETTINGS, updated, true);
+                showNotification('ترتیبات کامیابی سے محفوظ کر لی گئیں', 'success');
+            });
 
-document.getElementById('system-settings-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
-    const updated = {
-        ...existing,
-        autoBackupFrequency: document.getElementById('auto-backup-freq').value,
-        language: document.getElementById('system-language').value,
-    };
-    await addToStore(STORES.SETTINGS, updated, true);
-    showNotification('سسٹم ترتیبات کامیابی سے محفوظ کر لی گئیں', 'success');
-});
+            document.getElementById('system-settings-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
+                const updated = {
+                    ...existing,
+                    autoBackupFrequency: document.getElementById('auto-backup-freq').value,
+                    language: document.getElementById('system-language').value,
+                };
+                await addToStore(STORES.SETTINGS, updated, true);
+                showNotification('سسٹم ترتیبات کامیابی سے محفوظ کر لی گئیں', 'success');
+            });
             document.getElementById('auto-backup-enable').addEventListener('change', function () {
                 document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none';
             });
@@ -3095,55 +3145,55 @@ document.getElementById('system-settings-form').addEventListener('submit', async
             console.log('Application initialized successfully');
         }
         function showView(viewName) {
-    document.querySelectorAll('.section-view').forEach(view => {
-        view.style.display = 'none';
-    });
+            document.querySelectorAll('.section-view').forEach(view => {
+                view.style.display = 'none';
+            });
 
-    const selectedView = document.getElementById(viewName + '-view');
-    if (selectedView) {
-        selectedView.style.display = 'block';
-    } else {
-        console.error(`View not found for: ${viewName}`);
-        return;
-    }
+            const selectedView = document.getElementById(viewName + '-view');
+            if (selectedView) {
+                selectedView.style.display = 'block';
+            } else {
+                console.error(`View not found for: ${viewName}`);
+                return;
+            }
 
-    try {
-        switch (viewName) {
-            case 'dashboard': loadDashboardData(); break;
-            case 'students': loadStudentsTable(); break;
-            case 'teachers': loadTeachersTable(); break;
-            case 'staff': loadStaffTable(); break;
-            case 'classes': loadClassesTable(); break;
-            case 'subjects': loadSubjectsTable(); break;
-            case 'exams': loadExamsTable(); break;
-            case 'fees': loadFeeStructureTable(); break;
-            case 'salaries': loadSalaryStructureTable(); break;
-            case 'library':
-                loadBooksTable();
-                populateLibraryDropdowns();
-                break;
-            case 'users':
-                loadUsersTable();
-                loadRolesTable();
-                break;
-            case 'reports':
-                loadClassDropdowns();
-                break;
-            case 'settings':
-                loadSchoolSettings();
-                break;
-            case 'backup':
-                loadBackupHistoryTable();
-                break;
+            try {
+                switch (viewName) {
+                    case 'dashboard': loadDashboardData(); break;
+                    case 'students': loadStudentsTable(); break;
+                    case 'teachers': loadTeachersTable(); break;
+                    case 'staff': loadStaffTable(); break;
+                    case 'classes': loadClassesTable(); break;
+                    case 'subjects': loadSubjectsTable(); break;
+                    case 'exams': loadExamsTable(); break;
+                    case 'fees': loadFeeStructureTable(); break;
+                    case 'salaries': loadSalaryStructureTable(); break;
+                    case 'library':
+                        loadBooksTable();
+                        populateLibraryDropdowns();
+                        break;
+                    case 'users':
+                        loadUsersTable();
+                        loadRolesTable();
+                        break;
+                    case 'reports':
+                        loadClassDropdowns();
+                        break;
+                    case 'settings':
+                        loadSchoolSettings();
+                        break;
+                    case 'backup':
+                        loadBackupHistoryTable();
+                        break;
+                }
+            } catch (e) {
+                console.error(`Error loading data for view '${viewName}':`, e);
+            }
+
+            if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('active')) {
+                toggleSidebar();
+            }
         }
-    } catch (e) {
-        console.error(`Error loading data for view '${viewName}':`, e);
-    }
-
-    if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('active')) {
-        toggleSidebar();
-    }
-}
         function setupFormHandlers() {
             document.getElementById('student-form').addEventListener('submit', (e) => { e.preventDefault(); addStudent(); });
             document.getElementById('teacher-form').addEventListener('submit', (e) => { e.preventDefault(); addTeacher(); });
@@ -5703,108 +5753,108 @@ document.getElementById('system-settings-form').addEventListener('submit', async
                 }
             });
         }
-async function loadSchoolSettings() {
-    try {
-        const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
-        // General Settings Tab
-        document.getElementById('school-name').value = settings.schoolName || '';
-        document.getElementById('principal-name').value = settings.principalName || '';
-        document.getElementById('school-address').value = settings.schoolAddress || '';
-        document.getElementById('school-contact').value = settings.schoolPhone || '';
-        document.getElementById('school-email').value = settings.schoolEmail || '';
-        // System Settings Tab
-        document.getElementById('auto-backup-freq').value = settings.autoBackupFrequency || 'daily';
-        document.getElementById('system-language').value = settings.language || 'ur';
-    } catch(e) {
-        console.error("Error loading school settings:", e);
-    }
-}
+        async function loadSchoolSettings() {
+            try {
+                const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
 
-async function populateLibraryDropdowns() {
-    try {
-        const books = await getAllFromStore(STORES.BOOKS);
-        const students = await getAllFromStore(STORES.STUDENTS);
-        const issued = await getAllFromStore(STORES.BOOK_ISSUES);
+                document.getElementById('school-name').value = settings.schoolName || '';
+                document.getElementById('principal-name').value = settings.principalName || '';
+                document.getElementById('school-address').value = settings.schoolAddress || '';
+                document.getElementById('school-contact').value = settings.schoolPhone || '';
+                document.getElementById('school-email').value = settings.schoolEmail || '';
 
-        const bookSelect = document.getElementById('issue-book-select');
-        bookSelect.innerHTML = '<option value="">کتاب منتخب کریں</option>';
-        books.forEach(book => {
-            if (book.availableCopies > 0) {
-                bookSelect.innerHTML += `<option value="${book.id}">${book.name}</option>`;
-            }
-        });
-
-        const studentSelect = document.getElementById('issue-student-select');
-        studentSelect.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
-        students.forEach(student => {
-            studentSelect.innerHTML += `<option value="${student.id}">${student.name} (${student.rollNumber})</option>`;
-        });
-
-        const returnSelect = document.getElementById('return-book-select');
-        returnSelect.innerHTML = '<option value="">جاری شدہ کتاب منتخب کریں</option>';
-        const activeIssues = issued.filter(i => i.status === 'issued');
-        for (const issue of activeIssues) {
-            const book = books.find(b => b.id === issue.bookId);
-            const student = students.find(s => s.id === issue.studentId);
-            if(book && student) {
-               returnSelect.innerHTML += `<option value="${issue.id}">${book.name} - جاری: ${student.name}</option>`;
+                document.getElementById('auto-backup-freq').value = settings.autoBackupFrequency || 'daily';
+                document.getElementById('system-language').value = settings.language || 'ur';
+            } catch (e) {
+                console.error("Error loading school settings:", e);
             }
         }
-    } catch (e) {
-        console.error("Error populating library dropdowns:", e);
-    }
-}
-async function loadSchoolSettings() {
-    try {
-        const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
-        document.getElementById('school-name').value = settings.schoolName || '';
-        document.getElementById('principal-name').value = settings.principalName || '';
-        document.getElementById('school-address').value = settings.schoolAddress || '';
-        document.getElementById('school-contact').value = settings.schoolPhone || '';
-        document.getElementById('school-email').value = settings.schoolEmail || '';
-        document.getElementById('auto-backup-freq').value = settings.autoBackupFrequency || 'daily';
-        document.getElementById('system-language').value = settings.language || 'ur';
-    } catch (e) {
-        console.error("Error loading school settings:", e);
-    }
-}
 
-async function populateLibraryDropdowns() {
-    try {
-        const [books, students, issued] = await Promise.all([
-            getAllFromStore(STORES.BOOKS),
-            getAllFromStore(STORES.STUDENTS),
-            getAllFromStore(STORES.BOOK_ISSUES)
-        ]);
+        async function populateLibraryDropdowns() {
+            try {
+                const books = await getAllFromStore(STORES.BOOKS);
+                const students = await getAllFromStore(STORES.STUDENTS);
+                const issued = await getAllFromStore(STORES.BOOK_ISSUES);
 
-        const bookSelect = document.getElementById('issue-book-select');
-        bookSelect.innerHTML = '<option value="">کتاب منتخب کریں</option>';
-        books.forEach(book => {
-            if (book.availableCopies > 0) {
-                bookSelect.innerHTML += `<option value="${book.id}">${book.name}</option>`;
-            }
-        });
+                const bookSelect = document.getElementById('issue-book-select');
+                bookSelect.innerHTML = '<option value="">کتاب منتخب کریں</option>';
+                books.forEach(book => {
+                    if (book.availableCopies > 0) {
+                        bookSelect.innerHTML += `<option value="${book.id}">${book.name}</option>`;
+                    }
+                });
 
-        const studentSelect = document.getElementById('issue-student-select');
-        studentSelect.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
-        students.forEach(student => {
-            studentSelect.innerHTML += `<option value="${student.id}">${student.name} (${student.rollNumber})</option>`;
-        });
+                const studentSelect = document.getElementById('issue-student-select');
+                studentSelect.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
+                students.forEach(student => {
+                    studentSelect.innerHTML += `<option value="${student.id}">${student.name} (${student.rollNumber})</option>`;
+                });
 
-        const returnSelect = document.getElementById('return-book-select');
-        returnSelect.innerHTML = '<option value="">جاری شدہ کتاب منتخب کریں</option>';
-        const activeIssues = issued.filter(i => i.status === 'issued');
-        for (const issue of activeIssues) {
-            const book = books.find(b => b.id === issue.bookId);
-            const student = students.find(s => s.id === issue.studentId);
-            if (book && student) {
-                returnSelect.innerHTML += `<option value="${issue.id}">${book.name} - جاری: ${student.name}</option>`;
+                const returnSelect = document.getElementById('return-book-select');
+                returnSelect.innerHTML = '<option value="">جاری شدہ کتاب منتخب کریں</option>';
+                const activeIssues = issued.filter(i => i.status === 'issued');
+                for (const issue of activeIssues) {
+                    const book = books.find(b => b.id === issue.bookId);
+                    const student = students.find(s => s.id === issue.studentId);
+                    if (book && student) {
+                        returnSelect.innerHTML += `<option value="${issue.id}">${book.name} - جاری: ${student.name}</option>`;
+                    }
+                }
+            } catch (e) {
+                console.error("Error populating library dropdowns:", e);
             }
         }
-    } catch (e) {
-        console.error("Error populating library dropdowns:", e);
-    }
-}
+        async function loadSchoolSettings() {
+            try {
+                const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
+                document.getElementById('school-name').value = settings.schoolName || '';
+                document.getElementById('principal-name').value = settings.principalName || '';
+                document.getElementById('school-address').value = settings.schoolAddress || '';
+                document.getElementById('school-contact').value = settings.schoolPhone || '';
+                document.getElementById('school-email').value = settings.schoolEmail || '';
+                document.getElementById('auto-backup-freq').value = settings.autoBackupFrequency || 'daily';
+                document.getElementById('system-language').value = settings.language || 'ur';
+            } catch (e) {
+                console.error("Error loading school settings:", e);
+            }
+        }
+
+        async function populateLibraryDropdowns() {
+            try {
+                const [books, students, issued] = await Promise.all([
+                    getAllFromStore(STORES.BOOKS),
+                    getAllFromStore(STORES.STUDENTS),
+                    getAllFromStore(STORES.BOOK_ISSUES)
+                ]);
+
+                const bookSelect = document.getElementById('issue-book-select');
+                bookSelect.innerHTML = '<option value="">کتاب منتخب کریں</option>';
+                books.forEach(book => {
+                    if (book.availableCopies > 0) {
+                        bookSelect.innerHTML += `<option value="${book.id}">${book.name}</option>`;
+                    }
+                });
+
+                const studentSelect = document.getElementById('issue-student-select');
+                studentSelect.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
+                students.forEach(student => {
+                    studentSelect.innerHTML += `<option value="${student.id}">${student.name} (${student.rollNumber})</option>`;
+                });
+
+                const returnSelect = document.getElementById('return-book-select');
+                returnSelect.innerHTML = '<option value="">جاری شدہ کتاب منتخب کریں</option>';
+                const activeIssues = issued.filter(i => i.status === 'issued');
+                for (const issue of activeIssues) {
+                    const book = books.find(b => b.id === issue.bookId);
+                    const student = students.find(s => s.id === issue.studentId);
+                    if (book && student) {
+                        returnSelect.innerHTML += `<option value="${issue.id}">${book.name} - جاری: ${student.name}</option>`;
+                    }
+                }
+            } catch (e) {
+                console.error("Error populating library dropdowns:", e);
+            }
+        }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -7535,20 +7585,20 @@ async function populateLibraryDropdowns() {
             tbody.innerHTML = '';
             const books = await getAllFromStore(STORES.BOOKS);
             if (!books || books.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">کوئی کتاب موجود نہیں ہے۔</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">کوئی کتاب موجود نہیں ہے۔</td></tr>';
                 return;
             }
             books.forEach(book => {
                 const row = document.createElement('tr');
+
                 row.innerHTML = `
-            <td>${book.id}</td>
-            <td>${book.name}</td>
-            <td>${book.author}</td>
-            <td>${book.category}</td>
-            <td>${book.copies}</td>
-            <td>${book.availableCopies}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="deleteBook(${book.id})">حذف کریں</button></td>
-        `;
+                    <td>${book.id}</td>
+                    <td>${book.name}</td>
+                    <td>${book.author}</td>
+                    <td>${book.category}</td>
+                    <td>${book.availableCopies}</td> 
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteBook(${book.id})">حذف کریں</button></td>
+                `;
                 tbody.appendChild(row);
             });
         }
@@ -7974,9 +8024,9 @@ async function populateLibraryDropdowns() {
             });
         }
 
-       
-        
-        
+
+
+
     </script>
 </body>
 
