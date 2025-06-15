@@ -79,6 +79,7 @@
             height: 100vh;
             overflow-y: auto;
             width: 81%;
+            padding: 12px;
         }
 
         .main-content-inner {
@@ -577,7 +578,32 @@
         * {
             font-family: calibri;
         }
+
+
+        #js-report-output-area .dashboard-cards .card {
+            margin-bottom: 10px;
+
+        }
+
+        .filter-header-toggle {
+
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+
+        }
+
+        .filter-toggle-icon {
+            font-size: 1.2em;
+            transition: transform 0.2s ease-in-out;
+        }
+
+
+        /* .filter-content:not([style*="display: none"]) + .filter-header-toggle .filter-toggle-icon {
+    transform: rotate(180deg);
+} */
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -3144,7 +3170,85 @@
             showView('dashboard');
             console.log('Application initialized successfully');
         }
-        function showView(viewName) {
+        function renderBarChart(canvasId, chartTitle, labels, dataValues) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) {
+                console.warn("Canvas not found for chart:", canvasId);
+                return;
+            }
+            if (typeof Chart === 'undefined') {
+                console.warn("Chart.js library is not loaded. Skipping chart rendering.");
+                const placeholder = document.getElementById(canvasId);
+                if (placeholder) placeholder.innerHTML = '<p style="text-align:center; color: #777;"><em>Chart.js library not loaded.</em></p>';
+                return;
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: chartTitle,
+                        data: dataValues,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderPieChart(canvasId, chartTitle, labels, dataValues) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) {
+                console.warn("Canvas not found for chart:", canvasId);
+                return;
+            }
+            if (typeof Chart === 'undefined') {
+                console.warn("Chart.js library is not loaded. Skipping chart rendering.");
+                const placeholder = document.getElementById(canvasId);
+                if (placeholder) placeholder.innerHTML = '<p style="text-align:center; color: #777;"><em>Chart.js library not loaded.</em></p>';
+                return;
+            }
+
+            const backgroundColors = dataValues.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`);
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: chartTitle,
+                        data: dataValues,
+                        backgroundColor: backgroundColors,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: chartTitle
+                        }
+                    }
+                }
+            });
+        }
+        async function showView(viewName) {
             document.querySelectorAll('.section-view').forEach(view => {
                 view.style.display = 'none';
             });
@@ -3157,17 +3261,127 @@
                 return;
             }
 
+
+
+            const filterContainerIds = [
+                'js-student-filters-container',
+                'js-teacher-filters-container',
+                'js-staff-filters-container'
+
+            ];
+
+            filterContainerIds.forEach(id => {
+                const container = document.getElementById(id);
+
+
+                let parentListOfContainer = null;
+                if (container && container.parentElement) {
+                    parentListOfContainer = container.parentElement.id;
+                }
+
+                if (container) {
+                    let shouldRemove = true;
+                    if (viewName === 'students' && parentListOfContainer === 'students-list' && id === 'js-student-filters-container') {
+                        shouldRemove = false;
+                    } else if (viewName === 'teachers' && parentListOfContainer === 'teachers-list' && id === 'js-teacher-filters-container') {
+                        shouldRemove = false;
+                    } else if (viewName === 'staff' && parentListOfContainer === 'staff-list' && id === 'js-staff-filters-container') {
+                        shouldRemove = false;
+                    }
+
+
+                    if (shouldRemove) {
+                        container.remove();
+                    }
+                }
+            });
+
+
+
+            if (viewName !== 'reports') {
+                const reportOutputArea = document.getElementById('js-report-output-area');
+                if (reportOutputArea) reportOutputArea.innerHTML = '';
+                if (currentReportChart) {
+                    currentReportChart.destroy();
+                    currentReportChart = null;
+                }
+            }
+
+
             try {
                 switch (viewName) {
-                    case 'dashboard': loadDashboardData(); break;
-                    case 'students': loadStudentsTable(); break;
-                    case 'teachers': loadTeachersTable(); break;
-                    case 'staff': loadStaffTable(); break;
-                    case 'classes': loadClassesTable(); break;
-                    case 'subjects': loadSubjectsTable(); break;
-                    case 'exams': loadExamsTable(); break;
-                    case 'fees': loadFeeStructureTable(); break;
-                    case 'salaries': loadSalaryStructureTable(); break;
+                    case 'dashboard':
+                        loadDashboardData();
+                        break;
+                    case 'students':
+                        loadStudentsTable();
+
+                        createCollapsibleFilterUI(
+                            'students-list',
+                            'js-student-filters-container',
+                            'طلباء کے فلٹرز',
+                            createStudentFilterRows,
+                            populateStudentFilterDropdownsJS,
+                            applyStudentFiltersJS,
+                            resetStudentFiltersJS,
+                            [{ dropdownId: 'js-filter-student-class', handlerFn: populateStudentFilterSectionsJS }]
+                        );
+                        break;
+                    case 'teachers':
+                        loadTeachersTable();
+                        createCollapsibleFilterUI(
+                            'teachers-list',
+                            'js-teacher-filters-container',
+                            'اساتذہ کے فلٹرز',
+                            createTeacherFilterRows,
+                            populateTeacherFilterDropdownsJS,
+                            applyTeacherFiltersJS,
+                            resetTeacherFiltersJS
+                        );
+                        break;
+                    case 'staff':
+                        loadStaffTable();
+                        createCollapsibleFilterUI(
+                            'staff-list',
+                            'js-staff-filters-container',
+                            'عملہ کے فلٹرز',
+                            createStaffFilterRows,
+                            null,
+                            applyStaffFiltersJS,
+                            resetStaffFiltersJS
+                        );
+                        break;
+                    case 'classes':
+                        loadClassesTable();
+
+                        break;
+                    case 'subjects':
+                        loadSubjectsTable();
+
+                        break;
+                    case 'attendance':
+
+
+                        loadClassDropdowns();
+                        populateAttendanceSections('attendance-class', 'attendance-section');
+                        break;
+                    case 'exams':
+                        loadExamsTable();
+
+                        loadClassDropdowns();
+                        loadSubjectDropdowns();
+                        loadExamDropdowns();
+                        break;
+                    case 'fees':
+                        loadFeeStructureTable();
+                        loadClassDropdowns();
+
+                        break;
+                    case 'salaries':
+                        loadSalaryStructureTable();
+                        loadEmployeesForSalaryStructure();
+
+                        break;
                     case 'library':
                         loadBooksTable();
                         populateLibraryDropdowns();
@@ -3177,7 +3391,7 @@
                         loadRolesTable();
                         break;
                     case 'reports':
-                        loadClassDropdowns();
+                        initializeReportsViewJS();
                         break;
                     case 'settings':
                         loadSchoolSettings();
@@ -3185,14 +3399,147 @@
                     case 'backup':
                         loadBackupHistoryTable();
                         break;
+                    default:
+                        console.warn(`No specific load actions defined for view: ${viewName}`);
                 }
             } catch (e) {
-                console.error(`Error loading data for view '${viewName}':`, e);
+                console.error(`Error in showView during content loading for '${viewName}':`, e);
+                showNotification(`'${viewName}' منظر لوڈ کرنے میں خرابی ہوئی۔`, 'error');
             }
 
-            if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('active')) {
-                toggleSidebar();
+
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && sidebar.classList.contains('active')) {
+                    toggleSidebar();
+                }
             }
+        }
+
+
+        async function loadExamDropdowns() {
+            try {
+                const exams = getAllFromStore(STORES.EXAMS);
+                const examDropdowns = document.querySelectorAll('select[id$="-exam"], select[id^="marks-exam"], select[id^="result-exam"]');
+
+                examDropdowns.forEach(dropdown => {
+                    const currentVal = dropdown.value;
+                    const fixedOptions = Array.from(dropdown.options).filter(opt => opt.value === "" || opt.dataset.fixed);
+
+                    dropdown.innerHTML = '';
+                    fixedOptions.forEach(opt => dropdown.appendChild(opt.cloneNode(true)));
+
+                    exams.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+                    exams.forEach(exam => {
+                        const option = document.createElement('option');
+                        option.value = exam.id;
+                        option.textContent = `${exam.name} (${formatDate(exam.startDate)})`;
+                        dropdown.appendChild(option);
+                    });
+                    if (Array.from(dropdown.options).some(opt => opt.value === currentVal)) {
+                        dropdown.value = currentVal;
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading exam dropdowns:', error);
+            }
+        }
+        async function addStudent() {
+            showLoading();
+            const form = document.getElementById('student-form');
+            const editId = form.dataset.editId ? parseInt(form.dataset.editId) : null;
+
+            try {
+
+                const studentName = document.getElementById('student-name').value;
+                const fatherName = document.getElementById('student-father').value;
+                const studentClass = document.getElementById('student-class').value;
+                const studentAdmissionDate = document.getElementById('student-admission-date').value;
+
+
+                if (!studentName || !fatherName || !studentClass || !studentAdmissionDate) {
+                    showNotification('براہ کرم تمام ضروری فیلڈز کو پُر کریں۔ (*)', 'error');
+                    hideLoading();
+                    return;
+                }
+
+
+                const studentData = {
+                    name: studentName,
+                    fatherName: fatherName,
+                    dob: document.getElementById('student-dob').value,
+                    gender: document.getElementById('student-gender').value,
+                    classId: parseInt(studentClass),
+                    sectionId: parseInt(document.getElementById('student-section').value),
+                    contact: document.getElementById('student-contact').value,
+                    email: document.getElementById('student-email').value,
+                    guardian: document.getElementById('student-guardian').value,
+                    guardianContact: document.getElementById('student-guardian-contact').value,
+                    address: document.getElementById('student-address').value,
+                    admissionDate: studentAdmissionDate,
+                    feeCategory: document.getElementById('student-fee-category').value,
+                    monthlyFee: parseFloat(document.getElementById('student-monthly-fee').value),
+                    notes: document.getElementById('student-notes').value,
+
+                    createdAt: new Date().toISOString()
+                };
+
+
+                if (studentData.classId) {
+                    const classInfo = await getFromStore(STORES.CLASSES, studentData.classId);
+                    studentData.className = classInfo ? classInfo.name : 'N/A';
+                }
+                if (studentData.sectionId) {
+                    const sectionInfo = await getFromStore(STORES.SECTIONS, studentData.sectionId);
+                    studentData.sectionName = sectionInfo ? sectionInfo.name : 'N/A';
+                }
+
+
+                if (editId) {
+                    studentData.updatedAt = new Date().toISOString();
+                    await updateInStore(STORES.STUDENTS, editId, studentData);
+                    showNotification('طالب علم کا ریکارڈ کامیابی سے اپڈیٹ کر دیا گیا۔', 'success');
+                } else {
+
+                    const studentsCount = await getCount(STORES.STUDENTS);
+                    studentData.rollNumber = String(studentsCount + 1).padStart(4, '0');
+                    await addToStore(STORES.STUDENTS, studentData);
+                    showNotification('طالب علم کامیابی سے داخل کر لیا گیا ہے۔', 'success');
+                }
+
+
+                form.reset();
+                delete form.dataset.editId;
+                const submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) submitButton.textContent = 'طالب علم داخل کریں';
+
+
+                const studentListTab = document.querySelector('.tab[data-tab="students-list"]');
+                if (studentListTab && !studentListTab.classList.contains('active')) {
+                    studentListTab.click();
+
+
+                }
+
+
+
+                await loadStudentsTable();
+
+            } catch (error) {
+                console.error('Error saving student:', error);
+                showNotification('طالب علم کو محفوظ کرنے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function handlePhotoUpload(inputId) {
+            const photoInput = document.getElementById(inputId);
+            if (photoInput && photoInput.files && photoInput.files[0]) {
+                return await fileToBase64(photoInput.files[0]);
+            }
+            return null;
         }
         function setupFormHandlers() {
             document.getElementById('student-form').addEventListener('submit', (e) => { e.preventDefault(); addStudent(); });
@@ -3717,44 +4064,54 @@
                 hideLoading();
             }
         }
-        async function loadStudentsForAttendance() {
-            const classId = parseInt(document.getElementById('attendance-class').value);
-            const sectionId = parseInt(document.getElementById('attendance-section').value);
-            const date = document.getElementById('attendance-date').value;
-            if (!classId || !sectionId || !date) {
-                showNotification('براہ کرم تاریخ، کلاس اور سیکشن منتخب کریں۔', 'error');
-                return;
-            }
-            showLoading();
+        async function loadStudentsTable(studentsToLoad = null) {
             try {
-                const allStudents = await getAllFromStore(STORES.STUDENTS);
-                const classStudents = allStudents.filter(s => s.classId === classId && s.sectionId === sectionId);
-                const attendanceTableBody = document.querySelector('#attendance-table tbody');
-                attendanceTableBody.innerHTML = '';
-                if (classStudents.length === 0) {
-                    attendanceTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اس کلاس میں کوئی طالب علم نہیں ہے۔</td></tr>';
+                let studentsArray;
+                if (studentsToLoad === null) {
+                    studentsArray = await getAllFromStore(STORES.STUDENTS);
+                } else if (Array.isArray(studentsToLoad)) {
+                    studentsArray = studentsToLoad;
+                } else {
+
+                    console.warn('loadStudentsTable called with non-array studentsToLoad. Defaulting to all students.', studentsToLoad);
+                    studentsArray = await getAllFromStore(STORES.STUDENTS);
                 }
-                classStudents.forEach(student => {
+
+                const tbody = document.querySelector('#students-table tbody');
+                if (!tbody) {
+                    console.error("Student table body not found!");
+                    return;
+                }
+                tbody.innerHTML = '';
+
+                if (!studentsArray || !Array.isArray(studentsArray) || studentsArray.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی طالب علم موجود نہیں ہے یا فلٹر سے کوئی نتیجہ نہیں ملا۔</td></tr>';
+                    return;
+                }
+
+                for (const student of studentsArray) {
                     const row = document.createElement('tr');
-                    row.dataset.studentId = student.id;
+                    const classData = student.classId ? await getFromStore(STORES.CLASSES, student.classId) : null;
+                    const sectionData = student.sectionId ? await getFromStore(STORES.SECTIONS, student.sectionId) : null;
                     row.innerHTML = `
-                        <td>${student.rollNumber}</td>
-                        <td>${student.name}</td>
-                        <td>
-                            <label><input type="radio" name="status_${student.id}" value="present" checked> حاضر</label>
-                            <label><input type="radio" name="status_${student.id}" value="absent"> غیر حاضر</label>
-                        </td>
-                        <td><input type="checkbox" name="late_${student.id}"></td>
-                        <td><input type="checkbox" name="leave_${student.id}"></td>
-                        <td><input type="text" class="form-control" name="notes_${student.id}"></td>
-                    `;
-                    attendanceTableBody.appendChild(row);
-                });
-                document.getElementById('attendance-table-container').style.display = 'block';
+                <td>${student.rollNumber}</td>
+                <td>${student.name}</td>
+                <td>${student.fatherName}</td>
+                <td>${classData ? classData.name : 'N/A'}</td>
+                <td>${sectionData ? sectionData.name : 'N/A'}</td>
+                <td>${student.contact}</td>
+                <td>${formatDate(student.admissionDate)}</td>
+                <td class="no-print">
+                    <button class="btn btn-primary btn-sm" onclick="editStudent(${student.id})">ترمیم</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.id})">حذف کریں</button>
+                </td>
+            `;
+                    tbody.appendChild(row);
+                }
             } catch (error) {
-                console.error("Error loading students for attendance:", error);
-            } finally {
-                hideLoading();
+                console.error('Error loading students table:', error);
+                const tbody = document.querySelector('#students-table tbody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">طلباء کی فہرست لوڈ کرنے میں خرابی ہوئی۔</td></tr>';
             }
         }
         async function viewAttendance() {
@@ -4739,28 +5096,56 @@
                 showNotification('استاد کو حذف کر دیا گیا ہے۔', 'success');
             }
         }
-        async function loadTeacherDropdowns() {
+        async function loadTeachersTable(teachersToLoad = null) {
             try {
-                const teachers = await getAllFromStore(STORES.TEACHERS);
-                const teacherDropdowns = document.querySelectorAll('select[id$="-teacher"], select[id$="-incharge"]');
-                teacherDropdowns.forEach(dropdown => {
-                    const existingOptions = Array.from(dropdown.options).filter(option => {
-                        return option.value === 'all' || option.dataset.fixed === 'true';
-                    });
-                    dropdown.innerHTML = '';
-                    existingOptions.forEach(option => {
-                        dropdown.appendChild(option);
-                    });
-                    teachers.forEach(teacher => {
-                        const option = document.createElement('option');
-                        option.value = teacher.id;
-                        option.textContent = teacher.name;
-                        dropdown.appendChild(option);
-                    });
-                });
-                console.log('Teacher dropdowns loaded successfully');
+                let teachersArray;
+                if (teachersToLoad === null) {
+                    teachersArray = await getAllFromStore(STORES.TEACHERS);
+                } else if (Array.isArray(teachersToLoad)) {
+                    teachersArray = teachersToLoad;
+                } else {
+                    console.warn('loadTeachersTable called with non-array. Defaulting to all.', teachersToLoad);
+                    teachersArray = await getAllFromStore(STORES.TEACHERS);
+                }
+
+                const tbody = document.querySelector('#teachers-table tbody');
+                if (!tbody) {
+                    console.error("Teacher table body not found!");
+                    return;
+                }
+                tbody.innerHTML = '';
+
+                if (!teachersArray || !Array.isArray(teachersArray) || teachersArray.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی استاد موجود نہیں ہے یا فلٹر سے کوئی نتیجہ نہیں ملا۔</td></tr>';
+                    return;
+                }
+
+                for (const teacher of teachersArray) {
+                    const row = document.createElement('tr');
+                    let subjectNames = '-';
+                    if (teacher.subjects && teacher.subjects.length > 0) {
+                        const subjectPromises = teacher.subjects.map(id => getFromStore(STORES.SUBJECTS, parseInt(id)));
+                        const subjectObjects = await Promise.all(subjectPromises);
+                        subjectNames = subjectObjects.filter(s => s).map(s => s.name).join(', ');
+                    }
+                    row.innerHTML = `
+                <td>${teacher.employeeId}</td>
+                <td>${teacher.name}</td>
+                <td>${teacher.qualification}</td>
+                <td>${subjectNames}</td>
+                <td>${teacher.contact}</td>
+                <td>${formatDate(teacher.joiningDate)}</td>
+                <td>${teacher.basicSalary ? formatCurrency(teacher.basicSalary) : 'N/A'}</td>
+                <td class="no-print">
+                    <button class="btn btn-primary btn-sm" onclick="editTeacher(${teacher.id})">ترمیم</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.TEACHERS}', ${teacher.id})">حذف کریں</button>
+                </td>
+            `;
+                    tbody.appendChild(row);
+                }
             } catch (error) {
-                console.error('Error loading teacher dropdowns:', error);
+                console.error('Error loading teachers table:', error);
+
             }
         }
         async function checkAndLoadSampleData() {
@@ -5856,12 +6241,6 @@
             }
         }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContainer = document.getElementById('mainContainer');
-            sidebar.classList.toggle('active');
-            mainContainer.classList.toggle('sidebar-active');
-        }
         function showLoading() {
             document.getElementById('loading').style.display = 'flex';
         }
@@ -6282,6 +6661,7 @@
         async function addStaff() {
             try {
                 showLoading();
+
                 const name = document.getElementById('staff-name').value;
                 const fatherName = document.getElementById('staff-father').value;
                 const dob = document.getElementById('staff-dob').value;
@@ -6300,12 +6680,15 @@
                 const allowances = document.getElementById('staff-allowances').value;
                 const deductions = document.getElementById('staff-deductions').value;
                 const notes = document.getElementById('staff-notes').value;
+
                 const staffCount = await getCount(STORES.STAFF);
                 const employeeId = 'S' + String(staffCount + 1).padStart(3, '0');
-                let photo = null;
-                if (photoInput.files && photoInput.files) {
-                    photo = await fileToBase64(photoInput.files);
+
+                let photoBase64 = null;
+                if (photoInput.files && photoInput.files[0]) {
+                    photoBase64 = await fileToBase64(photoInput.files[0]);
                 }
+
                 const staffData = {
                     employeeId: employeeId,
                     name: name,
@@ -6320,7 +6703,7 @@
                     email: email,
                     address: address,
                     cnic: cnic,
-                    photo: photo,
+                    photo: photoBase64,
                     joiningDate: joiningDate,
                     basicSalary: parseFloat(basicSalary),
                     allowances: parseFloat(allowances) || 0,
@@ -6328,18 +6711,17 @@
                     notes: notes,
                     createdAt: new Date().toISOString()
                 };
+
                 const staffId = await addToStore(STORES.STAFF, staffData);
+
                 await addToStore(STORES.SALARY_STRUCTURE, {
                     employeeId: staffId,
                     employeeType: 'staff',
                     basicSalary: parseFloat(basicSalary),
-                    houseRent: parseFloat(basicSalary) * 0.4,
-                    transport: 1500,
-                    medical: 1000,
-                    otherAllowances: parseFloat(allowances) || 0,
-                    deductions: parseFloat(deductions) || 0,
+
                     createdAt: new Date().toISOString()
                 });
+
                 await addToStore(STORES.ACTIVITIES, {
                     description: 'نیا عملہ داخل کیا گیا',
                     date: new Date().toISOString(),
@@ -6349,10 +6731,15 @@
                     details: `${name} (${employeeId}) کو بطور ${designation} بھرتی کیا گیا`,
                     createdAt: new Date().toISOString()
                 });
+
                 document.getElementById('staff-form').reset();
-                loadStaffTable();
+                await loadStaffTable();
                 showNotification('عملہ کامیابی سے داخل کر لیا گیا ہے', 'success');
-                document.querySelector('.tab[data-tab="staff-list"]').click();
+                const staffListTab = document.querySelector('.tab[data-tab="staff-list"]');
+                if (staffListTab && !staffListTab.classList.contains('active')) {
+                    staffListTab.click();
+                }
+
             } catch (error) {
                 console.error('Error adding staff:', error);
                 showNotification('عملہ داخل کرنے میں خرابی ہوئی ہے', 'error');
@@ -7334,6 +7721,141 @@
                 hideLoading();
             }
         }
+        async function loadTeacherDropdowns() {
+            try {
+                const teachers = await getAllFromStore(STORES.TEACHERS);
+                const teacherDropdowns = document.querySelectorAll('select[id$="-teacher"], select[id$="-incharge"], select[id$="Teacher"]');
+                teacherDropdowns.forEach(dropdown => {
+                    const currentVal = dropdown.value;
+
+                    const fixedOptions = Array.from(dropdown.options).filter(opt => opt.value === "" || opt.value === "all" || opt.dataset.fixed);
+
+                    dropdown.innerHTML = '';
+                    fixedOptions.forEach(opt => dropdown.appendChild(opt.cloneNode(true)));
+
+
+                    teachers.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = teacher.id;
+                        option.textContent = teacher.name;
+                        dropdown.appendChild(option);
+                    });
+
+                    if (Array.from(dropdown.options).some(opt => opt.value === currentVal)) {
+                        dropdown.value = currentVal;
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error loading teacher dropdowns:', error);
+            }
+        }
+
+        async function loadStudentsForAttendance() {
+            const classIdElement = document.getElementById('attendance-class');
+            const sectionIdElement = document.getElementById('attendance-section');
+            const dateElement = document.getElementById('attendance-date');
+
+            if (!classIdElement || !sectionIdElement || !dateElement) {
+                console.error("Attendance filter elements not found.");
+                showNotification('حاضری کے لیے ضروری عناصر نہیں ملے۔', 'error');
+                return;
+            }
+
+            const classId = parseInt(classIdElement.value);
+            const sectionId = parseInt(sectionIdElement.value);
+            const date = dateElement.value;
+
+            if (isNaN(classId) || isNaN(sectionId) || !date) {
+                showNotification('براہ کرم تاریخ، کلاس اور سیکشن منتخب کریں۔', 'error');
+                return;
+            }
+
+            showLoading();
+            try {
+                const allStudents = await getAllFromStore(STORES.STUDENTS);
+
+                const classStudents = allStudents.filter(s => s.classId === classId && s.sectionId === sectionId);
+
+                const attendanceTableBody = document.querySelector('#attendance-table tbody');
+                const attendanceTableContainer = document.getElementById('attendance-table-container');
+
+                if (!attendanceTableBody || !attendanceTableContainer) {
+                    console.error("Attendance table elements not found.");
+                    hideLoading();
+                    return;
+                }
+
+                attendanceTableBody.innerHTML = '';
+
+                if (classStudents.length === 0) {
+                    attendanceTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">اس کلاس/سیکشن میں کوئی طالب علم نہیں ہے۔</td></tr>';
+                } else {
+
+                    const existingAttendanceRecords = await getAllFromIndex(STORES.ATTENDANCE, 'dateClassSection', [date, classId, sectionId]);
+                    const existingAttendanceMap = new Map();
+                    existingAttendanceRecords.forEach(rec => existingAttendanceMap.set(rec.studentId, rec));
+
+
+                    classStudents.forEach(student => {
+                        const existingRecord = existingAttendanceMap.get(student.id);
+                        const isPresent = existingRecord ? existingRecord.status === 'present' : true;
+                        const isLate = existingRecord ? existingRecord.isLate : false;
+                        const onLeave = existingRecord ? existingRecord.isLeave : false;
+                        const notes = existingRecord ? existingRecord.notes : '';
+
+
+                        const row = document.createElement('tr');
+                        row.dataset.studentId = student.id;
+                        row.innerHTML = `
+                    <td>${student.rollNumber}</td>
+                    <td>${student.name}</td>
+                    <td>
+                        <label style="margin-right: 5px;"><input type="radio" name="status_${student.id}" value="present" ${isPresent && !onLeave ? 'checked' : ''}> حاضر</label>
+                        <label style="margin-right: 5px;"><input type="radio" name="status_${student.id}" value="absent" ${!isPresent && !onLeave ? 'checked' : ''}> غیر حاضر</label>
+                    </td>
+                    <td><input type="checkbox" name="late_${student.id}" ${isLate ? 'checked' : ''}></td>
+                    <td><input type="checkbox" name="leave_${student.id}" ${onLeave ? 'checked' : ''}></td>
+                    <td><input type="text" class="form-control" name="notes_${student.id}" value="${notes}"></td>
+                `;
+                        attendanceTableBody.appendChild(row);
+
+
+                        const leaveCheckbox = row.querySelector(`input[name="leave_${student.id}"]`);
+                        const presentRadio = row.querySelector(`input[name="status_${student.id}"][value="present"]`);
+                        const absentRadio = row.querySelector(`input[name="status_${student.id}"][value="absent"]`);
+
+                        if (leaveCheckbox) {
+                            leaveCheckbox.addEventListener('change', (e) => {
+                                if (e.target.checked) {
+                                    if (presentRadio) presentRadio.checked = false;
+                                    if (absentRadio) absentRadio.checked = false;
+                                    if (presentRadio) presentRadio.disabled = true;
+                                    if (absentRadio) absentRadio.disabled = true;
+                                } else {
+                                    if (presentRadio) presentRadio.disabled = false;
+                                    if (absentRadio) absentRadio.disabled = false;
+                                    if (presentRadio && !absentRadio.checked) presentRadio.checked = true;
+                                }
+                            });
+
+                            if (onLeave) {
+                                if (presentRadio) presentRadio.checked = false;
+                                if (absentRadio) absentRadio.checked = false;
+                                if (presentRadio) presentRadio.disabled = true;
+                                if (absentRadio) absentRadio.disabled = true;
+                            }
+                        }
+                    });
+                }
+                attendanceTableContainer.style.display = 'block';
+            } catch (error) {
+                console.error("Error loading students for attendance:", error);
+                showNotification('حاضری کے لیے طلباء کو لوڈ کرنے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
         async function loadTeachersTable() {
             try {
                 const teachers = await getAllFromStore(STORES.TEACHERS);
@@ -7454,6 +7976,10 @@
             }
         }
         async function fileToBase64(file) {
+
+            if (!file || !(file instanceof Blob)) {
+                return null;
+            }
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
@@ -7462,10 +7988,77 @@
             });
         }
         function toggleSidebar() {
+
+
             const sidebar = document.getElementById('sidebar');
             const mainContainer = document.getElementById('mainContainer');
-            sidebar.classList.toggle('active');
-            mainContainer.classList.toggle('sidebar-active');
+            const menuToggle = document.getElementById('menuToggle');
+
+            if (!sidebar || !mainContainer || !menuToggle) {
+                console.error("Error: Required elements (sidebar, mainContainer, or menuToggle) not found.");
+                return;
+            }
+
+
+
+            let isActive;
+            if (sidebar.dataset.isActive === undefined) {
+
+
+
+
+                if (window.innerWidth <= 768) {
+                    isActive = sidebar.style.transform === 'translateX(0px)';
+                } else {
+                    isActive = true;
+                }
+            } else {
+                isActive = sidebar.dataset.isActive === 'true';
+            }
+
+
+            isActive = !isActive;
+            sidebar.dataset.isActive = isActive;
+
+
+            const icon = menuToggle.querySelector('i');
+
+            if (window.innerWidth <= 768) {
+                if (isActive) {
+
+                    sidebar.style.transform = 'translateX(0)';
+
+
+
+                    if (icon) icon.innerHTML = '×';
+                } else {
+
+                    sidebar.style.transform = 'translateX(100%)';
+
+
+
+                    if (icon) icon.innerHTML = '☰';
+                }
+            } else {
+
+
+
+                if (isActive) {
+                    sidebar.style.transform = 'translateX(0)';
+                    sidebar.style.width = '250px';
+                    mainContainer.style.marginRight = '250px';
+                    mainContainer.style.width = 'calc(100% - 250px)';
+                    if (icon) icon.innerHTML = '×';
+                } else {
+                    sidebar.style.transform = 'translateX(100%)';
+
+
+
+                    mainContainer.style.marginRight = '0';
+                    mainContainer.style.width = '100%';
+                    if (icon) icon.innerHTML = '☰';
+                }
+            }
         }
         function showLoading() {
             document.getElementById('loading').style.display = 'flex';
@@ -7801,29 +8394,168 @@
                 loadRolesTable();
             }
         }
-        function initializeReportsView() {
-            const container = document.getElementById('reports-view');
-            if (container.querySelector('.form-container')) return;
-            container.innerHTML = `
-        <h2>رپورٹس</h2>
-        <div class="form-container">
-            <div class="form-title">رپورٹ منتخب کریں</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">رپورٹ کی قسم</label>
-                    <select id="report-type" class="form-control">
-                        <option value="">منتخب کریں...</option>
-                        <option value="student_strength">طلباء کی تعداد</option>
-                        <option value="class_list">کلاس لسٹ</option>
-                    </select>
-                </div>
-            </div>
-            <div id="report-filters" class="form-row" style="margin-top: 1rem;"></div>
-            <button type="button" onclick="generateReport()" class="btn btn-primary" style="margin-top: 1rem;">رپورٹ بنائیں</button>
-        </div>
-        <div id="report-output" class="table-container" style="margin-top: 1.5rem; display: none;"></div>
-    `;
-            document.getElementById('report-type').addEventListener('change', toggleReportFilters);
+        function handleReportTypeChangeJS() {
+            const reportType = document.getElementById('js-report-type-select').value;
+            const filtersArea = document.getElementById('js-report-filters-area');
+            filtersArea.innerHTML = '';
+            filtersArea.style.display = 'none';
+
+
+            switch (reportType) {
+                case 'student_strength_by_class':
+
+                    filtersArea.style.display = 'none';
+                    break;
+                case 'class_fee_summary':
+                    filtersArea.style.display = 'block';
+                    const monthGroup = createElementJS('div', { class: 'form-group' });
+                    monthGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-month' }, 'مہینہ'));
+                    const monthSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-month' });
+                    const months = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
+                    months.forEach((m, i) => monthSelect.appendChild(createElementJS('option', { value: i + 1 }, m)));
+                    monthGroup.appendChild(monthSelect);
+                    filtersArea.appendChild(monthGroup);
+
+                    const yearGroup = createElementJS('div', { class: 'form-group' });
+                    yearGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-year' }, 'سال'));
+                    const currentYear = new Date().getFullYear();
+                    const yearInput = createElementJS('input', { type: 'number', class: 'form-control', id: 'js-filter-year', value: currentYear });
+                    yearGroup.appendChild(yearInput);
+                    filtersArea.appendChild(yearGroup);
+                    break;
+
+            }
+        }
+        async function generateSelectedReportJS() {
+            const reportType = document.getElementById('js-report-type-select').value;
+            const outputDiv = document.getElementById('js-report-output-area');
+            outputDiv.innerHTML = '';
+
+            if (!reportType) {
+                showNotification('براہ کرم رپورٹ کی قسم منتخب کریں۔', 'error');
+                return;
+            }
+
+            showLoading();
+            let reportHTML = '';
+            try {
+                switch (reportType) {
+                    case 'student_strength_by_class':
+                        reportHTML = await generateStudentStrengthByClassReportJS();
+                        break;
+                    case 'class_fee_summary':
+                        const month = document.getElementById('js-filter-month').value;
+                        const year = document.getElementById('js-filter-year').value;
+                        reportHTML = await generateClassFeeSummaryReportJS(parseInt(month), parseInt(year));
+                        break;
+
+                    default:
+                        reportHTML = '<p>منتخب کردہ رپورٹ کی قسم کے لیے کوئی عمل درآمد نہیں ہے۔</p>';
+                }
+                outputDiv.innerHTML = reportHTML;
+            } catch (error) {
+                console.error(`Error generating report '${reportType}':`, error);
+                outputDiv.innerHTML = `<p style="color:red;">رپورٹ بنانے میں خرابی ہوئی: ${error.message}</p>`;
+                showNotification('رپورٹ بنانے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        async function generateStudentStrengthByClassReportJS() {
+            const classes = await getAllFromStore(STORES.CLASSES);
+            const students = await getAllFromStore(STORES.STUDENTS);
+            let totalStudents = 0;
+
+            const reportData = classes.map(cls => {
+                const classStudents = students.filter(s => s.classId === cls.id);
+                totalStudents += classStudents.length;
+                return { className: cls.name, studentCount: classStudents.length };
+            });
+
+            let tableHTML = `<h3>طلباء کی تعداد بلحاظ کلاس</h3>
+                     <div class="table-container">
+                       <table class="table">
+                         <thead><tr><th>کلاس کا نام</th><th>طلباء کی تعداد</th></tr></thead>
+                         <tbody>`;
+            reportData.forEach(data => {
+                tableHTML += `<tr><td>${data.className}</td><td>${data.studentCount}</td></tr>`;
+            });
+            tableHTML += `</tbody>
+                  <tfoot><tr><td><strong>کل طلباء</strong></td><td><strong>${totalStudents}</strong></td></tr></tfoot>
+                  </table></div>`;
+
+
+            const chartContainerId = `chart-student-strength-${Date.now()}`;
+            tableHTML += `<div id="${chartContainerId}" style="height: 300px; margin-top: 20px;"></div>
+                  <p><em>Chart would be rendered here using a library like Chart.js.</em></p>`;
+
+
+            const chartLabels = reportData.map(d => d.className);
+            const chartDataValues = reportData.map(d => d.studentCount);
+
+
+
+
+            return tableHTML;
+        }
+        async function generateClassFeeSummaryReportJS(month, year) {
+            if (isNaN(month) || isNaN(year)) {
+                return "<p>فیس سمری رپورٹ کے لیے مہینہ اور سال درست ہونے چاہئیں۔</p>";
+            }
+            const classes = await getAllFromStore(STORES.CLASSES);
+            const feeRecords = await getAllFromStore(STORES.FEES);
+            const students = await getAllFromStore(STORES.STUDENTS);
+
+            let totalCollectedOverall = 0;
+            const monthName = new Date(year, month - 1, 1).toLocaleDateString('ur-PK', { month: 'long' });
+
+
+            const reportData = await Promise.all(classes.map(async (cls) => {
+                const studentsInClass = students.filter(s => s.classId === cls.id);
+                let classTotalCollected = 0;
+                let classPaidCount = 0;
+
+                studentsInClass.forEach(student => {
+                    const studentFeeRecord = feeRecords.find(
+                        fr => fr.studentId === student.id && parseInt(fr.month) === month && parseInt(fr.year) === year
+                    );
+                    if (studentFeeRecord) {
+                        classTotalCollected += studentFeeRecord.total || 0;
+                        classPaidCount++;
+                    }
+                });
+                totalCollectedOverall += classTotalCollected;
+                return {
+                    className: cls.name,
+                    totalStudents: studentsInClass.length,
+                    paidStudents: classPaidCount,
+                    collectedAmount: classTotalCollected
+                };
+            }));
+
+            let tableHTML = `<h3>کلاس وار فیس کا خلاصہ برائے ${monthName}، ${year}</h3>
+                     <div class="table-container">
+                       <table class="table">
+                         <thead><tr><th>کلاس کا نام</th><th>کل طلباء</th><th>فیس دہندگان</th><th>جمع شدہ رقم</th></tr></thead>
+                         <tbody>`;
+            reportData.forEach(data => {
+                tableHTML += `<tr>
+                        <td>${data.className}</td>
+                        <td>${data.totalStudents}</td>
+                        <td>${data.paidStudents}</td>
+                        <td>${formatCurrency(data.collectedAmount)}</td>
+                      </tr>`;
+            });
+            tableHTML += `</tbody>
+                  <tfoot><tr><td colspan="3"><strong>کل جمع شدہ رقم</strong></td><td><strong>${formatCurrency(totalCollectedOverall)}</strong></td></tr></tfoot>
+                  </table></div>`;
+
+
+            const chartContainerId = `chart-fee-summary-${Date.now()}`;
+            tableHTML += `<div id="${chartContainerId}" style="max-width: 400px; margin: 20px auto;"></div>
+                  <p><em>Pie chart (Collection by Class) would be rendered here.</em></p>`;
+
+            return tableHTML;
         }
         function toggleReportFilters() {
             const type = document.getElementById('report-type').value;
@@ -8027,6 +8759,1666 @@
 
 
 
+        function createElementJS(tag, attributes = {}, textContent = null) {
+            const element = document.createElement(tag);
+            let hasInnerHTML = false;
+
+            for (const key in attributes) {
+                if (key === 'style' && typeof attributes[key] === 'object') {
+                    for (const styleProp in attributes[key]) {
+                        element.style[styleProp] = attributes[key][styleProp];
+                    }
+                } else if (key === 'dataset' && typeof attributes[key] === 'object') {
+                    for (const dataKey in attributes[key]) {
+                        element.dataset[dataKey] = attributes[key][dataKey];
+                    }
+                } else if (key === 'innerHTML') {
+                    element.innerHTML = attributes[key];
+                    hasInnerHTML = true;
+                } else if (typeof attributes[key] === 'boolean') {
+                    if (attributes[key]) {
+                        element.setAttribute(key, '');
+                    }
+                } else {
+                    element.setAttribute(key, attributes[key]);
+                }
+            }
+
+
+            if (!hasInnerHTML && textContent !== null && textContent !== undefined) {
+                element.textContent = textContent;
+            }
+            return element;
+        }
+
+
+        async function createCollapsibleFilterUI(targetListDivId, filterContainerId, filterTitleTextContent, createFilterRowsFn, populateDropdownsFn, applyFiltersFn, resetFiltersFn, specificDropdownChangeHandlers = []) {
+            const listDiv = document.getElementById(targetListDivId);
+            if (!listDiv) {
+                console.error(`Target div '${targetListDivId}' not found for creating filters.`);
+                return;
+            }
+            if (document.getElementById(filterContainerId)) {
+
+
+                if (populateDropdownsFn) await populateDropdownsFn();
+                return;
+            }
+
+            const existingSearchContainer = listDiv.querySelector('.form-container:not(.js-filter-container)');
+
+            const filterContainer = createElementJS('div', {
+                id: filterContainerId,
+                class: 'form-container js-filter-container',
+                style: { marginBottom: '20px' }
+            });
+
+            const filterHeader = createElementJS('div', {
+                class: 'form-title filter-header-toggle',
+                style: { cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+            });
+            const filterTitleSpan = createElementJS('span', {}, filterTitleTextContent);
+            const filterToggleIcon = createElementJS('span', { class: 'filter-toggle-icon', innerHTML: '▾' });
+            filterHeader.appendChild(filterTitleSpan);
+            filterHeader.appendChild(filterToggleIcon);
+            filterContainer.appendChild(filterHeader);
+
+            const filterContent = createElementJS('div', { class: 'filter-content', style: { display: 'none', paddingTop: '15px' } });
+
+
+            await createFilterRowsFn(filterContent);
+
+            filterContainer.appendChild(filterContent);
+
+            if (existingSearchContainer) {
+                listDiv.insertBefore(filterContainer, existingSearchContainer);
+            } else {
+                listDiv.appendChild(filterContainer);
+            }
+
+            filterHeader.addEventListener('click', () => {
+                const isVisible = filterContent.style.display === 'block';
+                filterContent.style.display = isVisible ? 'none' : 'block';
+                filterToggleIcon.innerHTML = isVisible ? '▾' : '▴';
+            });
+
+
+            if (populateDropdownsFn) {
+                await populateDropdownsFn();
+            }
+
+
+            specificDropdownChangeHandlers.forEach(handlerConfig => {
+                const dropdown = filterContent.querySelector(`#${handlerConfig.dropdownId}`);
+                if (dropdown) {
+                    dropdown.addEventListener('change', handlerConfig.handlerFn);
+                }
+            });
+
+
+            const applyButton = filterContent.querySelector('button[id^="js-apply-"]');
+            if (applyButton && applyFiltersFn) applyButton.addEventListener('click', applyFiltersFn);
+
+            const resetButton = filterContent.querySelector('button[id^="js-reset-"]');
+            if (resetButton && resetFiltersFn) resetButton.addEventListener('click', resetFiltersFn);
+        }
+
+
+
+        async function createStudentFilterRows(filterContentDiv) {
+
+            const row1 = createElementJS('div', { class: 'form-row' });
+            const classGroup = createElementJS('div', { class: 'form-group' });
+            classGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-student-class' }, 'کلاس'));
+            classGroup.appendChild(createElementJS('select', { class: 'form-control', id: 'js-filter-student-class', multiple: true, style: { height: '100px' } }));
+            row1.appendChild(classGroup);
+
+            const sectionGroup = createElementJS('div', { class: 'form-group' });
+            sectionGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-student-section' }, 'سیکشن'));
+            sectionGroup.appendChild(createElementJS('select', { class: 'form-control', id: 'js-filter-student-section', multiple: true, style: { height: '100px' } }));
+            row1.appendChild(sectionGroup);
+            filterContentDiv.appendChild(row1);
+
+
+            const row2 = createElementJS('div', { class: 'form-row' });
+            const genderGroup = createElementJS('div', { class: 'form-group' });
+            genderGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-student-gender' }, 'جنس'));
+            const genderSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-student-gender' });
+            genderSelect.appendChild(createElementJS('option', { value: '' }, 'تمام'));
+            genderSelect.appendChild(createElementJS('option', { value: 'مرد' }, 'مرد'));
+            genderSelect.appendChild(createElementJS('option', { value: 'عورت' }, 'عورت'));
+            genderGroup.appendChild(genderSelect);
+            row2.appendChild(genderGroup);
+
+            const feeCategoryGroup = createElementJS('div', { class: 'form-group' });
+            feeCategoryGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-student-fee-category' }, 'فیس کیٹیگری'));
+            const feeCategorySelect = createElementJS('select', { class: 'form-control', id: 'js-filter-student-fee-category' });
+            feeCategorySelect.appendChild(createElementJS('option', { value: '' }, 'تمام'));
+            ['عام', 'مستحق', 'اسکالرشپ', 'مکمل معاف'].forEach(cat => {
+                feeCategorySelect.appendChild(createElementJS('option', { value: cat }, cat));
+            });
+            feeCategoryGroup.appendChild(feeCategorySelect);
+            row2.appendChild(feeCategoryGroup);
+            filterContentDiv.appendChild(row2);
+
+
+            const row3 = createElementJS('div', { class: 'form-row' });
+            const dateFromGroup = createElementJS('div', { class: 'form-group' });
+            dateFromGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-admission-date-from' }, 'داخلہ تاریخ (سے)'));
+            dateFromGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-admission-date-from' }));
+            row3.appendChild(dateFromGroup);
+
+            const dateToGroup = createElementJS('div', { class: 'form-group' });
+            dateToGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-admission-date-to' }, 'داخلہ تاریخ (تک)'));
+            dateToGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-admission-date-to' }));
+            row3.appendChild(dateToGroup);
+            filterContentDiv.appendChild(row3);
+
+
+            const row4 = createElementJS('div', { class: 'form-row' });
+            row4.appendChild(createElementJS('button', { class: 'btn btn-primary', id: 'js-apply-student-filters-btn' }, 'فلٹر کریں'));
+            row4.appendChild(createElementJS('button', { class: 'btn btn-danger', id: 'js-reset-student-filters-btn', style: { marginRight: '10px' } }, 'فلٹر ری سیٹ'));
+            filterContentDiv.appendChild(row4);
+        }
+
+        async function populateStudentFilterDropdownsJS() {
+            try {
+                const classes = await getAllFromStore(STORES.CLASSES);
+                const classFilterDropdown = document.getElementById('js-filter-student-class');
+                if (!classFilterDropdown) return;
+                classFilterDropdown.innerHTML = '';
+                classes.forEach(cls => {
+                    classFilterDropdown.appendChild(createElementJS('option', { value: cls.id }, cls.name));
+                });
+                await populateStudentFilterSectionsJS();
+            } catch (error) {
+                console.error('Error populating student class filter dropdown (JS):', error);
+            }
+        }
+
+        async function populateStudentFilterSectionsJS() {
+            const classFilterDropdown = document.getElementById('js-filter-student-class');
+            const sectionFilterDropdown = document.getElementById('js-filter-student-section');
+            if (!classFilterDropdown || !sectionFilterDropdown) return;
+
+            sectionFilterDropdown.innerHTML = '';
+            const selectedClassIds = Array.from(classFilterDropdown.selectedOptions).map(opt => parseInt(opt.value));
+
+            if (selectedClassIds.length === 0) {
+                const allSections = await getAllFromStore(STORES.SECTIONS);
+                for (const section of allSections) {
+                    const classData = await getFromStore(STORES.CLASSES, section.classId);
+                    sectionFilterDropdown.appendChild(
+                        createElementJS('option', { value: section.id }, `${section.name} (${classData?.name || 'N/A'})`)
+                    );
+                }
+                return;
+            }
+
+            for (const classId of selectedClassIds) {
+                if (isNaN(classId)) continue;
+                try {
+                    const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
+                    const classData = await getFromStore(STORES.CLASSES, classId);
+                    sections.forEach(section => {
+                        sectionFilterDropdown.appendChild(
+                            createElementJS('option', { value: section.id }, `${section.name} (${classData?.name || 'N/A'})`)
+                        );
+                    });
+                } catch (error) {
+                    console.error(`Error populating JS sections for class ID ${classId}:`, error);
+                }
+            }
+        }
+
+        async function applyStudentFiltersJS() {
+            showLoading();
+            try {
+                const selectedClassIds = Array.from(document.getElementById('js-filter-student-class').selectedOptions).map(opt => parseInt(opt.value));
+                const selectedSectionIds = Array.from(document.getElementById('js-filter-student-section').selectedOptions).map(opt => parseInt(opt.value));
+                const selectedGender = document.getElementById('js-filter-student-gender').value;
+                const selectedFeeCategory = document.getElementById('js-filter-student-fee-category').value;
+                const admissionDateFromStr = document.getElementById('js-filter-admission-date-from').value;
+                const admissionDateToStr = document.getElementById('js-filter-admission-date-to').value;
+
+                let students = await getAllFromStore(STORES.STUDENTS);
+
+                if (selectedClassIds.length > 0) {
+                    students = students.filter(student => selectedClassIds.includes(student.classId));
+                }
+                if (selectedSectionIds.length > 0) {
+                    students = students.filter(student => selectedSectionIds.includes(student.sectionId));
+                }
+                if (selectedGender) {
+                    students = students.filter(student => student.gender === selectedGender);
+                }
+                if (selectedFeeCategory) {
+                    students = students.filter(student => student.feeCategory === selectedFeeCategory);
+                }
+                if (admissionDateFromStr) {
+                    const fromDate = new Date(admissionDateFromStr);
+                    students = students.filter(student => student.admissionDate && new Date(student.admissionDate) >= fromDate);
+                }
+                if (admissionDateToStr) {
+                    const toDate = new Date(admissionDateToStr);
+                    students = students.filter(student => student.admissionDate && new Date(student.admissionDate) <= toDate);
+                }
+                loadStudentsTable(students);
+            } catch (error) {
+                console.error("Error applying student filters (JS):", error);
+                showNotification('فلٹر اپلائی کرنے میں خرابی ہوئی۔', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function resetStudentFiltersJS() {
+            const classSelect = document.getElementById('js-filter-student-class');
+            if (classSelect) Array.from(classSelect.options).forEach(opt => opt.selected = false);
+
+
+            const sectionSelect = document.getElementById('js-filter-student-section');
+            if (sectionSelect) sectionSelect.innerHTML = '';
+            populateStudentFilterSectionsJS();
+
+
+            const genderSelect = document.getElementById('js-filter-student-gender');
+            if (genderSelect) genderSelect.value = '';
+
+            const feeCatSelect = document.getElementById('js-filter-student-fee-category');
+            if (feeCatSelect) feeCatSelect.value = '';
+
+            const dateFrom = document.getElementById('js-filter-admission-date-from');
+            if (dateFrom) dateFrom.value = '';
+
+            const dateTo = document.getElementById('js-filter-admission-date-to');
+            if (dateTo) dateTo.value = '';
+
+            loadStudentsTable();
+        }
+
+
+
+        async function createTeacherFilterRows(filterContentDiv) {
+            const row1 = createElementJS('div', { class: 'form-row' });
+            const subjectGroup = createElementJS('div', { class: 'form-group' });
+            subjectGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-teacher-subject' }, 'مضمون'));
+            subjectGroup.appendChild(createElementJS('select', { class: 'form-control', id: 'js-filter-teacher-subject', multiple: true, style: { height: '100px' } }));
+            row1.appendChild(subjectGroup);
+
+            const qualGroup = createElementJS('div', { class: 'form-group' });
+            qualGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-teacher-qualification' }, 'قابلیت (تلاش)'));
+            qualGroup.appendChild(createElementJS('input', { type: 'text', class: 'form-control', id: 'js-filter-teacher-qualification', placeholder: 'مثال: عالم، فاضل' }));
+            row1.appendChild(qualGroup);
+            filterContentDiv.appendChild(row1);
+
+            const row2 = createElementJS('div', { class: 'form-row' });
+            const dateFromGroup = createElementJS('div', { class: 'form-group' });
+            dateFromGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-teacher-joining-from' }, 'شمولیت تاریخ (سے)'));
+            dateFromGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-teacher-joining-from' }));
+            row2.appendChild(dateFromGroup);
+
+            const dateToGroup = createElementJS('div', { class: 'form-group' });
+            dateToGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-teacher-joining-to' }, 'شمولیت تاریخ (تک)'));
+            dateToGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-teacher-joining-to' }));
+            row2.appendChild(dateToGroup);
+            filterContentDiv.appendChild(row2);
+
+            const row3 = createElementJS('div', { class: 'form-row' });
+            row3.appendChild(createElementJS('button', { class: 'btn btn-primary', id: 'js-apply-teacher-filters-btn' }, 'فلٹر کریں'));
+            row3.appendChild(createElementJS('button', { class: 'btn btn-danger', id: 'js-reset-teacher-filters-btn', style: { marginRight: '10px' } }, 'فلٹر ری سیٹ'));
+            filterContentDiv.appendChild(row3);
+        }
+
+        async function populateTeacherFilterDropdownsJS() {
+            try {
+                const subjects = await getAllFromStore(STORES.SUBJECTS);
+                const subjectFilterDropdown = document.getElementById('js-filter-teacher-subject');
+                if (!subjectFilterDropdown) return;
+                subjectFilterDropdown.innerHTML = '';
+                subjects.forEach(sub => {
+                    subjectFilterDropdown.appendChild(createElementJS('option', { value: sub.id }, sub.name));
+                });
+            } catch (error) {
+                console.error('Error populating teacher subject filter (JS):', error);
+            }
+        }
+
+        async function applyTeacherFiltersJS() {
+            showLoading();
+            try {
+                const selectedSubjectIds = Array.from(document.getElementById('js-filter-teacher-subject').selectedOptions).map(opt => parseInt(opt.value));
+                const qualificationSearch = document.getElementById('js-filter-teacher-qualification').value.toLowerCase();
+                const joiningDateFromStr = document.getElementById('js-filter-teacher-joining-from').value;
+                const joiningDateToStr = document.getElementById('js-filter-teacher-joining-to').value;
+
+                let teachers = await getAllFromStore(STORES.TEACHERS);
+
+                if (selectedSubjectIds.length > 0) {
+                    teachers = teachers.filter(teacher => teacher.subjects && teacher.subjects.some(subId => selectedSubjectIds.includes(parseInt(subId))));
+                }
+                if (qualificationSearch) {
+                    teachers = teachers.filter(teacher => teacher.qualification && teacher.qualification.toLowerCase().includes(qualificationSearch));
+                }
+                if (joiningDateFromStr) {
+                    const fromDate = new Date(joiningDateFromStr);
+                    teachers = teachers.filter(teacher => teacher.joiningDate && new Date(teacher.joiningDate) >= fromDate);
+                }
+                if (joiningDateToStr) {
+                    const toDate = new Date(joiningDateToStr);
+                    teachers = teachers.filter(teacher => teacher.joiningDate && new Date(teacher.joiningDate) <= toDate);
+                }
+                loadTeachersTable(teachers);
+            } catch (error) {
+                console.error("Error applying teacher filters (JS):", error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function resetTeacherFiltersJS() {
+            const subjectSelect = document.getElementById('js-filter-teacher-subject');
+            if (subjectSelect) Array.from(subjectSelect.options).forEach(opt => opt.selected = false);
+
+            const qualInput = document.getElementById('js-filter-teacher-qualification');
+            if (qualInput) qualInput.value = '';
+
+            const dateFrom = document.getElementById('js-filter-teacher-joining-from');
+            if (dateFrom) dateFrom.value = '';
+
+            const dateTo = document.getElementById('js-filter-teacher-joining-to');
+            if (dateTo) dateTo.value = '';
+
+            loadTeachersTable();
+        }
+
+
+
+        async function createStaffFilterRows(filterContentDiv) {
+            const row1 = createElementJS('div', { class: 'form-row' });
+            const desigGroup = createElementJS('div', { class: 'form-group' });
+            desigGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-staff-designation' }, 'عہدہ'));
+            const desigSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-staff-designation' });
+            desigSelect.appendChild(createElementJS('option', { value: '' }, 'تمام'));
+            ['دفتری کلرک', 'لائبریرین', 'سیکیورٹی گارڈ', 'صفائی کرنے والا', 'ڈرائیور', 'دیگر'].forEach(d => {
+                desigSelect.appendChild(createElementJS('option', { value: d }, d));
+            });
+            desigGroup.appendChild(desigSelect);
+            row1.appendChild(desigGroup);
+
+            const deptGroup = createElementJS('div', { class: 'form-group' });
+            deptGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-staff-department' }, 'شعبہ'));
+            const deptSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-staff-department' });
+            deptSelect.appendChild(createElementJS('option', { value: '' }, 'تمام'));
+            ['انتظامیہ', 'اکاؤنٹس', 'لائبریری', 'سیکیورٹی', 'ٹرانسپورٹ', 'صفائی', 'دیگر'].forEach(d => {
+                deptSelect.appendChild(createElementJS('option', { value: d }, d));
+            });
+            deptGroup.appendChild(deptSelect);
+            row1.appendChild(deptGroup);
+            filterContentDiv.appendChild(row1);
+
+            const row2 = createElementJS('div', { class: 'form-row' });
+            const dateFromGroup = createElementJS('div', { class: 'form-group' });
+            dateFromGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-staff-joining-from' }, 'شمولیت تاریخ (سے)'));
+            dateFromGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-staff-joining-from' }));
+            row2.appendChild(dateFromGroup);
+
+            const dateToGroup = createElementJS('div', { class: 'form-group' });
+            dateToGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-staff-joining-to' }, 'شمولیت تاریخ (تک)'));
+            dateToGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-staff-joining-to' }));
+            row2.appendChild(dateToGroup);
+            filterContentDiv.appendChild(row2);
+
+            const row3 = createElementJS('div', { class: 'form-row' });
+            row3.appendChild(createElementJS('button', { class: 'btn btn-primary', id: 'js-apply-staff-filters-btn' }, 'فلٹر کریں'));
+            row3.appendChild(createElementJS('button', { class: 'btn btn-danger', id: 'js-reset-staff-filters-btn', style: { marginRight: '10px' } }, 'فلٹر ری سیٹ'));
+            filterContentDiv.appendChild(row3);
+        }
+
+        async function applyStaffFiltersJS() {
+            showLoading();
+            try {
+                const selectedDesignation = document.getElementById('js-filter-staff-designation').value;
+                const selectedDepartment = document.getElementById('js-filter-staff-department').value;
+                const joiningDateFromStr = document.getElementById('js-filter-staff-joining-from').value;
+                const joiningDateToStr = document.getElementById('js-filter-staff-joining-to').value;
+
+                let staffList = await getAllFromStore(STORES.STAFF);
+
+                if (selectedDesignation) {
+                    staffList = staffList.filter(staff => staff.designation === selectedDesignation);
+                }
+                if (selectedDepartment) {
+                    staffList = staffList.filter(staff => staff.department === selectedDepartment);
+                }
+                if (joiningDateFromStr) {
+                    const fromDate = new Date(joiningDateFromStr);
+                    staffList = staffList.filter(staff => staff.joiningDate && new Date(staff.joiningDate) >= fromDate);
+                }
+                if (joiningDateToStr) {
+                    const toDate = new Date(joiningDateToStr);
+                    staffList = staffList.filter(staff => staff.joiningDate && new Date(staff.joiningDate) <= toDate);
+                }
+                loadStaffTable(staffList);
+            } catch (error) {
+                console.error("Error applying staff filters (JS):", error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function resetStaffFiltersJS() {
+            const desigSelect = document.getElementById('js-filter-staff-designation');
+            if (desigSelect) desigSelect.value = '';
+
+            const deptSelect = document.getElementById('js-filter-staff-department');
+            if (deptSelect) deptSelect.value = '';
+
+            const dateFrom = document.getElementById('js-filter-staff-joining-from');
+            if (dateFrom) dateFrom.value = '';
+
+            const dateTo = document.getElementById('js-filter-staff-joining-to');
+            if (dateTo) dateTo.value = '';
+
+            loadStaffTable();
+        }
+
+
+
+        async function loadStudentsTable(studentsToLoad = null) {
+            try {
+
+                const students = studentsToLoad === null ? await getAllFromStore(STORES.STUDENTS) : studentsToLoad;
+                const tbody = document.querySelector('#students-table tbody');
+                tbody.innerHTML = '';
+                if (!students || students.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی طالب علم موجود نہیں ہے یا فلٹر سے کوئی نتیجہ نہیں ملا۔</td></tr>';
+                    return;
+                }
+                for (const student of students) {
+                    const row = document.createElement('tr');
+                    const classData = student.classId ? await getFromStore(STORES.CLASSES, student.classId) : null;
+                    const sectionData = student.sectionId ? await getFromStore(STORES.SECTIONS, student.sectionId) : null;
+                    row.innerHTML = `
+                <td>${student.rollNumber}</td>
+                <td>${student.name}</td>
+                <td>${student.fatherName}</td>
+                <td>${classData ? classData.name : 'N/A'}</td>
+                <td>${sectionData ? sectionData.name : 'N/A'}</td>
+                <td>${student.contact}</td>
+                <td>${formatDate(student.admissionDate)}</td>
+                <td class="no-print">
+                    <button class="btn btn-primary btn-sm" onclick="editStudent(${student.id})">ترمیم</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.id})">حذف کریں</button>
+                </td>
+            `;
+                    tbody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error loading students table:', error);
+                const tbody = document.querySelector('#students-table tbody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">طلباء کی فہرست لوڈ کرنے میں خرابی ہوئی۔</td></tr>';
+            }
+        }
+
+        async function loadTeachersTable(teachersToLoad = null) {
+            try {
+                const teachers = teachersToLoad === null ? await getAllFromStore(STORES.TEACHERS) : teachersToLoad;
+                const tbody = document.querySelector('#teachers-table tbody');
+                tbody.innerHTML = '';
+                if (!teachers || teachers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی استاد موجود نہیں ہے یا فلٹر سے کوئی نتیجہ نہیں ملا۔</td></tr>';
+                    return;
+                }
+                for (const teacher of teachers) {
+                    const row = document.createElement('tr');
+                    let subjectNames = '-';
+                    if (teacher.subjects && teacher.subjects.length > 0) {
+                        const subjectPromises = teacher.subjects.map(id => getFromStore(STORES.SUBJECTS, parseInt(id)));
+                        const subjectObjects = await Promise.all(subjectPromises);
+                        subjectNames = subjectObjects.filter(s => s).map(s => s.name).join(', ');
+                    }
+                    row.innerHTML = `
+                <td>${teacher.employeeId}</td>
+                <td>${teacher.name}</td>
+                <td>${teacher.qualification}</td>
+                <td>${subjectNames}</td>
+                <td>${teacher.contact}</td>
+                <td>${formatDate(teacher.joiningDate)}</td>
+                <td>${teacher.basicSalary ? formatCurrency(teacher.basicSalary) : 'N/A'}</td>
+                <td class="no-print">
+                    <button class="btn btn-primary btn-sm" onclick="editTeacher(${teacher.id})">ترمیم</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.TEACHERS}', ${teacher.id})">حذف کریں</button>
+                </td>
+            `;
+                    tbody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error loading teachers table:', error);
+                const tbody = document.querySelector('#teachers-table tbody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">اساتذہ کی فہرست لوڈ کرنے میں خرابی ہوئی۔</td></tr>';
+            }
+        }
+
+        async function loadStaffTable(staffToLoad = null) {
+            try {
+                let staffArray;
+                if (staffToLoad === null) {
+                    staffArray = await getAllFromStore(STORES.STAFF);
+                } else if (Array.isArray(staffToLoad)) {
+                    staffArray = staffToLoad;
+                } else {
+                    console.warn('loadStaffTable called with non-array. Defaulting to all.', staffToLoad);
+                    staffArray = await getAllFromStore(STORES.STAFF);
+                }
+
+                const tbody = document.querySelector('#staff-table tbody');
+                if (!tbody) {
+                    console.error("Staff table body not found!");
+                    return;
+                }
+                tbody.innerHTML = '';
+
+                if (!staffArray || !Array.isArray(staffArray) || staffArray.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">کوئی عملہ موجود نہیں ہے یا فلٹر سے کوئی نتیجہ نہیں ملا۔</td></tr>';
+                    return;
+                }
+
+                staffArray.forEach(staff => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>${staff.employeeId}</td>
+                <td>${staff.name}</td>
+                <td>${staff.designation}</td>
+                <td>${staff.department}</td>
+                <td>${staff.contact}</td>
+                <td>${formatDate(staff.joiningDate)}</td>
+                <td>${staff.basicSalary ? formatCurrency(staff.basicSalary) : 'N/A'}</td>
+                <td class="no-print">
+                    <button class="btn btn-primary btn-sm" onclick="editStaff(${staff.id})">ترمیم</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.STAFF}', ${staff.id})">حذف کریں</button>
+                </td>
+            `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading staff table:', error);
+
+            }
+        }
+
+
+
+
+
+
+
+        const REPORT_CONFIG = {
+            students: [
+                { id: 'student_strength_by_class', name: 'طلباء کی تعداد بلحاظ کلاس', filters: [], generator: generateStudentStrengthByClassReportJS, chartType: 'bar' },
+                { id: 'student_gender_ratio_by_class', name: 'طلباء کی صنفی تناسب (کلاس وار)', filters: ['class_optional'], generator: generateStudentGenderRatioByClassReportJS, chartType: 'pie_multi' },
+                { id: 'student_admission_trend', name: 'داخلوں کا ماہانہ رجحان', filters: ['year_optional'], generator: generateStudentAdmissionTrendReportJS, chartType: 'line' },
+                { id: 'student_list_filtered', name: 'طلباء کی فہرست (فلٹر شدہ)', filters: ['class_optional', 'section_optional', 'gender_optional'], generator: generateFilteredStudentListReportJS, chartType: null }
+            ],
+            attendance: [
+                { id: 'daily_attendance_summary', name: 'روزانہ حاضری کا خلاصہ', filters: ['date', 'class_optional', 'section_optional'], generator: generateDailyAttendanceSummaryReportJS, chartType: 'pie' },
+                { id: 'monthly_attendance_student', name: 'ماہانہ حاضری فی طالب علم', filters: ['month_year', 'class', 'section', 'student_optional'], generator: generateMonthlyAttendanceByStudentReportJS, chartType: 'bar_grouped' },
+                { id: 'class_attendance_percentage_range', name: 'کلاس وار حاضری کا فیصد (مدت)', filters: ['date_range', 'class_optional'], generator: generateClassAttendancePercentageRangeReportJS, chartType: 'bar' }
+            ],
+            fees: [
+                { id: 'fee_collection_daily_summary', name: 'روزانہ فیس وصولی کا خلاصہ', filters: ['date'], generator: generateFeeCollectionDailySummaryReportJS, chartType: 'summary_cards' },
+                { id: 'fee_collection_monthly_class', name: 'ماہانہ فیس وصولی (کلاس وار)', filters: ['month_year', 'class_optional'], generator: generateFeeCollectionMonthlyByClassReportJS, chartType: 'bar' },
+                { id: 'fee_defaulters_list', name: 'فیس نادہندگان کی فہرست', filters: ['month_year', 'class_optional', 'section_optional'], generator: generateFeeDefaultersListReportJS, chartType: null },
+                { id: 'fee_category_wise_collection', name: 'فیس کیٹیگری وار وصولی (مدت)', filters: ['date_range'], generator: generateFeeCategoryWiseCollectionReportJS, chartType: 'pie' }
+            ],
+
+        };
+
+        let currentReportChart = null;
+
+        async function initializeReportsViewJS() {
+            const reportsViewDiv = document.getElementById('reports-view');
+            if (!reportsViewDiv) {
+                console.error("Reports view container 'reports-view' not found.");
+                return;
+            }
+
+            const h2 = reportsViewDiv.querySelector('h2');
+            reportsViewDiv.innerHTML = '';
+            if (h2) reportsViewDiv.appendChild(h2);
+
+            const formContainer = createElementJS('div', { class: 'form-container' });
+            reportsViewDiv.appendChild(formContainer);
+            formContainer.appendChild(createElementJS('div', { class: 'form-title' }, 'رپورٹ منتخب کریں'));
+
+            const reportTypeRow = createElementJS('div', { class: 'form-row' });
+            const reportTypeGroup = createElementJS('div', { class: 'form-group', style: { flexBasis: '100%' } });
+            reportTypeGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-report-type-select' }, 'رپورٹ کی قسم'));
+            const reportTypeSelect = createElementJS('select', { class: 'form-control', id: 'js-report-type-select' });
+            reportTypeSelect.appendChild(createElementJS('option', { value: '' }, '--- منتخب کریں ---'));
+
+            for (const categoryKey in REPORT_CONFIG) {
+                let categoryLabel = categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1);
+                if (categoryKey === 'students') categoryLabel = 'طلباء';
+                if (categoryKey === 'attendance') categoryLabel = 'حاضری';
+                if (categoryKey === 'fees') categoryLabel = 'فیس';
+
+                const optgroup = createElementJS('optgroup', { label: categoryLabel });
+                REPORT_CONFIG[categoryKey].forEach(report => {
+                    optgroup.appendChild(createElementJS('option', { value: `${categoryKey}:${report.id}` }, report.name));
+                });
+                reportTypeSelect.appendChild(optgroup);
+            }
+            reportTypeGroup.appendChild(reportTypeSelect);
+            reportTypeRow.appendChild(reportTypeGroup);
+            formContainer.appendChild(reportTypeRow);
+
+            const filtersArea = createElementJS('div', { id: 'js-report-filters-area', class: 'form-row', style: { marginTop: '15px', display: 'none', flexWrap: 'wrap', gap: '15px' } });
+            formContainer.appendChild(filtersArea);
+
+            const generateBtnRow = createElementJS('div', { class: 'form-row', style: { marginTop: '15px' } });
+            const generateBtn = createElementJS('button', { class: 'btn btn-primary', id: 'js-generate-report-btn' }, 'رپورٹ بنائیں');
+            generateBtnRow.appendChild(generateBtn);
+            formContainer.appendChild(generateBtnRow);
+
+            const reportOutputDiv = createElementJS('div', { id: 'js-report-output-area', style: { marginTop: '20px' } });
+            reportsViewDiv.appendChild(reportOutputDiv);
+
+            reportTypeSelect.addEventListener('change', handleReportTypeChangeJS);
+            generateBtn.addEventListener('click', generateSelectedReportJS);
+            handleReportTypeChangeJS();
+        }
+
+        async function handleReportTypeChangeJS() {
+            const selectedValue = document.getElementById('js-report-type-select').value;
+            const filtersArea = document.getElementById('js-report-filters-area');
+            filtersArea.innerHTML = '';
+            filtersArea.style.display = 'none';
+
+            if (!selectedValue) return;
+
+            const [category, reportId] = selectedValue.split(':');
+            const reportConfig = REPORT_CONFIG[category]?.find(r => r.id === reportId);
+
+            if (!reportConfig || !reportConfig.filters || reportConfig.filters.length === 0) return;
+
+            filtersArea.style.display = 'flex';
+
+            for (const filterType of reportConfig.filters) {
+                const filterGroup = createElementJS('div', { class: 'form-group' });
+                let requiresRepopulate = false;
+
+                switch (filterType) {
+                    case 'date':
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-date' }, 'تاریخ'));
+                        filterGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-date', value: new Date().toISOString().split('T')[0] }));
+                        break;
+                    case 'date_range':
+                    case 'date_range_year_month':
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-date-from' }, 'تاریخ (سے)'));
+                        filterGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-date-from' }));
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-date-to', style: { marginTop: '5px' } }, 'تاریخ (تک)'));
+                        filterGroup.appendChild(createElementJS('input', { type: 'date', class: 'form-control', id: 'js-filter-date-to' }));
+                        break;
+                    case 'month_year':
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-month' }, 'مہینہ'));
+                        const monthSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-month' });
+                        const months = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
+                        months.forEach((m, i) => monthSelect.appendChild(createElementJS('option', { value: i + 1 }, m)));
+                        monthSelect.value = new Date().getMonth() + 1;
+                        filterGroup.appendChild(monthSelect);
+
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-year', style: { marginTop: '5px' } }, 'سال'));
+                        filterGroup.appendChild(createElementJS('input', { type: 'number', class: 'form-control', id: 'js-filter-year', value: new Date().getFullYear() }));
+                        break;
+                    case 'year_optional':
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-year-optional' }, 'سال (اختیاری)'));
+                        const yearOptionalInput = createElementJS('input', { type: 'number', class: 'form-control', id: 'js-filter-year-optional', placeholder: 'خالی چھوڑیں موجودہ سال کے لیے' });
+                        filterGroup.appendChild(yearOptionalInput);
+                        break;
+                    case 'class':
+                    case 'class_optional':
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-class' }, 'کلاس'));
+                        const classSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-class' });
+                        if (filterType === 'class_optional') {
+                            classSelect.appendChild(createElementJS('option', { value: '' }, 'تمام کلاسز'));
+                        }
+                        const classes = await getAllFromStore(STORES.CLASSES);
+                        classes.forEach(c => classSelect.appendChild(createElementJS('option', { value: c.id }, c.name)));
+                        filterGroup.appendChild(classSelect);
+                        if (reportConfig.filters.includes('section_optional') || reportConfig.filters.includes('section')) {
+                            classSelect.addEventListener('change', () => populateReportFilterSectionsJS(reportConfig.filters.includes('section_optional')));
+                            requiresRepopulate = true;
+                        }
+                        if (reportConfig.filters.includes('student_optional')) {
+                            classSelect.addEventListener('change', populateReportFilterStudentsJS);
+                        }
+                        break;
+                    case 'section':
+                    case 'section_optional':
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-section' }, 'سیکشن'));
+                        const sectionSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-section' });
+                        filterGroup.appendChild(sectionSelect);
+                        if (reportConfig.filters.includes('student_optional')) {
+                            sectionSelect.addEventListener('change', populateReportFilterStudentsJS);
+                        }
+                        requiresRepopulate = true;
+                        break;
+                    case 'gender_optional':
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-gender' }, 'جنس'));
+                        const genderSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-gender' });
+                        genderSelect.appendChild(createElementJS('option', { value: '' }, 'تمام'));
+                        genderSelect.appendChild(createElementJS('option', { value: 'مرد' }, 'مرد'));
+                        genderSelect.appendChild(createElementJS('option', { value: 'عورت' }, 'عورت'));
+                        filterGroup.appendChild(genderSelect);
+                        break;
+                    case 'student_optional':
+                        filterGroup.appendChild(createElementJS('label', { class: 'form-label', for: 'js-filter-student' }, 'طالب علم'));
+                        const studentSelect = createElementJS('select', { class: 'form-control', id: 'js-filter-student' });
+                        filterGroup.appendChild(studentSelect);
+                        requiresRepopulate = true;
+                        break;
+                }
+                filtersArea.appendChild(filterGroup);
+
+                if (requiresRepopulate) {
+                    if (filterType.includes('section')) await populateReportFilterSectionsJS(filterType === 'section_optional');
+                    if (filterType.includes('student')) await populateReportFilterStudentsJS();
+                }
+            }
+        }
+
+        async function populateReportFilterSectionsJS(isOptional = false) {
+            const classSelect = document.getElementById('js-filter-class');
+            const sectionSelect = document.getElementById('js-filter-section');
+            if (!sectionSelect) return;
+
+            sectionSelect.innerHTML = '';
+            if (isOptional) {
+                sectionSelect.appendChild(createElementJS('option', { value: '' }, 'تمام سیکشنز'));
+            }
+
+            const classId = classSelect ? parseInt(classSelect.value) : null;
+
+            if (classId && !isNaN(classId)) {
+                const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
+                sections.forEach(s => sectionSelect.appendChild(createElementJS('option', { value: s.id }, s.name)));
+            } else if (!classId && isOptional) {
+                const allSections = await getAllFromStore(STORES.SECTIONS);
+                for (const s of allSections) {
+                    const c = await getFromStore(STORES.CLASSES, s.classId);
+                    sectionSelect.appendChild(createElementJS('option', { value: s.id }, `${s.name} (${c?.name || ''})`));
+                }
+            } else if (!classId && !isOptional) {
+                sectionSelect.appendChild(createElementJS('option', { value: '' }, 'پہلے کلاس منتخب کریں'));
+            }
+        }
+
+        async function populateReportFilterStudentsJS() {
+            const studentSelect = document.getElementById('js-filter-student');
+            if (!studentSelect) return;
+
+            studentSelect.innerHTML = '';
+            studentSelect.appendChild(createElementJS('option', { value: '' }, 'تمام طلباء'));
+
+            const classIdVal = document.getElementById('js-filter-class')?.value;
+            const sectionIdVal = document.getElementById('js-filter-section')?.value;
+            const classId = classIdVal ? parseInt(classIdVal) : null;
+            const sectionId = sectionIdVal ? parseInt(sectionIdVal) : null;
+
+
+            let students = await getAllFromStore(STORES.STUDENTS);
+
+            if (classId && !isNaN(classId)) {
+                students = students.filter(s => s.classId === classId);
+            }
+            if (sectionId && !isNaN(sectionId)) {
+                students = students.filter(s => s.sectionId === sectionId);
+            }
+
+            students.sort((a, b) => (a.name || "").localeCompare(b.name || "", 'ur'));
+            students.forEach(s => studentSelect.appendChild(createElementJS('option', { value: s.id }, `${s.name || 'بلا نام'} (${s.rollNumber || 'N/A'})`)));
+        }
+
+        async function generateSelectedReportJS() {
+            const selectedValue = document.getElementById('js-report-type-select').value;
+            const outputDiv = document.getElementById('js-report-output-area');
+            outputDiv.innerHTML = '';
+            if (currentReportChart) {
+                currentReportChart.destroy();
+                currentReportChart = null;
+            }
+
+            if (!selectedValue) {
+                showNotification('براہ کرم رپورٹ کی قسم منتخب کریں۔', 'error');
+                return;
+            }
+            showLoading();
+            const [category, reportId] = selectedValue.split(':');
+            const reportConfig = REPORT_CONFIG[category]?.find(r => r.id === reportId);
+
+            if (!reportConfig || !reportConfig.generator) {
+                outputDiv.innerHTML = '<p>رپورٹ جنریٹر فنکشن نہیں ملا۔</p>';
+                hideLoading();
+                return;
+            }
+
+            try {
+                const filterValues = {};
+                if (reportConfig.filters) {
+                    reportConfig.filters.forEach(filterKey => {
+                        if (filterKey === 'date') filterValues.date = document.getElementById('js-filter-date')?.value;
+                        if (filterKey === 'date_range' || filterKey === 'date_range_year_month') {
+                            filterValues.dateFrom = document.getElementById('js-filter-date-from')?.value;
+                            filterValues.dateTo = document.getElementById('js-filter-date-to')?.value;
+                        }
+                        if (filterKey === 'month_year') {
+                            filterValues.month = parseInt(document.getElementById('js-filter-month')?.value);
+                            filterValues.year = parseInt(document.getElementById('js-filter-year')?.value);
+                        }
+                        if (filterKey === 'year_optional') {
+                            const yearVal = document.getElementById('js-filter-year-optional')?.value;
+                            filterValues.year = yearVal ? parseInt(yearVal) : new Date().getFullYear();
+                        }
+                        if (filterKey === 'class' || filterKey === 'class_optional') {
+                            const val = document.getElementById('js-filter-class')?.value;
+                            filterValues.classId = val ? parseInt(val) : null;
+                        }
+                        if (filterKey === 'section' || filterKey === 'section_optional') {
+                            const val = document.getElementById('js-filter-section')?.value;
+                            filterValues.sectionId = val ? parseInt(val) : null;
+                        }
+                        if (filterKey === 'gender_optional') {
+                            filterValues.gender = document.getElementById('js-filter-gender')?.value || null;
+                        }
+                        if (filterKey === 'student_optional') {
+                            const val = document.getElementById('js-filter-student')?.value;
+                            filterValues.studentId = val ? parseInt(val) : null;
+                        }
+                    });
+                }
+                const { html, chartData } = await reportConfig.generator(filterValues);
+                outputDiv.innerHTML = html;
+
+                if (chartData && reportConfig.chartType && chartData.canvasId) {
+                    if (typeof Chart === 'undefined') {
+                        console.warn("Chart.js library is not loaded. Skipping chart rendering.");
+                        const placeholder = document.getElementById(chartData.canvasId);
+                        if (placeholder) placeholder.innerHTML = '<p style="text-align:center; color: #777;"><em>Chart.js library not loaded.</em></p>';
+                    } else {
+                        renderChart(reportConfig.chartType, chartData.canvasId, chartData.title, chartData.labels, chartData.datasets, chartData.options);
+                    }
+                }
+
+            } catch (error) {
+                console.error(`Error generating report '${reportConfig.name}':`, error);
+                outputDiv.innerHTML = `<p style="color:red;">رپورٹ بنانے میں خرابی ہوئی: ${error.message}</p>`;
+            } finally {
+                hideLoading();
+            }
+        }
+
+
+        function renderChart(type, canvasId, chartTitle, labels, datasets, chartOptions = {}) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) {
+                console.warn("Canvas not found for chart:", canvasId);
+                return;
+            }
+            if (currentReportChart) {
+                currentReportChart.destroy();
+            }
+
+            const defaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: chartTitle, font: { size: 16, family: "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif" } },
+                    legend: { labels: { font: { family: "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif" } } }
+                },
+
+
+            };
+            if (type === 'bar' || type === 'line' || type === 'bar_grouped') {
+                defaultOptions.scales = { y: { beginAtZero: true, ticks: { font: { family: "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif" } } }, x: { ticks: { font: { family: "'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', sans-serif" } } } };
+            }
+
+
+            currentReportChart = new Chart(ctx, {
+                type: type === 'bar_grouped' ? 'bar' : type,
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: { ...defaultOptions, ...chartOptions }
+            });
+        }
+
+
+
+        async function generateStudentStrengthByClassReportJS(filters) {
+            const classes = await getAllFromStore(STORES.CLASSES);
+            const students = await getAllFromStore(STORES.STUDENTS);
+            let totalStudentsOverall = 0;
+
+            const reportDataItems = classes.map(cls => {
+                const classStudents = students.filter(s => s.classId === cls.id);
+                totalStudentsOverall += classStudents.length;
+                return { className: cls.name, studentCount: classStudents.length };
+            });
+
+            let tableHTML = `<h3>طلباء کی تعداد بلحاظ کلاس</h3>
+                     <div class="table-container">
+                       <table class="table">
+                         <thead><tr><th>کلاس کا نام</th><th>طلباء کی تعداد</th></tr></thead><tbody>`;
+            reportDataItems.forEach(data => {
+                tableHTML += `<tr><td>${data.className}</td><td>${data.studentCount}</td></tr>`;
+            });
+            tableHTML += `</tbody><tfoot><tr><td><strong>کل طلباء</strong></td><td><strong>${totalStudentsOverall}</strong></td></tr></tfoot></table></div>`;
+
+            const chartCanvasId = `chart-std-strength-${Date.now()}`;
+            tableHTML += `<div style="height: 350px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasId}"></canvas></div>`;
+
+            const chartData = {
+                canvasId: chartCanvasId,
+                title: 'طلباء کی تعداد بلحاظ کلاس',
+                labels: reportDataItems.map(d => d.className),
+                datasets: [{
+                    label: 'طلباء کی تعداد',
+                    data: reportDataItems.map(d => d.studentCount),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+            return { html: tableHTML, chartData: chartData };
+        }
+
+        async function generateStudentGenderRatioByClassReportJS(filters) {
+            let classesToReportOn = [];
+            if (filters.classId && !isNaN(filters.classId)) {
+                const cls = await getFromStore(STORES.CLASSES, filters.classId);
+                if (cls) classesToReportOn.push(cls);
+            } else {
+                classesToReportOn = await getAllFromStore(STORES.CLASSES);
+            }
+            const students = await getAllFromStore(STORES.STUDENTS);
+            let overallMale = 0;
+            let overallFemale = 0;
+            let overallOther = 0;
+
+            let html = `<h3>طلباء کی صنفی تناسب بلحاظ کلاس</h3>`;
+            const chartDataSets = [];
+
+            for (const cls of classesToReportOn) {
+                const classStudents = students.filter(s => s.classId === cls.id);
+                const maleCount = classStudents.filter(s => s.gender === 'مرد').length;
+                const femaleCount = classStudents.filter(s => s.gender === 'عورت').length;
+
+                overallMale += maleCount;
+                overallFemale += femaleCount;
+
+
+                html += `<div class="form-container" style="margin-bottom:15px;">
+                    <h4>کلاس: ${cls.name} (کل: ${classStudents.length})</h4>
+                    <p>مرد: ${maleCount} (${classStudents.length > 0 ? ((maleCount / classStudents.length) * 100).toFixed(1) : 0}%)</p>
+                    <p>عورت: ${femaleCount} (${classStudents.length > 0 ? ((femaleCount / classStudents.length) * 100).toFixed(1) : 0}%)</p>
+                    <div style="height: 250px; position: relative;"><canvas id="chart-gender-${cls.id}-${Date.now()}"></canvas></div>
+                 </div>`;
+                chartDataSets.push({
+                    canvasId: `chart-gender-${cls.id}-${Date.now()}`,
+                    title: `صنفی تناسب - ${cls.name}`,
+                    labels: ['مرد', 'عورت'],
+                    datasets: [{
+                        data: [maleCount, femaleCount],
+                        backgroundColor: ['rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)'],
+                    }]
+                });
+            }
+            html += `<div class="form-container"><h4>مجموعی صنفی تناسب</h4>
+                <p>کل مرد: ${overallMale}</p>
+                <p>کل عورت: ${overallFemale}</p>
+                <div style="height: 300px; position: relative;"><canvas id="chart-gender-overall-${Date.now()}"></canvas></div>
+              </div>`;
+            chartDataSets.push({
+                canvasId: `chart-gender-overall-${Date.now()}`,
+                title: `مجموعی صنفی تناسب`,
+                labels: ['مرد', 'عورت'],
+                datasets: [{
+                    data: [overallMale, overallFemale],
+                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 159, 64, 0.7)'],
+                }]
+            });
+
+
+            return { html: html, chartData: chartDataSets, chartType: 'pie_multi' };
+        }
+
+        async function generateStudentAdmissionTrendReportJS(filters) {
+            const year = filters.year || new Date().getFullYear();
+            const students = await getAllFromStore(STORES.STUDENTS);
+            const monthlyAdmissions = Array(12).fill(0);
+
+            students.forEach(s => {
+                if (s.admissionDate) {
+                    const admissionDate = new Date(s.admissionDate);
+                    if (admissionDate.getFullYear() === year) {
+                        monthlyAdmissions[admissionDate.getMonth()]++;
+                    }
+                }
+            });
+
+            const monthsUrdu = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
+            let tableHTML = `<h3>${year} میں ماہانہ داخلوں کا رجحان</h3>
+                     <div class="table-container">
+                       <table class="table">
+                         <thead><tr><th>مہینہ</th><th>نئے داخلے</th></tr></thead><tbody>`;
+            monthlyAdmissions.forEach((count, index) => {
+                tableHTML += `<tr><td>${monthsUrdu[index]}</td><td>${count}</td></tr>`;
+            });
+            tableHTML += `</tbody></table></div>`;
+
+            const chartCanvasId = `chart-admission-trend-${Date.now()}`;
+            tableHTML += `<div style="height: 350px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasId}"></canvas></div>`;
+
+            const chartData = {
+                canvasId: chartCanvasId,
+                title: `${year} میں ماہانہ داخلوں کا رجحان`,
+                labels: monthsUrdu,
+                datasets: [{
+                    label: 'نئے داخلے',
+                    data: monthlyAdmissions,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            };
+            return { html: tableHTML, chartData: chartData };
+        }
+
+        async function generateFilteredStudentListReportJS(filters) {
+            let students = await getAllFromStore(STORES.STUDENTS);
+
+            if (filters.classId) {
+                students = students.filter(s => s.classId === filters.classId);
+            }
+            if (filters.sectionId) {
+                students = students.filter(s => s.sectionId === filters.sectionId);
+            }
+            if (filters.gender) {
+                students = students.filter(s => s.gender === filters.gender);
+            }
+
+            let title = "طلباء کی فہرست";
+            if (filters.classId || filters.sectionId || filters.gender) title += " (فلٹر شدہ)";
+
+            let tableHTML = `<h3>${title} (کل: ${students.length})</h3>
+                     <div class="table-container">
+                       <table class="table">
+                         <thead><tr><th>رول نمبر</th><th>نام</th><th>والد کا نام</th><th>کلاس</th><th>سیکشن</th><th>جنس</th><th>رابطہ</th><th>داخلہ تاریخ</th></tr></thead><tbody>`;
+            for (const student of students) {
+                const classData = student.classId ? await getFromStore(STORES.CLASSES, student.classId) : null;
+                const sectionData = student.sectionId ? await getFromStore(STORES.SECTIONS, student.sectionId) : null;
+                tableHTML += `<tr>
+                        <td>${student.rollNumber || 'N/A'}</td>
+                        <td>${student.name || 'N/A'}</td>
+                        <td>${student.fatherName || 'N/A'}</td>
+                        <td>${classData ? classData.name : 'N/A'}</td>
+                        <td>${sectionData ? sectionData.name : 'N/A'}</td>
+                        <td>${student.gender || 'N/A'}</td>
+                        <td>${student.contact || 'N/A'}</td>
+                        <td>${student.admissionDate ? formatDate(student.admissionDate) : 'N/A'}</td>
+                      </tr>`;
+            }
+            tableHTML += `</tbody></table></div>`;
+            return { html: tableHTML, chartData: null };
+        }
+
+
+
+        async function generateDailyAttendanceSummaryReportJS(filters) {
+            const { date, classId, sectionId } = filters;
+            if (!date) return { html: "<p>براہ کرم تاریخ منتخب کریں۔</p>", chartData: null };
+
+            let attendanceRecords = await getAllFromIndex(STORES.ATTENDANCE, 'date', date);
+            let allStudentsInScope = await getAllFromStore(STORES.STUDENTS);
+
+            let reportTitle = `${formatDate(date)} کی روزانہ حاضری کا خلاصہ`;
+
+            if (classId && !isNaN(classId)) {
+                const classInfo = await getFromStore(STORES.CLASSES, classId);
+                reportTitle += ` - کلاس: ${classInfo?.name || 'N/A'}`;
+                allStudentsInScope = allStudentsInScope.filter(s => s.classId === classId);
+                attendanceRecords = attendanceRecords.filter(r => r.classId === classId);
+                if (sectionId && !isNaN(sectionId)) {
+                    const sectionInfo = await getFromStore(STORES.SECTIONS, sectionId);
+                    reportTitle += ` - سیکشن: ${sectionInfo?.name || 'N/A'}`;
+                    allStudentsInScope = allStudentsInScope.filter(s => s.sectionId === sectionId);
+                    attendanceRecords = attendanceRecords.filter(r => r.sectionId === sectionId);
+                }
+            }
+
+            const totalStudents = allStudentsInScope.length;
+            let presentCount = 0;
+            let absentCount = 0;
+            let leaveCount = 0;
+            let lateCount = 0;
+
+            const studentAttendanceMap = new Map();
+            attendanceRecords.forEach(rec => studentAttendanceMap.set(rec.studentId, rec));
+
+            allStudentsInScope.forEach(student => {
+                const record = studentAttendanceMap.get(student.id);
+                if (record) {
+                    if (record.isLeave) leaveCount++;
+                    else if (record.status === 'present') presentCount++;
+                    else if (record.status === 'absent') absentCount++;
+                    if (record.isLate) lateCount++;
+                } else {
+                    absentCount++;
+                }
+            });
+
+            const attendancePercentage = totalStudents > 0 ? ((presentCount / totalStudents) * 100).toFixed(1) : 0;
+
+            let html = `<h3>${reportTitle}</h3>`;
+            html += `<div class="dashboard-cards" style="justify-content: space-around; flex-wrap:wrap;">
+                <div class="card" style="min-width:150px; margin:5px;"><div class="card-title">کل طلباء</div><div class="card-value">${totalStudents}</div></div>
+                <div class="card" style="min-width:150px; margin:5px;"><div class="card-title">حاضر</div><div class="card-value" style="color: #2ecc71;">${presentCount}</div></div>
+                <div class="card" style="min-width:150px; margin:5px;"><div class="card-title">غیر حاضر</div><div class="card-value" style="color: #e74c3c;">${absentCount}</div></div>
+                <div class="card" style="min-width:150px; margin:5px;"><div class="card-title">رخصت</div><div class="card-value" style="color: #f39c12;">${leaveCount}</div></div>
+                <div class="card" style="min-width:150px; margin:5px;"><div class="card-title">دیر سے</div><div class="card-value" style="color: #e67e22;">${lateCount}</div></div>
+                <div class="card" style="min-width:150px; margin:5px;"><div class="card-title">حاضری %</div><div class="card-value" style="color: #3498db;">${attendancePercentage}%</div></div>
+             </div>`;
+
+            const chartCanvasId = `chart-daily-attendance-${Date.now()}`;
+            html += `<div style="height: 300px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasId}"></canvas></div>`;
+
+            const chartData = {
+                canvasId: chartCanvasId,
+                title: 'روزانہ حاضری کی تقسیم',
+                labels: ['حاضر', 'غیر حاضر', 'رخصت'],
+                datasets: [{
+                    data: [presentCount, absentCount, leaveCount],
+                    backgroundColor: ['rgba(46, 204, 113, 0.7)', 'rgba(231, 76, 60, 0.7)', 'rgba(243, 156, 18, 0.7)'],
+                }]
+            };
+            return { html: html, chartData: chartData };
+        }
+
+        async function generateMonthlyAttendanceByStudentReportJS(filters) {
+            const { month, year, classId, sectionId, studentId } = filters;
+            if (!month || !year || !classId) {
+                return { html: "<p>براہ کرم مہینہ، سال اور کلاس منتخب کریں۔ سیکشن اختیاری ہے۔</p>", chartData: null };
+            }
+
+            const monthName = new Date(year, month - 1, 1).toLocaleDateString('ur-PK', { month: 'long' });
+            let html = `<h3>${monthName}، ${year} کی ماہانہ حاضری رپورٹ</h3>`;
+            const sClass = await getFromStore(STORES.CLASSES, classId);
+            html += `<p><strong>کلاس:</strong> ${sClass?.name || '-'}`;
+            if (sectionId) {
+                const sSection = await getFromStore(STORES.SECTIONS, sectionId);
+                html += ` - <strong>سیکشن:</strong> ${sSection?.name || '-'}`;
+            }
+            html += `</p>`;
+
+            let studentsToReport = [];
+            if (studentId && !isNaN(studentId)) {
+                const student = await getFromStore(STORES.STUDENTS, studentId);
+                if (student && student.classId === classId && (!sectionId || student.sectionId === sectionId)) studentsToReport.push(student);
+            } else {
+                studentsToReport = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.classId === classId && (!sectionId || s.sectionId === sectionId));
+            }
+
+            if (studentsToReport.length === 0) return { html: html + "<p>اس معیار پر کوئی طالب علم نہیں ملا۔</p>", chartData: null };
+
+            const allAttendance = await getAllFromStore(STORES.ATTENDANCE);
+
+            html += `<div class="table-container"><table class="table">
+                <thead><tr><th>رول نمبر</th><th>نام</th><th>کل ایام (ریکارڈ شدہ)</th><th>حاضر</th><th>غیر حاضر</th><th>رخصت</th><th>دیر سے</th><th>حاضری %</th></tr></thead>
+                <tbody>`;
+
+            const chartLabels = [];
+            const presentDataset = [];
+            const absentDataset = [];
+            const leaveDataset = [];
+
+            for (const student of studentsToReport) {
+                const studentMonthlyAttendance = allAttendance.filter(r =>
+                    r.studentId === student.id &&
+                    new Date(r.date).getFullYear() === year &&
+                    new Date(r.date).getMonth() + 1 === month
+                );
+
+                const totalRecordedDays = studentMonthlyAttendance.length;
+                const present = studentMonthlyAttendance.filter(r => r.status === 'present' && !r.isLeave).length;
+                const absent = studentMonthlyAttendance.filter(r => r.status === 'absent' && !r.isLeave).length;
+                const onLeave = studentMonthlyAttendance.filter(r => r.isLeave).length;
+                const late = studentMonthlyAttendance.filter(r => r.isLate).length;
+
+                const effectiveDaysForPercentage = present + absent;
+                const percentage = effectiveDaysForPercentage > 0 ? ((present / effectiveDaysForPercentage) * 100).toFixed(1) : (onLeave > 0 ? 'رخصت' : '0.0');
+
+                html += `<tr>
+                    <td>${student.rollNumber}</td>
+                    <td>${student.name}</td>
+                    <td>${totalRecordedDays}</td>
+                    <td>${present}</td>
+                    <td>${absent}</td>
+                    <td>${onLeave}</td>
+                    <td>${late}</td>
+                    <td>${percentage}${percentage !== 'رخصت' ? '%' : ''}</td>
+                 </tr>`;
+
+                if (studentsToReport.length <= 15) {
+                    chartLabels.push(student.name.split(" ")[0]);
+                    presentDataset.push(present);
+                    absentDataset.push(absent);
+                    leaveDataset.push(onLeave);
+                }
+            }
+            html += `</tbody></table></div>`;
+            let chartData = null;
+            if (studentsToReport.length > 0 && studentsToReport.length <= 15) {
+                const chartCanvasId = `chart-monthly-stud-att-${Date.now()}`;
+                html += `<div style="height: 400px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasId}"></canvas></div>`;
+                chartData = {
+                    canvasId: chartCanvasId,
+                    title: `${sClass?.name || ''} ${sectionId ? '- ' + (await getFromStore(STORES.SECTIONS, sectionId))?.name : ''} - ماہانہ حاضری`,
+                    labels: chartLabels,
+                    datasets: [
+                        { label: 'حاضر', data: presentDataset, backgroundColor: 'rgba(46, 204, 113, 0.7)' },
+                        { label: 'غیر حاضر', data: absentDataset, backgroundColor: 'rgba(231, 76, 60, 0.7)' },
+                        { label: 'رخصت', data: leaveDataset, backgroundColor: 'rgba(243, 156, 18, 0.7)' }
+                    ]
+                };
+            }
+            return { html: html, chartData: chartData };
+        }
+
+        async function generateClassAttendancePercentageRangeReportJS(filters) {
+            const { dateFrom, dateTo, classId } = filters;
+            if (!dateFrom || !dateTo) {
+                return { html: "<p>براہ کرم تاریخ کی مدت منتخب کریں۔</p>", chartData: null };
+            }
+
+            let classesToReport = [];
+            if (classId && !isNaN(classId)) {
+                const cls = await getFromStore(STORES.CLASSES, classId);
+                if (cls) classesToReport.push(cls);
+            } else {
+                classesToReport = await getAllFromStore(STORES.CLASSES);
+            }
+
+            if (classesToReport.length === 0) return { html: "<p>کوئی کلاس منتخب نہیں یا موجود نہیں۔</p>", chartData: null };
+
+            const allAttendance = await getAllFromStore(STORES.ATTENDANCE);
+            const allStudents = await getAllFromStore(STORES.STUDENTS);
+
+            let html = `<h3>کلاس وار حاضری کا فیصد (${formatDate(dateFrom)} - ${formatDate(dateTo)})</h3>`;
+            html += `<div class="table-container"><table class="table">
+               <thead><tr><th>کلاس</th><th>کل طلباء</th><th>کل حاضریاں (ریکارڈ شدہ)</th><th>کل ممکنہ حاضریاں</th><th>حاضری %</th></tr></thead>
+               <tbody>`;
+
+            const chartLabels = [];
+            const chartPercentages = [];
+
+            for (const cls of classesToReport) {
+                const studentsInClass = allStudents.filter(s => s.classId === cls.id);
+                let totalPresentInClass = 0;
+                let totalPossibleAttendancesInClass = 0;
+                let totalRecordedAttendancesByStudents = 0;
+
+
+                for (const student of studentsInClass) {
+                    const studentAttendanceInRange = allAttendance.filter(r => {
+                        const recordDate = new Date(r.date);
+                        return r.studentId === student.id &&
+                            recordDate >= new Date(dateFrom) &&
+                            recordDate <= new Date(dateTo) &&
+                            !r.isLeave;
+                    });
+                    totalRecordedAttendancesByStudents += studentAttendanceInRange.length;
+                    totalPresentInClass += studentAttendanceInRange.filter(r => r.status === 'present').length;
+                }
+
+
+
+
+
+                totalPossibleAttendancesInClass = totalRecordedAttendancesByStudents;
+
+
+                const classPercentage = totalPossibleAttendancesInClass > 0 ?
+                    ((totalPresentInClass / totalPossibleAttendancesInClass) * 100).toFixed(1) : 0;
+
+                html += `<tr>
+                    <td>${cls.name}</td>
+                    <td>${studentsInClass.length}</td>
+                    <td>${totalPresentInClass}</td>
+                    <td>${totalPossibleAttendancesInClass}</td>
+                    <td>${classPercentage}%</td>
+                 </tr>`;
+                chartLabels.push(cls.name);
+                chartPercentages.push(parseFloat(classPercentage));
+            }
+            html += `</tbody></table></div>`;
+
+            const chartCanvasId = `chart-class-att-perc-${Date.now()}`;
+            html += `<div style="height: 350px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasId}"></canvas></div>`;
+            const chartData = {
+                canvasId: chartCanvasId,
+                title: `کلاس وار حاضری کا فیصد (${formatDate(dateFrom)} - ${formatDate(dateTo)})`,
+                labels: chartLabels,
+                datasets: [{
+                    label: 'حاضری %',
+                    data: chartPercentages,
+                    backgroundColor: chartLabels.map(() => `rgba(${Math.floor(Math.random() * 155) + 100}, ${Math.floor(Math.random() * 155) + 100}, ${Math.floor(Math.random() * 155) + 100}, 0.7)`),
+                    borderColor: chartLabels.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`),
+                    borderWidth: 1
+                }]
+            };
+            return { html: html, chartData: chartData };
+        }
+
+
+
+        async function generateFeeCollectionDailySummaryReportJS(filters) {
+            const { date } = filters;
+            if (!date) return { html: "<p>براہ کرم تاریخ منتخب کریں۔</p>", chartData: null };
+
+            const feeRecords = (await getAllFromStore(STORES.FEES)).filter(fr => fr.date === date);
+            let totalCollected = 0;
+            let byMethod = {};
+            let byClass = {};
+
+            const students = await getAllFromStore(STORES.STUDENTS);
+            const studentMap = new Map(students.map(s => [s.id, s]));
+            const classes = await getAllFromStore(STORES.CLASSES);
+            const classMap = new Map(classes.map(c => [c.id, c]));
+
+
+            feeRecords.forEach(rec => {
+                totalCollected += rec.total || 0;
+                byMethod[rec.paymentMethod] = (byMethod[rec.paymentMethod] || 0) + (rec.total || 0);
+
+                const student = studentMap.get(rec.studentId);
+                if (student && student.classId) {
+                    const className = classMap.get(student.classId)?.name || 'دیگر';
+                    byClass[className] = (byClass[className] || 0) + (rec.total || 0);
+                }
+            });
+
+            let html = `<h3>${formatDate(date)} کی روزانہ فیس وصولی کا خلاصہ</h3>`;
+            html += `<div class="dashboard-cards" style="justify-content: space-around; flex-wrap:wrap;">
+               <div class="card" style="min-width:200px; margin:5px;">
+                 <div class="card-title">کل وصولی</div>
+                 <div class="card-value">${formatCurrency(totalCollected)}</div>
+               </div>
+               <div class="card" style="min-width:200px; margin:5px;">
+                 <div class="card-title">ٹرانزیکشنز کی تعداد</div>
+                 <div class="card-value">${feeRecords.length}</div>
+               </div>
+            </div>`;
+
+            html += `<h4>وصولی بلحاظ طریقہ ادائیگی</h4><div class="table-container"><table class="table">
+               <thead><tr><th>طریقہ</th><th>رقم</th></tr></thead><tbody>`;
+            for (const method in byMethod) {
+                html += `<tr><td>${method}</td><td>${formatCurrency(byMethod[method])}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+
+            const chartCanvasIdMethods = `chart-fee-methods-${Date.now()}`;
+            html += `<div style="height: 300px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasIdMethods}"></canvas></div>`;
+
+
+            const charts = [];
+            charts.push({
+                type: 'pie',
+                canvasId: chartCanvasIdMethods,
+                title: 'وصولی بلحاظ طریقہ ادائیگی',
+                labels: Object.keys(byMethod),
+                datasets: [{ data: Object.values(byMethod), backgroundColor: Object.keys(byMethod).map(() => `rgba(${Math.floor(Math.random() * 200) + 55}, ${Math.floor(Math.random() * 200) + 55}, ${Math.floor(Math.random() * 200) + 55}, 0.7)`) }]
+            });
+
+            html += `<h4 style="margin-top:20px;">وصولی بلحاظ کلاس</h4><div class="table-container"><table class="table">
+               <thead><tr><th>کلاس</th><th>رقم</th></tr></thead><tbody>`;
+            for (const className in byClass) {
+                html += `<tr><td>${className}</td><td>${formatCurrency(byClass[className])}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+
+            const chartCanvasIdClasses = `chart-fee-classes-${Date.now()}`;
+            html += `<div style="height: 300px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasIdClasses}"></canvas></div>`;
+            charts.push({
+                type: 'bar',
+                canvasId: chartCanvasIdClasses,
+                title: 'وصولی بلحاظ کلاس',
+                labels: Object.keys(byClass),
+                datasets: [{ label: 'وصول شدہ رقم', data: Object.values(byClass), backgroundColor: 'rgba(153, 102, 255, 0.6)' }]
+            });
+
+            return { html: html, chartData: charts, chartType: 'multi' };
+        }
+
+
+        async function generateFeeCollectionMonthlyByClassReportJS(filters) {
+            const { month, year, classId } = filters;
+            if (!month || !year) return { html: "<p>براہ کرم مہینہ اور سال منتخب کریں۔</p>", chartData: null };
+
+            let classesToReport = [];
+            if (classId && !isNaN(classId)) {
+                const cls = await getFromStore(STORES.CLASSES, classId);
+                if (cls) classesToReport.push(cls);
+            } else {
+                classesToReport = await getAllFromStore(STORES.CLASSES);
+            }
+
+            if (classesToReport.length === 0) return { html: "<p>کوئی کلاس منتخب نہیں یا موجود نہیں۔</p>", chartData: null };
+
+            const feeRecords = (await getAllFromStore(STORES.FEES)).filter(fr => parseInt(fr.month) === month && parseInt(fr.year) === year);
+            const students = await getAllFromStore(STORES.STUDENTS);
+            const monthName = new Date(year, month - 1, 1).toLocaleDateString('ur-PK', { month: 'long' });
+
+            let html = `<h3>${monthName}، ${year} کی ماہانہ فیس وصولی (کلاس وار)</h3>`;
+            html += `<div class="table-container"><table class="table">
+               <thead><tr><th>کلاس</th><th>کل طلباء</th><th>فیس دہندگان</th><th>کل متوقع فیس</th><th>کل وصول شدہ</th><th>وصولی %</th></tr></thead>
+               <tbody>`;
+
+            const chartLabels = [];
+            const chartCollected = [];
+            const chartExpected = [];
+
+            let grandTotalExpected = 0;
+            let grandTotalCollected = 0;
+
+            for (const cls of classesToReport) {
+                const studentsInClass = students.filter(s => s.classId === cls.id);
+                let classTotalCollected = 0;
+                let classPaidCount = 0;
+                let classTotalExpected = 0;
+
+                studentsInClass.forEach(student => {
+
+                    const studentFeeStructure = getFeeStructureForStudent(student.id, cls.id, student.feeCategory);
+                    classTotalExpected += studentFeeStructure?.monthlyFee || student.monthlyFee || 0;
+
+                    const studentFeeRecord = feeRecords.find(fr => fr.studentId === student.id);
+                    if (studentFeeRecord) {
+                        classTotalCollected += studentFeeRecord.total || 0;
+                        classPaidCount++;
+                    }
+                });
+
+                grandTotalExpected += classTotalExpected;
+                grandTotalCollected += classTotalCollected;
+
+                const collectionPercentage = classTotalExpected > 0 ? ((classTotalCollected / classTotalExpected) * 100).toFixed(1) : 0;
+
+                html += `<tr>
+                    <td>${cls.name}</td>
+                    <td>${studentsInClass.length}</td>
+                    <td>${classPaidCount}</td>
+                    <td>${formatCurrency(classTotalExpected)}</td>
+                    <td>${formatCurrency(classTotalCollected)}</td>
+                    <td>${collectionPercentage}%</td>
+                 </tr>`;
+                chartLabels.push(cls.name);
+                chartCollected.push(classTotalCollected);
+                chartExpected.push(classTotalExpected);
+            }
+            html += `</tbody><tfoot>
+                <tr>
+                    <td colspan="3"><strong>مجموعی</strong></td>
+                    <td><strong>${formatCurrency(grandTotalExpected)}</strong></td>
+                    <td><strong>${formatCurrency(grandTotalCollected)}</strong></td>
+                    <td><strong>${grandTotalExpected > 0 ? ((grandTotalCollected / grandTotalExpected) * 100).toFixed(1) : 0}%</strong></td>
+                </tr>
+             </tfoot></table></div>`;
+
+            const chartCanvasId = `chart-monthly-fee-class-${Date.now()}`;
+            html += `<div style="height: 350px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasId}"></canvas></div>`;
+            const chartData = {
+                canvasId: chartCanvasId,
+                title: `${monthName}، ${year} - فیس وصولی (متوقع بمقابلہ وصول شدہ)`,
+                labels: chartLabels,
+                datasets: [
+                    {
+                        label: 'متوقع فیس',
+                        data: chartExpected,
+                        backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'وصول شدہ فیس',
+                        data: chartCollected,
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+            return { html: html, chartData: chartData };
+        }
+
+
+        async function getFeeStructureForStudent(studentId, classId, feeCategory) {
+
+
+            const feeStructures = await getAllFromStore(STORES.FEE_STRUCTURE);
+            return feeStructures.find(fs => fs.classId === classId && fs.category === feeCategory) || { monthlyFee: 0 };
+        }
+
+
+        async function generateFeeDefaultersListReportJS(filters) {
+            const { month, year, classId, sectionId } = filters;
+            if (!month || !year) return { html: "<p>براہ کرم مہینہ اور سال منتخب کریں۔</p>", chartData: null };
+
+            let studentsToList = await getAllFromStore(STORES.STUDENTS);
+            const feeRecordsForMonth = (await getAllFromStore(STORES.FEES)).filter(fr => parseInt(fr.month) === month && parseInt(fr.year) === year);
+            const paidStudentIds = new Set(feeRecordsForMonth.map(fr => fr.studentId));
+
+            let reportTitle = `${new Date(year, month - 1, 1).toLocaleDateString('ur-PK', { month: 'long' })}، ${year} کے فیس نادہندگان`;
+
+            if (classId && !isNaN(classId)) {
+                studentsToList = studentsToList.filter(s => s.classId === classId);
+                const clsInfo = await getFromStore(STORES.CLASSES, classId);
+                reportTitle += ` - کلاس: ${clsInfo?.name || 'N/A'}`;
+                if (sectionId && !isNaN(sectionId)) {
+                    studentsToList = studentsToList.filter(s => s.sectionId === sectionId);
+                    const secInfo = await getFromStore(STORES.SECTIONS, sectionId);
+                    reportTitle += ` - سیکشن: ${secInfo?.name || 'N/A'}`;
+                }
+            }
+
+            const defaulters = studentsToList.filter(s => !paidStudentIds.has(s.id));
+
+            let html = `<h3>${reportTitle} (کل نادہندگان: ${defaulters.length})</h3>`;
+            if (defaulters.length === 0) {
+                html += "<p>اس مہینے کوئی نادہندہ نہیں ہے۔ شاباش!</p>";
+                return { html: html, chartData: null };
+            }
+
+            html += `<div class="table-container"><table class="table">
+               <thead><tr><th>رول نمبر</th><th>نام</th><th>والد کا نام</th><th>کلاس</th><th>سیکشن</th><th>متوقع فیس</th><th>رابطہ نمبر</th></tr></thead>
+               <tbody>`;
+            let totalDefaultAmount = 0;
+            for (const student of defaulters) {
+                const classData = student.classId ? await getFromStore(STORES.CLASSES, student.classId) : null;
+                const sectionData = student.sectionId ? await getFromStore(STORES.SECTIONS, student.sectionId) : null;
+                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                const expectedFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                totalDefaultAmount += expectedFee;
+                html += `<tr>
+                    <td>${student.rollNumber || 'N/A'}</td>
+                    <td>${student.name || 'N/A'}</td>
+                    <td>${student.fatherName || 'N/A'}</td>
+                    <td>${classData?.name || 'N/A'}</td>
+                    <td>${sectionData?.name || 'N/A'}</td>
+                    <td>${formatCurrency(expectedFee)}</td>
+                    <td>${student.contact || 'N/A'}</td>
+                 </tr>`;
+            }
+            html += `</tbody><tfoot><tr><td colspan="5"><strong>کل واجب الادا رقم</strong></td><td colspan="2"><strong>${formatCurrency(totalDefaultAmount)}</strong></td></tr></tfoot></table></div>`;
+
+
+            return { html: html, chartData: null };
+        }
+
+        async function generateFeeCategoryWiseCollectionReportJS(filters) {
+            const { dateFrom, dateTo } = filters;
+            if (!dateFrom || !dateTo) {
+                return { html: "<p>براہ کرم تاریخ کی مدت منتخب کریں۔</p>", chartData: null };
+            }
+
+            const feeRecords = (await getAllFromStore(STORES.FEES)).filter(fr => {
+                const recDate = new Date(fr.date);
+                return recDate >= new Date(dateFrom) && recDate <= new Date(dateTo);
+            });
+
+            const students = await getAllFromStore(STORES.STUDENTS);
+            const studentMap = new Map(students.map(s => [s.id, s]));
+
+            const collectionByCategory = {};
+            let totalCollected = 0;
+
+            feeRecords.forEach(rec => {
+                const student = studentMap.get(rec.studentId);
+                const category = student?.feeCategory || 'نامعلوم';
+                collectionByCategory[category] = (collectionByCategory[category] || 0) + (rec.total || 0);
+                totalCollected += (rec.total || 0);
+            });
+
+            let html = `<h3>فیس کیٹیگری وار وصولی (${formatDate(dateFrom)} - ${formatDate(dateTo)})</h3>`;
+            html += `<p><strong>کل وصول شدہ: ${formatCurrency(totalCollected)}</strong></p>`;
+            html += `<div class="table-container"><table class="table">
+               <thead><tr><th>فیس کیٹیگری</th><th>وصول شدہ رقم</th><th>حصہ %</th></tr></thead><tbody>`;
+
+            for (const category in collectionByCategory) {
+                const percentage = totalCollected > 0 ? ((collectionByCategory[category] / totalCollected) * 100).toFixed(1) : 0;
+                html += `<tr>
+                    <td>${category}</td>
+                    <td>${formatCurrency(collectionByCategory[category])}</td>
+                    <td>${percentage}%</td>
+                 </tr>`;
+            }
+            html += `</tbody></table></div>`;
+
+            const chartCanvasId = `chart-fee-cat-coll-${Date.now()}`;
+            html += `<div style="height: 350px; margin-top: 20px; position: relative;"><canvas id="${chartCanvasId}"></canvas></div>`;
+
+            const chartData = {
+                canvasId: chartCanvasId,
+                title: 'فیس کیٹیگری وار وصولی',
+                labels: Object.keys(collectionByCategory),
+                datasets: [{
+                    data: Object.values(collectionByCategory),
+                    backgroundColor: Object.keys(collectionByCategory).map((_, i) => `hsl(${(i * 360 / Object.keys(collectionByCategory).length) % 360}, 70%, 60%)`),
+                }]
+            };
+            return { html: html, chartData: chartData };
+        }
     </script>
 </body>
 
