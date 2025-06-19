@@ -249,6 +249,21 @@
             color: white;
             padding: 0px 18px;
         }
+
+        .id-card .photo.qr-code-image {
+            width: 96px;
+            /* Match the new QR size */
+            height: 96px;
+            /* Match the new QR size */
+            padding: 5px;
+            /* Add some padding around the QR code */
+            box-sizing: border-box;
+            /* Ensure padding is included in width/height */
+            object-fit: contain;
+            /* Make sure QR code is not stretched */
+            background-color: #fff;
+            /* Ensure white background for QR if needed */
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -3482,7 +3497,7 @@
 
         function applyUrduFont(elements) {
             elements.forEach(element => {
-                element.style.fontFamily = Calibri, 'Jameel Noori Nastaleeq, sans-serif';
+                element.style.fontFamily = 'Calibri, Jameel Noori Nastaleeq, sans-serif';
             });
         }
 
@@ -4480,6 +4495,99 @@
                 console.error("Error loading exams:", error);
             }
         }
+        // --- QR Code Generation and Library Loader ---
+
+        let qrCodeLibraryLoaded = false; // Keep track of library loading status
+
+        async function ensureQRCodeLibrary() {
+            if (qrCodeLibraryLoaded && window.QRCode) return true; // Already loaded and available
+
+            if (!window.QRCode) { // Check if QRCode constructor exists
+                console.log("QRCode.js library not found, attempting to load...");
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+                script.async = true;
+                document.head.appendChild(script);
+
+                try {
+                    await new Promise((resolve, reject) => {
+                        script.onload = () => {
+                            if (window.QRCode) {
+                                console.log("QRCode.js library loaded successfully.");
+                                qrCodeLibraryLoaded = true;
+                                resolve();
+                            } else {
+                                console.error("QRCode.js loaded but QRCode constructor not found.");
+                                reject(new Error("QRCode.js loaded but QRCode constructor not found."));
+                            }
+                        };
+                        script.onerror = () => {
+                            console.error("Failed to load QRCode.js library.");
+                            alert("QR کوڈ لائبریری لوڈ کرنے میں ناکامی۔");
+                            reject(new Error("QRCode.js library load failed"));
+                        };
+                        // Timeout for loading
+                        setTimeout(() => {
+                            if (!qrCodeLibraryLoaded) {
+                                console.warn("QRCode.js loading timeout.");
+                                reject(new Error("QRCode.js loading timeout."));
+                            }
+                        }, 5000); // 5 seconds timeout
+                    });
+                    return true;
+                } catch (error) {
+                    qrCodeLibraryLoaded = false;
+                    console.error("Error in ensureQRCodeLibrary:", error);
+                    return false;
+                }
+            } else {
+                qrCodeLibraryLoaded = true; // Already present
+                return true;
+            }
+        }
+
+        async function generateQRCodeDataURL(textData, size = 80) {
+            const libLoaded = await ensureQRCodeLibrary();
+            if (!libLoaded || !window.QRCode) {
+                console.error("QRCode library is not available for QR generation.");
+                return null;
+            }
+
+            return new Promise((resolve) => {
+                const tempElement = document.createElement('div');
+                // QRCode.js appends to the element it's given
+                try {
+                    new QRCode(tempElement, {
+                        text: textData,
+                        width: size,
+                        height: size,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.L // Medium error correction
+                    });
+
+                    // QRCode.js might create a canvas or an img tag
+                    // We need to wait for it to render
+                    setTimeout(() => {
+                        const canvas = tempElement.querySelector('canvas');
+                        const img = tempElement.querySelector('img');
+
+                        if (canvas) {
+                            resolve(canvas.toDataURL('image/png'));
+                        } else if (img && img.src.startsWith('data:image')) {
+                            // If it generated an img tag with a data URL (some versions might)
+                            resolve(img.src);
+                        } else {
+                            console.warn("QR Code was generated, but couldn't extract data URL (no canvas or img found).");
+                            resolve(null); // Fallback
+                        }
+                    }, 100); // Give it a moment to render
+                } catch (e) {
+                    console.error("Error during QRCode instantiation:", e);
+                    resolve(null);
+                }
+            });
+        }
         async function loadStudentsAndSubjectsForResult() {
             const classId = document.getElementById('resultClass').value;
             const tableBody = document.getElementById('resultsEntryTable').querySelector('tbody');
@@ -5444,27 +5552,64 @@
 
             window.generateSingleIDCard = async function () {
                 const type = document.getElementById('idCardType').value;
-                const personId = parseInt(document.getElementById('idCardSelect').value);
+                const personIdElement = document.getElementById('idCardSelect');
+                const personId = personIdElement ? parseInt(personIdElement.value) : null;
                 const template = document.getElementById('idCardTemplate').value;
                 const preview = document.getElementById('singleIDCardPreview');
                 const content = document.getElementById('idCardContent');
+
+                // Ensure currentPhoto is accessible or defined within this scope
+                // If it's a global variable set by file input, it should be fine.
+                // Otherwise, you might need to pass it or retrieve it here.
+                // For this example, assuming 'currentPhoto' is a global or accessible variable.
+
                 if (!type || !personId) {
-                    content.textContent = 'براہ کرم تمام فیلڈز پُر کریں۔';
-                    preview.style.display = 'block';
+                    if (content) content.textContent = 'براہ کرم تمام فیلڈز پُر کریں۔';
+                    if (preview) preview.style.display = 'block';
                     return;
                 }
+
                 try {
-                    const storeName = type === 'student' ? STORE_STUDENTS : STORE_TEACHERS;
-                    const person = await getById(storeName, personId);
-                    const schoolSetting = await getById(STORE_SETTINGS, 'schoolName');
+                    const storeName = type === 'student' ? window.STORE_STUDENTS : window.STORE_TEACHERS;
+                    const person = await window.getById(storeName, personId);
+                    if (!person) {
+                        if (content) content.textContent = 'شخص نہیں ملا۔';
+                        if (preview) preview.style.display = 'block';
+                        return;
+                    }
+
+                    const schoolSetting = await window.getById(window.STORE_SETTINGS, 'schoolName');
                     const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
+
                     const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
-                    const className = type === 'student' ? await getClassName(person.classId) : 'N/A';
-                    const autoImage = await tryLoadImage(person.id, person.name, type);
-                    const photoSrc = currentPhoto || autoImage || null;
-                    content.innerHTML = template === 'front' ? `
+                    const className = type === 'student' ? ((typeof window.getClassName === 'function') ? await window.getClassName(person.classId) : 'N/A') : 'N/A';
+                    const autoImage = (typeof window.tryLoadImage === 'function') ? await window.tryLoadImage(person.id, person.name, type) : null;
+                    const photoSrc = window.currentPhoto || autoImage || null; // Assuming window.currentPhoto is set by your file input
+
+                    let imageElementHTML;
+                    if (photoSrc) {
+                        imageElementHTML = `<img src="${photoSrc}" class="photo" alt="تصویر">`;
+                    } else {
+                        console.log("No photo found, generating QR code for single ID card...");
+                        let qrData = `${idNumber}|${person.name}`; // Using "|" as a separator
+                        if (type === 'student') {
+                            qrData += `|C:${className.substring(0, 10)}`; // Max 10 chars for class name
+                        } else { // teacher
+                            qrData += `|T`; // "T" for Teacher
+                        }
+
+                        const qrCodeDataURL = await generateQRCodeDataURL(qrData.trim(), 80);
+                        if (qrCodeDataURL) {
+                            imageElementHTML = `<img src="${qrCodeDataURL}" class="photo qr-code-image" alt="QR Code">`;
+                        } else {
+                            imageElementHTML = `<div class="photo"><span>کوئی تصویر/<br>کیو آر کوڈ نہیں</span></div>`;
+                        }
+                    }
+
+                    if (content) {
+                        content.innerHTML = template === 'front' ? `
                 <div class="id-card front">
-                    ${photoSrc ? `<img src="${photoSrc}" class="photo">` : `<div class="photo"></div>`}
+                    ${imageElementHTML}
                     <div class="content">
                         <div class="header">${schoolName}</div>
                         <p><strong>${type === 'student' ? 'طالب علم' : 'استاد'}</strong></p>
@@ -5485,14 +5630,14 @@
                     </div>
                 </div>
             `;
-                    preview.style.display = 'block';
+                    }
+                    if (preview) preview.style.display = 'block';
                 } catch (error) {
                     console.error('Error generating ID card:', error);
-                    content.textContent = 'خرابی: آئی ڈی کارڈ جنریٹ نہیں ہو سکا۔';
-                    preview.style.display = 'block';
+                    if (content) content.textContent = 'خرابی: آئی ڈی کارڈ جنریٹ نہیں ہو سکا۔';
+                    if (preview) preview.style.display = 'block';
                 }
             };
-
             window.exportSingleIDCard = async function () {
                 const preview = document.getElementById('singleIDCardPreview');
                 if (preview.style.display === 'none' || !document.getElementById('idCardContent').innerHTML) {
@@ -5510,7 +5655,125 @@
                     alert('ایکسپورٹ میں خرابی: ' + error.message);
                 }
             };
+            // Bulk generate with QR Code Yasin
+            /*
+            window.generateBulkIDCards = async function () {
+                const type = document.getElementById('bulkIdCardType').value;
+                const classIdElement = document.getElementById('bulkIdCardClass');
+                const classId = classIdElement ? classIdElement.value : null;
+                const template = document.getElementById('bulkIdCardTemplate').value;
+                const table = document.getElementById('bulkIDCardTable');
+                const tbody = table ? table.querySelector('tbody') : null;
+            
+                if (!tbody) {
+                    console.error("Bulk ID card table body not found.");
+                    return;
+                }
+            
+                if (!type) {
+                    tbody.innerHTML = '<tr><td colspan="3">براہ کرم قسم منتخب کریں۔</td></tr>';
+                    if (table) table.style.display = 'table';
+                    return;
+                }
+            
+                try {
+                    const storeName = type === 'student' ? window.STORE_STUDENTS : window.STORE_TEACHERS;
+                    let persons = await window.getAll(storeName);
+                    if (type === 'student' && classId) {
+                        persons = persons.filter(p => p.classId === parseInt(classId));
+                    }
+            
+                    // Filter based on checkboxes if they exist and are part of the table structure
+                    const selectedPersons = [];
+                    if (tbody.rows.length === persons.length) { // Check if checkboxes were rendered
+                         persons.forEach((person, i) => {
+                            const rowCheckbox = tbody.rows[i]?.querySelector('.bulk-select');
+                            if (rowCheckbox && rowCheckbox.checked) {
+                                selectedPersons.push(person);
+                            }
+                        });
+                    } else { // Fallback if checkboxes not integrated or issue with row matching
+                        console.warn("Mismatch between persons data and table rows for bulk selection, or checkboxes not found. Processing all loaded persons for the selected criteria.");
+                        selectedPersons.push(...persons); // Process all if selection mechanism is unclear
+                    }
+            
+            
+                    if (selectedPersons.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3">کوئی شخص منتخب نہیں کیا گیا یا اس معیار پر کوئی شخص نہیں۔</td></tr>';
+                        if (table) table.style.display = 'table';
+                        return;
+                    }
+            
+                    const schoolSetting = await window.getById(window.STORE_SETTINGS, 'schoolName');
+                    const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
+            
+                    tbody.innerHTML = ''; // Clear for new previews
+                    for (const person of selectedPersons.sort((a, b) => a.name.localeCompare(b.name))) {
+                        const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
+                        const currentClassName = type === 'student' ? ( (typeof window.getClassName === 'function') ? await window.getClassName(person.classId) : 'N/A' ) : 'N/A';
+                        const autoImage = (typeof window.tryLoadImage === 'function') ? await window.tryLoadImage(person.id, person.name, type) : null;
+            
+                        let imageElementHTMLBulk;
+                        if (autoImage) {
+                            imageElementHTMLBulk = `<img src="${autoImage}" class="photo" alt="تصویر">`;
+                        } else {
+                            console.log(`No photo for bulk ID: ${person.name}, generating QR code...`);
+                let qrData = `${idNumber}|${person.name}`; // Using "|" as a separator
+                const currentClassName = type === 'student' ? ( (typeof window.getClassName === 'function') ? await window.getClassName(person.classId) : 'N/A' ) : 'N/A';
+                if (type === 'student') {
+                    qrData += `|C:${currentClassName.substring(0, 10)}`; // Max 10 chars for class name
+                } else {
+                    qrData += `|T`; // "T" for Teacher
+                }
+            
+                            const qrCodeDataURL = await generateQRCodeDataURL(qrData.trim(), 98);
+                            if (qrCodeDataURL) {
+                                imageElementHTMLBulk = `<img src="${qrCodeDataURL}" class="photo qr-code-image" alt="QR Code">`;
+                            } else {
+                                imageElementHTMLBulk = `<div class="photo"><span>N/A</span></div>`;
+                            }
+                        }
+            
+                        const row = tbody.insertRow();
+                        row.dataset.id = person.id;
+                        // The preview in the table is just for a quick look. The actual export will regenerate.
+                        row.innerHTML = `
+                            <td>${idNumber}</td>
+                            <td>${person.name}</td>
+                            <td>
+                                <div class="preview" style="transform: scale(0.5); transform-origin: top left; width: 160px; height:100px; overflow:hidden; border: 1px solid #ccc;">
+                                    <div class="id-card ${template}" style="width: 320px; height: 200px;">
+                                        ${imageElementHTMLBulk}
+                                        <div class="content">
+                                            <div class="header">${schoolName}</div>
+                                            ${template === 'front' ? `
+                                                <p style="font-size:10px;"><strong>${type === 'student' ? 'طالب علم' : 'استاد'}</strong></p>
+                                                <p style="font-size:10px;"><strong>نام:</strong> ${person.name}</p>
+                                                <p style="font-size:10px;"><strong>آئی ڈی:</strong> ${idNumber}</p>
+                                                ${type === 'student' ? `<p style="font-size:10px;"><strong>کلاس:</strong> ${currentClassName}</p>` : ''}
+                                                <div class="footer" style="font-size:8px;">${new Date().toISOString().split('T')[0]}</div>
+                                            ` : `
+                                                <p style="font-size:10px;"><strong>رابطہ:</strong> ${person.contact || 'N/A'}</p>
+                                                ${type === 'student' ? `<p style="font-size:10px;"><strong>والد کا نام:</strong> ${person.fatherName}</p>` : ''}
+                                                <p style="font-size:10px;"><strong>پتہ:</strong> ${person.address || person.qualification || 'N/A'}</p>
+                                                <div class="footer" style="font-size:8px;">مدرسہ کی ملکیت</div>
+                                            `}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        `;
+                    }
+                    if (table) table.style.display = 'table';
+                } catch (error) {
+                    console.error('Error generating bulk ID cards:', error);
+                    tbody.innerHTML = '<tr><td colspan="3">خرابی: آئی ڈی کارڈز جنریٹ نہیں ہو سکیں۔</td></tr>';
+                    if (table) table.style.display = 'table';
+                }
+            };
+            */
 
+            //Bulk Generate without Qr Code
             window.generateBulkIDCards = async function () {
                 const type = document.getElementById('bulkIdCardType').value;
                 const classId = document.getElementById('bulkIdCardClass').value;
@@ -5616,9 +5879,13 @@
             window.showModule = function (moduleId) {
                 originalShowModule(moduleId);
                 if (moduleId === 'idCardGenerator') {
-                    loadClassesForBulk();
-                    loadIDCardSelect();
-                    loadBulkIDCardSelect();
+                    ensureQRCodeLibrary().then(loaded => {
+                        if (loaded) console.log("ID Card module shown, QR library ready/loading.");
+                        else console.warn("ID Card module shown, QR library failed/loading.");
+                    });
+                    if (typeof loadClassesForBulk === 'function') loadClassesForBulk();
+                    if (typeof loadIDCardSelect === 'function') loadIDCardSelect();
+                    if (typeof loadBulkIDCardSelect === 'function') loadBulkIDCardSelect();
                 }
             };
 
