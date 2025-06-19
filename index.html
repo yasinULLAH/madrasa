@@ -115,7 +115,8 @@
             font-size: larger;
         }
 
-        .container div, p {
+        .container div,
+        p {
             font-size: large;
         }
 
@@ -237,9 +238,10 @@
             font-size: 42px;
             margin: 0 -30px;
         }
+
         * {
-    font-family: calibri;
-}
+            font-family: calibri;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -267,12 +269,59 @@
         <div id="dashboard" class="module active">
             <h2>ڈیش بورڈ</h2>
             <p>سسٹم میں خوش آمدید۔ یہاں آپ اہم اعدادوشمار دیکھ سکیں گے۔</p>
+
+            <h3>فوری اعدادوشمار (آج)</h3>
             <div class="form-grid">
                 <div>کل طلباء: <span id="totalStudents">0</span></div>
                 <div>کل اساتذہ: <span id="totalTeachers">0</span></div>
                 <div>کل کلاسیں: <span id="totalClasses">0</span></div>
                 <div>آج کی آمدنی (فیس): <span id="todayFees">0</span></div>
                 <div>آج کے اخراجات: <span id="todayExpenses">0</span></div>
+            </div>
+            <hr style="margin: 20px 0;">
+
+            <h3>تفصیلی رپورٹس</h3>
+            <div class="form-grid">
+                <div>
+                    <label for="dashboardReportType">رپورٹ کی قسم:</label>
+                    <select id="dashboardReportType" onchange="toggleDashboardReportInputs()">
+                        <option value="monthly">ماہانہ خلاصہ</option>
+                        <option value="yearly">سالانہ خلاصہ</option>
+                        <option value="custom_range">مخصوص مدت</option>
+                    </select>
+                </div>
+                <div id="dashboardMonthSelectorDiv">
+                    <label for="dashboardReportMonth">مہینہ:</label>
+                    <select id="dashboardReportMonth" style="width:auto; padding:5px; margin-right:5px;"></select>
+                </div>
+                <div id="dashboardYearSelectorDiv">
+                    <label for="dashboardReportYear">سال:</label>
+                    <input type="number" id="dashboardReportYear" placeholder="YYYY" style="width:100px; padding:5px;">
+                </div>
+                <div id="dashboardDateRangeSelectorDiv" style="display:none; grid-column: span 2;">
+                    <div>
+                        <label for="dashboardReportStartDate">شروع تاریخ:</label>
+                        <input type="date" id="dashboardReportStartDate">
+                    </div>
+                    <div>
+                        <label for="dashboardReportEndDate">اختتامی تاریخ:</label>
+                        <input type="date" id="dashboardReportEndDate">
+                    </div>
+                </div>
+                <div style="grid-column: 1 / -1; text-align:left;">
+                    <button onclick="generateDashboardDetailedReport()">رپورٹ دیکھیں</button>
+                </div>
+            </div>
+
+            <div id="dashboardDetailedReportOutput"
+                style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
+                <h4 id="dashboardReportTitle">منتخب مدت کے لیے خلاصہ:</h4>
+                <div class="form-grid">
+                    <div>کل آمدنی (فیس): <span id="periodTotalFees">0</span></div>
+                    <div>کل اخراجات: <span id="periodTotalExpenses">0</span></div>
+                    <div>نفع/نقصان: <span id="periodNetProfit">0</span></div>
+                    <div>نئے داخلے اس مدت میں: <span id="periodNewAdmissions">0</span></div>
+                </div>
             </div>
         </div>
 
@@ -872,6 +921,33 @@
                 request.onsuccess = (event) => {
                     db = event.target.result;
                     console.log("Database opened successfully");
+                    // Inside your main <script> tag, after db is initialized and helper functions are defined:
+
+                    window.db = db; // Expose the db object
+                    window.addData = addData;
+                    window.updateData = updateData;
+                    window.getById = getById;
+                    window.getAll = getAll;
+                    window.getObjectStore = getObjectStore;
+                    // Optionally, expose these too if the sample script's final lines need them:
+                    window.getClassName = getClassName;
+                    window.getTeacherName = getTeacherName;
+                    window.getStudentName = getStudentName;
+                    window.showModule = showModule;
+                    window.loadDashboardStats = loadDashboardStats;
+
+                    // Also expose your STORE constants if the sample script uses them directly
+                    // (though it's better if it relies on addData which knows the store name)
+                    window.STORE_SETTINGS = STORE_SETTINGS;
+                    window.STORE_TEACHERS = STORE_TEACHERS;
+                    window.STORE_CLASSES = STORE_CLASSES;
+                    window.STORE_STUDENTS = STORE_STUDENTS;
+                    window.STORE_FEE_STRUCTURES = STORE_FEE_STRUCTURES;
+                    window.STORE_FEES = STORE_FEES;
+                    window.STORE_ATTENDANCE = STORE_ATTENDANCE;
+                    window.STORE_RESULTS = STORE_RESULTS;
+                    window.STORE_TIMETABLE = STORE_TIMETABLE;
+                    window.STORE_EXPENSES = STORE_EXPENSES;
                     resolve(db);
                 };
 
@@ -1003,7 +1079,107 @@
                 };
             });
         }
+        function populateDashboardDateSelectors() {
+            const monthSelect = document.getElementById('dashboardReportMonth');
+            if (monthSelect.options.length <= 1) { // Populate only if not already populated
+                const urduMonths = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
+                monthSelect.innerHTML = ''; // Clear previous options
+                urduMonths.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1; // 1-12
+                    option.textContent = month;
+                    monthSelect.appendChild(option);
+                });
+                monthSelect.value = new Date().getMonth() + 1; // Default to current month
+            }
 
+            const yearInput = document.getElementById('dashboardReportYear');
+            if (!yearInput.value) {
+                yearInput.value = new Date().getFullYear(); // Default to current year
+            }
+        }
+
+        function toggleDashboardReportInputs() {
+            const reportType = document.getElementById('dashboardReportType').value;
+            const monthDiv = document.getElementById('dashboardMonthSelectorDiv');
+            const yearDiv = document.getElementById('dashboardYearSelectorDiv');
+            const dateRangeDiv = document.getElementById('dashboardDateRangeSelectorDiv');
+
+            monthDiv.style.display = 'none';
+            yearDiv.style.display = 'none';
+            dateRangeDiv.style.display = 'none';
+
+            if (reportType === 'monthly') {
+                monthDiv.style.display = 'block';
+                yearDiv.style.display = 'block';
+            } else if (reportType === 'yearly') {
+                yearDiv.style.display = 'block';
+            } else if (reportType === 'custom_range') {
+                dateRangeDiv.style.display = 'grid'; // Use grid for layout
+            }
+        }
+
+        async function generateDashboardDetailedReport() {
+            const reportType = document.getElementById('dashboardReportType').value;
+            const reportTitleEl = document.getElementById('dashboardReportTitle');
+
+            let startDate, endDate;
+            let titlePeriod = "";
+
+            if (reportType === 'monthly') {
+                const month = parseInt(document.getElementById('dashboardReportMonth').value);
+                const year = parseInt(document.getElementById('dashboardReportYear').value);
+                if (!month || !year) { alert('براہ کرم مہینہ اور سال منتخب کریں۔'); return; }
+                startDate = new Date(year, month - 1, 1);
+                endDate = new Date(year, month, 0); // Last day of the month
+                titlePeriod = `${document.getElementById('dashboardReportMonth').options[month - 1].text} ${year}`;
+            } else if (reportType === 'yearly') {
+                const year = parseInt(document.getElementById('dashboardReportYear').value);
+                if (!year) { alert('براہ کرم سال منتخب کریں۔'); return; }
+                startDate = new Date(year, 0, 1);
+                endDate = new Date(year, 11, 31);
+                titlePeriod = `سال ${year}`;
+            } else if (reportType === 'custom_range') {
+                const startStr = document.getElementById('dashboardReportStartDate').value;
+                const endStr = document.getElementById('dashboardReportEndDate').value;
+                if (!startStr || !endStr) { alert('براہ کرم شروع اور اختتامی تاریخ منتخب کریں۔'); return; }
+                startDate = new Date(startStr);
+                endDate = new Date(endStr);
+                endDate.setHours(23, 59, 59, 999); // Include full end day
+                titlePeriod = `${startStr} سے ${endStr}`;
+            }
+
+            reportTitleEl.textContent = `${titlePeriod} کے لیے خلاصہ:`;
+            const startDateString = startDate.toISOString().split('T')[0];
+            const endDateString = endDate.toISOString().split('T')[0];
+
+            try {
+                const allFees = await getAll(STORE_FEES);
+                const allExpenses = await getAll(STORE_EXPENSES);
+                const allStudents = await getAll(STORE_STUDENTS);
+
+                const periodFees = allFees.filter(fee => fee.date >= startDateString && fee.date <= endDateString);
+                const periodExpenses = allExpenses.filter(exp => exp.date >= startDateString && exp.date <= endDateString);
+                const periodNewAdmissions = allStudents.filter(std => std.admissionDate >= startDateString && std.admissionDate <= endDateString);
+
+                const totalPeriodFees = periodFees.reduce((sum, fee) => sum + fee.paidAmount, 0);
+                const totalPeriodExpenses = periodExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                const netProfit = totalPeriodFees - totalPeriodExpenses;
+
+                document.getElementById('periodTotalFees').textContent = totalPeriodFees.toLocaleString();
+                document.getElementById('periodTotalExpenses').textContent = totalPeriodExpenses.toLocaleString();
+                document.getElementById('periodNetProfit').textContent = netProfit.toLocaleString();
+                document.getElementById('periodNewAdmissions').textContent = periodNewAdmissions.length;
+
+            } catch (error) {
+                console.error("Error generating dashboard detailed report:", error);
+                alert("رپورٹ بنانے میں خرابی۔");
+                document.getElementById('periodTotalFees').textContent = 'خرابی';
+                document.getElementById('periodTotalExpenses').textContent = 'خرابی';
+                document.getElementById('periodNetProfit').textContent = 'خرابی';
+                document.getElementById('periodNewAdmissions').textContent = 'خرابی';
+            }
+        }
         function showModule(moduleId) {
             document.querySelectorAll('.module').forEach(module => module.classList.remove('active', 'printable'));
             document.getElementById(moduleId).classList.add('active');
@@ -1043,7 +1219,18 @@
             if (moduleId === 'expenses') loadExpenses();
             if (moduleId === 'feeStructures') { loadClassesForFeeStructureFilter(); loadFeeStructures(); }
             if (moduleId === 'timetable') { loadClassesForTimetable(); loadTeachersForRoaster(); loadTimetable(); }
-            if (moduleId === 'dashboard') loadDashboardStats();
+            // Inside showModule function
+            if (moduleId === 'dashboard') {
+                loadDashboardStats(); // Your existing function for today's stats & totals
+                populateDashboardDateSelectors(); // New function to populate month/year
+                toggleDashboardReportInputs(); // Set initial visibility of selectors
+                // Optionally, generate a default report for the current month or clear period stats
+                document.getElementById('dashboardReportTitle').textContent = "منتخب مدت کے لیے خلاصہ:";
+                document.getElementById('periodTotalFees').textContent = '0';
+                document.getElementById('periodTotalExpenses').textContent = '0';
+                document.getElementById('periodNetProfit').textContent = '0';
+                document.getElementById('periodNewAdmissions').textContent = '0';
+            }
             if (moduleId === 'reports') loadClassesForReportFilter();
             if (moduleId === 'settings') loadPrintSettings();
 

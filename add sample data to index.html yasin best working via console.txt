@@ -1,0 +1,294 @@
+// --- Sample Data Generation Script (Run in Chrome Console) ---
+
+async function generateSampleData() {
+    if (!window.db || typeof window.addData !== 'function') {
+        console.error("ERROR: 'db' object or 'addData' function is not available globally. Make sure your app is loaded.");
+        alert("ڈیٹا بیس یا ضروری فنکشنز دستیاب نہیں۔ براہ کرم یقینی بنائیں کہ آپ کی ایپ لوڈ ہوچکی ہے۔");
+        return;
+    }
+
+    console.log("Starting sample data generation...");
+
+    const urduMaleNames = ["احمد", "علی", "محمد", "عمر", "عثمان", "حسن", "حسین", "بلال", "خالد", "زبیر", "یاسر", "فہد", "سلمان", "عرفان", "زید", "انس", "حمزہ", "طلحہ", "سعد", "عمران"];
+    const urduFatherNames = ["عبداللہ", "عبدالرحمن", "محمد اقبال", "غلام مصطفیٰ", "نذیر احمد", "بشیر احمد", "رشید احمد", "شفیق احمد", "منظور حسین", "عنایت اللہ", "کریم بخش", "اللہ دتہ", "نور محمد", "فدا حسین", "قمر الزمان"];
+    const urduSubjects = ["اردو", "اسلامیات", "ناظرہ قرآن", "حفظ القرآن", "عربی گرامر", "فقہ", "حدیث", "تاریخ اسلام", "اخلاقیات", "سیرت النبی ﷺ"];
+    const urduExpenseTypes = ["بجلی کا بل", "پانی کا بل", "اسٹیشنری", "تنخواہ استاد", "مرمت و دیکھ بھال", "مہمان نوازی", "سفر خرچ", "کتابوں کی خریداری", "راشن"];
+    const urduFeeTypes = ["ماہانہ فیس", "داخلہ فیس", "امتحانی فیس", "سالانہ فیس", "کاپی فیس"];
+    const urduClassNamesBase = ["اول", "دوم", "سوم", "چہارم", "پنجم", "ششم", "ہفتم", "ہشتم", "دورہ حدیث سال اول", "دورہ حدیث سال دوم"];
+    const urduDays = ["پیر", "منگل", "بدھ", "جمعرات", "جمعہ", "ہفتہ"];
+    const paymentMethods = ["Cash", "Bank", "EasyPaisa"];
+
+    function getRandomElement(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getRandomDate(startYear = 2022, endYear = new Date().getFullYear()) {
+        const year = Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;
+        const month = Math.floor(Math.random() * 12);
+        const day = Math.floor(Math.random() * 28) + 1; // Keep it simple for days
+        return new Date(year, month, day).toISOString().split('T')[0];
+    }
+
+    function getRandomPhoneNumber() {
+        return `03${Math.floor(10 + Math.random() * 40)}-${String(Math.floor(1000000 + Math.random() * 9000000))}`;
+    }
+
+    // 1. Settings
+    console.log("Populating Settings...");
+    try {
+        await updateData(STORE_SETTINGS, { key: 'schoolName', value: 'جامعہ دارالعلوم یاسین' });
+        console.log("School name setting added.");
+    } catch (e) { console.error("Error settings:", e); }
+
+    // 2. Teachers
+    console.log("Populating Teachers...");
+    const teacherIds = [];
+    for (let i = 0; i < 7; i++) { // Create 7 teachers
+        const teacher = {
+            name: `${getRandomElement(urduMaleNames)} صاحب`,
+            subjects: `${getRandomElement(urduSubjects)}, ${getRandomElement(urduSubjects)}`,
+            contact: getRandomPhoneNumber(),
+            salary: Math.floor(15000 + Math.random() * 25000),
+            appointmentDate: getRandomDate(2020),
+            qualification: `فاضل ${getRandomElement(["درس نظامی", "وفاق المدارس"])}`,
+        };
+        try {
+            const id = await addData(STORE_TEACHERS, teacher);
+            teacherIds.push(id);
+            console.log(`Added Teacher: ${teacher.name} (ID: ${id})`);
+        } catch (e) { console.error("Error adding teacher:", teacher.name, e); }
+    }
+    const allTeachers = teacherIds.length > 0 ? await Promise.all(teacherIds.map(id => getById(STORE_TEACHERS, id))) : [];
+
+
+    // 3. Classes
+    console.log("Populating Classes...");
+    const classIds = [];
+    if (allTeachers.length > 0) {
+        for (let i = 0; i < 5; i++) { // Create 5 classes
+            const classSubjects = new Set();
+            for(let k=0; k<3; k++) classSubjects.add(getRandomElement(urduSubjects));
+            const cls = {
+                name: `کلاس ${urduClassNamesBase[i]}`,
+                teacherId: getRandomElement(allTeachers).id,
+                subjects: Array.from(classSubjects),
+            };
+            try {
+                const id = await addData(STORE_CLASSES, cls);
+                classIds.push(id);
+                console.log(`Added Class: ${cls.name} (ID: ${id})`);
+            } catch (e) { console.error("Error adding class:", cls.name, e); }
+        }
+    }
+    const allClasses = classIds.length > 0 ? await Promise.all(classIds.map(id => getById(STORE_CLASSES, id))) : [];
+
+    // 4. Students
+    console.log("Populating Students...");
+    const studentIds = [];
+    if (allClasses.length > 0) {
+        for (let i = 0; i < 20; i++) {
+            const student = {
+                admissionNo: `ADM${String(Date.now()).slice(-5)}${i.toString().padStart(2, '0')}`,
+                name: getRandomElement(urduMaleNames),
+                fatherName: getRandomElement(urduFatherNames),
+                classId: getRandomElement(allClasses).id,
+                admissionDate: getRandomDate(2023),
+                contact: getRandomPhoneNumber(),
+                address: `گلی نمبر ${Math.floor(1 + Math.random() * 10)}, محلہ ${getRandomElement(["عثمان آباد", "گلشن اقبال", "رضا نگر"])}, شہر کراچی`,
+            };
+            try {
+                const id = await addData(STORE_STUDENTS, student);
+                studentIds.push(id);
+                console.log(`Added Student: ${student.name} (ID: ${id})`);
+            } catch (e) { console.error("Error adding student:", student.name, e); }
+        }
+    }
+    const allStudents = studentIds.length > 0 ? await Promise.all(studentIds.map(id => getById(STORE_STUDENTS, id))) : [];
+
+
+    // 5. Fee Structures
+    console.log("Populating Fee Structures...");
+    if (allClasses.length > 0) {
+        for (const cls of allClasses) {
+            for (let j = 0; j < 2; j++) { // 2 fee types per class
+                const feeStructure = {
+                    classId: cls.id,
+                    feeType: `${getRandomElement(urduFeeTypes)} - ${cls.name}`, // make unique for demo
+                    amount: Math.floor(500 + Math.random() * 1500),
+                };
+                try {
+                    await addData(STORE_FEE_STRUCTURES, feeStructure);
+                    console.log(`Added Fee Structure: ${feeStructure.feeType} for class ${cls.name}`);
+                } catch (e) { console.error("Error adding fee structure:", feeStructure.feeType, e); }
+            }
+        }
+    }
+    const allFeeStructures = await getAll(STORE_FEE_STRUCTURES);
+
+    // 6. Fees
+    console.log("Populating Fees...");
+    if (allStudents.length > 0 && allFeeStructures.length > 0) {
+        for (const student of allStudents.slice(0, 15)) { // Fees for 15 students
+            const studentClassId = student.classId;
+            const applicableStructures = allFeeStructures.filter(fs => fs.classId === studentClassId);
+            if (applicableStructures.length === 0) continue;
+
+            for (let k = 0; k < 2; k++) { // 2 fee records per student
+                const structure = getRandomElement(applicableStructures);
+                const feeRecord = {
+                    studentId: student.id,
+                    date: getRandomDate(),
+                    feeType: structure.feeType,
+                    paidAmount: Math.floor(structure.amount * (Math.random() * 0.5 + 0.5)), // Pay 50-100%
+                    discount: Math.random() > 0.7 ? Math.floor(structure.amount * 0.1) : 0,
+                    method: getRandomElement(paymentMethods),
+                    notes: `نمونہ ادائیگی برائے ${student.name}`
+                };
+                try {
+                    await addData(STORE_FEES, feeRecord);
+                    console.log(`Added Fee for ${student.name}, Type: ${feeRecord.feeType}`);
+                } catch (e) { console.error("Error adding fee record:", student.name, e); }
+            }
+        }
+    }
+
+    // 7. Attendance
+    console.log("Populating Attendance...");
+    if (allStudents.length > 0 && allClasses.length > 0) {
+        for (let dayOffset = 0; dayOffset < 3; dayOffset++) { // 3 different days
+            const attendanceDate = new Date();
+            attendanceDate.setDate(attendanceDate.getDate() - (dayOffset * 7 + Math.floor(Math.random()*5) )); // Some past days
+            const dateStr = attendanceDate.toISOString().split('T')[0];
+
+            for (const cls of allClasses.slice(0,3)) { // Attendance for first 3 classes
+                const studentsInClass = allStudents.filter(s => s.classId === cls.id);
+                for (const student of studentsInClass) {
+                    const attendance = {
+                        date: dateStr,
+                        classId: cls.id,
+                        studentId: student.id,
+                        status: Math.random() > 0.1 ? 'Present' : 'Absent', // 90% present
+                    };
+                     try {
+                        const store = await getObjectStore(STORE_ATTENDANCE, 'readonly');
+                        const index = store.index('date_classId_studentId');
+                        const request = index.get([attendance.date, attendance.classId, attendance.studentId]);
+                        const existing = await new Promise((resolve, reject) => {
+                            request.onsuccess = () => resolve(request.result);
+                            request.onerror = (e) => reject(e.target.error);
+                        });
+                        if (!existing) {
+                            await addData(STORE_ATTENDANCE, attendance);
+                            console.log(`Attendance: ${student.name} on ${dateStr} - ${attendance.status}`);
+                        }
+                    } catch (e) { console.error("Error adding attendance:", student.name, e); }
+                }
+            }
+        }
+    }
+
+    // 8. Results
+    console.log("Populating Results...");
+    if (allStudents.length > 0 && allClasses.length > 0) {
+        const examNames = ["ششماہی امتحان", "سالانہ امتحان"];
+        for (const student of allStudents.slice(0, 15)) { // Results for 15 students
+            const studentClass = allClasses.find(c => c.id === student.classId);
+            if (!studentClass || !studentClass.subjects || studentClass.subjects.length === 0) continue;
+
+            for (let sIdx = 0; sIdx < Math.min(2, studentClass.subjects.length); sIdx++) { // Results for 2 subjects
+                const subject = studentClass.subjects[sIdx];
+                const result = {
+                    examName: getRandomElement(examNames),
+                    classId: student.classId,
+                    subject: subject,
+                    studentId: student.id,
+                    totalMarks: 100,
+                    obtainedMarks: Math.floor(40 + Math.random() * 60),
+                    date: getRandomDate(new Date().getFullYear()),
+                };
+                 try {
+                    const store = await getObjectStore(STORE_RESULTS, 'readonly');
+                    const index = store.index('exam_class_subject_student');
+                    const request = index.get([result.examName, result.classId, result.subject, result.studentId]);
+                    const existing = await new Promise((resolve, reject) => {
+                            request.onsuccess = () => resolve(request.result);
+                            request.onerror = (e) => reject(e.target.error);
+                        });
+                    if (!existing) {
+                        await addData(STORE_RESULTS, result);
+                        console.log(`Result: ${student.name}, Sub: ${subject}, Exam: ${result.examName}`);
+                    }
+                } catch (e) { console.error("Error adding result:", student.name, e); }
+            }
+        }
+    }
+
+    // 9. Timetable
+    console.log("Populating Timetable...");
+    if (allClasses.length > 0 && allTeachers.length > 0) {
+        const periodsCount = 4;
+        for (const cls of allClasses.slice(0,3)) { // Timetable for first 3 classes
+             if (!cls.subjects || cls.subjects.length === 0) continue;
+            for (const day of urduDays.slice(0, 5)) { // Mon-Fri
+                for (let period = 1; period <= periodsCount; period++) {
+                    if (Math.random() < 0.3) continue; // Sparsely populate
+                    const timetableEntry = {
+                        classId: cls.id,
+                        day: day,
+                        period: period,
+                        subject: getRandomElement(cls.subjects),
+                        teacherId: getRandomElement(allTeachers).id
+                    };
+                    try {
+                        const store = await getObjectStore(STORE_TIMETABLE, 'readonly');
+                        const index = store.index('classId_day_period');
+                        const request = index.get([timetableEntry.classId, timetableEntry.day, timetableEntry.period]);
+                        const existing = await new Promise((resolve, reject) => {
+                                request.onsuccess = () => resolve(request.result);
+                                request.onerror = (e) => reject(e.target.error);
+                            });
+                        if (!existing) {
+                            await addData(STORE_TIMETABLE, timetableEntry);
+                             console.log(`Timetable: Class ${cls.name}, Day ${day}, P${period}`);
+                        }
+                    } catch (e) { console.error("Error adding timetable:", cls.name, e); }
+                }
+            }
+        }
+    }
+
+    // 10. Expenses
+    console.log("Populating Expenses...");
+    for (let i = 0; i < 20; i++) {
+        const expense = {
+            date: getRandomDate(),
+            type: getRandomElement(urduExpenseTypes),
+            amount: Math.floor(200 + Math.random() * 4800),
+            paidTo: Math.random() > 0.6 ? `${getRandomElement(urduMaleNames)} سٹور` : "",
+            description: `نمونہ خرچہ برائے ${urduExpenseTypes[i % urduExpenseTypes.length]}`
+        };
+        try {
+            await addData(STORE_EXPENSES, expense);
+            console.log(`Added Expense: ${expense.type}, Amount: ${expense.amount}`);
+        } catch (e) { console.error("Error adding expense:", expense.type, e); }
+    }
+
+    console.log("Sample data generation finished!");
+    alert("نمونہ ڈیٹا شامل ہو گیا ہے۔ براہ کرم صفحہ ریفریش کریں یا متعلقہ ماڈیولز کو دوبارہ لوڈ کریں تاکہ ڈیٹا نظر آ سکے۔");
+
+    // Attempt to refresh dashboard if functions are available
+    if (typeof loadDashboardStats === 'function' && typeof showModule === 'function') {
+        const currentActiveModule = document.querySelector('.module.active');
+        if (currentActiveModule) {
+            showModule(currentActiveModule.id); //This will re-trigger loads for the active module
+        } else {
+            showModule('dashboard');
+        }
+    }
+}
+
+// To run from console:
+// 1. Ensure your app is loaded and `db` is globally available.
+// 2. Copy all the code above this line.
+// 3. Paste into the Chrome DevTools console and press Enter.
+// 4. Then type `generateSampleData()` and press Enter.
