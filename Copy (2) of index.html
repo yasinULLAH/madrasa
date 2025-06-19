@@ -275,7 +275,7 @@
                 <div>کل طلباء: <span id="totalStudents">0</span></div>
                 <div>کل اساتذہ: <span id="totalTeachers">0</span></div>
                 <div>کل کلاسیں: <span id="totalClasses">0</span></div>
-                <div>آج کی آمدنی (مع فیس): <span id="todayFees">0</span></div>
+                <div>آج کی آمدنی (فیس): <span id="todayFees">0</span></div>
                 <div>آج کے اخراجات: <span id="todayExpenses">0</span></div>
             </div>
             <hr style="margin: 20px 0;">
@@ -317,7 +317,7 @@
                 style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
                 <h4 id="dashboardReportTitle">منتخب مدت کے لیے خلاصہ:</h4>
                 <div class="form-grid">
-                    <div>کل آمدنی (مع فیس): <span id="periodTotalFees">0</span></div>
+                    <div>کل آمدنی (فیس): <span id="periodTotalFees">0</span></div>
                     <div>کل اخراجات: <span id="periodTotalExpenses">0</span></div>
                     <div>نفع/نقصان: <span id="periodNetProfit">0</span></div>
                     <div>نئے داخلے اس مدت میں: <span id="periodNewAdmissions">0</span></div>
@@ -1119,69 +1119,67 @@
             }
         }
 
-async function generateDashboardDetailedReport() {
-    const reportType = document.getElementById('dashboardReportType').value;
-    const reportTitleEl = document.getElementById('dashboardReportTitle');
+        async function generateDashboardDetailedReport() {
+            const reportType = document.getElementById('dashboardReportType').value;
+            const reportTitleEl = document.getElementById('dashboardReportTitle');
 
-    let startDate, endDate;
-    let titlePeriod = "";
+            let startDate, endDate;
+            let titlePeriod = "";
 
-    if (reportType === 'monthly') {
-        const month = parseInt(document.getElementById('dashboardReportMonth').value);
-        const year = parseInt(document.getElementById('dashboardReportYear').value);
-        if (!month || !year) { alert('براہ کرم مہینہ اور سال منتخب کریں۔'); return; }
-        startDate = new Date(year, month - 1, 1);
-        endDate = new Date(year, month, 0);
-        titlePeriod = `${document.getElementById('dashboardReportMonth').options[month-1].text} ${year}`;
-    } else if (reportType === 'yearly') {
-        const year = parseInt(document.getElementById('dashboardReportYear').value);
-        if (!year) { alert('براہ کرم سال منتخب کریں۔'); return; }
-        startDate = new Date(year, 0, 1);
-        endDate = new Date(year, 11, 31);
-        titlePeriod = `سال ${year}`;
-    } else if (reportType === 'custom_range') {
-        const startStr = document.getElementById('dashboardReportStartDate').value;
-        const endStr = document.getElementById('dashboardReportEndDate').value;
-        if (!startStr || !endStr) { alert('براہ کرم شروع اور اختتامی تاریخ منتخب کریں۔'); return; }
-        startDate = new Date(startStr);
-        endDate = new Date(endStr);
-        endDate.setHours(23, 59, 59, 999);
-        titlePeriod = `${startStr} سے ${endStr}`;
-    }
+            if (reportType === 'monthly') {
+                const month = parseInt(document.getElementById('dashboardReportMonth').value);
+                const year = parseInt(document.getElementById('dashboardReportYear').value);
+                if (!month || !year) { alert('براہ کرم مہینہ اور سال منتخب کریں۔'); return; }
+                startDate = new Date(year, month - 1, 1);
+                endDate = new Date(year, month, 0); // Last day of the month
+                titlePeriod = `${document.getElementById('dashboardReportMonth').options[month - 1].text} ${year}`;
+            } else if (reportType === 'yearly') {
+                const year = parseInt(document.getElementById('dashboardReportYear').value);
+                if (!year) { alert('براہ کرم سال منتخب کریں۔'); return; }
+                startDate = new Date(year, 0, 1);
+                endDate = new Date(year, 11, 31);
+                titlePeriod = `سال ${year}`;
+            } else if (reportType === 'custom_range') {
+                const startStr = document.getElementById('dashboardReportStartDate').value;
+                const endStr = document.getElementById('dashboardReportEndDate').value;
+                if (!startStr || !endStr) { alert('براہ کرم شروع اور اختتامی تاریخ منتخب کریں۔'); return; }
+                startDate = new Date(startStr);
+                endDate = new Date(endStr);
+                endDate.setHours(23, 59, 59, 999); // Include full end day
+                titlePeriod = `${startStr} سے ${endStr}`;
+            }
 
-    reportTitleEl.textContent = `${titlePeriod} کے لیے خلاصہ:`;
-    const startDateString = startDate.toISOString().split('T')[0];
-    const endDateString = endDate.toISOString().split('T')[0];
+            reportTitleEl.textContent = `${titlePeriod} کے لیے خلاصہ:`;
+            const startDateString = startDate.toISOString().split('T')[0];
+            const endDateString = endDate.toISOString().split('T')[0];
 
-    try {
-        const allTransactions = await getAll(STORE_EXPENSES); // Or window.getAll(window.STORE_EXPENSES)
-        const allStudents = await getAll(STORE_STUDENTS);     // Or window.getAll(window.STORE_STUDENTS)
+            try {
+                const allFees = await getAll(STORE_FEES);
+                const allExpenses = await getAll(STORE_EXPENSES);
+                const allStudents = await getAll(STORE_STUDENTS);
 
-        const periodTransactions = allTransactions.filter(t => t.date >= startDateString && t.date <= endDateString);
+                const periodFees = allFees.filter(fee => fee.date >= startDateString && fee.date <= endDateString);
+                const periodExpenses = allExpenses.filter(exp => exp.date >= startDateString && exp.date <= endDateString);
+                const periodNewAdmissions = allStudents.filter(std => std.admissionDate >= startDateString && std.admissionDate <= endDateString);
 
-        const periodIncome = periodTransactions.filter(t => t.recordType === 'income');
-        const periodExpenses = periodTransactions.filter(t => t.recordType === 'expense');
-        const periodNewAdmissions = allStudents.filter(std => std.admissionDate >= startDateString && std.admissionDate <= endDateString);
+                const totalPeriodFees = periodFees.reduce((sum, fee) => sum + fee.paidAmount, 0);
+                const totalPeriodExpenses = periodExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                const netProfit = totalPeriodFees - totalPeriodExpenses;
 
-        const totalPeriodIncome = periodIncome.reduce((sum, inc) => sum + inc.amount, 0);
-        const totalPeriodExpenses = periodExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-        const netProfit = totalPeriodIncome - totalPeriodExpenses;
+                document.getElementById('periodTotalFees').textContent = totalPeriodFees.toLocaleString();
+                document.getElementById('periodTotalExpenses').textContent = totalPeriodExpenses.toLocaleString();
+                document.getElementById('periodNetProfit').textContent = netProfit.toLocaleString();
+                document.getElementById('periodNewAdmissions').textContent = periodNewAdmissions.length;
 
-        document.getElementById('periodTotalFees').textContent = totalPeriodIncome.toLocaleString(); // Represents total income
-        document.getElementById('periodTotalExpenses').textContent = totalPeriodExpenses.toLocaleString();
-        document.getElementById('periodNetProfit').textContent = netProfit.toLocaleString();
-        document.getElementById('periodNewAdmissions').textContent = periodNewAdmissions.length;
-
-    } catch (error) {
-        console.error("Error generating dashboard detailed report:", error);
-        alert("رپورٹ بنانے میں خرابی۔");
-        document.getElementById('periodTotalFees').textContent = 'خرابی';
-        document.getElementById('periodTotalExpenses').textContent = 'خرابی';
-        document.getElementById('periodNetProfit').textContent = 'خرابی';
-        document.getElementById('periodNewAdmissions').textContent = 'خرابی';
-    }
-}
-        
+            } catch (error) {
+                console.error("Error generating dashboard detailed report:", error);
+                alert("رپورٹ بنانے میں خرابی۔");
+                document.getElementById('periodTotalFees').textContent = 'خرابی';
+                document.getElementById('periodTotalExpenses').textContent = 'خرابی';
+                document.getElementById('periodNetProfit').textContent = 'خرابی';
+                document.getElementById('periodNewAdmissions').textContent = 'خرابی';
+            }
+        }
         function showModule(moduleId) {
             document.querySelectorAll('.module').forEach(module => module.classList.remove('active', 'printable'));
             document.getElementById(moduleId).classList.add('active');
@@ -1218,18 +1216,7 @@ async function generateDashboardDetailedReport() {
                 loadExamsForResultCard();
                 loadPastResults();
             }
-            if (moduleId === 'expenses') {
-                if (typeof window.loadTransactions === 'function') {
-                    window.loadTransactions();
-                    const transactionDateInput = document.getElementById('transactionDate');
-                    const transactionRecordTypeSel = document.getElementById('transactionRecordType');
-                    if(transactionDateInput) transactionDateInput.value = new Date().toISOString().split('T')[0];
-                    if(transactionRecordTypeSel) transactionRecordTypeSel.value = 'expense';
-                    if(typeof window.toggleTransactionFields === 'function') window.toggleTransactionFields();
-                } else {
-                    console.warn("loadTransactions function not yet defined when trying to show 'expenses' module.");
-                }
-            }
+            if (moduleId === 'expenses') loadExpenses();
             if (moduleId === 'feeStructures') { loadClassesForFeeStructureFilter(); loadFeeStructures(); }
             if (moduleId === 'timetable') { loadClassesForTimetable(); loadTeachersForRoaster(); loadTimetable(); }
             // Inside showModule function
@@ -1425,40 +1412,30 @@ async function generateDashboardDetailedReport() {
             }
         }
 
-async function loadDashboardStats() {
-    try {
-        const students = await getAll(STORE_STUDENTS); // Or window.getAll(window.STORE_STUDENTS)
-        const teachers = await getAll(STORE_TEACHERS);
-        const classes = await getAll(STORE_CLASSES);
+        async function loadDashboardStats() {
+            try {
+                const students = await getAll(STORE_STUDENTS);
+                const teachers = await getAll(STORE_TEACHERS);
+                const classes = await getAll(STORE_CLASSES);
 
-        document.getElementById('totalStudents').textContent = students.length;
-        document.getElementById('totalTeachers').textContent = teachers.length;
-        document.getElementById('totalClasses').textContent = classes.length;
+                document.getElementById('totalStudents').textContent = students.length;
+                document.getElementById('totalTeachers').textContent = teachers.length;
+                document.getElementById('totalClasses').textContent = classes.length;
 
-        const today = new Date().toISOString().split('T')[0];
-        // Fetch all transactions (income and expenses)
-        const allTransactions = await getAll(STORE_EXPENSES); // Or window.getAll(window.STORE_EXPENSES)
+                const today = new Date().toISOString().split('T')[0];
+                const fees = await getAll(STORE_FEES, 'date', today);
+                const expenses = await getAll(STORE_EXPENSES, 'date', today);
 
-        // Filter for today's transactions
-        const transactionsToday = allTransactions.filter(t => t.date === today);
+                const totalFeesToday = fees.reduce((sum, fee) => sum + fee.paidAmount, 0);
+                const totalExpensesToday = expenses.reduce((sum, exp) => sum + exp.amount, 0);
 
-        const incomeToday = transactionsToday.filter(t => t.recordType === 'income');
-        const expensesToday = transactionsToday.filter(t => t.recordType === 'expense');
+                document.getElementById('todayFees').textContent = totalFeesToday.toLocaleString();
+                document.getElementById('todayExpenses').textContent = totalExpensesToday.toLocaleString();
 
-        const totalIncomeToday = incomeToday.reduce((sum, inc) => sum + inc.amount, 0);
-        const totalExpensesToday = expensesToday.reduce((sum, exp) => sum + exp.amount, 0);
-
-        // 'todayFees' will now represent total income for today
-        document.getElementById('todayFees').textContent = totalIncomeToday.toLocaleString();
-        document.getElementById('todayExpenses').textContent = totalExpensesToday.toLocaleString();
-
-    } catch (error) {
-        console.error("Error loading dashboard stats:", error);
-        document.getElementById('todayFees').textContent = 'خرابی';
-        document.getElementById('todayExpenses').textContent = 'خرابی';
-    }
-}
-
+            } catch (error) {
+                console.error("Error loading dashboard stats:", error);
+            }
+        }
 
 
         const studentForm = document.getElementById('studentForm');
@@ -2033,9 +2010,6 @@ async function loadDashboardStats() {
                 document.getElementById('feePaidAmount').value = '';
                 document.getElementById('feeDiscount').value = '0';
                 document.getElementById('feeNotes').value = '';
-                if (typeof window.addFeeIncomeToTransactions === 'function') {
-                    await window.addFeeIncomeToTransactions(fullFeeRecord); // Ensure fullFeeRecord is the saved fee data
-                }
                 // Don't reset student selection, reload details instead
                 loadStudentFeeDetails(studentId); // Reload details for the same student
                 loadDashboardStats(); // Update dashboard
@@ -3531,319 +3505,7 @@ async function loadDashboardStats() {
             };
             reader.readAsText(file);
         });
-        function setupIncomeExpensesModule() {
-    console.log("Setting up Income & Expenses module via JS...");
-    const expensesModule = document.getElementById('expenses');
-    if (!expensesModule) {
-        console.error("Original 'expenses' module not found. Cannot transform.");
-        return;
-    }
 
-    // 1. Replace HTML content of the 'expenses' module
-    expensesModule.innerHTML = `
-        <h2>آمدنی و اخراجات کا انتظام</h2>
-        <h3>نیا لین دین شامل کریں / ترمیم کریں</h3>
-        <form id="transactionForm">
-            <input type="hidden" id="transactionId">
-            <div class="form-grid">
-                <div>
-                    <label for="transactionDate">تاریخ</label>
-                    <input type="date" id="transactionDate" required>
-                </div>
-                <div>
-                    <label for="transactionRecordType">قسم (آمدنی/خرچہ)</label>
-                    <select id="transactionRecordType" required>
-                        <option value="expense">خرچہ</option>
-                        <option value="income">آمدنی</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="transactionCategory">زمرہ/نوعیت</label>
-                    <input type="text" id="transactionCategory" placeholder="مثال: تنخواہ, بجلی کا بل, فیس, چندہ" required>
-                </div>
-                <div>
-                    <label for="transactionAmount">رقم</label>
-                    <input type="number" id="transactionAmount" required>
-                </div>
-                <div id="paidToDiv">
-                    <label for="transactionPaidTo">ادا کیا گیا (استاد/وغیرہ)</label>
-                    <input type="text" id="transactionPaidTo">
-                </div>
-                <div id="receivedFromDiv" style="display:none;">
-                    <label for="transactionReceivedFrom">وصول کیا گیا (شخص/ادارہ)</label>
-                    <input type="text" id="transactionReceivedFrom">
-                </div>
-                <div class="full-width">
-                    <label for="transactionDescription">تفصیل</label>
-                    <textarea id="transactionDescription" rows="2"></textarea>
-                </div>
-            </div>
-            <button type="submit">محفوظ کریں</button>
-            <button type="button" id="resetTransactionBtn">منسوخ کریں</button>
-        </form>
-
-        <h3>آمدنی و اخراجات کی فہرست</h3>
-        <div class="form-grid">
-            <div>
-                <label for="transactionFilterDate">تاریخ کے لحاظ سے فلٹر کریں:</label>
-                <input type="date" id="transactionFilterDate">
-            </div>
-            <div>
-                <label for="transactionFilterType">قسم کے لحاظ سے فلٹر کریں:</label>
-                <select id="transactionFilterType">
-                    <option value="">تمام</option>
-                    <option value="expense">صرف اخراجات</option>
-                    <option value="income">صرف آمدنی</option>
-                </select>
-            </div>
-        </div>
-        <table id="transactionsTable">
-            <thead>
-                <tr>
-                    <th>تاریخ</th>
-                    <th>قسم</th>
-                    <th>زمرہ/نوعیت</th>
-                    <th>تفصیل</th>
-                    <th>وصول/ادا کیا گیا</th>
-                    <th>رقم (آمدنی)</th>
-                    <th>رقم (خرچہ)</th>
-                    <th>عمل</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    `;
-
-    // 2. Define and Attach Event Listeners
-
-    // Make sure STORE_EXPENSES is globally accessible (e.g., window.STORE_EXPENSES = STORE_EXPENSES)
-    // or pass it as an argument if this function is called from a place where it's defined.
-    // For this example, assuming STORE_EXPENSES is globally available as window.STORE_EXPENSES
-
-    const transactionForm = document.getElementById('transactionForm');
-    const transactionsTableBody = document.getElementById('transactionsTable').querySelector('tbody');
-    const transactionFilterDateInput = document.getElementById('transactionFilterDate');
-    const transactionFilterTypeSelect = document.getElementById('transactionFilterType');
-    const transactionRecordTypeSelect = document.getElementById('transactionRecordType');
-    const resetTransactionBtn = document.getElementById('resetTransactionBtn');
-
-
-    window.toggleTransactionFields = function() {
-        const recordType = transactionRecordTypeSelect.value;
-        const paidToDiv = document.getElementById('paidToDiv');
-        const receivedFromDiv = document.getElementById('receivedFromDiv');
-        const transactionPaidToInput = document.getElementById('transactionPaidTo');
-        const transactionReceivedFromInput = document.getElementById('transactionReceivedFrom');
-
-
-        if (paidToDiv) paidToDiv.style.display = (recordType === 'expense') ? 'block' : 'none';
-        if (receivedFromDiv) receivedFromDiv.style.display = (recordType === 'income') ? 'block' : 'none';
-
-        if (recordType === 'expense' && transactionReceivedFromInput) {
-            transactionReceivedFromInput.value = '';
-        } else if (transactionPaidToInput) {
-            transactionPaidToInput.value = '';
-        }
-    }
-    // Initial call to set fields based on default select value
-    if(transactionRecordTypeSelect) toggleTransactionFields();
-
-
-    if (transactionRecordTypeSelect) {
-        transactionRecordTypeSelect.addEventListener('change', window.toggleTransactionFields);
-    }
-
-
-    if (transactionForm) {
-        transactionForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const transactionId = document.getElementById('transactionId').value;
-            const recordType = document.getElementById('transactionRecordType').value;
-            const transaction = {
-                date: document.getElementById('transactionDate').value || new Date().toISOString().split('T')[0],
-                recordType: recordType,
-                category: document.getElementById('transactionCategory').value.trim(),
-                amount: parseFloat(document.getElementById('transactionAmount').value),
-                description: document.getElementById('transactionDescription').value.trim()
-            };
-
-            if (recordType === 'expense') {
-                transaction.paidTo = document.getElementById('transactionPaidTo').value.trim();
-            } else {
-                transaction.receivedFrom = document.getElementById('transactionReceivedFrom').value.trim();
-            }
-
-            if (!transaction.category || isNaN(transaction.amount) || transaction.amount <= 0) {
-                alert('براہ کرم تاریخ، قسم، زمرہ اور رقم درست درج کریں۔');
-                return;
-            }
-
-            try {
-                if (transactionId) {
-                    transaction.id = parseInt(transactionId);
-                    await window.updateData(window.STORE_EXPENSES, transaction);
-                    alert('لین دین اپ ڈیٹ ہو گیا۔');
-                } else {
-                    await window.addData(window.STORE_EXPENSES, transaction);
-                    alert('نیا لین دین شامل ہو گیا۔');
-                }
-                window.resetTransactionForm(); // Call the global version
-                window.loadTransactions();     // Call the global version
-                if (typeof window.loadDashboardStats === 'function') window.loadDashboardStats();
-            } catch (error) {
-                console.error("Error saving transaction:", error);
-                alert('لین دین محفوظ کرنے میں خرابی۔');
-            }
-        });
-    }
-
-    window.resetTransactionForm = function() {
-        if (transactionForm) transactionForm.reset();
-        const transactionIdInput = document.getElementById('transactionId');
-        const transactionDateInput = document.getElementById('transactionDate');
-        const transactionRecordTypeSel = document.getElementById('transactionRecordType');
-
-        if(transactionIdInput) transactionIdInput.value = '';
-        if(transactionDateInput) transactionDateInput.value = new Date().toISOString().split('T')[0];
-        if(transactionRecordTypeSel) transactionRecordTypeSel.value = 'expense';
-        window.toggleTransactionFields();
-    }
-    if (resetTransactionBtn) {
-        resetTransactionBtn.addEventListener('click', window.resetTransactionForm);
-    }
-
-
-    window.loadTransactions = async function() {
-        if (!transactionsTableBody) return;
-        transactionsTableBody.innerHTML = '<tr><td colspan="8">لوڈ ہو رہا ہے...</td></tr>';
-        const filterDate = transactionFilterDateInput ? transactionFilterDateInput.value : '';
-        const filterType = transactionFilterTypeSelect ? transactionFilterTypeSelect.value : '';
-
-        try {
-            let transactions = await window.getAll(window.STORE_EXPENSES);
-
-            if (filterDate) {
-                transactions = transactions.filter(t => t.date === filterDate);
-            }
-            if (filterType) {
-                transactions = transactions.filter(t => t.recordType === filterType);
-            }
-
-            transactionsTableBody.innerHTML = '';
-            transactions
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .forEach(transaction => {
-                    const row = transactionsTableBody.insertRow();
-                    const incomeAmount = transaction.recordType === 'income' ? transaction.amount.toLocaleString() : '-';
-                    const expenseAmount = transaction.recordType === 'expense' ? transaction.amount.toLocaleString() : '-';
-                    const paidOrReceivedParty = transaction.recordType === 'expense' ? (transaction.paidTo || '-') : (transaction.receivedFrom || '-');
-
-                    row.innerHTML = `
-                        <td>${transaction.date}</td>
-                        <td>${transaction.recordType === 'income' ? 'آمدنی' : 'خرچہ'}</td>
-                        <td>${transaction.category}</td>
-                        <td>${transaction.description || '-'}</td>
-                        <td>${paidOrReceivedParty}</td>
-                        <td>${incomeAmount}</td>
-                        <td>${expenseAmount}</td>
-                        <td>
-                            <button class="edit" onclick="window.editTransaction(${transaction.id})">ترمیم</button>
-                            <button class="delete" onclick="window.deleteTransaction(${transaction.id})">حذف کریں</button>
-                        </td>
-                    `;
-                });
-            if (transactions.length === 0) {
-                let msg = 'کوئی لین دین نہیں ملا۔';
-                if (filterDate || filterType) msg = 'اس معیار پر کوئی لین دین نہیں ملا۔';
-                transactionsTableBody.innerHTML = `<tr><td colspan="8">${msg}</td></tr>`;
-            }
-        } catch (error) {
-            console.error("Error loading transactions:", error);
-            transactionsTableBody.innerHTML = '<tr><td colspan="8">آمدنی و اخراجات لوڈ کرنے میں خرابی۔</td></tr>';
-        }
-    }
-    if(transactionFilterDateInput) transactionFilterDateInput.addEventListener('change', window.loadTransactions);
-    if(transactionFilterTypeSelect) transactionFilterTypeSelect.addEventListener('change', window.loadTransactions);
-
-
-    window.editTransaction = async function(id) {
-        try {
-            const transaction = await window.getById(window.STORE_EXPENSES, id);
-            if (transaction) {
-                document.getElementById('transactionId').value = transaction.id;
-                document.getElementById('transactionDate').value = transaction.date;
-                document.getElementById('transactionRecordType').value = transaction.recordType || 'expense';
-                document.getElementById('transactionCategory').value = transaction.category;
-                document.getElementById('transactionAmount').value = transaction.amount;
-                document.getElementById('transactionDescription').value = transaction.description || '';
-
-                window.toggleTransactionFields();
-
-                if (transaction.recordType === 'expense') {
-                    document.getElementById('transactionPaidTo').value = transaction.paidTo || '';
-                } else if (transaction.recordType === 'income') {
-                    document.getElementById('transactionReceivedFrom').value = transaction.receivedFrom || '';
-                }
-
-                if (typeof window.showModule === 'function') window.showModule('expenses');
-                window.scrollTo(0, 0);
-            }
-        } catch (error) {
-            console.error("Error fetching transaction for edit:", error);
-            alert('ترمیم کے لیے لین دین لانے میں خرابی۔');
-        }
-    }
-
-    window.deleteTransaction = async function(id) {
-        const transaction = await window.getById(window.STORE_EXPENSES, id);
-        let confirmDelete = true;
-        if (transaction && transaction.category === "طالب علم فیس - خودکار") {
-            confirmDelete = confirm('یہ ایک خودکار طور پر شامل کردہ فیس کی آمدنی ہے۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟ اس سے رپورٹس متاثر ہو سکتی ہیں۔');
-        } else {
-            confirmDelete = confirm('کیا آپ واقعی اس لین دین کو حذف کرنا چاہتے ہیں؟');
-        }
-
-        if (!confirmDelete) return;
-
-        try {
-            await window.deleteData(window.STORE_EXPENSES, id);
-            alert('لین دین حذف ہو گیا۔');
-            window.loadTransactions();
-            if (typeof window.loadDashboardStats === 'function') window.loadDashboardStats();
-        } catch (error) {
-            console.error("Error deleting transaction:", error);
-            alert('لین دین حذف کرنے میں خرابی۔');
-        }
-    }
-
-    // Auto-add fee income to transactions
-    window.addFeeIncomeToTransactions = async function(feeRecord) {
-        const student = await window.getById(window.STORE_STUDENTS, feeRecord.studentId);
-        const className = student ? ( (typeof window.getClassName === 'function') ? await window.getClassName(student.classId) : 'N/A' ) : 'N/A';
-
-        const incomeTransaction = {
-            date: feeRecord.date,
-            recordType: 'income',
-            category: 'طالب علم فیس - خودکار',
-            amount: feeRecord.paidAmount,
-            description: `فیس برائے ${student ? student.name : 'N/A'} (کلاس: ${className}), قسم: ${feeRecord.feeType}`,
-            receivedFrom: student ? student.name : 'طالب علم',
-        };
-        try {
-            await window.addData(window.STORE_EXPENSES, incomeTransaction);
-            console.log("Fee income automatically added to transactions.");
-            const expensesMod = document.getElementById('expenses');
-            if (expensesMod && expensesMod.classList.contains('active')) {
-                window.loadTransactions();
-            }
-        } catch (error) {
-            console.error("Error auto-adding fee income to transactions:", error);
-        }
-    }
-
-    console.log("Income & Expenses module setup complete.");
-}
         async function savePrintSettings() {
             const schoolName = document.getElementById('schoolNamePrint').value.trim();
             if (!schoolName) {
@@ -3874,8 +3536,7 @@ async function loadDashboardStats() {
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDatabase();
-                setupIncomeExpensesModule();
-                showModule('dashboard');
+                showModule('dashboard'); // Show dashboard first
             } catch (error) {
                 console.error("Initialization error:", error);
                 alert("ڈیٹا بیس لوڈ کرنے میں ناکام: " + error);
