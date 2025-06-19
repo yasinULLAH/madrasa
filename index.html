@@ -231,7 +231,7 @@
         }
 
         * {
-            font-family: 'Jameel Noori Nastaleeq', Arial, sans-serif;
+            font-family: Calibri, Calibri, 'Jameel Noori Nastaleeq', Arial, sans-serif;
         }
 
         #dm_modal_trigger span:first-child {
@@ -241,6 +241,13 @@
 
         * {
             font-family: calibri;
+        }
+
+        .form-grid div span {
+            margin-right: 23px;
+            background: #0000ff82;
+            color: white;
+            padding: 0px 18px;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
@@ -314,7 +321,8 @@
                 <div class="form-grid">
                     <div>کل آمدنی (مع فیس): <span id="periodTotalFees">0</span></div>
                     <div>کل اخراجات: <span id="periodTotalExpenses">0</span></div>
-                    <div>نفع/نقصان: <span id="periodNetProfit">0</span></div>
+                    <div title="Loss is shown with a red background | نقصان کو سرخ پس منظر کے ساتھ ظاہر کیا جاتا ہے">
+                        نفع/نقصان: <span id="periodNetProfit">0</span></div>
                     <div>نئے داخلے اس مدت میں: <span id="periodNewAdmissions">0</span></div>
                 </div>
             </div>
@@ -3474,7 +3482,7 @@
 
         function applyUrduFont(elements) {
             elements.forEach(element => {
-                element.style.fontFamily = 'Jameel Noori Nastaleeq, sans-serif';
+                element.style.fontFamily = Calibri, 'Jameel Noori Nastaleeq, sans-serif';
             });
         }
 
@@ -3492,14 +3500,14 @@
             if (studentForm) {
                 const memorizationStatusLabel = document.createElement('label');
                 memorizationStatusLabel.textContent = 'حفظ کی حالت:';
-                memorizationStatusLabel.style.fontFamily = 'Jameel Noori Nastaleeq, sans-serif';
+                memorizationStatusLabel.style.fontFamily = 'Calibri, Jameel Noori Nastaleeq, sans-serif';
                 const memorizationStatusInput = document.createElement('select');
                 memorizationStatusInput.innerHTML = `
       <option value="hafiz">حافظ</option>
       <option value="non-hafiz">غیر حافظ</option>
       <option value="in-progress">زیرِ تکمیل</option>
     `;
-                memorizationStatusInput.style.fontFamily = 'Jameel Noori Nastaleeq, sans-serif';
+                memorizationStatusInput.style.fontFamily = 'Calibri, Jameel Noori Nastaleeq, sans-serif';
                 studentForm.appendChild(memorizationStatusLabel);
                 studentForm.appendChild(memorizationStatusInput);
             }
@@ -6265,6 +6273,25 @@
                 dm_init();
             }
         })();
+        const target = document.querySelector('#dashboardDetailedReportOutput > div');
+
+        const observer = new MutationObserver(() => {
+            const el = document.querySelector('#dashboardDetailedReportOutput > div > div:nth-child(3)');
+            if (!el) return;
+            const text = el.textContent;
+            if (text.includes('-')) {
+                el.style.background = 'red';
+                el.style.padding = '5px';
+                el.style.color = 'white';
+            } else {
+                el.style.background = '';
+                el.style.padding = '';
+                el.style.color = '';
+            }
+        });
+
+        observer.observe(target, { childList: true, subtree: true, characterData: true });
+
     </script>
 </body>
 
