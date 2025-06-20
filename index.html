@@ -239,6 +239,10 @@
             margin: 0 -30px;
         }
 
+        .dm_modal_trigger {
+            left: 4px !important;
+        }
+
         * {
             font-family: calibri;
         }
@@ -3457,7 +3461,7 @@
                     console.error("Error auto-adding fee income to transactions:", error);
                 }
             }
-            
+
             console.log("Income & Expenses module setup complete.");
         }
         async function savePrintSettings() {
@@ -3790,16 +3794,16 @@
                 subtree: true
             });
         });
-(function() {
-    async function savePageOffline() {
-        try {
-            // 1. Capture the current localStorage and sessionStorage data
-            const localData = JSON.stringify(localStorage);
-            const sessionData = JSON.stringify(sessionStorage);
+        (function () {
+            async function savePageOffline() {
+                try {
+                    // 1. Capture the current localStorage and sessionStorage data
+                    const localData = JSON.stringify(localStorage);
+                    const sessionData = JSON.stringify(sessionStorage);
 
-            // 2. Create the script that will restore the data when the offline file is opened.
-            // This script is created as a string to be injected into the raw HTML.
-            const restoreScriptText = `
+                    // 2. Create the script that will restore the data when the offline file is opened.
+                    // This script is created as a string to be injected into the raw HTML.
+                    const restoreScriptText = `
                 <script id="restore-storage-script">
                     try {
                         const local = ${localData};
@@ -3812,56 +3816,56 @@
                 <\/script> 
             `; // The <\/script> is to prevent parsing issues.
 
-            // 3. Fetch the original HTML source of the current page. This is the key step.
-            const response = await fetch(window.location.href);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch page source: ${response.statusText}`);
+                    // 3. Fetch the original HTML source of the current page. This is the key step.
+                    const response = await fetch(window.location.href);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch page source: ${response.statusText}`);
+                    }
+                    let originalHtml = await response.text();
+
+                    // 4. Inject the restoration script right after the opening <head> tag using string replacement.
+                    // This ensures it runs before any other scripts on the page.
+                    originalHtml = originalHtml.replace(
+                        /(<head.*?>)/i,
+                        `$1\n${restoreScriptText}`
+                    );
+
+                    // 5. Create a Blob from the modified HTML string and trigger the download.
+                    const blob = new Blob([originalHtml], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'madrasa_system_offline_copy.html';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                } catch (error) {
+                    console.error('Failed to save offline copy:', error);
+                    alert('Could not save offline copy. Check the console for more details.');
+                }
             }
-            let originalHtml = await response.text();
 
-            // 4. Inject the restoration script right after the opening <head> tag using string replacement.
-            // This ensures it runs before any other scripts on the page.
-            originalHtml = originalHtml.replace(
-                /(<head.*?>)/i,
-                `$1\n${restoreScriptText}`
-            );
-
-            // 5. Create a Blob from the modified HTML string and trigger the download.
-            const blob = new Blob([originalHtml], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'madrasa_system_offline_copy.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-        } catch (error) {
-            console.error('Failed to save offline copy:', error);
-            alert('Could not save offline copy. Check the console for more details.');
-        }
-    }
-
-    // This creates the save icon button on the page.
-    const icon = document.createElement('div');
-    icon.textContent = "💾";
-    icon.title = "Save Offline Copy";
-    Object.assign(icon.style, {
-        position: 'fixed',
-        top: '5px',
-        left: '10px',
-        fontSize: '24px',
-        cursor: 'pointer',
-        zIndex: '9999',
-        background: '#fff',
-        padding: '5px',
-        borderRadius: '5px',
-        boxShadow: '0 0 5px rgba(0,0,0,0.5)'
-    });
-    icon.onclick = savePageOffline;
-    document.body.appendChild(icon);
-})();        
+            // This creates the save icon button on the page.
+            const icon = document.createElement('div');
+            icon.textContent = "💾";
+            icon.title = "Save Offline Copy";
+            Object.assign(icon.style, {
+                position: 'fixed',
+                top: '5px',
+                left: '10px',
+                fontSize: '24px',
+                cursor: 'pointer',
+                zIndex: '9999',
+                background: '#fff',
+                padding: '5px',
+                borderRadius: '5px',
+                boxShadow: '0 0 5px rgba(0,0,0,0.5)'
+            });
+            icon.onclick = savePageOffline;
+            document.body.appendChild(icon);
+        })();
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Breadcrumb script running');
 
@@ -4010,7 +4014,7 @@
                 { id: 'attendanceTable', searchable: true, sortable: true, paginated: true },
                 { id: 'resultsEntryTable', searchable: true, sortable: true, paginated: true },
                 { id: 'classTimetableTable', searchable: true, sortable: true, paginated: true },
-                { id: 'teacherRoasterTable', searchable: true, sortable: true, paginated: true },        
+                { id: 'teacherRoasterTable', searchable: true, sortable: true, paginated: true },
                 { id: 'expensesTable', searchable: true, sortable: true, paginated: true }
             ];
 
@@ -6588,6 +6592,468 @@
 
         observer.observe(target, { childList: true, subtree: true, characterData: true });
 
+
+
+        (function () {
+            // --- Start of Communication Module ---
+
+            function initializeCommunicationModule() {
+                // 1. Create the button in the Settings module to launch the new feature
+                const settingsModule = document.getElementById('settings');
+                if (settingsModule) {
+                    const launcherButton = document.createElement('button');
+                    launcherButton.textContent = 'SMS / WhatsApp براڈکاسٹ';
+                    launcherButton.style.backgroundColor = '#007bff';
+                    launcherButton.onclick = () => launchCommunicationModal();
+
+                    // Find the "Print Settings" section to insert the button before it
+                    const printSettingsHeader = Array.from(settingsModule.querySelectorAll('h3')).find(h => h.textContent.includes('Print Settings'));
+                    if (printSettingsHeader) {
+                        printSettingsHeader.parentNode.insertBefore(launcherButton, printSettingsHeader);
+                    } else {
+                        settingsModule.appendChild(launcherButton);
+                    }
+                }
+
+                // 2. Create the Modal HTML structure dynamically
+                const modal = document.createElement('div');
+                modal.id = 'communicationModal';
+                modal.className = 'comm-modal';
+                modal.innerHTML = `
+            <div class="comm-modal-content">
+                <div class="comm-modal-header">
+                    <h2>SMS / WhatsApp براڈکاسٹ</h2>
+                    <button class="comm-close-btn" onclick="closeCommunicationModal()">×</button>
+                </div>
+                <div class="comm-modal-body">
+                    <div class="comm-grid">
+                        <!-- Column 1: Configuration -->
+                        <div class="comm-config-panel">
+                            <h3>مرحلہ ۱: سیٹ اپ</h3>
+                            
+                            <label for="commPlatform">پلیٹ فارم منتخب کریں:</label>
+                            <select id="commPlatform">
+                                <option value="sms">SMS (Text Message)</option>
+                                <option value="whatsapp">WhatsApp</option>
+                            </select>
+
+                            <label for="commRecipientType">وصول کنندہ کی قسم:</label>
+                            <select id="commRecipientType" onchange="handleRecipientTypeChange()">
+                                <option value="">-- منتخب کریں --</option>
+                                <option value="students">طلباء</option>
+                                <option value="teachers">اساتذہ</option>
+                            </select>
+
+                            <div id="commClassFilterContainer" style="display:none;">
+                                <label for="commClassFilter">کلاس کے لحاظ سے فلٹر کریں:</label>
+                                <select id="commClassFilter" onchange="handleRecipientTypeChange()">
+                                    <option value="">تمام کلاسیں</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Recipient List -->
+                        <div class="comm-recipients-panel">
+                            <h3>مرحلہ ۲: وصول کنندگان منتخب کریں</h3>
+                            <div class="comm-select-all-container">
+                                <input type="checkbox" id="commSelectAll" onchange="toggleSelectAllRecipients(this.checked)">
+                                <label for="commSelectAll">سب کو منتخب کریں</label>
+                            </div>
+                            <div id="commRecipientList">
+                                <p>براہ کرم وصول کنندہ کی قسم منتخب کریں۔</p>
+                            </div>
+                        </div>
+
+                        <!-- Column 3: Message Composition -->
+                        <div class="comm-message-panel">
+                            <h3>مرحلہ ۳: پیغام لکھیں</h3>
+                            <label for="commMessageType">پیغام کی قسم:</label>
+                            <select id="commMessageType" onchange="handleMessageTypeChange()">
+                                <option value="custom">اپنی مرضی کا پیغام</option>
+                                <option value="fee_reminder">فیس یاد دہانی</option>
+                                <option value="attendance_absent">غیر حاضری کی اطلاع</option>
+                                <option value="exam_result">امتحانی نتیجہ</option>
+                                <option value="salary_notification">تنخواہ کی اطلاع</option>
+                            </select>
+
+                            <label for="commMessageBody">پیغام کا متن:</label>
+                            <textarea id="commMessageBody" rows="6" placeholder="یہاں اپنا پیغام لکھیں۔"></textarea>
+                            <div class="comm-placeholders">
+                                <strong>Placeholders:</strong> [name], [father_name], [class], [contact], [date]
+                            </div>
+
+                            <label>پیغام کا پیش نظارہ (پہلے وصول کنندہ کی بنیاد پر):</label>
+                            <div id="commMessagePreview"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="comm-modal-footer">
+                    <button id="commSendButton" onclick="handleSendMessages()">پیغامات بھیجیں</button>
+                </div>
+            </div>
+        `;
+                document.body.appendChild(modal);
+                const messageBodyTextarea = document.getElementById('commMessageBody');
+                if (messageBodyTextarea) {
+                    messageBodyTextarea.addEventListener('input', updateMessagePreview);
+                }
+                // 3. Inject the necessary CSS
+                const style = document.createElement('style');
+                style.textContent = `
+            .comm-modal {
+                display: none;
+                position: fixed;
+                z-index: 2000;
+                left: 0; top: 0;
+                width: 100%; height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.6);
+                align-items: center;
+                justify-content: center;
+                font-family: 'Noto Nastaliq Urdu', sans-serif;
+            }
+            .comm-modal-content {
+                background-color: #f8f9fa;
+                color: #333;
+                margin: auto;
+                padding: 20px;
+                border-radius: 8px;
+                width: 95%;
+                max-width: 1400px;
+                /* height: 90vh; */
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            }
+            .comm-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #dee2e6;
+                padding-bottom: 15px;
+                direction: rtl;
+            }
+            .comm-modal-header h2 { margin: 0; color: #007bff; }
+            .comm-close-btn {
+                background: none; border: none; font-size: 2.5rem;
+                cursor: pointer; color: #6c757d; line-height: 1;
+            }
+            .comm-modal-body {
+                flex-grow: 1;
+                overflow-y: auto;
+                padding: 20px 0;
+            }
+            .comm-grid {
+                display: grid;
+                grid-template-columns: 250px 1fr 1fr;
+                gap: 20px;
+                height: 100%;
+                direction: rtl;
+            }
+            .comm-grid > div {
+                background-color: #fff;
+                padding: 15px;
+                border-radius: 5px;
+                border: 1px solid #e9ecef;
+                display: flex;
+                flex-direction: column;
+            }
+            .comm-grid h3 {
+                margin-top: 0;
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+            .comm-recipients-panel #commRecipientList {
+                flex-grow: 1;
+                overflow-y: auto;
+                border: 1px solid #ccc;
+                padding: 10px;
+                background: #f9f9f9;
+            }
+            .comm-recipient-item { margin-bottom: 5px; }
+            .comm-select-all-container { margin-bottom: 10px; }
+            .comm-modal-body label { font-weight: bold; margin-top: 10px; display: block; }
+            .comm-modal-body select, .comm-modal-body textarea {
+                width: 100%; padding: 8px; margin-top: 5px;
+                border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem;
+            }
+            .comm-placeholders { font-size: 0.8rem; color: #6c757d; margin-top: 5px; direction: ltr; }
+            #commMessagePreview {
+                margin-top: 10px; padding: 10px; background: #e9ecef;
+                border-radius: 4px; min-height: 50px; white-space: pre-wrap;
+            }
+            .comm-modal-footer {
+                border-top: 1px solid #dee2e6;
+                padding-top: 15px; text-align: left;
+            }
+            #commSendButton {
+                background-color: #28a745; color: white; padding: 12px 25px;
+                border: none; border-radius: 5px; cursor: pointer; font-size: 1.2rem;
+            }
+            #commSendButton:hover { background-color: #218838; }
+
+            @media (max-width: 992px) {
+                .comm-grid { grid-template-columns: 1fr; }
+                .comm-recipients-panel { min-height: 250px; }
+            }
+        `;
+                document.head.appendChild(style);
+            }
+
+            // --- Module Logic ---
+
+            window.launchCommunicationModal = async function () {
+                const modal = document.getElementById('communicationModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    // Populate class filter dropdown
+                    const classSelect = document.getElementById('commClassFilter');
+                    classSelect.innerHTML = '<option value="">تمام کلاسیں</option>';
+                    try {
+                        const classes = await getAll(STORE_CLASSES);
+                        classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(cls => {
+                            const option = document.createElement('option');
+                            option.value = cls.id;
+                            option.textContent = cls.name;
+                            classSelect.appendChild(option);
+                        });
+                    } catch (error) {
+                        console.error("Error loading classes for comms module:", error);
+                    }
+                }
+            }
+
+            window.closeCommunicationModal = function () {
+                const modal = document.getElementById('communicationModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            window.handleRecipientTypeChange = async function () {
+                const type = document.getElementById('commRecipientType').value;
+                const classFilterContainer = document.getElementById('commClassFilterContainer');
+                const recipientListDiv = document.getElementById('commRecipientList');
+                const classId = document.getElementById('commClassFilter').value;
+
+                classFilterContainer.style.display = type === 'students' ? 'block' : 'none';
+                recipientListDiv.innerHTML = '<p>لوڈ ہو رہا ہے...</p>';
+
+                if (!type) {
+                    recipientListDiv.innerHTML = '<p>براہ کرم وصول کنندہ کی قسم منتخب کریں۔</p>';
+                    return;
+                }
+
+                try {
+                    const storeName = type === 'students' ? STORE_STUDENTS : STORE_TEACHERS;
+                    let recipients = await getAll(storeName);
+
+                    if (type === 'students' && classId) {
+                        recipients = recipients.filter(s => s.classId === parseInt(classId));
+                    }
+
+                    if (recipients.length === 0) {
+                        recipientListDiv.innerHTML = '<p>کوئی وصول کنندہ نہیں ملا۔</p>';
+                        return;
+                    }
+
+                    let listHtml = '';
+                    for (const person of recipients) {
+                        if (person.contact) { // Only show recipients with a contact number
+                            const className = type === 'students' ? `(${await getClassName(person.classId) || 'N/A'})` : '';
+                            listHtml += `
+                        <div class="comm-recipient-item">
+                            <input type="checkbox" class="comm-recipient-checkbox" value="${person.id}" onchange="updateMessagePreview()">
+                            <label>${person.name} ${className} - ${person.contact}</label>
+                        </div>
+                    `;
+                        }
+                    }
+                    recipientListDiv.innerHTML = listHtml || '<p>اس معیار پر کوئی وصول کنندہ نہیں ملا جس کا رابطہ نمبر موجود ہو۔</p>';
+                    setTimeout(() => {
+                        document.querySelectorAll(".comm-recipient-item label").forEach(label => {
+                            const text = label.textContent;
+                            const match = text.match(/\d{4}-\d{7}/);
+                            if (match) {
+                                const nameClass = text.replace(/\s*-\s*\d{4}-\d{7}/, '').trim();
+                                label.innerHTML = `${nameClass}<br><small style="color:#555">${match[0]}</small>`;
+                            }
+                        });
+                    }, 300);
+                    updateMessagePreview();
+
+                } catch (error) {
+                    console.error("Error fetching recipients:", error);
+                    recipientListDiv.innerHTML = '<p>وصول کنندگان کو لوڈ کرنے میں خرابی۔</p>';
+                }
+            }
+
+            window.toggleSelectAllRecipients = function (checked) {
+                document.querySelectorAll('.comm-recipient-checkbox').forEach(cb => {
+                    cb.checked = checked;
+                });
+                updateMessagePreview();
+            }
+
+            window.handleMessageTypeChange = function () {
+                const type = document.getElementById('commMessageType').value;
+                const messageBody = document.getElementById('commMessageBody');
+                let template = '';
+
+                switch (type) {
+                    case 'fee_reminder':
+                        template = 'محترم والد صاحب/سرپرست،\n[name] کی فیس واجب الادا ہے۔ برائے مہربانی جلد از جلد جمع کرائیں۔\nشکریہ،\n[مدرسہ کا نام]';
+                        break;
+                    case 'attendance_absent':
+                        template = 'محترم والد صاحب/سرپرست،\nآپ کو مطلع کیا جاتا ہے کہ [name] آج، [date]، کو مدرسہ سے غیر حاضر ہے۔\nشکریہ،\n[مدرسہ کا نام]';
+                        break;
+                    case 'exam_result':
+                        template = 'محترم والد صاحب/سرپرست،\n[name] کے امتحانی نتائج تیار ہیں۔ آپ مدرسہ سے نتیجہ کارڈ حاصل کر سکتے ہیں۔\nشکریہ،\n[مدرسہ کا نام]';
+                        break;
+                    case 'salary_notification':
+                        template = 'محترم [name]،\nآپ کی ماہانہ تنخواہ آپ کے اکاؤنٹ میں منتقل کر دی گئی ہے۔\nشکریہ،\n[مدرسہ کا نام]';
+                        break;
+                    case 'custom':
+                    default:
+                        template = '';
+                        break;
+                }
+                messageBody.value = template;
+                updateMessagePreview();
+            }
+
+            window.updateMessagePreview = async function () {
+                const previewDiv = document.getElementById('commMessagePreview');
+                const messageTemplate = document.getElementById('commMessageBody').value;
+                const firstSelected = document.querySelector('.comm-recipient-checkbox:checked');
+
+                if (!firstSelected) {
+                    previewDiv.textContent = 'ایک پیغام دیکھنے کے لیے کم از کم ایک وصول کنندہ منتخب کریں۔';
+                    return;
+                }
+
+                try {
+                    const recipientType = document.getElementById('commRecipientType').value;
+                    const storeName = recipientType === 'students' ? STORE_STUDENTS : STORE_TEACHERS;
+                    const person = await getById(storeName, parseInt(firstSelected.value));
+                    if (!person) return;
+
+                    const schoolNameSetting = await getById(STORE_SETTINGS, 'schoolName');
+                    const schoolName = schoolNameSetting ? schoolNameSetting.value : "مدرسہ";
+
+                    let personalizedMessage = messageTemplate
+                        .replace(/\[name\]/g, person.name || '')
+                        .replace(/\[father_name\]/g, person.fatherName || '')
+                        .replace(/\[contact\]/g, person.contact || '')
+                        .replace(/\[date\]/g, new Date().toLocaleDateString('ur-PK'))
+                        .replace(/\[مدرسہ کا نام\]/g, schoolName);
+
+                    if (recipientType === 'students') {
+                        const className = await getClassName(person.classId);
+                        personalizedMessage = personalizedMessage.replace(/\[class\]/g, className || '');
+                    }
+
+                    previewDiv.textContent = personalizedMessage;
+                } catch (error) {
+                    console.error("Error updating preview:", error);
+                    previewDiv.textContent = 'پیش نظارہ بنانے میں خرابی۔';
+                }
+            }
+
+            function formatPhoneNumberForWhatsApp(number) {
+                if (!number) return null;
+                let cleaned = number.replace(/[^0-9]/g, ''); // Remove all non-numeric characters
+                if (cleaned.startsWith('03')) {
+                    return '92' + cleaned.substring(1); // Replace leading 0 with 92
+                }
+                if (cleaned.startsWith('92')) {
+                    return cleaned; // Already in correct format
+                }
+                // Add other country code logic here if needed
+                return cleaned; // Fallback
+            }
+
+            window.handleSendMessages = async function () {
+                const platform = document.getElementById('commPlatform').value;
+                const messageTemplate = document.getElementById('commMessageBody').value;
+                const selectedCheckboxes = Array.from(document.querySelectorAll('.comm-recipient-checkbox:checked'));
+
+                if (selectedCheckboxes.length === 0) {
+                    alert('براہ کرم کم از کم ایک وصول کنندہ منتخب کریں۔');
+                    return;
+                }
+
+                if (!messageTemplate.trim()) {
+                    alert('پیغام خالی نہیں ہو سکتا۔');
+                    return;
+                }
+
+                const confirmMessage = `آپ ${selectedCheckboxes.length} وصول کنندگان کو پیغام بھیجنے والے ہیں۔\nنوٹ: یہ آپ کے آلہ پر ${platform.toUpperCase()} ایپ میں ہر وصول کنندہ کے لیے ایک نیا چیٹ/ڈرافٹ کھولے گا۔\n\nکیا آپ جاری رکھنا چاہتے ہیں؟`;
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+
+                const recipientType = document.getElementById('commRecipientType').value;
+                const storeName = recipientType === 'students' ? STORE_STUDENTS : STORE_TEACHERS;
+                const schoolNameSetting = await getById(STORE_SETTINGS, 'schoolName');
+                const schoolName = schoolNameSetting ? schoolNameSetting.value : "مدرسہ";
+
+                let sentCount = 0;
+                for (const cb of selectedCheckboxes) {
+                    try {
+                        const person = await getById(storeName, parseInt(cb.value));
+                        if (!person || !person.contact) continue;
+
+                        let personalizedMessage = messageTemplate
+                            .replace(/\[name\]/g, person.name || '')
+                            .replace(/\[father_name\]/g, person.fatherName || '')
+                            .replace(/\[contact\]/g, person.contact || '')
+                            .replace(/\[date\]/g, new Date().toLocaleDateString('ur-PK'))
+                            .replace(/\[مدرسہ کا نام\]/g, schoolName);
+                        if (recipientType === 'students') {
+                            const className = await getClassName(person.classId);
+                            personalizedMessage = personalizedMessage.replace(/\[class\]/g, className || '');
+                        }
+
+                        const encodedMessage = encodeURIComponent(personalizedMessage);
+                        let url;
+
+                        if (platform === 'sms') {
+                            url = `sms:${person.contact}?body=${encodedMessage}`;
+                        } else { // whatsapp
+                            const formattedNumber = formatPhoneNumberForWhatsApp(person.contact);
+                            if (formattedNumber) {
+                                url = `https://wa.me/${formattedNumber}?text=${encodedMessage}`;
+                            } else {
+                                console.warn(`Skipping invalid WhatsApp number: ${person.contact}`);
+                                continue;
+                            }
+                        }
+
+                        window.open(url, '_blank');
+                        sentCount++;
+                        // A small delay to prevent browsers from blocking too many popups at once
+                        if (sentCount % 5 === 0) {
+                            await new Promise(resolve => setTimeout(resolve, 300));
+                        }
+
+                    } catch (error) {
+                        console.error(`Failed to generate message link for person ID ${cb.value}:`, error);
+                    }
+                }
+
+                alert(`${sentCount} پیغامات کے لیے لنکس تیار کر دیے گئے ہیں۔ براہ کرم ہر ٹیب/ایپ میں بھیجنے کی تصدیق کریں۔`);
+            }
+
+            // Initialize the module when the DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeCommunicationModule);
+            } else {
+                initializeCommunicationModule();
+            }
+
+        })();
     </script>
 </body>
 
