@@ -6872,15 +6872,17 @@
                     }
                     recipientListDiv.innerHTML = listHtml || '<p>اس معیار پر کوئی وصول کنندہ نہیں ملا جس کا رابطہ نمبر موجود ہو۔</p>';
                     setTimeout(() => {
-                        document.querySelectorAll(".comm-recipient-item label").forEach(label => {
-                            const text = label.textContent;
-                            const match = text.match(/\d{4}-\d{7}/);
-                            if (match) {
-                                const nameClass = text.replace(/\s*-\s*\d{4}-\d{7}/, '').trim();
-                                label.innerHTML = `${nameClass}<br><small style="color:#555">${match[0]}</small>`;
-                            }
-                        });
-                    }, 300);
+                    document.querySelectorAll(".comm-recipient-item label").forEach(label => {
+                        const text = label.textContent;
+                        const match = text.match(/(?:\+92|0092|92|0)?\d{3}[-\s.]?\d{7}/);
+                        if (match) {
+                        const cleaned = match[0].replace(/[^+\d]/g, '');
+                        const nameClass = text.replace(match[0], '').trim().replace(/[-\s]+$/, '');
+                        label.innerHTML = `${nameClass}<br><small style="color:#555">${cleaned}</small>`;
+                        }
+                    });
+                    }, 500);
+
                     updateMessagePreview();
 
                 } catch (error) {
@@ -6903,13 +6905,13 @@
 
                 switch (type) {
                     case 'fee_reminder':
-                        template = 'محترم والد صاحب/سرپرست،\n[name] کی فیس واجب الادا ہے۔ برائے مہربانی جلد از جلد جمع کرائیں۔\nشکریہ،\n[مدرسہ کا نام]';
+                        template = 'محترم والد/سرپرست صاحب،\n[name] کی فیس واجب الادا ہے۔ برائے مہربانی جلد از جلد جمع کرائیں۔\nشکریہ،\n[مدرسہ کا نام]';
                         break;
                     case 'attendance_absent':
-                        template = 'محترم والد صاحب/سرپرست،\nآپ کو مطلع کیا جاتا ہے کہ [name] آج، [date]، کو مدرسہ سے غیر حاضر ہے۔\nشکریہ،\n[مدرسہ کا نام]';
+                        template = 'محترم والد/سرپرست صاحب،\nآپ کو مطلع کیا جاتا ہے کہ [name] آج، [date]، کو مدرسہ سے غیر حاضر ہے۔\nشکریہ،\n[مدرسہ کا نام]';
                         break;
                     case 'exam_result':
-                        template = 'محترم والد صاحب/سرپرست،\n[name] کے امتحانی نتائج تیار ہیں۔ آپ مدرسہ سے نتیجہ کارڈ حاصل کر سکتے ہیں۔\nشکریہ،\n[مدرسہ کا نام]';
+                        template = 'محترم والد/سرپرست صاحب،\n[name] کے امتحانی نتائج تیار ہیں۔ آپ مدرسہ سے نتیجہ کارڈ حاصل کر سکتے ہیں۔\nشکریہ،\n[مدرسہ کا نام]';
                         break;
                     case 'salary_notification':
                         template = 'محترم [name]،\nآپ کی ماہانہ تنخواہ آپ کے اکاؤنٹ میں منتقل کر دی گئی ہے۔\nشکریہ،\n[مدرسہ کا نام]';
