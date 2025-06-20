@@ -6872,15 +6872,15 @@
                     }
                     recipientListDiv.innerHTML = listHtml || '<p>اس معیار پر کوئی وصول کنندہ نہیں ملا جس کا رابطہ نمبر موجود ہو۔</p>';
                     setTimeout(() => {
-                    document.querySelectorAll(".comm-recipient-item label").forEach(label => {
-                        const text = label.textContent;
-                        const match = text.match(/(?:\+92|0092|92|0)?\d{3}[-\s.]?\d{7}/);
-                        if (match) {
-                        const cleaned = match[0].replace(/[^+\d]/g, '');
-                        const nameClass = text.replace(match[0], '').trim().replace(/[-\s]+$/, '');
-                        label.innerHTML = `${nameClass}<br><small style="color:#555">${cleaned}</small>`;
-                        }
-                    });
+                        document.querySelectorAll(".comm-recipient-item label").forEach(label => {
+                            const text = label.textContent;
+                            const match = text.match(/(?:\+92|0092|92|0)?\d{3}[-\s.]?\d{7}/);
+                            if (match) {
+                                const cleaned = match[0].replace(/[^+\d]/g, '');
+                                const nameClass = text.replace(match[0], '').trim().replace(/[-\s]+$/, '');
+                                label.innerHTML = `${nameClass}<br><small style="color:#555">${cleaned}</small>`;
+                            }
+                        });
                     }, 500);
 
                     updateMessagePreview();
