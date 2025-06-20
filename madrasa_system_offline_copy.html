@@ -2,6 +2,18 @@
 <html lang="ur" dir="rtl">
 
 <head>
+
+                <script id="restore-storage-script">
+                    try {
+                        const local = {};
+                        const session = {};
+                        if (local) Object.keys(local).forEach(key => localStorage.setItem(key, local[key]));
+                        if (session) Object.keys(session).forEach(key => sessionStorage.setItem(key, session[key]));
+                    } catch (e) {
+                        console.error('Error restoring storage:', e);
+                    }
+                </script> 
+            
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مدرسہ مینجمنٹ سسٹم Yasin's</title>
