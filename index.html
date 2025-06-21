@@ -300,14 +300,15 @@
             border-width: 0px 0px 4px 0px;
             border-radius: 20px;
         }
-        #bulkIDCardTable .preview {
-    width: 468px;
-    height: 230px;
-}
 
-.id-card.front * {
-    font-size: 15px !important;
-}
+        #bulkIDCardTable .preview {
+            width: 468px;
+            height: 230px;
+        }
+
+        .id-card.front * {
+            font-size: 15px !important;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -5936,7 +5937,7 @@
             window.tryLoadImage = async function (id, name, type, admissionNo = null) {
                 const numericId = parseInt(id.toString().replace(/\D/g, '')) || 0;
                 const paddedId = numericId.toString().padStart(4, '0');
-                
+
                 const idVariants = [];
                 // Prioritize the full admission number if it exists
                 if (admissionNo) {
@@ -6000,7 +6001,7 @@
 
                     const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
                     const className = type === 'student' ? ((typeof window.getClassName === 'function') ? await window.getClassName(person.classId) : 'N/A') : 'N/A';
-                    
+
                     // Pass admissionNo to the image search function
                     const autoImage = await window.tryLoadImage(person.id, person.name, type, person.admissionNo);
                     const photoSrc = currentPhoto || autoImage || null;
@@ -6012,7 +6013,7 @@
                         let qrData = `${idNumber}|${person.name}`;
                         if (type === 'student') {
                             qrData += `|C:${className.substring(0, 10)}`;
-                        } else { 
+                        } else {
                             qrData += `|T`;
                         }
 
@@ -6074,73 +6075,73 @@
                 }
             };
             // Bulk generate with QR Code Yasin
-            
-window.generateBulkIDCards = async function () {
-    const type = document.getElementById('bulkIdCardType').value;
-    const template = document.getElementById('bulkIdCardTemplate').value;
-    const table = document.getElementById('bulkIDCardTable');
-    const tbody = table ? table.querySelector('tbody') : null;
 
-    if (!tbody) {
-        console.error("Bulk ID card table body not found.");
-        return;
-    }
+            window.generateBulkIDCards = async function () {
+                const type = document.getElementById('bulkIdCardType').value;
+                const template = document.getElementById('bulkIdCardTemplate').value;
+                const table = document.getElementById('bulkIDCardTable');
+                const tbody = table ? table.querySelector('tbody') : null;
 
-    if (!type) {
-        tbody.innerHTML = '<tr><td colspan="3">براہ کرم قسم منتخب کریں۔</td></tr>';
-        if (table) table.style.display = 'table';
-        return;
-    }
-
-    try {
-        const storeName = type === 'student' ? window.STORE_STUDENTS : window.STORE_TEACHERS;
-        let allPersonsInStore = await window.getAll(storeName);
-
-        const selectedIds = Array.from(tbody.querySelectorAll('tr .bulk-select:checked'))
-                               .map(cb => parseInt(cb.closest('tr').dataset.id));
-        
-        if (selectedIds.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3">کوئی شخص منتخب نہیں کیا گیا۔</td></tr>';
-            table.style.display = 'table';
-            return;
-        }
-
-        const selectedPersons = allPersonsInStore.filter(p => selectedIds.includes(p.id));
-
-        const schoolSetting = await window.getById(window.STORE_SETTINGS, 'schoolName');
-        const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
-
-        tbody.innerHTML = ''; 
-        for (const person of selectedPersons.sort((a, b) => a.name.localeCompare(b.name))) {
-            const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
-            const currentClassName = type === 'student' ? (await window.getClassName(person.classId) || 'N/A') : 'N/A';
-            
-            // Pass admissionNo to the image search function
-            const autoImage = await window.tryLoadImage(person.id, person.name, type, person.admissionNo);
-
-            let imageElementHTMLBulk;
-            if (autoImage) {
-                imageElementHTMLBulk = `<img src="${autoImage}" class="photo" alt="تصویر">`;
-            } else {
-                let qrData = `${idNumber}|${person.name}`;
-                
-                if (type === 'student') {
-                    qrData += `|C:${currentClassName.substring(0, 10)}`;
-                } else {
-                    qrData += `|T`;
+                if (!tbody) {
+                    console.error("Bulk ID card table body not found.");
+                    return;
                 }
-        
-                const qrCodeDataURL = await generateQRCodeDataURL(qrData.trim(), 98);
-                if (qrCodeDataURL) {
-                    imageElementHTMLBulk = `<img src="${qrCodeDataURL}" class="photo qr-code-image" alt="QR Code">`;
-                } else {
-                    imageElementHTMLBulk = `<div class="photo"><span>N/A</span></div>`;
-                }
-            }
 
-            const row = tbody.insertRow();
-            row.dataset.id = person.id;
-            row.innerHTML = `
+                if (!type) {
+                    tbody.innerHTML = '<tr><td colspan="3">براہ کرم قسم منتخب کریں۔</td></tr>';
+                    if (table) table.style.display = 'table';
+                    return;
+                }
+
+                try {
+                    const storeName = type === 'student' ? window.STORE_STUDENTS : window.STORE_TEACHERS;
+                    let allPersonsInStore = await window.getAll(storeName);
+
+                    const selectedIds = Array.from(tbody.querySelectorAll('tr .bulk-select:checked'))
+                        .map(cb => parseInt(cb.closest('tr').dataset.id));
+
+                    if (selectedIds.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3">کوئی شخص منتخب نہیں کیا گیا۔</td></tr>';
+                        table.style.display = 'table';
+                        return;
+                    }
+
+                    const selectedPersons = allPersonsInStore.filter(p => selectedIds.includes(p.id));
+
+                    const schoolSetting = await window.getById(window.STORE_SETTINGS, 'schoolName');
+                    const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
+
+                    tbody.innerHTML = '';
+                    for (const person of selectedPersons.sort((a, b) => a.name.localeCompare(b.name))) {
+                        const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
+                        const currentClassName = type === 'student' ? (await window.getClassName(person.classId) || 'N/A') : 'N/A';
+
+                        // Pass admissionNo to the image search function
+                        const autoImage = await window.tryLoadImage(person.id, person.name, type, person.admissionNo);
+
+                        let imageElementHTMLBulk;
+                        if (autoImage) {
+                            imageElementHTMLBulk = `<img src="${autoImage}" class="photo" alt="تصویر">`;
+                        } else {
+                            let qrData = `${idNumber}|${person.name}`;
+
+                            if (type === 'student') {
+                                qrData += `|C:${currentClassName.substring(0, 10)}`;
+                            } else {
+                                qrData += `|T`;
+                            }
+
+                            const qrCodeDataURL = await generateQRCodeDataURL(qrData.trim(), 98);
+                            if (qrCodeDataURL) {
+                                imageElementHTMLBulk = `<img src="${qrCodeDataURL}" class="photo qr-code-image" alt="QR Code">`;
+                            } else {
+                                imageElementHTMLBulk = `<div class="photo"><span>N/A</span></div>`;
+                            }
+                        }
+
+                        const row = tbody.insertRow();
+                        row.dataset.id = person.id;
+                        row.innerHTML = `
                 <td>${idNumber}</td>
                 <td>${person.name}</td>
                 <td>
@@ -6166,83 +6167,83 @@ window.generateBulkIDCards = async function () {
                     </div>
                 </td>
             `;
-        }
-        if (table) table.style.display = 'table';
-    } catch (error) {
-        console.error('Error generating bulk ID cards:', error);
-        tbody.innerHTML = '<tr><td colspan="3">خرابی: آئی ڈی کارڈز جنریٹ نہیں ہو سکیں۔</td></tr>';
-        if (table) table.style.display = 'table';
-    }
-};
-            //Bulk Generate without Qr Code
-/*          window.generateBulkIDCards = async function () {
-                const type = document.getElementById('bulkIdCardType').value;
-                const classId = document.getElementById('bulkIdCardClass').value;
-                const template = document.getElementById('bulkIdCardTemplate').value;
-                const table = document.getElementById('bulkIDCardTable');
-                const tbody = table.querySelector('tbody');
-                if (!type) {
-                    tbody.innerHTML = '<tr><td colspan="3">براہ کرم قسم منتخب کریں۔</td></tr>';
-                    table.style.display = 'table';
-                    return;
-                }
-                try {
-                    const storeName = type === 'student' ? STORE_STUDENTS : STORE_TEACHERS;
-                    let persons = await getAll(storeName);
-                    if (type === 'student' && classId) {
-                        persons = persons.filter(p => p.classId === parseInt(classId));
                     }
-                    persons = persons.filter((_, i) => tbody.rows[i]?.querySelector('.bulk-select').checked);
-                    if (persons.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="3">کوئی شخص منتخب نہیں کیا گیا۔</td></tr>';
-                        table.style.display = 'table';
-                        return;
-                    }
-                    const schoolSetting = await getById(STORE_SETTINGS, 'schoolName');
-                    const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
-                    tbody.innerHTML = '';
-                    persons.sort((a, b) => a.name.localeCompare(b.name)).forEach(async person => {
-                        const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
-                        const className = type === 'student' ? await getClassName(person.classId) : 'N/A';
-                        const autoImage = await tryLoadImage(person.id, person.name, type);
-                        const row = tbody.insertRow();
-                        row.dataset.id = person.id;
-                        row.innerHTML = `
-                    <td>${idNumber}</td>
-                    <td>${person.name}</td>
-                    <td>
-                        <div class="preview">
-                            <div class="id-card ${template}">
-                                ${autoImage ? `<img src="${autoImage}" class="photo">` : `<div class="photo"></div>`}
-                                <div class="content">
-                                    <div class="header">${schoolName}</div>
-                                    ${template === 'front' ? `
-                                        <p><strong>${type === 'student' ? 'طالب علم' : 'استاد'}</strong></p>
-                                        <p><strong>نام:</strong> ${person.name}</p>
-                                        <p><strong>آئی ڈی:</strong> ${idNumber}</p>
-                                        ${type === 'student' ? `<p><strong>کلاس:</strong> ${className}</p>` : ''}
-                                        <div class="footer">${new Date().toISOString().split('T')[0]}</div>
-                                    ` : `
-                                        <p><strong>رابطہ:</strong> ${person.contact || 'N/A'}</p>
-                                        ${type === 'student' ? `<p><strong>والد کا نام:</strong> ${person.fatherName}</p>` : ''}
-                                        <p><strong>پتہ:</strong> ${person.address || person.qualification || 'N/A'}</p>
-                                        <div class="footer">مدرسہ کی ملکیت</div>
-                                    `}
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                `;
-                    });
-                    table.style.display = 'table';
+                    if (table) table.style.display = 'table';
                 } catch (error) {
                     console.error('Error generating bulk ID cards:', error);
                     tbody.innerHTML = '<tr><td colspan="3">خرابی: آئی ڈی کارڈز جنریٹ نہیں ہو سکیں۔</td></tr>';
-                    table.style.display = 'table';
+                    if (table) table.style.display = 'table';
                 }
             };
- */
-           
+            //Bulk Generate without Qr Code
+            /*          window.generateBulkIDCards = async function () {
+                            const type = document.getElementById('bulkIdCardType').value;
+                            const classId = document.getElementById('bulkIdCardClass').value;
+                            const template = document.getElementById('bulkIdCardTemplate').value;
+                            const table = document.getElementById('bulkIDCardTable');
+                            const tbody = table.querySelector('tbody');
+                            if (!type) {
+                                tbody.innerHTML = '<tr><td colspan="3">براہ کرم قسم منتخب کریں۔</td></tr>';
+                                table.style.display = 'table';
+                                return;
+                            }
+                            try {
+                                const storeName = type === 'student' ? STORE_STUDENTS : STORE_TEACHERS;
+                                let persons = await getAll(storeName);
+                                if (type === 'student' && classId) {
+                                    persons = persons.filter(p => p.classId === parseInt(classId));
+                                }
+                                persons = persons.filter((_, i) => tbody.rows[i]?.querySelector('.bulk-select').checked);
+                                if (persons.length === 0) {
+                                    tbody.innerHTML = '<tr><td colspan="3">کوئی شخص منتخب نہیں کیا گیا۔</td></tr>';
+                                    table.style.display = 'table';
+                                    return;
+                                }
+                                const schoolSetting = await getById(STORE_SETTINGS, 'schoolName');
+                                const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
+                                tbody.innerHTML = '';
+                                persons.sort((a, b) => a.name.localeCompare(b.name)).forEach(async person => {
+                                    const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
+                                    const className = type === 'student' ? await getClassName(person.classId) : 'N/A';
+                                    const autoImage = await tryLoadImage(person.id, person.name, type);
+                                    const row = tbody.insertRow();
+                                    row.dataset.id = person.id;
+                                    row.innerHTML = `
+                                <td>${idNumber}</td>
+                                <td>${person.name}</td>
+                                <td>
+                                    <div class="preview">
+                                        <div class="id-card ${template}">
+                                            ${autoImage ? `<img src="${autoImage}" class="photo">` : `<div class="photo"></div>`}
+                                            <div class="content">
+                                                <div class="header">${schoolName}</div>
+                                                ${template === 'front' ? `
+                                                    <p><strong>${type === 'student' ? 'طالب علم' : 'استاد'}</strong></p>
+                                                    <p><strong>نام:</strong> ${person.name}</p>
+                                                    <p><strong>آئی ڈی:</strong> ${idNumber}</p>
+                                                    ${type === 'student' ? `<p><strong>کلاس:</strong> ${className}</p>` : ''}
+                                                    <div class="footer">${new Date().toISOString().split('T')[0]}</div>
+                                                ` : `
+                                                    <p><strong>رابطہ:</strong> ${person.contact || 'N/A'}</p>
+                                                    ${type === 'student' ? `<p><strong>والد کا نام:</strong> ${person.fatherName}</p>` : ''}
+                                                    <p><strong>پتہ:</strong> ${person.address || person.qualification || 'N/A'}</p>
+                                                    <div class="footer">مدرسہ کی ملکیت</div>
+                                                `}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            `;
+                                });
+                                table.style.display = 'table';
+                            } catch (error) {
+                                console.error('Error generating bulk ID cards:', error);
+                                tbody.innerHTML = '<tr><td colspan="3">خرابی: آئی ڈی کارڈز جنریٹ نہیں ہو سکیں۔</td></tr>';
+                                table.style.display = 'table';
+                            }
+                        };
+             */
+
             window.exportBulkIDCards = async function () {
                 const table = document.getElementById('bulkIDCardTable');
                 const rows = table.querySelectorAll('tbody tr');
