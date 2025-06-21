@@ -3894,8 +3894,7 @@
                                 const tableClone = table.cloneNode(true);
                                 // Find the index of the "Actions" column ('عمل')
                                 const actionColumnIndex = Array.from(tableClone.querySelectorAll('thead th'))
-                                                                .findIndex(th => th.textContent.trim() === 'عمل');
-
+                                    .findIndex(th => th.textContent.trim() === 'عمل');
                                 // If the column is found, remove it from every row in the clone
                                 if (actionColumnIndex > -1) {
                                     const allRows = tableClone.querySelectorAll('tr');
