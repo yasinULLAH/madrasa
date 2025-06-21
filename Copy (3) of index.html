@@ -276,7 +276,7 @@
 <body>
     <div class="container">
         <h1>مدرسہ مینجمنٹ سسٹم</h1>
-        <nav style="overflow-x: auto;">
+        <nav>
             <button onclick="showModule('dashboard')">ڈیش بورڈ</button>
             <button onclick="showModule('students')">طلباء</button>
             <button onclick="showModule('teachers')">اساتذہ</button>
@@ -288,62 +288,8 @@
             <button onclick="showModule('timetable')">ٹائم ٹیبل / ڈیوٹی روسٹر</button>
             <button onclick="showModule('expenses')">اخراجات</button>
             <button onclick="showModule('reports')">رپورٹس</button>
-            <button onclick="showModule('inventory')">انوینٹری</button>
             <button onclick="showModule('settings')">سیٹنگز</button>
-            <button onclick="showModule('exportData')">ڈیٹا ایکسپورٹ</button>
         </nav>
-        <div id="inventory" class="module">
-            <h2>انوینٹری کا انتظام</h2>
-            <h3>نیا آئٹم شامل کریں / ترمیم کریں</h3>
-            <form id="inventoryForm">
-                <input type="hidden" id="inventoryId">
-                <div class="form-grid">
-                    <div>
-                        <label for="itemName">آئٹم کا نام</label>
-                        <input type="text" id="itemName" required>
-                    </div>
-                    <div>
-                        <label for="itemCategory">زمرہ</label>
-                        <input type="text" id="itemCategory" placeholder="مثال: اسٹیشنری، فرنیچر" required>
-                    </div>
-                    <div>
-                        <label for="itemQuantity">مقدار</label>
-                        <input type="number" id="itemQuantity" required min="0">
-                    </div>
-                    <div>
-                        <label for="unitPrice">فی یونٹ قیمت</label>
-                        <input type="number" id="unitPrice" required min="0" step="0.01">
-                    </div>
-                    <div>
-                        <label for="purchaseDate">خریداری کی تاریخ</label>
-                        <input type="date" id="purchaseDate">
-                    </div>
-                    <div class="full-width">
-                        <label for="itemDescription">تفصیل</label>
-                        <textarea id="itemDescription" rows="2"></textarea>
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetInventoryForm()">منسوخ کریں</button>
-            </form>
-            <h3>انوینٹری کی فہرست</h3>
-            <input type="text" id="inventorySearch" placeholder="نام یا زمرہ سے تلاش کریں..." onkeyup="loadInventory()">
-            <table id="inventoryTable">
-                <thead>
-                    <tr>
-                        <th>آئٹم کا نام</th>
-                        <th>زمرہ</th>
-                        <th>مقدار</th>
-                        <th>فی یونٹ قیمت</th>
-                        <th>کل قیمت</th>
-                        <th>خریداری کی تاریخ</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
         <div id="dashboard" class="module active">
             <h2>ڈیش بورڈ</h2>
             <p>سسٹم میں خوش آمدید۔ یہاں آپ اہم اعدادوشمار دیکھ سکیں گے۔</p>
@@ -943,7 +889,7 @@
     </div>
     <script>
         const DB_NAME = 'SchoolManagementDB';
-        const DB_VERSION = 15;
+        const DB_VERSION = 14;
         let db;
         const STORE_STUDENTS = 'students';
         const STORE_TEACHERS = 'teachers';
@@ -955,8 +901,6 @@
         const STORE_FEE_STRUCTURES = 'feeStructures';
         const STORE_TIMETABLE = 'timetable';
         const STORE_SETTINGS = 'settings';
-        const STORE_INVENTORY = 'inventory';
-        const LOW_STOCK_THRESHOLD = 5; // Threshold for low stock alerts
         function openDatabase() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -1101,24 +1045,6 @@
                     }
                     if (!db.objectStoreNames.contains(STORE_SETTINGS)) {
                         const settingsStore = db.createObjectStore(STORE_SETTINGS, { keyPath: 'key' });
-                    }
-                    // Add Inventory store if it doesn't exist
-                    if (!db.objectStoreNames.contains(STORE_INVENTORY)) {
-                        const inventoryStore = db.createObjectStore(STORE_INVENTORY, { keyPath: 'id', autoIncrement: true });
-                        inventoryStore.createIndex('itemName', 'itemName', { unique: false });
-                        inventoryStore.createIndex('itemCategory', 'itemCategory', { unique: false });
-                        inventoryStore.createIndex('quantity', 'quantity', { unique: false });
-                    } else {
-                        const inventoryStore = upgradeTransaction.objectStore(STORE_INVENTORY);
-                        if (!inventoryStore.indexNames.contains('itemName')) {
-                            inventoryStore.createIndex('itemName', 'itemName', { unique: false });
-                        }
-                        if (!inventoryStore.indexNames.contains('itemCategory')) {
-                            inventoryStore.createIndex('itemCategory', 'itemCategory', { unique: false });
-                        }
-                        if (!inventoryStore.indexNames.contains('quantity')) {
-                            inventoryStore.createIndex('quantity', 'quantity', { unique: false });
-                        }
                     }
                     console.log("Database upgrade complete");
                 };
@@ -1275,11 +1201,6 @@
             }
             if (moduleId === 'reports') loadClassesForReportFilter();
             if (moduleId === 'settings') loadPrintSettings();
-            if (moduleId === 'inventory') {
-                loadInventory();
-                checkLowStockItems();
-                loadInventoryCategories();
-            }
             loadClassesForStudentForm();
             loadTeachersForClassForm();
         }
@@ -1441,155 +1362,6 @@
                 return null;
             }
         }
-        async function loadInventory() {
-            try {
-                const searchTerm = document.getElementById('inventorySearch').value.toLowerCase();
-                const inventory = await getAll(STORE_INVENTORY);
-                const tableBody = document.getElementById('inventoryTable').querySelector('tbody');
-                tableBody.innerHTML = '';
-
-                inventory.forEach(item => {
-                    if (!searchTerm ||
-                        item.itemName.toLowerCase().includes(searchTerm) ||
-                        item.itemCategory.toLowerCase().includes(searchTerm)) {
-                        const row = tableBody.insertRow();
-                        row.innerHTML = `
-                            <td>${item.itemName}</td>
-                            <td>${item.itemCategory}</td>
-                            <td>${item.quantity}</td>
-                            <td>${item.unitPrice}</td>
-                            <td>${(item.quantity * item.unitPrice).toFixed(2)}</td>
-                            <td>${item.purchaseDate || 'N/A'}</td>
-                            <td>
-                                <button onclick="editInventoryItem(${item.id})" class="edit">ترمیم</button>
-                                <button onclick="deleteInventoryItem(${item.id})" class="delete">حذف</button>
-                            </td>
-                        `;
-                    }
-                });
-            } catch (error) {
-                console.error("Error loading inventory:", error);
-            }
-        }
-
-        async function loadInventoryCategories() {
-            try {
-                const inventory = await getAll(STORE_INVENTORY);
-                const categories = [...new Set(inventory.map(item => item.itemCategory))];
-                const categoryInput = document.getElementById('itemCategory');
-                categoryInput.setAttribute('list', 'inventoryCategories');
-
-                const datalist = document.getElementById('inventoryCategories') ||
-                    document.createElement('datalist');
-                datalist.id = 'inventoryCategories';
-                datalist.innerHTML = '';
-
-                categories.forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category;
-                    datalist.appendChild(option);
-                });
-
-                if (!document.getElementById('inventoryCategories')) {
-                    document.body.appendChild(datalist);
-                }
-            } catch (error) {
-                console.error("Error loading inventory categories:", error);
-            }
-        }
-
-        async function checkLowStockItems() {
-            try {
-                const inventory = await getAll(STORE_INVENTORY);
-                const lowStockItems = inventory.filter(item => item.quantity <= LOW_STOCK_THRESHOLD);
-
-                if (lowStockItems.length > 0) {
-                    alert(`Warning: ${lowStockItems.length} items are low in stock!`);
-                }
-            } catch (error) {
-                console.error("Error checking low stock items:", error);
-            }
-        }
-
-        async function editInventoryItem(id) {
-            try {
-                const item = await getById(STORE_INVENTORY, id);
-                if (item) {
-                    document.getElementById('inventoryId').value = item.id;
-                    document.getElementById('itemName').value = item.itemName;
-                    document.getElementById('itemCategory').value = item.itemCategory;
-                    document.getElementById('itemQuantity').value = item.quantity;
-                    document.getElementById('unitPrice').value = item.unitPrice;
-                    document.getElementById('purchaseDate').value = item.purchaseDate || '';
-                    document.getElementById('itemDescription').value = item.itemDescription || '';
-                }
-            } catch (error) {
-                console.error("Error editing inventory item:", error);
-            }
-        }
-
-        async function deleteInventoryItem(id) {
-            if (confirm('کیا آپ واقعی یہ آئٹم حذف کرنا چاہتے ہیں؟')) {
-                try {
-                    await deleteData(STORE_INVENTORY, id);
-                    loadInventory();
-                } catch (error) {
-                    console.error("Error deleting inventory item:", error);
-                }
-            }
-        }
-
-        function resetInventoryForm() {
-            document.getElementById('inventoryForm').reset();
-            document.getElementById('inventoryId').value = '';
-        }
-
-        document.getElementById('inventoryForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const item = {
-                itemName: document.getElementById('itemName').value,
-                itemCategory: document.getElementById('itemCategory').value,
-                quantity: parseFloat(document.getElementById('itemQuantity').value),
-                unitPrice: parseFloat(document.getElementById('unitPrice').value),
-                purchaseDate: document.getElementById('purchaseDate').value || null,
-                itemDescription: document.getElementById('itemDescription').value || null
-            };
-
-            const id = document.getElementById('inventoryId').value;
-
-            try {
-                if (id) {
-                    item.id = parseInt(id);
-                    await updateData(STORE_INVENTORY, item);
-                } else {
-                    await addData(STORE_INVENTORY, item);
-
-                    // Automatically add an expense record for the new inventory purchase
-                    if (item.unitPrice > 0 && item.quantity > 0) {
-                        const expenseAmount = item.quantity * item.unitPrice;
-                        const expenseTransaction = {
-                            date: item.purchaseDate || new Date().toISOString().split('T')[0],
-                            recordType: 'expense',
-                            category: 'انوینٹری خریداری', // Inventory Purchase
-                            amount: expenseAmount,
-                            description: `خریداری: ${item.quantity} عدد ${item.itemName} @ ${item.unitPrice} فی عدد`,
-                            paidTo: 'سپلائر' // Generic supplier
-                        };
-                        await addData(STORE_EXPENSES, expenseTransaction);
-                        loadDashboardStats(); // Refresh dashboard with the new expense
-                    }
-                }
-
-                resetInventoryForm();
-                loadInventory();
-                loadInventoryCategories();
-                checkLowStockItems();
-            } catch (error) {
-                console.error("Error saving inventory item:", error);
-            }
-        });
-
         async function loadDashboardStats() {
             try {
                 const students = await getAll(STORE_STUDENTS);
@@ -3892,19 +3664,7 @@
                                 document.body.appendChild(loadingEl);
 
                                 const tableClone = table.cloneNode(true);
-                                // Find the index of the "Actions" column ('عمل')
-                                const actionColumnIndex = Array.from(tableClone.querySelectorAll('thead th'))
-                                                                .findIndex(th => th.textContent.trim() === 'عمل');
 
-                                // If the column is found, remove it from every row in the clone
-                                if (actionColumnIndex > -1) {
-                                    const allRows = tableClone.querySelectorAll('tr');
-                                    allRows.forEach(row => {
-                                        if (row.cells[actionColumnIndex]) {
-                                            row.deleteCell(actionColumnIndex);
-                                        }
-                                    });
-                                }
                                 tableClone.style.width = table.offsetWidth + 'px';
                                 tableClone.style.fontFamily = 'Arial, sans-serif';
                                 tableClone.style.borderCollapse = 'collapse';
@@ -4329,7 +4089,6 @@
                     border-radius: 4px;
                     font-family: 'Noto Nastaliq Urdu', sans-serif;
                     font-size: large;
-                    display: none;
                 `;
                         controlsContainer.appendChild(searchInput);
                         searchInput.addEventListener('input', debounce(() => {
@@ -5281,7 +5040,6 @@
         border-radius: 50%;
         padding: 10px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        display: none;
     `;
             excelIcon.innerHTML = `
 <svg width="24" height="24" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
@@ -6198,7 +5956,6 @@
                 { text: 'ٹائم ٹیبل / ڈیوٹی روسٹر', module: 'timetable' },
                 { text: 'اخراجات', module: 'expenses' },
                 { text: 'رپورٹس', module: 'reports' },
-                { text: 'انوینٹری', module: 'inventory' }, // Add this line
                 { text: 'سیٹنگز', module: 'settings' },
                 { text: 'ڈیٹا ایکسپورٹ', module: 'exportData' },
                 { text: 'آئی ڈی کارڈ جنریٹر', module: 'idCardGenerator' }
