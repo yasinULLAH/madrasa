@@ -50,13 +50,11 @@ This project is a powerful, browser-based application designed to digitize and s
 
 ### 🚀 How to Use | استعمال کرنے کا طریقہ
 
-1.  **Download | ڈاؤن لوڈ:** Download the `index.html` file to your computer. | `index.html` فائل اپنے کمپیوٹر پر ڈاؤن لوڈ کریں۔
+1.  **Download | ڈاؤن لوڈ:** Download the `index.html` file to your computer. | `index.html` فائل اپنے کمپیوٹر پر ڈاؤن لوڈ کریں۔ (use the **💾 Save Offline Copy** button (top-left) -  **💾 آف لائن کاپی محفوظ کریں** بٹن (اوپر بائیں) استعمال کریں۔)
 2.  **Open | کھولیں:** Open the downloaded `index.html` file in a modern web browser like Chrome, Firefox, or Edge. | ڈاؤن لوڈ کی گئی `index.html` فائل کو کروم، فائر فاکس، یا ایج جیسے جدید ویب براؤزر میں کھولیں۔
+
 3.  **Start Working | کام شروع کریں:** The application is ready to use! Start adding your data. | ایپلیکیشن استعمال کے لیے تیار ہے! اپنا ڈیٹا شامل کرنا شروع کریں۔
-4.  **IMPORTANT: Save Your Work | اہم: اپنا کام محفوظ کریں:**
-    *   After adding data, always use the **💾 Save Offline Copy** button (top-left). | ڈیٹا شامل کرنے کے بعد، ہمیشہ **💾 آف لائن کاپی محفوظ کریں** بٹن (اوپر بائیں) استعمال کریں۔
-    *   This will download a new `.html` file that contains all your saved data. | یہ ایک نئی `.html` فائل ڈاؤن لوڈ کرے گا جس میں آپ کا تمام محفوظ شدہ ڈیٹا موجود ہوگا۔
-    *   **From now on, always open this new file to continue your work.** | **اب سے، اپنا کام جاری رکھنے کے لیے ہمیشہ یہ نئی فائل کھولیں۔**
+
 
 ### 🤝 Contributing | شراکت داری
 
