@@ -2331,7 +2331,7 @@
                                 <label>
                                     <input type="radio" name="attendance_${student.id}" value="Present" data-student-id="${student.id}" ${existingStatus === 'Present' ? 'checked' : ''}> حاضر
                                 </label>
-                                <label style="margin-right: 15px;">
+                                <label style="/* margin-right: 15px; */">
                                     <input type="radio" name="attendance_${student.id}" value="Absent" data-student-id="${student.id}" ${existingStatus === 'Absent' ? 'checked' : ''}> غیر حاضر
                                 </label>
                              </td>
@@ -2408,7 +2408,9 @@
                 }
 
                 setTimeout(() => {
-                    if (completed === attendanceData.length) alert('حاضری کامیابی سے محفوظ ہو گئی۔ (Fallback)');
+                    if (completed === attendanceData.length) {
+                        //alert('حاضری کامیابی سے محفوظ ہو گئی۔ (Fallback)');
+                    }
                 }, 500);
             } catch (error) {
                 console.error("Error saving attendance:", error);
@@ -2636,7 +2638,9 @@
                 }
 
                 setTimeout(() => {
-                    if (completed === resultsData.length) alert('نتائج کامیابی سے محفوظ ہو گئے۔ (Fallback)');
+                    if (completed === resultsData.length) {
+                        //alert('نتائج کامیابی سے محفوظ ہو گئے۔ (Fallback)');
+                    }
                 }, 500);
             } catch (error) {
                 console.error("Error saving results:", error);
@@ -2898,7 +2902,9 @@
                 }
 
                 setTimeout(() => {
-                    if (completed === timetableEntries.length) alert('ٹائم ٹیبل کامیابی سے محفوظ ہو گیا۔ (Fallback)');
+                    if (completed === timetableEntries.length) {
+                        //alert('ٹائم ٹیبل کامیابی سے محفوظ ہو گیا۔ (Fallback)');
+                    }
                 }, 500);
             } catch (error) {
                 console.error("Error saving timetable:", error);
