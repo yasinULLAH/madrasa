@@ -6121,7 +6121,11 @@
 
                         let imageElementHTMLBulk;
                         if (autoImage) {
-                            imageElementHTMLBulk = `<img src="${autoImage}" class="photo" alt="تصویر">`;
+                            if(document.querySelector("#bulkIdCardTemplate").value == "front"){
+                                imageElementHTMLBulk = `<img src="${autoImage}" class="photo" alt="تصویر">`;
+                            }else{
+                                imageElementHTMLBulk = `<img src="logo.png" class="photo" alt="تصویر">`;
+                            }
                         } else {
                             let qrData = `${idNumber}|${person.name}`;
 
@@ -6133,7 +6137,12 @@
 
                             const qrCodeDataURL = await generateQRCodeDataURL(qrData.trim(), 98);
                             if (qrCodeDataURL) {
-                                imageElementHTMLBulk = `<img src="${qrCodeDataURL}" class="photo qr-code-image" alt="QR Code">`;
+                                //imageElementHTMLBulk = `<img src="${qrCodeDataURL}" class="photo qr-code-image" alt="QR Code">`;
+                                if(document.querySelector("#bulkIdCardTemplate").value == "front"){
+                                    imageElementHTMLBulk = `<img src="${qrCodeDataURL}" class="photo qr-code-image" alt="QR Code">`;
+                                }else{
+                                    imageElementHTMLBulk = `<img src="logo.png" class="photo qr-code-image" alt="QR Code">`;
+                                    }
                             } else {
                                 imageElementHTMLBulk = `<div class="photo"><span>N/A</span></div>`;
                             }
