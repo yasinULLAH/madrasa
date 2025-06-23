@@ -644,12 +644,28 @@
             text-align: center;
             page-break-inside: avoid;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            background: url(bgc.png);
+            background-image: url(bgc.png);
             background-repeat: no-repeat;
-            background-size: 102% 108%;
+            background-size: 102% 106%;
             background-position: center;
             background-origin: border-box;
             background-clip: padding-box;
+            position: relative;
+        }
+
+        .certificate-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url(logo2.png);
+            background-size: 63%;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.1;
+            pointer-events: none;
         }
 
         .certificate-container h2 {
@@ -815,6 +831,10 @@
         .certificate-wrapper {
             position: relative;
             padding-top: 20px;
+        }
+
+        .certificate-container b {
+            text-decoration: underline;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -5492,6 +5512,41 @@
                 showNotification('Error loading settings.', 'error');
             }
         }
+        async function populateAttendanceSections(classDropdownId, sectionDropdownId) {
+            const classSelect = document.getElementById(classDropdownId);
+            const sectionSelect = document.getElementById(sectionDropdownId);
+            if (!classSelect || !sectionSelect) return;
+
+            const classId = parseInt(classSelect.value);
+            sectionSelect.innerHTML = ''; // Clear previous options
+
+            // Add a default or "All" option if the parent dropdown supports it
+            if (classSelect.querySelector('option[value="all"]')) {
+                sectionSelect.innerHTML = '<option value="all">All Sections</option>';
+            } else {
+                sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            }
+
+            if (isNaN(classId)) {
+                return; // No class selected, so do nothing more
+            }
+
+            try {
+                const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
+                if (sections.length === 0) {
+                    sectionSelect.innerHTML = '<option value="">No Sections Found</option>';
+                } else {
+                    sections.forEach(section => {
+                        const option = document.createElement('option');
+                        option.value = section.id;
+                        option.textContent = section.name;
+                        sectionSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error(`Error populating sections for dropdown ${sectionDropdownId}:`, error);
+            }
+        }
         async function initializeApp() {
             console.log('Initializing application...');
             await loadSettings();
@@ -9990,13 +10045,37 @@
                 'settings_language': { selector: 'label[for="system-language"]', en: 'Language', ur: 'زبان' },
             };
             const rtlCss = `
+    /* --- Base Direction and Font Override --- */
     body.rtl-mode { 
         direction: rtl; 
-        font-family: Calibri, 'Noto Nastaliq Urdu', Arial, sans-serif; 
     }
-    body:not(.rtl-mode) {
+    
+    /* FIX 1: Force Calibri font on ALL elements, including form inputs, when in RTL mode. */
+    body.rtl-mode,
+    body.rtl-mode *,
+    body.rtl-mode input, 
+    body.rtl-mode select, 
+    body.rtl-mode textarea, 
+    body.rtl-mode button,
+    body.rtl-mode .form-control {
+        font-family: Calibri, 'Noto Nastaliq Urdu', sans-serif !important;
+    }
+    
+    /* Ensure default font for English mode */
+    body:not(.rtl-mode),
+    body:not(.rtl-mode) * {
         font-family: Arial, sans-serif;
     }
+
+    /* FIX 2: Force RTL direction on form controls to override the original LTR rule. */
+    body.rtl-mode .form-control,
+    body.rtl-mode input,
+    body.rtl-mode select,
+    body.rtl-mode textarea {
+        direction: rtl !important;
+    }
+
+    /* --- Existing Layout Adjustments --- */
     body.rtl-mode .sidebar { left: auto; right: 0; }
     body.rtl-mode .sidebar-menu li { padding: 10px 20px; text-align: right;}
     body.rtl-mode .sidebar-menu i { margin-right: 0; margin-left: 10px; }
@@ -10004,7 +10083,6 @@
     body.rtl-mode .header h1, body.rtl-mode h2, body.rtl-mode .form-title, body.rtl-mode .card-title, body.rtl-mode .profile-details { text-align: right; }
     body.rtl-mode .table th, body.rtl-mode .table td { text-align: right; }
     body.rtl-mode .form-label { text-align: right; display: block; }
-    body.rtl-mode input, body.rtl-mode select, body.rtl-mode textarea { direction: rtl; text-align: right; }
     body.rtl-mode select { background-position: left .75rem center; }
     body.rtl-mode .btn-danger[style*="margin-left"] { margin-left: 0 !important; margin-right: 10px; }
     body.rtl-mode .menu-toggle { left: auto; right: 15px; }
@@ -10023,6 +10101,7 @@
         body.rtl-mode .sidebar.active { transform: translateX(0); }
     }
 `;
+
             function injectFonts() {
                 const fontLink = document.createElement('link');
                 fontLink.href = 'https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap';
