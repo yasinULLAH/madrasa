@@ -714,19 +714,21 @@
             padding-top: 10px;
         }
 
-.id-card-photo-container {
-    width: 85px;
-    height: 105px; /* Give it a fixed height */
-    text-align: center;
-    cursor: pointer;
-}
-.id-card-photo {
-    width: 80px;
-    height: 100px;
-    border: 2px solid #2c3e50;
-    object-fit: contain;
-    background-color: #f0f0f0;
-}
+        .id-card-photo-container {
+            width: 85px;
+            height: 105px;
+            /* Give it a fixed height */
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .id-card-photo {
+            width: 80px;
+            height: 100px;
+            border: 2px solid #2c3e50;
+            object-fit: contain;
+            background-color: #f0f0f0;
+        }
 
         .id-card-details {
             flex: 1;
@@ -747,29 +749,33 @@
             margin: 4px 0;
         }
 
-.id-card-qr-code {
-    width: 80px;
-    height: 80px;
-    margin: 6px auto 0 auto;
-    display: flex; /* This is new */
-    justify-content: center; /* This is new */
-    align-items: center; /* This is new */
-}
-.card-export-btn-back {
-    position: absolute;
-    top: -5px;
-    right: 36px;
-    z-index: 10;
-    background-color: #27ae60;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    font-size: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
+        .id-card-qr-code {
+            width: 80px;
+            height: 80px;
+            margin: 6px auto 0 auto;
+            display: flex;
+            /* This is new */
+            justify-content: center;
+            /* This is new */
+            align-items: center;
+            /* This is new */
+        }
+
+        .card-export-btn-back {
+            position: absolute;
+            top: -5px;
+            right: 36px;
+            z-index: 10;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
 
         .certificate-wrapper {
             position: relative;
@@ -3063,76 +3069,82 @@
                 </div>
             </div>
         </div>
-<div class="section-view" id="id-cards-view">
-    <h2>شناختی کارڈ اور سرٹیفکیٹ</h2>
-    <div class="tabs">
-        <div class="tab active" data-tab="id-card-generator">شناختی کارڈ جنریٹر</div>
-        <div class="tab" data-tab="certificate-generator">سرٹیفکیٹ جنریٹر</div>
-    </div>
-
-    <!-- ID Card Generator Tab -->
-    <div class="tab-content active" id="id-card-generator">
-        <div class="form-container no-print">
-            <div class="form-title">شناختی کارڈ بنائیں</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">ممبر کی قسم</label>
-                    <select class="form-control" id="id-card-member-type">
-                        <option value="students">طلباء</option>
-                        <option value="teachers">اساتذہ</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">کلاس</label>
-                    <select class="form-control" id="id-card-class-filter"></select>
-                </div>
-                 <div class="form-group">
-                    <label class="form-label">سیکشن</label>
-                    <select class="form-control" id="id-card-section-filter"></select>
-                </div>
+        <div class="section-view" id="id-cards-view">
+            <h2>شناختی کارڈ اور سرٹیفکیٹ</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="id-card-generator">شناختی کارڈ جنریٹر</div>
+                <div class="tab" data-tab="certificate-generator">سرٹیفکیٹ جنریٹر</div>
             </div>
-            <div class="form-row">
-                <button class="btn btn-primary" id="generate-id-cards-btn">کارڈز بنائیں</button>
-                <button class="btn btn-success" onclick="window.print()" style="margin-right:10px;">پرنٹ کریں</button>
-                <button class="btn btn-info" id="bulk-export-zip-btn" style="margin-right:10px;">سب کو ZIP میں ایکسپورٹ کریں</button>
+
+            <!-- ID Card Generator Tab -->
+            <div class="tab-content active" id="id-card-generator">
+                <div class="form-container no-print">
+                    <div class="form-title">شناختی کارڈ بنائیں</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">ممبر کی قسم</label>
+                            <select class="form-control" id="id-card-member-type">
+                                <option value="students">طلباء</option>
+                                <option value="teachers">اساتذہ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">کلاس</label>
+                            <select class="form-control" id="id-card-class-filter"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">سیکشن</label>
+                            <select class="form-control" id="id-card-section-filter"></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <button class="btn btn-primary" id="generate-id-cards-btn">کارڈز بنائیں</button>
+                        <button class="btn btn-success" onclick="window.print()" style="margin-right:10px;">پرنٹ
+                            کریں</button>
+                        <button class="btn btn-info" id="bulk-export-zip-btn" style="margin-right:10px;">سب کو ZIP میں
+                            ایکسپورٹ کریں</button>
+                    </div>
+                </div>
+                <div id="id-card-output" class="dashboard-cards"
+                    style="background: #e9ecef; padding: 20px; justify-content: center;"></div>
+            </div>
+
+            <!-- Certificate Generator Tab -->
+            <div class="tab-content" id="certificate-generator">
+                <div class="form-container no-print">
+                    <div class="form-title">سرٹیفکیٹ بنائیں</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">سرٹیفکیٹ کی قسم</label>
+                            <select class="form-control" id="certificate-type">
+                                <option value="promotion">ترقی سرٹیفکیٹ</option>
+                                <option value="leaving">اسکول چھوڑنے کا سرٹیفکیٹ</option>
+                                <option value="character">کردار کا سرٹیفکیٹ</option>
+                                <option value="achievement">کامیابی کا سرٹیفکیٹ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">طالب علم منتخب کریں</label>
+                            <select class="form-control" id="certificate-student-filter"></select>
+                        </div>
+                    </div>
+                    <div class="form-row" id="achievement-details-row" style="display:none;">
+                        <div class="form-group">
+                            <label class="form-label">کامیابی کی تفصیل</label>
+                            <input type="text" id="achievement-description" class="form-control"
+                                placeholder="مثال: تقریری مقابلے میں پہلی پوزیشن">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <button class="btn btn-primary" id="generate-certificate-btn">سرٹیفکیٹ بنائیں</button>
+                        <button class="btn btn-success" onclick="window.print()" style="margin-right:10px;">پرنٹ
+                            کریں</button>
+                    </div>
+                </div>
+                <div id="certificate-output"
+                    style="background: #e9ecef; padding: 20px; display:flex; justify-content: center;"></div>
             </div>
         </div>
-        <div id="id-card-output" class="dashboard-cards" style="background: #e9ecef; padding: 20px; justify-content: center;"></div>
-    </div>
-
-    <!-- Certificate Generator Tab -->
-    <div class="tab-content" id="certificate-generator">
-        <div class="form-container no-print">
-            <div class="form-title">سرٹیفکیٹ بنائیں</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">سرٹیفکیٹ کی قسم</label>
-                    <select class="form-control" id="certificate-type">
-                        <option value="promotion">ترقی سرٹیفکیٹ</option>
-                        <option value="leaving">اسکول چھوڑنے کا سرٹیفکیٹ</option>
-                        <option value="character">کردار کا سرٹیفکیٹ</option>
-                        <option value="achievement">کامیابی کا سرٹیفکیٹ</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">طالب علم منتخب کریں</label>
-                    <select class="form-control" id="certificate-student-filter"></select>
-                </div>
-            </div>
-             <div class="form-row" id="achievement-details-row" style="display:none;">
-                <div class="form-group">
-                    <label class="form-label">کامیابی کی تفصیل</label>
-                    <input type="text" id="achievement-description" class="form-control" placeholder="مثال: تقریری مقابلے میں پہلی پوزیشن">
-                </div>
-            </div>
-            <div class="form-row">
-                <button class="btn btn-primary" id="generate-certificate-btn">سرٹیفکیٹ بنائیں</button>
-                <button class="btn btn-success" onclick="window.print()" style="margin-right:10px;">پرنٹ کریں</button>
-            </div>
-        </div>
-        <div id="certificate-output" style="background: #e9ecef; padding: 20px; display:flex; justify-content: center;"></div>
-    </div>
-</div>
     </div>
     <script>
         let db;
@@ -9854,8 +9866,8 @@
             document.getElementById('generate-certificate-btn').addEventListener('click', generateCertificate);
         }
 
-  
-async function generateCertificate() {
+
+        async function generateCertificate() {
             showLoading();
             const certType = document.getElementById('certificate-type').value;
             const studentId = parseInt(document.getElementById('certificate-student-filter').value);
@@ -9916,136 +9928,136 @@ async function generateCertificate() {
             hideLoading();
         }
 
-async function exportElementAsPNG(elementId, filename) {
-    const element = document.getElementById(elementId);
-    if (!element) return;
-    showLoading();
-    try {
-        const canvas = await html2canvas(element, { scale: 3, useCORS: true, backgroundColor: null });
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    } catch(err) {
-        console.error("PNG Export failed:", err);
-        showNotification("PNG ایکسپورٹ میں خرابی ہوئی۔", "error");
-    } finally {
-        hideLoading();
-    }
-}
-
-function generateQrCode(elementId, text) {
-    const el = document.getElementById(elementId);
-    if(el) {
-        new QRCode(el, {
-            text: text,
-            width: 80,
-            height: 80,
-            correctLevel: QRCode.CorrectLevel.H
-        });
-    }
-}
-
-async function handleImageUpload(event, memberId, memberType) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    showLoading();
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const b64 = e.target.result;
-        
-        // Update image on card immediately
-        const imgElement = document.getElementById(`photo-${memberType}-${memberId}`);
-        const qrContainer = document.getElementById(`qr-container-${memberId}`);
-
-        imgElement.src = b64;
-        imgElement.style.display = 'block';
-        if (qrContainer) qrContainer.style.display = 'none';
-
-        // Save to database
-        const storeName = memberType === 'students' ? STORES.STUDENTS : STORES.TEACHERS;
-        await updateInStore(storeName, memberId, { photo: b64 });
-        
-        hideLoading();
-        showNotification("تصویر کامیابی سے اپڈیٹ ہو گئی۔", "success");
-    };
-    reader.readAsDataURL(file);
-}
-
-// ---- Main functions for the view ----
-async function initializeIdCardsView() {
-    // Populate dropdowns
-    const classDropdown = document.getElementById('id-card-class-filter');
-    const studentDropdown = document.getElementById('certificate-student-filter');
-    classDropdown.innerHTML = '<option value="">تمام کلاسز</option>';
-    studentDropdown.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
-
-    const classes = await getAllFromStore(STORES.CLASSES);
-    const students = await getAllFromStore(STORES.STUDENTS);
-
-    classes.forEach(c => classDropdown.innerHTML += `<option value="${c.id}">${c.name}</option>`);
-    students.sort((a,b) => a.name.localeCompare(b.name, 'ur')).forEach(s => studentDropdown.innerHTML += `<option value="${s.id}">${s.name} (${s.rollNumber})</option>`);
-
-    document.getElementById('id-card-class-filter').addEventListener('change', async () => {
-        const classId = parseInt(document.getElementById('id-card-class-filter').value);
-        const sectionDropdown = document.getElementById('id-card-section-filter');
-        sectionDropdown.innerHTML = '<option value="">تمام سیکشنز</option>';
-        if(classId) {
-            const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
-            sections.forEach(s => sectionDropdown.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+        async function exportElementAsPNG(elementId, filename) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            showLoading();
+            try {
+                const canvas = await html2canvas(element, { scale: 3, useCORS: true, backgroundColor: null });
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error("PNG Export failed:", err);
+                showNotification("PNG ایکسپورٹ میں خرابی ہوئی۔", "error");
+            } finally {
+                hideLoading();
+            }
         }
-    });
 
-    document.getElementById('certificate-type').addEventListener('change', (e) => {
-        document.getElementById('achievement-details-row').style.display = (e.target.value === 'achievement') ? 'flex' : 'none';
-    });
+        function generateQrCode(elementId, text) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                new QRCode(el, {
+                    text: text,
+                    width: 80,
+                    height: 80,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        }
 
-    document.getElementById('generate-id-cards-btn').addEventListener('click', generateIdCards);
-    document.getElementById('generate-certificate-btn').addEventListener('click', generateCertificate);
-    document.getElementById('bulk-export-zip-btn').addEventListener('click', exportAllCardsAsZip);
-}
+        async function handleImageUpload(event, memberId, memberType) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-async function generateIdCards() {
-    showLoading();
-    const memberType = document.getElementById('id-card-member-type').value;
-    const classId = parseInt(document.getElementById('id-card-class-filter').value);
-    const sectionId = parseInt(document.getElementById('id-card-section-filter').value);
-    const outputDiv = document.getElementById('id-card-output');
-    outputDiv.innerHTML = '';
+            showLoading();
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const b64 = e.target.result;
 
-    const storeName = memberType === 'students' ? STORES.STUDENTS : STORES.TEACHERS;
-    let members = await getAllFromStore(storeName);
+                // Update image on card immediately
+                const imgElement = document.getElementById(`photo-${memberType}-${memberId}`);
+                const qrContainer = document.getElementById(`qr-container-${memberId}`);
 
-    if (memberType === 'students') {
-        if (classId) members = members.filter(s => s.classId === classId);
-        if (sectionId) members = members.filter(s => s.sectionId === sectionId);
-    }
-    
-    if (members.length === 0) {
-        outputDiv.innerHTML = '<p>کوئی ریکارڈ نہیں ملا۔</p>';
-        hideLoading();
-        return;
-    }
+                imgElement.src = b64;
+                imgElement.style.display = 'block';
+                if (qrContainer) qrContainer.style.display = 'none';
 
-    const settings = await getFromStore(STORES.SETTINGS, 'general');
-    const schoolName = settings?.schoolName || "Deeni Madrasa";
-    const schoolAddress = settings?.schoolAddress || "Address not set";
-    const schoolPhone = settings?.schoolPhone || "Phone not set";
-    const schoolWebsite = settings?.schoolWebsite || "Website not set"; // Get website from settings
-    const backSideQRs = [];
+                // Save to database
+                const storeName = memberType === 'students' ? STORES.STUDENTS : STORES.TEACHERS;
+                await updateInStore(storeName, memberId, { photo: b64 });
 
-    for (const member of members) {
-        const memberId = member.id;
-        const memberIdentifier = member.rollNumber || member.employeeId;
-        const className = member.classId ? (await getFromStore(STORES.CLASSES, member.classId))?.name : '';
+                hideLoading();
+                showNotification("تصویر کامیابی سے اپڈیٹ ہو گئی۔", "success");
+            };
+            reader.readAsDataURL(file);
+        }
 
-        const dbPhoto = member.photo;
-        const localPhotoPath = `images/${memberIdentifier}.png`;
-        const photoSrc = dbPhoto || localPhotoPath;
-        const qrText = `ID: ${memberIdentifier}\nName: ${member.name}`;
+        // ---- Main functions for the view ----
+        async function initializeIdCardsView() {
+            // Populate dropdowns
+            const classDropdown = document.getElementById('id-card-class-filter');
+            const studentDropdown = document.getElementById('certificate-student-filter');
+            classDropdown.innerHTML = '<option value="">تمام کلاسز</option>';
+            studentDropdown.innerHTML = '<option value="">طالب علم منتخب کریں</option>';
 
-        const cardHTML = `
+            const classes = await getAllFromStore(STORES.CLASSES);
+            const students = await getAllFromStore(STORES.STUDENTS);
+
+            classes.forEach(c => classDropdown.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+            students.sort((a, b) => a.name.localeCompare(b.name, 'ur')).forEach(s => studentDropdown.innerHTML += `<option value="${s.id}">${s.name} (${s.rollNumber})</option>`);
+
+            document.getElementById('id-card-class-filter').addEventListener('change', async () => {
+                const classId = parseInt(document.getElementById('id-card-class-filter').value);
+                const sectionDropdown = document.getElementById('id-card-section-filter');
+                sectionDropdown.innerHTML = '<option value="">تمام سیکشنز</option>';
+                if (classId) {
+                    const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
+                    sections.forEach(s => sectionDropdown.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+                }
+            });
+
+            document.getElementById('certificate-type').addEventListener('change', (e) => {
+                document.getElementById('achievement-details-row').style.display = (e.target.value === 'achievement') ? 'flex' : 'none';
+            });
+
+            document.getElementById('generate-id-cards-btn').addEventListener('click', generateIdCards);
+            document.getElementById('generate-certificate-btn').addEventListener('click', generateCertificate);
+            document.getElementById('bulk-export-zip-btn').addEventListener('click', exportAllCardsAsZip);
+        }
+
+        async function generateIdCards() {
+            showLoading();
+            const memberType = document.getElementById('id-card-member-type').value;
+            const classId = parseInt(document.getElementById('id-card-class-filter').value);
+            const sectionId = parseInt(document.getElementById('id-card-section-filter').value);
+            const outputDiv = document.getElementById('id-card-output');
+            outputDiv.innerHTML = '';
+
+            const storeName = memberType === 'students' ? STORES.STUDENTS : STORES.TEACHERS;
+            let members = await getAllFromStore(storeName);
+
+            if (memberType === 'students') {
+                if (classId) members = members.filter(s => s.classId === classId);
+                if (sectionId) members = members.filter(s => s.sectionId === sectionId);
+            }
+
+            if (members.length === 0) {
+                outputDiv.innerHTML = '<p>کوئی ریکارڈ نہیں ملا۔</p>';
+                hideLoading();
+                return;
+            }
+
+            const settings = await getFromStore(STORES.SETTINGS, 'general');
+            const schoolName = settings?.schoolName || "Deeni Madrasa";
+            const schoolAddress = settings?.schoolAddress || "Address not set";
+            const schoolPhone = settings?.schoolPhone || "Phone not set";
+            const schoolWebsite = settings?.schoolWebsite || "Website not set"; // Get website from settings
+            const backSideQRs = [];
+
+            for (const member of members) {
+                const memberId = member.id;
+                const memberIdentifier = member.rollNumber || member.employeeId;
+                const className = member.classId ? (await getFromStore(STORES.CLASSES, member.classId))?.name : '';
+
+                const dbPhoto = member.photo;
+                const localPhotoPath = `images/${memberIdentifier}.png`;
+                const photoSrc = dbPhoto || localPhotoPath;
+                const qrText = `ID: ${memberIdentifier}\nName: ${member.name}`;
+
+                const cardHTML = `
         <div class="card-wrapper" id="wrapper-${memberType}-${memberId}">
             <button title="Download Front" class="card-export-btn no-print" onclick="exportElementAsPNG('front-${memberType}-${memberId}', 'ID-Card-${memberIdentifier}-Front.png')">F↓</button>
             <button title="Download Back" class="card-export-btn-back no-print" onclick="exportElementAsPNG('back-${memberType}-${memberId}', 'ID-Card-${memberIdentifier}-Back.png')">B↓</button>
@@ -10077,103 +10089,103 @@ async function generateIdCards() {
                 <div id="qr-back-${memberId}" class="id-card-qr-code"></div>
             </div>
         </div>`;
-        outputDiv.innerHTML += cardHTML;
-        backSideQRs.push({ id: `qr-back-${memberId}`, text: schoolWebsite });
-    }
-    
-    // Generate QR codes for the back of the cards after they are in the DOM
-    backSideQRs.forEach(item => {
-        generateQrCode(item.id, item.text);
-    });
+                outputDiv.innerHTML += cardHTML;
+                backSideQRs.push({ id: `qr-back-${memberId}`, text: schoolWebsite });
+            }
 
-    hideLoading();
-}
-async function exportAllCardsAsZip() {
-    showLoading();
-    const zip = new JSZip();
-    const cardWrappers = document.querySelectorAll('#id-card-output .card-wrapper');
+            // Generate QR codes for the back of the cards after they are in the DOM
+            backSideQRs.forEach(item => {
+                generateQrCode(item.id, item.text);
+            });
 
-    if (cardWrappers.length === 0) {
-        showNotification("ایکسپورٹ کے لیے کوئی کارڈ نہیں ہے۔", "info");
-        hideLoading();
-        return;
-    }
+            hideLoading();
+        }
+        async function exportAllCardsAsZip() {
+            showLoading();
+            const zip = new JSZip();
+            const cardWrappers = document.querySelectorAll('#id-card-output .card-wrapper');
 
-    try {
-        const promises = Array.from(cardWrappers).map(async (wrapper) => {
-            const frontEl = wrapper.querySelector('.id-card-front');
-            const backEl = wrapper.querySelector('.id-card-back');
-            const [_, memberType, identifier] = frontEl.id.split('-');
-            const member = await getFromStore(memberType === 'students' ? STORES.STUDENTS : STORES.TEACHERS, parseInt(identifier));
-            const fileNameBase = `${member.rollNumber || member.employeeId}_${member.name.replace(/\s/g, '_')}`;
+            if (cardWrappers.length === 0) {
+                showNotification("ایکسپورٹ کے لیے کوئی کارڈ نہیں ہے۔", "info");
+                hideLoading();
+                return;
+            }
 
-            const frontCanvas = await html2canvas(frontEl, { scale: 3, useCORS: true, backgroundColor: null });
-            const backCanvas = await html2canvas(backEl, { scale: 3, useCORS: true, backgroundColor: null });
+            try {
+                const promises = Array.from(cardWrappers).map(async (wrapper) => {
+                    const frontEl = wrapper.querySelector('.id-card-front');
+                    const backEl = wrapper.querySelector('.id-card-back');
+                    const [_, memberType, identifier] = frontEl.id.split('-');
+                    const member = await getFromStore(memberType === 'students' ? STORES.STUDENTS : STORES.TEACHERS, parseInt(identifier));
+                    const fileNameBase = `${member.rollNumber || member.employeeId}_${member.name.replace(/\s/g, '_')}`;
 
-            zip.file(`${fileNameBase}_Front.png`, await new Promise(r => frontCanvas.toBlob(r, 'image/png')));
-            zip.file(`${fileNameBase}_Back.png`, await new Promise(r => backCanvas.toBlob(r, 'image/png')));
-        });
+                    const frontCanvas = await html2canvas(frontEl, { scale: 3, useCORS: true, backgroundColor: null });
+                    const backCanvas = await html2canvas(backEl, { scale: 3, useCORS: true, backgroundColor: null });
 
-        await Promise.all(promises);
+                    zip.file(`${fileNameBase}_Front.png`, await new Promise(r => frontCanvas.toBlob(r, 'image/png')));
+                    zip.file(`${fileNameBase}_Back.png`, await new Promise(r => backCanvas.toBlob(r, 'image/png')));
+                });
 
-        const zipBlob = await zip.generateAsync({ type: "blob" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(zipBlob);
-        link.download = `ID_Cards_${new Date().toISOString().slice(0,10)}.zip`;
-        link.click();
-        URL.revokeObjectURL(link.href);
+                await Promise.all(promises);
 
-    } catch(err) {
-        console.error("ZIP Export failed:", err);
-        showNotification("ZIP ایکسپورٹ میں خرابی ہوئی۔", "error");
-    } finally {
-        hideLoading();
-    }
-}
-async function generateCertificate() {
-    showLoading();
-    const certType = document.getElementById('certificate-type').value;
-    const studentId = parseInt(document.getElementById('certificate-student-filter').value);
-    const outputDiv = document.getElementById('certificate-output');
-    outputDiv.innerHTML = '';
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(zipBlob);
+                link.download = `ID_Cards_${new Date().toISOString().slice(0, 10)}.zip`;
+                link.click();
+                URL.revokeObjectURL(link.href);
 
-    if (!studentId) {
-        showNotification('براہ کرم ایک طالب علم منتخب کریں۔', 'error');
-        hideLoading();
-        return;
-    }
+            } catch (err) {
+                console.error("ZIP Export failed:", err);
+                showNotification("ZIP ایکسپورٹ میں خرابی ہوئی۔", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+        async function generateCertificate() {
+            showLoading();
+            const certType = document.getElementById('certificate-type').value;
+            const studentId = parseInt(document.getElementById('certificate-student-filter').value);
+            const outputDiv = document.getElementById('certificate-output');
+            outputDiv.innerHTML = '';
 
-    const student = await getFromStore(STORES.STUDENTS, studentId);
-    const settings = await getFromStore(STORES.SETTINGS, 'general');
-    const schoolName = settings?.schoolName || "Deeni Madrasa";
-    const principalName = settings?.principalName || "پرنسپل";
-    const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : '';
-    const today = new Date().toLocaleDateString('ur-PK-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' });
+            if (!studentId) {
+                showNotification('براہ کرم ایک طالب علم منتخب کریں۔', 'error');
+                hideLoading();
+                return;
+            }
 
-    let title = "";
-    let body = "";
+            const student = await getFromStore(STORES.STUDENTS, studentId);
+            const settings = await getFromStore(STORES.SETTINGS, 'general');
+            const schoolName = settings?.schoolName || "Deeni Madrasa";
+            const principalName = settings?.principalName || "پرنسپل";
+            const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : '';
+            const today = new Date().toLocaleDateString('ur-PK-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    switch(certType) {
-        case 'promotion':
-            title = "ترقی سرٹیفکیٹ";
-            body = `<p>تصدیق کی جاتی ہے کہ طالب علم/طالبہ <b>${student.name}</b> ولد/بنت <b>${student.fatherName}</b> نے کامیابی سے کلاس <b>${className}</b> مکمل کر لی ہے اور انہیں اگلی کلاس میں ترقی دی جاتی ہے۔ ہم ان کے مستقبل کے لیے نیک خواہشات کا اظہار کرتے ہیں۔</p>`;
-            break;
-        case 'leaving':
-            title = "اسکول چھوڑنے کا سرٹیفکیٹ";
-            body = `<p>تصدیق کی جاتی ہے کہ طالب علم/طالبہ <b>${student.name}</b> ولد/بنت <b>${student.fatherName}</b>، رول نمبر <b>${student.rollNumber}</b>، ہمارے ادارے میں زیر تعلیم رہے ہیں۔ انہیں یہ سرٹیفکیٹ جاری کیا جا رہا ہے۔ ہم ان کے روشن مستقبل کے لیے دعاگو ہیں۔</p>`;
-            break;
-        case 'character':
-            title = "کردار کا سرٹیفکیٹ";
-             body = `<p>تصدیق کی جاتی ہے کہ طالب علم/طالبہ <b>${student.name}</b> ولد/بنت <b>${student.fatherName}</b> ہمارے ادارے میں ایک اچھے کردار اور بہترین اخلاق کے حامل طالب علم کے طور پر جانے جاتے ہیں۔ ان کا رویہ اساتذہ اور ساتھی طلباء کے ساتھ ہمیشہ مثبت رہا۔</p>`;
-            break;
-        case 'achievement':
-            title = "کامیابی کا سرٹیفکیٹ";
-            const achievement = document.getElementById('achievement-description').value || 'نمایاں کارکردگی';
-            body = `<p>یہ سرٹیفکیٹ طالب علم/طالبہ <b>${student.name}</b> ولد/بنت <b>${student.fatherName}</b> کو <b>${achievement}</b> پر پیش کیا جا رہا ہے۔ ادارے کو ان کی اس شاندار کامیابی پر فخر ہے۔</p>`;
-            break;
-    }
+            let title = "";
+            let body = "";
 
-    const certificateHTML = `
+            switch (certType) {
+                case 'promotion':
+                    title = "ترقی سرٹیفکیٹ";
+                    body = `<p>تصدیق کی جاتی ہے کہ طالب علم/طالبہ <b>${student.name}</b> ولد/بنت <b>${student.fatherName}</b> نے کامیابی سے کلاس <b>${className}</b> مکمل کر لی ہے اور انہیں اگلی کلاس میں ترقی دی جاتی ہے۔ ہم ان کے مستقبل کے لیے نیک خواہشات کا اظہار کرتے ہیں۔</p>`;
+                    break;
+                case 'leaving':
+                    title = "اسکول چھوڑنے کا سرٹیفکیٹ";
+                    body = `<p>تصدیق کی جاتی ہے کہ طالب علم/طالبہ <b>${student.name}</b> ولد/بنت <b>${student.fatherName}</b>، رول نمبر <b>${student.rollNumber}</b>، ہمارے ادارے میں زیر تعلیم رہے ہیں۔ انہیں یہ سرٹیفکیٹ جاری کیا جا رہا ہے۔ ہم ان کے روشن مستقبل کے لیے دعاگو ہیں۔</p>`;
+                    break;
+                case 'character':
+                    title = "کردار کا سرٹیفکیٹ";
+                    body = `<p>تصدیق کی جاتی ہے کہ طالب علم/طالبہ <b>${student.name}</b> ولد/بنت <b>${student.fatherName}</b> ہمارے ادارے میں ایک اچھے کردار اور بہترین اخلاق کے حامل طالب علم کے طور پر جانے جاتے ہیں۔ ان کا رویہ اساتذہ اور ساتھی طلباء کے ساتھ ہمیشہ مثبت رہا۔</p>`;
+                    break;
+                case 'achievement':
+                    title = "کامیابی کا سرٹیفکیٹ";
+                    const achievement = document.getElementById('achievement-description').value || 'نمایاں کارکردگی';
+                    body = `<p>یہ سرٹیفکیٹ طالب علم/طالبہ <b>${student.name}</b> ولد/بنت <b>${student.fatherName}</b> کو <b>${achievement}</b> پر پیش کیا جا رہا ہے۔ ادارے کو ان کی اس شاندار کامیابی پر فخر ہے۔</p>`;
+                    break;
+            }
+
+            const certificateHTML = `
     <div class="certificate-wrapper" id="cert-wrapper-${student.id}">
         <button title="Download PNG" class="card-export-btn no-print" onclick="exportElementAsPNG('cert-container-${student.id}', 'Certificate-${student.rollNumber}.png')">↓</button>
         <div class="certificate-container" id="cert-container-${student.id}">
@@ -10189,32 +10201,32 @@ async function generateCertificate() {
             </div>
         </div>
     </div>`;
-    outputDiv.innerHTML = certificateHTML;
-    hideLoading();
-}
+            outputDiv.innerHTML = certificateHTML;
+            hideLoading();
+        }
 
-function showQrCode(qrContainerId, text, imgIdToHide) {
-    const imgEl = document.getElementById(imgIdToHide);
-    const qrContainer = document.getElementById(qrContainerId);
+        function showQrCode(qrContainerId, text, imgIdToHide) {
+            const imgEl = document.getElementById(imgIdToHide);
+            const qrContainer = document.getElementById(qrContainerId);
 
-    // Hide the broken image link
-    if (imgEl) {
-        imgEl.style.display = 'none';
-        imgEl.src = ''; // Prevents repeated error triggers
-    }
-    
-    // Display the QR container and generate the code
-    if (qrContainer) {
-        qrContainer.style.display = 'flex'; // Use flex to center
-        qrContainer.innerHTML = ''; // Clear previous QR if any
-        new QRCode(qrContainer, {
-            text: text,
-            width: 80,
-            height: 80,
-            correctLevel: QRCode.CorrectLevel.H
-        });
-    }
-}
+            // Hide the broken image link
+            if (imgEl) {
+                imgEl.style.display = 'none';
+                imgEl.src = ''; // Prevents repeated error triggers
+            }
+
+            // Display the QR container and generate the code
+            if (qrContainer) {
+                qrContainer.style.display = 'flex'; // Use flex to center
+                qrContainer.innerHTML = ''; // Clear previous QR if any
+                new QRCode(qrContainer, {
+                    text: text,
+                    width: 80,
+                    height: 80,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        }
     </script>
 </body>
 
