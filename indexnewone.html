@@ -179,7 +179,7 @@
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 3px 6px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -310,8 +310,8 @@
 
         .modal-content {
             background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
+            margin: 6px auto;
+            padding: 12px;
             border: 1px solid #888;
             width: 80%;
             max-width: 600px;
@@ -844,6 +844,15 @@
 </head>
 
 <body>
+    <!-- Student Details Modal -->
+    <div id="student-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px; max-height: 110vh; overflow-y: auto;">
+            <span class="close" id="modal-close-btn">×</span>
+            <div id="modal-content-area">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
     <div class="loading" id="loading">
         <div class="spinner"></div>
     </div>
@@ -1087,6 +1096,17 @@
                             <div class="form-group">
                                 <label class="form-label">Additional Info</label>
                                 <textarea class="form-control" id="student-notes" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row" id="student-status-container" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label">Student Status</label>
+                                <select class="form-control" id="student-status">
+                                    <option value="active">Active</option>
+                                    <option value="promoted">Promoted Out</option>
+                                    <option value="left">Left School</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-row">
@@ -3269,6 +3289,7 @@
     </div>
     <script>
         let db;
+        let appSettings = {};
         const DB_NAME = 'SchoolMadrasaDB';
         const DB_VERSION = 1;
         const STORES = {
@@ -3936,7 +3957,7 @@
         }
         async function loadDashboardData() {
             try {
-                const totalStudents = await getCount(STORES.STUDENTS);
+                const totalStudents = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active').length;
                 document.getElementById('total-students').textContent = totalStudents;
                 const totalTeachers = await getCount(STORES.TEACHERS);
                 document.getElementById('total-teachers').textContent = totalTeachers;
@@ -4083,6 +4104,24 @@
                 console.error('Error loading recent activities:', error);
                 showNotification('Error loading recent activities.', 'error');
             }
+        }
+        async function loadAndCacheAppSettings() {
+            // Set defaults in case they don't exist in the database yet
+            const defaults = {
+                libraryReturnDays: 14,
+                feeDueDay: 10,
+                feeLateFine: 50,
+                weeklyHoliday: ['Sunday']
+            };
+            appSettings = await getFromStore(STORES.SETTINGS, 'general') || defaults;
+
+            // Ensure our required settings have values
+            for (const key in defaults) {
+                if (appSettings[key] === undefined) {
+                    appSettings[key] = defaults[key];
+                }
+            }
+            console.log("App settings loaded and cached:", appSettings);
         }
         function setupFormHandlers() {
             document.getElementById('student-form').addEventListener('submit', function (e) { e.preventDefault(); addStudent(); });
@@ -4553,21 +4592,21 @@
         }
         async function loadStudentsTable(studentsToLoad = null) {
             try {
-                const students = studentsToLoad === null ? await getAllFromStore(STORES.STUDENTS) : studentsToLoad;
+                const allStudents = studentsToLoad === null ? await getAllFromStore(STORES.STUDENTS) : studentsToLoad;
+                const activeStudents = allStudents.filter(s => !s.status || s.status === 'active');
+
                 const tbody = document.querySelector('#students-table tbody');
-                if (!tbody) {
-                    console.error("Students table body not found!");
-                    return;
-                }
                 tbody.innerHTML = '';
-                if (!students || students.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No students available or no results from filter.</td></tr>';
+                if (activeStudents.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No active students found.</td></tr>';
                     return;
                 }
-                for (const student of students) {
+                for (const student of activeStudents) {
                     const row = document.createElement('tr');
                     const classData = student.classId ? await getFromStore(STORES.CLASSES, student.classId) : null;
                     const sectionData = student.sectionId ? await getFromStore(STORES.SECTIONS, student.sectionId) : null;
+
+                    // --- MODIFICATION: Added "View" button ---
                     row.innerHTML = `
                 <td>${student.rollNumber}</td>
                 <td>${student.name}</td>
@@ -4577,17 +4616,231 @@
                 <td>${student.contact}</td>
                 <td>${formatDate(student.admissionDate)}</td>
                 <td class="no-print">
+                    <button class="btn btn-info btn-sm" onclick="viewStudentDetails(${student.id})">View</button>
                     <button class="btn btn-primary btn-sm" onclick="editStudent(${student.id})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.id})">Delete</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.STUDENTS}', ${student.id})">Delete</button>
                 </td>
             `;
                     tbody.appendChild(row);
                 }
             } catch (error) {
                 console.error('Error loading students table:', error);
-                const tbody = document.querySelector('#students-table tbody');
-                if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Error loading student list.</td></tr>';
             }
+        }
+
+
+        // Function to export an HTML table to CSV format
+        function exportTableToCSV(tableId, filename) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+
+            let csv = [];
+            const rows = table.querySelectorAll("tr");
+
+            for (const row of rows) {
+                const cols = row.querySelectorAll("td, th");
+                const rowData = [];
+                for (const col of cols) {
+                    // Escape commas and wrap in quotes
+                    let data = col.innerText.replace(/"/g, '""');
+                    if (data.includes(',')) {
+                        data = `"${data}"`;
+                    }
+                    rowData.push(data);
+                }
+                csv.push(rowData.join(","));
+            }
+
+            const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+
+        // Main function to orchestrate the modal view
+        async function viewStudentDetails(studentId) {
+            showLoading();
+            const modal = document.getElementById('student-details-modal');
+            const contentArea = document.getElementById('modal-content-area');
+            contentArea.innerHTML = ''; // Clear previous content
+
+            try {
+                const student = await getFromStore(STORES.STUDENTS, studentId);
+                if (!student) {
+                    showNotification('Student not found.', 'error');
+                    return;
+                }
+
+                const profileHTML = await generateProfileSectionHTML(student);
+                const feeHTML = await generateFeeSectionHTML(student);
+                const attendanceHTML = await generateAttendanceSectionHTML(studentId);
+                const examHTML = await generateExamSectionHTML(studentId);
+
+                contentArea.innerHTML = profileHTML + feeHTML + attendanceHTML + examHTML;
+                modal.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error viewing student details:', error);
+                showNotification('Could not load student details.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Helper to generate the top profile section
+        async function generateProfileSectionHTML(student) {
+            const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+            const sectionName = student.sectionId ? (await getFromStore(STORES.SECTIONS, student.sectionId))?.name : 'N/A';
+            return `
+        <div class="profile-card">
+            <div class="profile-image">
+                <img src="${student.photo || 'logo2.png'}" alt="Student Photo">
+            </div>
+            <div class="profile-details">
+                <div class="profile-name">${student.name}</div>
+                <div class="profile-info"><span>Roll No:</span> ${student.rollNumber}</div>
+                <div class="profile-info"><span>Class:</span> ${className} (${sectionName})</div>
+                <div class="profile-info"><span>Father:</span> ${student.fatherName}</div>
+                <div class="profile-info"><span>Contact:</span> ${student.contact}</div>
+                <div class="profile-info"><span>Status:</span> <span style="font-weight:bold; color:${student.status !== 'active' ? '#e74c3c' : '#2ecc71'}; text-transform: capitalize;">${student.status || 'Active'}</span></div>
+            </div>
+        </div>
+    `;
+        }
+
+        // Helper to generate the complex Fee section with dues calculation
+        async function generateFeeSectionHTML(student) {
+            let html = `<div class="form-container" style="margin-top:20px;">
+                    <div class="form-title">Fee History</div>`;
+
+            const paidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
+            const paidMap = new Map(paidRecords.map(rec => `${rec.month}-${rec.year}`));
+
+            const dueRecords = [];
+            let totalPaid = 0;
+            let totalDue = 0;
+
+            const admissionDate = new Date(student.admissionDate);
+            admissionDate.setDate(1); // Start from the beginning of the admission month
+            const currentDate = new Date();
+            currentDate.setDate(1);
+
+            for (let d = new Date(admissionDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+                const month = d.toLocaleString('en-US', { month: 'long' });
+                const year = d.getFullYear();
+
+                if (!paidMap.has(`${month}-${year}`)) {
+                    const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                    const dueAmount = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                    if (dueAmount > 0) {
+                        dueRecords.push({ month, year, amount: dueAmount });
+                        totalDue += dueAmount;
+                    }
+                }
+            }
+
+            // Display Due Fees
+            if (dueRecords.length > 0) {
+                html += `<h4>Due Fees (Total: ${formatCurrency(totalDue)})</h4>
+                 <div class="table-container" style="max-height: 200px; overflow-y: auto;">
+                   <table class="table" id="student-due-fees-table">
+                     <thead><tr><th>Month</th><th>Year</th><th>Amount Due</th></tr></thead><tbody>`;
+                dueRecords.forEach(due => {
+                    html += `<tr><td>${due.month}</td><td>${due.year}</td><td>${formatCurrency(due.amount)}</td></tr>`;
+                });
+                html += `</tbody></table></div>`;
+            }
+
+            // Display Paid Fees
+            html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <h4>Paid Fee History</h4>
+                <button class="btn btn-success btn-sm no-print" onclick="exportTableToCSV('student-paid-fees-table', 'FeeHistory_${student.rollNumber}.csv')">Export Paid</button>
+             </div>
+             <div class="table-container" style="max-height: 200px; overflow-y: auto;">
+               <table class="table" id="student-paid-fees-table">
+                 <thead><tr><th>Receipt</th><th>Month/Year</th><th>Date</th><th>Amount</th><th>Fine</th><th>Discount</th><th>Total</th></tr></thead><tbody>`;
+            if (paidRecords.length > 0) {
+                paidRecords.forEach(rec => {
+                    totalPaid += rec.total;
+                    html += `<tr>
+                <td>${rec.receiptNumber}</td>
+                <td>${rec.month} ${rec.year}</td>
+                <td>${formatDate(rec.date)}</td>
+                <td>${formatCurrency(rec.amount)}</td>
+                <td>${formatCurrency(rec.fine)}</td>
+                <td>${formatCurrency(rec.discount)}</td>
+                <td>${formatCurrency(rec.total)}</td>
+            </tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="7" style="text-align:center;">No paid fee records found.</td></tr>`;
+            }
+            html += `</tbody><tfoot><tr><td colspan="6" style="text-align:right; font-weight:bold;">Total Paid:</td><td>${formatCurrency(totalPaid)}</td></tr></tfoot></table></div></div>`;
+            return html;
+        }
+
+        // Helper to generate the attendance section
+        async function generateAttendanceSectionHTML(studentId) {
+            const records = await getAllFromIndex(STORES.ATTENDANCE, 'studentId', studentId);
+            let html = `<div class="form-container" style="margin-top:20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="form-title">Attendance History</div>
+                        <button class="btn btn-success btn-sm no-print" onclick="exportTableToCSV('student-attendance-table', 'Attendance_${studentId}.csv')">Export</button>
+                    </div>
+                    <div class="table-container" style="max-height: 250px; overflow-y: auto;">
+                      <table class="table" id="student-attendance-table">
+                        <thead><tr><th>Date</th><th>Status</th><th>Late</th><th>Leave</th><th>Notes</th></tr></thead><tbody>`;
+            if (records.length > 0) {
+                records.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(rec => {
+                    html += `<tr>
+                <td>${formatDate(rec.date)}</td>
+                <td style="text-transform: capitalize;">${rec.status}</td>
+                <td>${rec.isLate ? 'Yes' : 'No'}</td>
+                <td>${rec.isLeave ? 'Yes' : 'No'}</td>
+                <td>${rec.notes || '-'}</td>
+            </tr>`;
+                });
+            } else {
+                html += `<tr><td colspan="5" style="text-align:center;">No attendance records found.</td></tr>`;
+            }
+            html += `</tbody></table></div></div>`;
+            return html;
+        }
+
+        // Helper to generate the exam results section
+        async function generateExamSectionHTML(studentId) {
+            const records = await getAllFromIndex(STORES.MARKS, 'studentId', studentId);
+            let html = `<div class="form-container" style="margin-top:20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="form-title">Exam Results</div>
+                        <button class="btn btn-success btn-sm no-print" onclick="exportTableToCSV('student-exams-table', 'Exams_${studentId}.csv')">Export</button>
+                    </div>
+                    <div class="table-container" style="max-height: 250px; overflow-y: auto;">
+                      <table class="table" id="student-exams-table">
+                        <thead><tr><th>Exam</th><th>Subject</th><th>Total</th><th>Obtained</th><th>Grade</th><th>Result</th></tr></thead><tbody>`;
+            if (records.length > 0) {
+                for (const rec of records) {
+                    const exam = await getFromStore(STORES.EXAMS, rec.examId);
+                    const subject = await getFromStore(STORES.SUBJECTS, rec.subjectId);
+                    html += `<tr>
+                <td>${exam ? exam.name : 'N/A'}</td>
+                <td>${subject ? subject.name : 'N/A'}</td>
+                <td>${rec.totalMarks}</td>
+                <td>${rec.obtainedMarks}</td>
+                <td>${rec.grade}</td>
+                <td>${rec.isPassed ? 'Passed' : 'Failed'}</td>
+            </tr>`;
+                }
+            } else {
+                html += `<tr><td colspan="6" style="text-align:center;">No exam records found.</td></tr>`;
+            }
+            html += `</tbody></table></div></div>`;
+            return html;
         }
         async function loadTeachersTable(teachersToLoad = null) {
             try {
@@ -5555,6 +5808,7 @@
         }
         async function initializeApp() {
             console.log('Initializing application...');
+            await loadAndCacheAppSettings();
             await loadSettings();
             await loadDashboardData();
             await loadDropdownData();
@@ -5644,6 +5898,25 @@
                     }
                 }
             });
+        }
+        async function populateSectionsForResults() {
+            const classSelect = document.getElementById('result-class');
+            const sectionSelect = document.getElementById('result-section');
+            if (!sectionSelect) return; // Exit if the element isn't there
+
+            sectionSelect.innerHTML = '<option value="">Select Section</option>'; // Clear previous options
+
+            const classId = parseInt(classSelect.value);
+            if (isNaN(classId)) return;
+
+            try {
+                const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
+                sections.forEach(section => {
+                    sectionSelect.innerHTML += `<option value="${section.id}">${section.name}</option>`;
+                });
+            } catch (error) {
+                console.error('Error populating sections for results tab:', error);
+            }
         }
         async function showView(viewName) {
             document.querySelectorAll('.section-view').forEach(view => {
@@ -5749,6 +6022,10 @@
                         loadClassDropdowns();
                         loadSubjectDropdowns();
                         loadExamDropdowns();
+
+                        // Attach listeners here to ensure they are active when the view is visible
+                        document.getElementById('marks-class').addEventListener('change', populateSectionsForMarksEntry);
+                        document.getElementById('result-class').addEventListener('change', populateSectionsForResults);
                         break;
                     case 'fees':
                         loadFeeStructureTable();
@@ -5817,44 +6094,29 @@
             showLoading();
             const form = document.getElementById('student-form');
             const editId = form.dataset.editId ? parseInt(form.dataset.editId) : null;
+            const statusContainer = document.getElementById('student-status-container');
             try {
-                const studentName = document.getElementById('student-name').value;
-                const fatherName = document.getElementById('student-father').value;
-                const studentClass = document.getElementById('student-class').value;
-                const studentAdmissionDate = document.getElementById('student-admission-date').value;
-                if (!studentName || !fatherName || !studentClass || !studentAdmissionDate) {
-                    showNotification('Please fill in all required fields. (*)', 'error');
-                    hideLoading();
-                    return;
-                }
                 const studentData = {
-                    name: studentName,
-                    fatherName: fatherName,
+                    name: document.getElementById('student-name').value,
+                    fatherName: document.getElementById('student-father').value,
                     dob: document.getElementById('student-dob').value,
                     gender: document.getElementById('student-gender').value,
-                    classId: parseInt(studentClass),
+                    classId: parseInt(document.getElementById('student-class').value),
                     sectionId: parseInt(document.getElementById('student-section').value),
                     contact: document.getElementById('student-contact').value,
                     email: document.getElementById('student-email').value,
                     guardian: document.getElementById('student-guardian').value,
                     guardianContact: document.getElementById('student-guardian-contact').value,
                     address: document.getElementById('student-address').value,
-                    admissionDate: studentAdmissionDate,
+                    admissionDate: document.getElementById('student-admission-date').value,
                     feeCategory: document.getElementById('student-fee-category').value,
                     monthlyFee: parseFloat(document.getElementById('student-monthly-fee').value),
                     notes: document.getElementById('student-notes').value,
-                    createdAt: new Date().toISOString()
+                    // --- MODIFICATION: Set status based on add or edit mode ---
+                    status: editId ? document.getElementById('student-status').value : 'active'
                 };
-                if (studentData.classId) {
-                    const classInfo = await getFromStore(STORES.CLASSES, studentData.classId);
-                    studentData.className = classInfo ? classInfo.name : 'N/A';
-                }
-                if (studentData.sectionId) {
-                    const sectionInfo = await getFromStore(STORES.SECTIONS, studentData.sectionId);
-                    studentData.sectionName = sectionInfo ? sectionInfo.name : 'N/A';
-                }
+
                 if (editId) {
-                    studentData.updatedAt = new Date().toISOString();
                     await updateInStore(STORES.STUDENTS, editId, studentData);
                     showNotification('Student record updated successfully.', 'success');
                 } else {
@@ -5863,18 +6125,56 @@
                     await addToStore(STORES.STUDENTS, studentData);
                     showNotification('Student added successfully.', 'success');
                 }
+
                 form.reset();
                 delete form.dataset.editId;
-                const submitButton = form.querySelector('button[type="submit"]');
-                if (submitButton) submitButton.textContent = 'Add Student';
-                const studentListTab = document.querySelector('.tab[data-tab="students-list"]');
-                if (studentListTab && !studentListTab.classList.contains('active')) {
-                    studentListTab.click();
-                }
+                statusContainer.style.display = 'none'; // Hide status on reset
+                form.querySelector('button[type="submit"]').textContent = 'Add Student';
+                document.querySelector('.tab[data-tab="students-list"]').click();
                 await loadStudentsTable();
+
             } catch (error) {
                 console.error('Error saving student:', error);
                 showNotification('Failed to save student.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        async function editStudent(id) {
+            showLoading();
+            try {
+                const student = await getFromStore(STORES.STUDENTS, id);
+                if (!student) return;
+
+                const form = document.getElementById('student-form');
+                form.dataset.editId = id;
+
+                // Show and set the status field
+                document.getElementById('student-status-container').style.display = 'block';
+                document.getElementById('student-status').value = student.status || 'active';
+
+                document.getElementById('student-name').value = student.name;
+                document.getElementById('student-father').value = student.fatherName;
+                document.getElementById('student-dob').value = student.dob;
+                document.getElementById('student-gender').value = student.gender;
+                document.getElementById('student-class').value = student.classId;
+                // After setting class, populate and set section
+                await populateSectionsForStudentForm();
+                document.getElementById('student-section').value = student.sectionId;
+                document.getElementById('student-contact').value = student.contact;
+                document.getElementById('student-email').value = student.email;
+                document.getElementById('student-guardian').value = student.guardian;
+                document.getElementById('student-guardian-contact').value = student.guardianContact;
+                document.getElementById('student-address').value = student.address;
+                document.getElementById('student-admission-date').value = student.admissionDate;
+                document.getElementById('student-fee-category').value = student.feeCategory;
+                document.getElementById('student-monthly-fee').value = student.monthlyFee;
+                document.getElementById('student-notes').value = student.notes;
+
+                document.querySelector('.tab[data-tab="add-student"]').click();
+                form.querySelector('button[type="submit"]').textContent = 'Update Student';
+            } catch (e) {
+                console.error(e);
             } finally {
                 hideLoading();
             }
@@ -5886,7 +6186,43 @@
             }
             return null;
         }
+
+        function calculateLateFee() {
+            const month = parseInt(document.getElementById('fee-month').value);
+            const year = parseInt(document.getElementById('fee-year').value);
+            const paymentDateStr = document.getElementById('fee-payment-date').value;
+
+            if (!month || !year || !paymentDateStr) return;
+
+            // Due date is the 'feeDueDay' of the NEXT month.
+            const dueDate = new Date(year, month, appSettings.feeDueDay);
+            const paymentDate = new Date(paymentDateStr);
+
+            const fineInput = document.getElementById('fee-fine');
+
+            if (paymentDate > dueDate) {
+                fineInput.value = appSettings.feeLateFine || 0;
+                showNotification(`Late fee of ${formatCurrency(appSettings.feeLateFine)} applied.`, 'info');
+            } else {
+                fineInput.value = 0;
+            }
+            // Recalculate the total amount
+            calculateFeeTotal();
+        }
         function setupEventListeners() {
+            document.getElementById('marks-table-container').addEventListener('input', function (e) {
+                if (e.target && e.target.matches('input[name^="marks_"]')) {
+                    calculateMarksRow(e.target);
+                }
+            });
+            document.getElementById('modal-close-btn').addEventListener('click', () => {
+                document.getElementById('student-details-modal').style.display = 'none';
+            });
+            document.getElementById('fee-payment-form').addEventListener('change', (e) => {
+                if (['fee-month', 'fee-year', 'fee-payment-date'].includes(e.target.id)) {
+                    calculateLateFee();
+                }
+            });
             document.querySelector('[data-tab="students-list"]').addEventListener('click', () => loadStudentsTable());
             document.querySelector('[data-tab="teachers-list"]').addEventListener('click', () => loadTeachersTable());
             document.querySelector('[data-tab="staff-list"]').addEventListener('click', () => loadStaffTable());
@@ -6380,6 +6716,77 @@
                 hideLoading();
             }
         }
+        async function populateSectionsForMarksEntry() {
+            const classSelect = document.getElementById('marks-class');
+            const sectionSelect = document.getElementById('marks-section');
+            const subjectSelect = document.getElementById('marks-subject');
+
+            // Clear both dependent dropdowns
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+            document.getElementById('marks-table-container').style.display = 'none';
+
+            const classId = parseInt(classSelect.value);
+            if (isNaN(classId)) return; // Stop if no valid class is selected
+
+            try {
+                // Populate Sections
+                const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
+                if (sections.length > 0) {
+                    sections.forEach(section => {
+                        sectionSelect.innerHTML += `<option value="${section.id}">${section.name}</option>`;
+                    });
+                } else {
+                    sectionSelect.innerHTML = '<option value="">No Sections</option>';
+                }
+
+                // Populate Subjects assigned to this class
+                const classSubjects = await getAllFromIndex(STORES.CLASS_SUBJECTS, 'classId', classId);
+                if (classSubjects.length > 0) {
+                    for (const cs of classSubjects) {
+                        const subject = await getFromStore(STORES.SUBJECTS, cs.subjectId);
+                        if (subject) {
+                            subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name}</option>`;
+                        }
+                    }
+                } else {
+                    subjectSelect.innerHTML = '<option value="">No Subjects Assigned</option>';
+                }
+            } catch (error) {
+                console.error('Error populating sections/subjects for marks entry:', error);
+            }
+        }
+        function calculateMarksRow(inputElement) {
+            const row = inputElement.closest('tr');
+            if (!row) return;
+
+            const totalMarks = parseFloat(document.getElementById('marks-total').value) || 100;
+            const obtainedMarks = parseFloat(inputElement.value);
+
+            const percentageCell = row.children[3];
+            const gradeCell = row.children[4];
+
+            if (isNaN(obtainedMarks)) {
+                percentageCell.textContent = '-';
+                gradeCell.textContent = '-';
+                return;
+            }
+
+            const percentage = (obtainedMarks / totalMarks) * 100;
+            percentageCell.textContent = percentage.toFixed(2) + '%';
+
+            let grade = 'F';
+            const passingPercent = parseFloat(document.getElementById('exam-passing-percent').value) || 33;
+
+            if (percentage >= 90) grade = 'A+';
+            else if (percentage >= 80) grade = 'A';
+            else if (percentage >= 70) grade = 'B';
+            else if (percentage >= 60) grade = 'C';
+            else if (percentage >= 50) grade = 'D';
+            else if (percentage >= passingPercent) grade = 'E';
+
+            gradeCell.textContent = grade;
+        }
         async function populateSectionsForStudentForm() {
             const classId = parseInt(document.getElementById('student-class').value);
             const sectionSelect = document.getElementById('student-section');
@@ -6549,27 +6956,34 @@
             const classId = parseInt(document.getElementById('result-class').value);
             const sectionId = parseInt(document.getElementById('result-section').value);
             const container = document.getElementById('result-cards-container');
+
             if (isNaN(examId) || isNaN(classId) || isNaN(sectionId)) {
                 showNotification('Please select Exam, Class and Section.', 'error');
                 return;
             }
+
             showLoading();
             container.innerHTML = '';
             container.style.display = 'none';
+
             try {
                 const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.classId === classId && s.sectionId === sectionId);
                 const allMarks = (await getAllFromStore(STORES.MARKS)).filter(m => m.examId === examId);
                 const exam = await getFromStore(STORES.EXAMS, examId);
+
                 if (students.length === 0) {
                     container.innerHTML = `<div class="form-container"><p>No student found in this class/section.</p></div>`;
                     container.style.display = 'block';
+                    hideLoading();
                     return;
                 }
+
                 for (const student of students) {
                     const studentMarks = allMarks.filter(m => m.studentId === student.id);
                     let totalObtained = 0;
                     let totalMarks = 0;
                     let resultStatus = 'Passed';
+
                     let marksTable = `
                 <table class="table" style="font-size: 14px; margin-top: 10px;">
                     <thead><tr><th>Subject</th><th>Total Marks</th><th>Obtained</th><th>Result</th></tr></thead>
@@ -6579,34 +6993,50 @@
                         const subject = await getFromStore(STORES.SUBJECTS, mark.subjectId);
                         totalObtained += mark.obtainedMarks;
                         totalMarks += mark.totalMarks;
-                        if (!mark.isPassed) resultStatus = 'Failed';
+                        const passingPercent = exam.passingPercent || 33;
+                        const isPassed = ((mark.obtainedMarks / mark.totalMarks) * 100) >= passingPercent;
+
+                        if (!isPassed) resultStatus = 'Failed';
+
                         marksTable += `
                     <tr>
                         <td>${subject ? subject.name : 'N/A'}</td>
                         <td>${mark.totalMarks}</td>
                         <td>${mark.obtainedMarks}</td>
-                        <td>${mark.isPassed ? 'Passed' : 'Failed'}</td>
+                        <td>${isPassed ? 'Passed' : 'Failed'}</td>
                     </tr>
                 `;
                     }
                     marksTable += `</tbody></table>`;
+
                     const percentage = totalMarks > 0 ? ((totalObtained / totalMarks) * 100).toFixed(2) : 0;
+                    const cardId = `result-card-${student.id}`;
+                    const selectedvaua = document.querySelector("#result-exam").selectedOptions[0].text;
+
                     const cardHTML = `
-                <div class="card" style="margin-bottom: 20px; page-break-inside: avoid;">
-                    <h4 class="card-title" style="text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">${exam.name} - Result Card</h4>
-                    <div style="display: flex; justify-content: space-between;">
-                        <p><strong>Name:</strong> ${student.name}</p>
-                        <p><strong>Roll No.:</strong> ${student.rollNumber}</p>
-                    </div>
-                     <div style="display: flex; justify-content: space-between;">
-                        <p><strong>Father's Name:</strong> ${student.fatherName}</p>
-                        <p><strong>Class:</strong> ${student.className} (${student.sectionName})</p>
-                    </div>
-                    ${marksTable}
-                    <div style="display: flex; justify-content: space-around; background-color: #f9f9f9; padding: 10px; border-radius: 4px; margin-top: 15px;">
-                        <p><strong>Total Obtained:</strong> ${totalObtained} / ${totalMarks}</p>
-                        <p><strong>Percentage:</strong> ${percentage}%</p>
-                        <p><strong>Result:</strong> ${resultStatus}</p>
+                <div class="result-card-wrapper" style="position: relative; margin-bottom: 20px; page-break-inside: avoid;">
+                    <button class="btn btn-info btn-sm no-print" 
+                            style="position: absolute; top: 10px; right: 10px; z-index: 10;" 
+                            title="Download as PNG"
+                            onclick="exportElementAsPNG('${cardId}', 'ResultCard-${student.rollNumber}.png')">
+                        PNG ↓
+                    </button>
+                    <div class="card" id="${cardId}">
+                        <h4 class="card-title" style="text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">${selectedvaua} - Result Card</h4>
+                        <div style="display: flex; justify-content: space-between;">
+                            <p><strong>Name:</strong> ${student.name}</p>
+                            <p><strong>Roll No.:</strong> ${student.rollNumber}</p>
+                        </div>
+                         <div style="display: flex; justify-content: space-between;">
+                            <p><strong>Father's Name:</strong> ${student.fatherName}</p>
+                            <p><strong>Class:</strong> ${student.className} (${student.sectionName})</p>
+                        </div>
+                        ${marksTable}
+                        <div style="display: flex; justify-content: space-around; background-color: #f9f9f9; padding: 10px; border-radius: 4px; margin-top: 15px;">
+                            <p><strong>Total Obtained:</strong> ${totalObtained} / ${totalMarks}</p>
+                            <p><strong>Percentage:</strong> ${percentage}%</p>
+                            <p><strong>Result:</strong> ${resultStatus}</p>
+                        </div>
                     </div>
                 </div>
             `;
@@ -6620,6 +7050,7 @@
                 hideLoading();
             }
         }
+
         async function searchStudentForFee() {
             const searchTerm = document.getElementById('fee-student-search').value;
             if (!searchTerm) return;
@@ -7102,83 +7533,62 @@
             }
         }
         async function addTeacher() {
+            showLoading();
+            const form = document.getElementById('teacher-form');
+            const editId = form.dataset.editId ? parseInt(form.dataset.editId) : null;
             try {
-                showLoading();
-                const name = document.getElementById('teacher-name').value;
-                const fatherName = document.getElementById('teacher-father').value;
-                const dob = document.getElementById('teacher-dob').value;
-                const gender = document.getElementById('teacher-gender').value;
-                const qualification = document.getElementById('teacher-qualification').value;
-                const specialization = document.getElementById('teacher-specialization').value;
-                const subjects = Array.from(document.getElementById('teacher-subject').selectedOptions).map(option => option.value);
-                const classes = Array.from(document.getElementById('teacher-class').selectedOptions).map(option => option.value);
-                const contact = document.getElementById('teacher-contact').value;
-                const email = document.getElementById('teacher-email').value;
-                const address = document.getElementById('teacher-address').value;
-                const cnic = document.getElementById('teacher-cnic').value;
-                const photoInput = document.getElementById('teacher-photo');
-                const joiningDate = document.getElementById('teacher-joining-date').value;
-                const basicSalary = document.getElementById('teacher-basic-salary').value;
-                const allowances = document.getElementById('teacher-allowances').value;
-                const deductions = document.getElementById('teacher-deductions').value;
-                const notes = document.getElementById('teacher-notes').value;
-                const teachersCount = await getCount(STORES.TEACHERS);
-                const employeeId = 'T' + String(teachersCount + 1).padStart(3, '0');
                 let photo = null;
+                const photoInput = document.getElementById('teacher-photo');
                 if (photoInput.files && photoInput.files[0]) {
                     photo = await fileToBase64(photoInput.files[0]);
                 }
+
                 const teacherData = {
-                    employeeId: employeeId,
-                    name: name,
-                    fatherName: fatherName,
-                    gender: gender,
-                    dob: dob,
-                    qualification: qualification,
-                    specialization: specialization,
-                    subjects: subjects,
-                    classes: classes,
-                    contact: contact,
-                    email: email,
-                    address: address,
-                    cnic: cnic,
-                    photo: photo,
-                    joiningDate: joiningDate,
-                    basicSalary: parseFloat(basicSalary),
-                    allowances: parseFloat(allowances) || 0,
-                    deductions: parseFloat(deductions) || 0,
-                    notes: notes,
-                    createdAt: new Date().toISOString()
+                    name: document.getElementById('teacher-name').value,
+                    fatherName: document.getElementById('teacher-father').value,
+                    gender: document.getElementById('teacher-gender').value,
+                    dob: document.getElementById('teacher-dob').value,
+                    qualification: document.getElementById('teacher-qualification').value,
+                    specialization: document.getElementById('teacher-specialization').value,
+                    subjects: Array.from(document.getElementById('teacher-subject').selectedOptions).map(option => option.value),
+                    classes: Array.from(document.getElementById('teacher-class').selectedOptions).map(option => option.value),
+                    contact: document.getElementById('teacher-contact').value,
+                    email: document.getElementById('teacher-email').value,
+                    address: document.getElementById('teacher-address').value,
+                    cnic: document.getElementById('teacher-cnic').value,
+                    joiningDate: document.getElementById('teacher-joining-date').value,
+                    basicSalary: parseFloat(document.getElementById('teacher-basic-salary').value),
+                    allowances: parseFloat(document.getElementById('teacher-allowances').value) || 0,
+                    deductions: parseFloat(document.getElementById('teacher-deductions').value) || 0,
+                    notes: document.getElementById('teacher-notes').value,
                 };
-                const teacherId = await addToStore(STORES.TEACHERS, teacherData);
-                await addToStore(STORES.SALARY_STRUCTURE, {
-                    employeeId: teacherId,
-                    employeeType: 'teacher',
-                    basicSalary: parseFloat(basicSalary),
-                    houseRent: parseFloat(basicSalary) * 0.45,
-                    transport: 2000,
-                    medical: 1500,
-                    otherAllowances: parseFloat(allowances) || 0,
-                    deductions: parseFloat(deductions) || 0,
-                    createdAt: new Date().toISOString()
-                });
-                await addToStore(STORES.ACTIVITIES, {
-                    description: 'New teacher added',
-                    date: new Date().toISOString(),
-                    type: 'Recruitment',
-                    user: 'System Admin',
-                    userId: 1,
-                    details: `${name} (${employeeId}) was recruited as a teacher`,
-                    createdAt: new Date().toISOString()
-                });
-                document.getElementById('teacher-form').reset();
-                loadTeachersTable();
-                loadTeacherDropdowns();
-                showNotification('Teacher added successfully', 'success');
+
+                if (photo) {
+                    teacherData.photo = photo;
+                }
+
+                if (editId) {
+                    teacherData.updatedAt = new Date().toISOString();
+                    await updateInStore(STORES.TEACHERS, editId, teacherData);
+                    showNotification('Teacher record updated successfully.', 'success');
+                } else {
+                    const teachersCount = await getCount(STORES.TEACHERS);
+                    teacherData.employeeId = 'T' + String(teachersCount + 1).padStart(3, '0');
+                    teacherData.createdAt = new Date().toISOString();
+                    await addToStore(STORES.TEACHERS, teacherData);
+                    showNotification('Teacher added successfully.', 'success');
+                }
+
+                form.reset();
+                delete form.dataset.editId;
+                form.querySelector('button[type="submit"]').textContent = 'Add Teacher';
                 document.querySelector('.tab[data-tab="teachers-list"]').click();
+                await loadTeachersTable();
+                await loadTeacherDropdowns();
+
             } catch (error) {
-                console.error('Error adding teacher:', error);
-                showNotification('Failed to add teacher.', 'error');
+                console.error('Error saving teacher:', error);
+                showNotification('Failed to save teacher.', 'error');
             } finally {
                 hideLoading();
             }
@@ -7763,21 +8173,24 @@
                 const bookId = parseInt(document.getElementById('issue-book-select').value);
                 const studentId = parseInt(document.getElementById('issue-student-select').value);
                 const issueDate = document.getElementById('issue-date').value;
+                // --- MODIFICATION: Due date is now read-only and calculated automatically ---
                 const returnDueDate = document.getElementById('return-due-date').value;
+
+                if (!bookId || !studentId || !issueDate) {
+                    showNotification('Please select a book, student, and issue date.', 'error');
+                    hideLoading();
+                    return;
+                }
+
                 const bookData = await getFromStore(STORES.BOOKS, bookId);
-                const studentData = await getFromStore(STORES.STUDENTS, studentId);
-                if (!bookData) {
-                    showNotification('Book not found.', 'error');
-                    return;
-                }
-                if (!studentData) {
-                    showNotification('Student not found.', 'error');
-                    return;
-                }
                 if (bookData.availableCopies <= 0) {
                     showNotification('No copies of this book are available.', 'error');
+                    hideLoading();
                     return;
                 }
+
+                const studentData = await getFromStore(STORES.STUDENTS, studentId);
+
                 const issueData = {
                     bookId: bookId,
                     bookName: bookData.name,
@@ -7785,32 +8198,21 @@
                     memberName: studentData.name,
                     memberType: 'student',
                     issueDate: issueDate,
-                    returnDueDate: returnDueDate,
+                    returnDueDate: returnDueDate, // Use the calculated value
                     status: 'issued',
-                    actualReturnDate: null,
-                    fine: 0,
-                    condition: 'Good',
-                    notes: '',
-                    createdAt: new Date().toISOString()
                 };
+
                 await addToStore(STORES.BOOK_ISSUES, issueData);
                 await updateInStore(STORES.BOOKS, bookId, {
                     availableCopies: bookData.availableCopies - 1
                 });
-                await addToStore(STORES.ACTIVITIES, {
-                    description: 'Book issued',
-                    date: new Date().toISOString(),
-                    type: 'Library',
-                    user: 'System Admin',
-                    userId: 1,
-                    details: `${bookData.name} issued to ${studentData.name}`,
-                    createdAt: new Date().toISOString()
-                });
+
                 document.getElementById('issue-form').reset();
                 showNotification('Book issued successfully.', 'success');
                 loadIssuedBooksTable();
                 loadBooksTable();
                 populateLibraryDropdowns();
+
             } catch (error) {
                 console.error('Error issuing book:', error);
                 showNotification('Failed to issue book.', 'error');
@@ -7818,6 +8220,7 @@
                 hideLoading();
             }
         }
+
         async function returnBook() {
             try {
                 showLoading();
@@ -8151,94 +8554,120 @@
                 console.error('Error loading teacher dropdowns:', error);
             }
         }
-        async function loadStudentsForAttendance() {
-            const classIdElement = document.getElementById('attendance-class');
-            const sectionIdElement = document.getElementById('attendance-section');
-            const dateElement = document.getElementById('attendance-date');
-            if (!classIdElement || !sectionIdElement || !dateElement) {
-                console.error("Attendance filter elements not found.");
-                showNotification('Required attendance elements not found.', 'error');
-                return;
-            }
-            const classId = parseInt(classIdElement.value);
-            const sectionId = parseInt(sectionIdElement.value);
-            const date = dateElement.value;
-            if (isNaN(classId) || isNaN(sectionId) || !date) {
-                showNotification('Please select date, class and section.', 'error');
-                return;
-            }
-            showLoading();
-            try {
-                const allStudents = await getAllFromStore(STORES.STUDENTS);
-                const classStudents = allStudents.filter(s => s.classId === classId && s.sectionId === sectionId);
-                const attendanceTableBody = document.querySelector('#attendance-table tbody');
-                const attendanceTableContainer = document.getElementById('attendance-table-container');
-                if (!attendanceTableBody || !attendanceTableContainer) {
-                    console.error("Attendance table elements not found.");
-                    hideLoading();
-                    return;
-                }
-                attendanceTableBody.innerHTML = '';
-                if (classStudents.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="6" class="text-center">No students found for this class and section.</td>';
-                } else {
-                    const existingAttendanceRecords = await getAllFromIndex(STORES.ATTENDANCE, 'dateClassSection', [date, classId, sectionId]);
-                    const existingAttendanceMap = new Map();
-                    existingAttendanceRecords.forEach(rec => existingAttendanceMap.set(rec.studentId, rec));
-                    classStudents.forEach(student => {
-                        const existingRecord = existingAttendanceMap.get(student.id);
-                        const isPresent = existingRecord ? existingRecord.status === 'present' : true;
-                        const isLate = existingRecord ? existingRecord.isLate : false;
-                        const onLeave = existingRecord ? existingRecord.isLeave : false;
-                        const notes = existingRecord ? existingRecord.notes : '';
-                        const row = document.createElement('tr');
-                        row.dataset.studentId = student.id;
-                        row.innerHTML = `
+async function loadStudentsForAttendance() {
+    const dateElement = document.getElementById('attendance-date');
+    const classIdElement = document.getElementById('attendance-class');
+    const sectionIdElement = document.getElementById('attendance-section');
+    
+    // Use 'T00:00:00' to ensure the date is interpreted in the user's local timezone
+    const selectedDate = new Date(dateElement.value + 'T00:00:00'); 
+    const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+    // --- Holiday Check ---
+    if (appSettings.weeklyHoliday && appSettings.weeklyHoliday.includes(dayName)) {
+        showNotification(`${dayName} is a holiday. Attendance cannot be marked.`, 'info');
+        document.getElementById('attendance-table-container').style.display = 'none';
+        return;
+    }
+
+    if (!classIdElement || !sectionIdElement || !dateElement) {
+        console.error("Attendance filter elements not found.");
+        showNotification('Required attendance elements not found.', 'error');
+        return;
+    }
+
+    const classId = parseInt(classIdElement.value);
+    const sectionId = parseInt(sectionIdElement.value);
+    const date = dateElement.value;
+
+    if (isNaN(classId) || isNaN(sectionId) || !date) {
+        showNotification('Please select date, class and section.', 'error');
+        return;
+    }
+
+    showLoading();
+    try {
+        const allStudents = await getAllFromStore(STORES.STUDENTS);
+        // --- Filter for active students only ---
+        const activeStudents = allStudents.filter(s => !s.status || s.status === 'active');
+        const classStudents = activeStudents.filter(s => s.classId === classId && s.sectionId === sectionId);
+        
+        const attendanceTableBody = document.querySelector('#attendance-table tbody');
+        const attendanceTableContainer = document.getElementById('attendance-table-container');
+        
+        if (!attendanceTableBody || !attendanceTableContainer) {
+            console.error("Attendance table elements not found.");
+            hideLoading();
+            return;
+        }
+
+        attendanceTableBody.innerHTML = '';
+        if (classStudents.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="6" style="text-align:center;">No active students found for this class and section.</td>';
+            attendanceTableBody.appendChild(row);
+        } else {
+            const existingAttendanceRecords = await getAllFromIndex(STORES.ATTENDANCE, 'dateClassSection', [date, classId, sectionId]);
+            const existingAttendanceMap = new Map(existingAttendanceRecords.map(rec => [rec.studentId, rec]));
+
+            classStudents.forEach(student => {
+                const existingRecord = existingAttendanceMap.get(student.id);
+                const isPresent = existingRecord ? existingRecord.status === 'present' : true; // Default to present
+                const isAbsent = existingRecord ? existingRecord.status === 'absent' : false;
+                const isLate = existingRecord ? existingRecord.isLate : false;
+                const onLeave = existingRecord ? existingRecord.isLeave : false;
+                const notes = existingRecord ? existingRecord.notes : '';
+
+                const row = document.createElement('tr');
+                row.dataset.studentId = student.id;
+                row.innerHTML = `
                     <td>${student.rollNumber}</td>
                     <td>${student.name}</td>
                     <td>
                         <label style="margin-right: 5px;"><input type="radio" name="status_${student.id}" value="present" ${isPresent && !onLeave ? 'checked' : ''}> Present</label>
-                        <label style="margin-right: 5px;"><input type="radio" name="status_${student.id}" value="absent" ${!isPresent && !onLeave ? 'checked' : ''}> Absent</label>
+                        <label style="margin-right: 5px;"><input type="radio" name="status_${student.id}" value="absent" ${isAbsent && !onLeave ? 'checked' : ''}> Absent</label>
                     </td>
                     <td><input type="checkbox" name="late_${student.id}" ${isLate ? 'checked' : ''}></td>
                     <td><input type="checkbox" name="leave_${student.id}" ${onLeave ? 'checked' : ''}></td>
                     <td><input type="text" class="form-control" name="notes_${student.id}" value="${notes}"></td>
                 `;
-                        attendanceTableBody.appendChild(row);
-                        const leaveCheckbox = row.querySelector(`input[name="leave_${student.id}"]`);
-                        const presentRadio = row.querySelector(`input[name="status_${student.id}"][value="present"]`);
-                        const absentRadio = row.querySelector(`input[name="status_${student.id}"][value="absent"]`);
-                        if (leaveCheckbox) {
-                            leaveCheckbox.addEventListener('change', (e) => {
-                                if (e.target.checked) {
-                                    if (presentRadio) presentRadio.checked = false;
-                                    if (absentRadio) absentRadio.checked = false;
-                                    if (presentRadio) presentRadio.disabled = true;
-                                    if (absentRadio) absentRadio.disabled = true;
-                                } else {
-                                    if (presentRadio) presentRadio.disabled = false;
-                                    if (absentRadio) absentRadio.disabled = false;
-                                    if (presentRadio && !absentRadio.checked) presentRadio.checked = true;
-                                }
-                            });
-                            if (onLeave) {
-                                if (presentRadio) presentRadio.checked = false;
-                                if (absentRadio) absentRadio.checked = false;
-                                if (presentRadio) presentRadio.disabled = true;
-                                if (absentRadio) absentRadio.disabled = true;
-                            }
+                attendanceTableBody.appendChild(row);
+
+                const leaveCheckbox = row.querySelector(`input[name="leave_${student.id}"]`);
+                const presentRadio = row.querySelector(`input[name="status_${student.id}"][value="present"]`);
+                const absentRadio = row.querySelector(`input[name="status_${student.id}"][value="absent"]`);
+
+                if (leaveCheckbox) {
+                    leaveCheckbox.addEventListener('change', (e) => {
+                        if (e.target.checked) {
+                            presentRadio.checked = false;
+                            absentRadio.checked = false;
+                            presentRadio.disabled = true;
+                            absentRadio.disabled = true;
+                        } else {
+                            presentRadio.disabled = false;
+                            absentRadio.disabled = false;
+                            presentRadio.checked = true; // Default back to present
                         }
                     });
+
+                    // Set initial disabled state if on leave
+                    if (onLeave) {
+                        presentRadio.disabled = true;
+                        absentRadio.disabled = true;
+                    }
                 }
-                attendanceTableContainer.style.display = 'block';
-            } catch (error) {
-                console.error("Error loading students for attendance:", error);
-                showNotification('Failed to load students for attendance.', 'error');
-            } finally {
-                hideLoading();
-            }
+            });
         }
+        attendanceTableContainer.style.display = 'block';
+    } catch (error) {
+        console.error("Error loading students for attendance:", error);
+        showNotification('Failed to load students for attendance.', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+       
         async function restoreBackup() {
             try {
                 showLoading();
@@ -8422,6 +8851,15 @@
             });
             console.log("Delegated event listeners attached to main container.");
         }
+        function calculateDueDate() {
+            const issueDateStr = document.getElementById('issue-date').value;
+            if (!issueDateStr) return;
+
+            const issueDate = new Date(issueDateStr);
+            issueDate.setDate(issueDate.getDate() + parseInt(appSettings.libraryReturnDays));
+
+            document.getElementById('return-due-date').value = issueDate.toISOString().split('T')[0];
+        }
         async function initializeLibraryView() {
             const container = document.getElementById('library-view');
             if (container.querySelector('.tabs')) {
@@ -8476,11 +8914,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Issue Date</label>
-                            <input type="date" class="form-control" id="issue-date" required>
+                            <input type="date" class="form-control" id="issue-date" required onchange="calculateDueDate()">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Return Due Date</label>
-                            <input type="date" class="form-control" id="return-due-date" required>
+                            <input type="date" class="form-control" id="return-due-date" required readonly>
                         </div>
                     </div>
                     <div class="form-row">
@@ -9865,6 +10303,50 @@
                 hideLoading();
             }
         }
+        async function editTeacher(id) {
+            showLoading();
+            try {
+                const teacher = await getFromStore(STORES.TEACHERS, id);
+                if (!teacher) {
+                    showNotification('Teacher not found.', 'error');
+                    return;
+                }
+                const form = document.getElementById('teacher-form');
+                form.dataset.editId = id;
+
+                document.getElementById('teacher-name').value = teacher.name;
+                document.getElementById('teacher-father').value = teacher.fatherName;
+                document.getElementById('teacher-dob').value = teacher.dob;
+                document.getElementById('teacher-gender').value = teacher.gender;
+                document.getElementById('teacher-qualification').value = teacher.qualification;
+                document.getElementById('teacher-specialization').value = teacher.specialization;
+                document.getElementById('teacher-contact').value = teacher.contact;
+                document.getElementById('teacher-email').value = teacher.email;
+                document.getElementById('teacher-address').value = teacher.address;
+                document.getElementById('teacher-cnic').value = teacher.cnic;
+                document.getElementById('teacher-joining-date').value = teacher.joiningDate;
+                document.getElementById('teacher-basic-salary').value = teacher.basicSalary;
+                document.getElementById('teacher-allowances').value = teacher.allowances;
+                document.getElementById('teacher-deductions').value = teacher.deductions;
+                document.getElementById('teacher-notes').value = teacher.notes;
+
+                Array.from(document.getElementById('teacher-subject').options).forEach(opt => {
+                    opt.selected = teacher.subjects && teacher.subjects.includes(opt.value);
+                });
+                Array.from(document.getElementById('teacher-class').options).forEach(opt => {
+                    opt.selected = teacher.classes && teacher.classes.includes(opt.value);
+                });
+
+                document.querySelector('.tab[data-tab="add-teacher"]').click();
+                form.querySelector('button[type="submit"]').textContent = 'Update Teacher';
+
+            } catch (e) {
+                console.error('Error preparing teacher for edit:', e);
+                showNotification('Could not load teacher data.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
         function showQrCode(qrContainerId, text, imgIdToHide) {
             const imgEl = document.getElementById(imgIdToHide);
             const qrContainer = document.getElementById(qrContainerId);
@@ -9892,16 +10374,19 @@
                 'action': { selector: '.table th', en: 'Action', ur: 'عمل', isGeneric: true, matchingText: 'Action' },
                 'edit': { selector: '.btn-primary.btn-sm', en: 'Edit', ur: 'ترمیم', isGeneric: true, matchingText: 'Edit' },
                 'delete': { selector: '.btn-danger.btn-sm', en: 'Delete', ur: 'حذف کریں', isGeneric: true, matchingText: 'Delete' },
-                'name': { selector: '.table th, .form-label', en: 'Name', ur: 'نام', isGeneric: true, matchingText: 'Name' },
                 'class': { selector: '.table th, .form-label', en: 'Class', ur: 'کلاس', isGeneric: true, matchingText: 'Class' },
                 'section': { selector: '.table th, .form-label', en: 'Section', ur: 'سیکشن', isGeneric: true, matchingText: 'Section' },
                 'contact_no': { selector: '.table th, .form-label', en: 'Contact No.', ur: 'رابطہ نمبر', isGeneric: true, matchingText: 'Contact No.' },
                 'email': { selector: 'label.form-label', en: 'Email', ur: 'ای میل', isGeneric: true, matchingText: 'Email' },
-                'date': { selector: '.table th, .form-label', en: 'Date', ur: 'تاریخ', isGeneric: true, matchingText: 'Date' },
+                'dob': { selector: '.form-label', en: 'Date of Birth', ur: 'تاریخِ پیدائش', isGeneric: true, matchingText: '^Date of Birth$' },
+                'admission_date': { selector: '.form-label', en: 'Admission Date', ur: 'داخلے کی تاریخ', isGeneric: true, matchingText: '^Admission Date$' },
+                'joining_date': { selector: 'label[for$="-joining-date"]', en: 'Joining Date', ur: 'شمولیت کی تاریخ', isGeneric: true, matchingText: 'Joining Date' },
                 'notes': { selector: 'label.form-label', en: 'Note', ur: 'نوٹ', isGeneric: true, matchingText: 'Note' },
                 'details': { selector: '.table th, label.form-label', en: 'Details', ur: 'تفصیلات', isGeneric: true, matchingText: 'Details' },
                 'additional_info': { selector: 'label.form-label', en: 'Additional Info', ur: 'اضافی معلومات', isGeneric: true, matchingText: 'Additional Info' },
-                'father_name': { selector: '.table th, .form-label', en: "Father's Name", ur: 'والد کا نام', isGeneric: true, matchingText: "Father's Name" },
+                'student_name': { selector: '.form-label', en: 'Student Name', ur: 'طالب علم کا نام', isGeneric: true, matchingText: '^Student Name$' },
+                'father_name': { selector: '.form-label', en: "Father's Name", ur: 'والد کا نام', isGeneric: true, matchingText: "^Father's Name$" },
+                'guardian_name': { selector: '.form-label', en: 'Guardian Name', ur: 'سرپرست کا نام', isGeneric: true, matchingText: '^Guardian Name$' },
                 'dob': { selector: '.form-label', en: 'Date of Birth', ur: 'تاریخِ پیدائش', isGeneric: true, matchingText: 'Date of Birth' },
                 'gender': { selector: '.form-label', en: 'Gender', ur: 'جنس', isGeneric: true, matchingText: 'Gender' },
                 'address': { selector: '.form-label', en: 'Full Address', ur: 'مکمل پتہ', isGeneric: true, matchingText: 'Full Address' },
@@ -9925,7 +10410,6 @@
                 'sidebar_idcards': { selector: 'li[data-view="id-cards"]', en: 'ID Cards & Certificates', ur: 'شناختی کارڈ اور سرٹیفکیٹ' },
                 'dashboard_title': { selector: '#dashboard-view > h2', en: 'Dashboard', ur: 'ڈیش بورڈ' },
                 'dash_total_students': { selector: '.card:nth-child(1) .card-title', en: 'Total Students', ur: 'کل طلباء' },
-                'dash_total_teachers': { selector: '.card:nth-child(2) .card-title', en: 'Total Teachers', ur: 'کل اساتذہ' },
                 'dash_total_classes': { selector: '.card:nth-child(3) .card-title', en: 'Total Classes', ur: 'کل کلاسیں' },
                 'dash_today_attendance': { selector: '.card:nth-child(4) .card-title', en: "Today's Attendance", ur: 'آج کی حاضری' },
                 'dash_monthly_fee': { selector: '.dashboard-cards:nth-child(2) .card:nth-child(1) .card-title', en: 'Monthly Fee Collection', ur: 'ماہانہ فیس وصولی' },
