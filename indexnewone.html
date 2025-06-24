@@ -84,7 +84,7 @@
 
         .main-content-inner {
             direction: ltr;
-            padding: 20px;
+            padding: 4px;
         }
 
         .dashboard-cards {
@@ -373,31 +373,26 @@
             color: #7f8c8d;
         }
 
-        @media print {
-
+        /*         @media print {
             .sidebar,
             .header,
             .no-print {
                 display: none !important;
             }
-
             .main-container {
                 margin: 0;
                 padding: 0;
             }
-
             .print-only {
                 display: block;
             }
-
             .table-container,
             .form-container,
             .card {
                 box-shadow: none;
                 border: 1px solid #ddd;
             }
-        }
-
+        } */
         @media (max-width: 768px) {
             .sidebar {
                 width: 0;
@@ -836,6 +831,66 @@
         .certificate-container b {
             text-decoration: underline;
         }
+
+        .receipt-paper {
+            width: 300px;
+            padding: 15px;
+            background: #fff;
+            color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            border: 1px dashed #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .receipt-paper h3 {
+            text-align: center;
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+
+        .receipt-paper p {
+            margin: 2px 0;
+        }
+
+        .receipt-paper hr {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 8px 0;
+        }
+
+        .receipt-paper .receipt-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .receipt-paper .receipt-total {
+            font-weight: bold;
+            font-size: 14px;
+            border-top: 1px solid #000;
+            margin-top: 8px;
+            padding-top: 5px;
+        }
+
+        .receipt-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 72px;
+            font-weight: bold;
+            color: rgba(0, 128, 0, 0.15);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -844,12 +899,38 @@
 </head>
 
 <body>
-    <!-- Student Details Modal -->
+    <div id="fee-receipt-modal" class="modal">
+        <div class="modal-content" style="max-width: 320px;">
+            <span class="close" id="fee-receipt-modal-close">×</span>
+            <div id="receipt-content-area">
+            </div>
+            <div class="form-row no-print" style="margin-top: 15px;">
+                <button id="print-receipt-btn-final" class="btn btn-primary" style="width:100%;">Print Receipt</button>
+            </div>
+        </div>
+    </div>
     <div id="student-details-modal" class="modal">
-        <div class="modal-content" style="max-width: 900px; max-height: 110vh; overflow-y: auto;">
+        <div class="modal-content" style="max-width: 900px; overflow-y: auto;">
             <span class="close" id="modal-close-btn">×</span>
             <div id="modal-content-area">
-                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+    <div id="send-notice-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" id="send-notice-modal-close">×</span>
+            <div class="form-title">Send Fee Reminder</div>
+            <div id="notice-student-info"
+                style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 4px;">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Message Template</label>
+                <textarea class="form-control" id="notice-message-template" rows="5"></textarea>
+            </div>
+            <div class="form-row" style="margin-top: 20px; justify-content: flex-end;">
+                <button id="send-whatsapp-btn" class="btn btn-success" style="margin-right: 10px;">Send via
+                    WhatsApp</button>
+                <button id="send-sms-btn" class="btn btn-primary">Send via SMS</button>
             </div>
         </div>
     </div>
@@ -887,40 +968,40 @@
         </div>
         <div class="section-view" id="dashboard-view" style="display: block;">
             <h2>Dashboard</h2>
-            <div class="dashboard-cards">
-                <div class="card">
-                    <div class="card-title">Total Students</div>
-                    <div class="card-value" id="total-students">0</div>
-                    <div class="card-subtitle">Registered Students</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Total Teachers</div>
-                    <div class="card-value" id="total-teachers">0</div>
-                    <div class="card-subtitle">Registered Teachers</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Total Classes</div>
-                    <div class="card-value" id="total-classes">0</div>
-                    <div class="card-subtitle">Active Classes</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Today's Attendance</div>
-                    <div class="card-value" id="today-attendance">0%</div>
-                    <div class="card-subtitle">Students Present</div>
-                </div>
+                    <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-title">Total Students</div>
+                <div class="card-value" id="total-students">0</div>
+                <div class="card-subtitle">Registered Students</div>
             </div>
-            <div class="dashboard-cards">
-                <div class="card">
-                    <div class="card-title">Monthly Fee Collection</div>
-                    <div class="card-value" id="monthly-fee">0 Rs</div>
-                    <div class="card-subtitle">Current Month</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Outstanding Fees</div>
-                    <div class="card-value" id="pending-fee">0 Rs</div>
-                    <div class="card-subtitle">Pending Payments</div>
-                </div>
+            <div class="card">
+                <div class="card-title">Total Teachers</div>
+                <div class="card-value" id="total-teachers">0</div>
+                <div class="card-subtitle">Registered Teachers</div>
             </div>
+            <div class="card">
+                <div class="card-title">Total Classes</div>
+                <div class="card-value" id="total-classes">0</div>
+                <div class="card-subtitle">Active Classes</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Today's Attendance</div>
+                <div class="card-value" id="today-attendance">0%</div>
+                <div class="card-subtitle">Students Present</div>
+            </div>
+        </div>
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-title">Monthly Fee Collection</div>
+                <div class="card-value" id="monthly-fee">0 Rs</div>
+                <div class="card-subtitle">Current Month</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Outstanding Fees</div>
+                <div class="card-value" id="pending-fee">0 Rs</div>
+                <div class="card-subtitle">Pending Payments</div>
+            </div>
+        </div>
             <div class="form-container">
                 <div class="form-title">Upcoming Events</div>
                 <div id="upcoming-events">
@@ -1766,7 +1847,9 @@
                         </tbody>
                     </table>
                     <div class="form-row">
-                        <button type="button" class="btn btn-primary" id="print-attendance">Print</button>
+                        <button type="button" class="btn btn-primary"
+                            onclick="exportElementAsPNG('view-attendance-table-container', 'AttendanceView.png')">Export
+                            PNG</button>
                     </div>
                 </div>
             </div>
@@ -1817,7 +1900,9 @@
                         </tbody>
                     </table>
                     <div class="form-row">
-                        <button type="button" class="btn btn-primary" id="print-attendance-report">Print</button>
+                        <button type="button" class="btn btn-primary"
+                            onclick="exportElementAsPNG('report-attendance-table-container', 'AttendanceReport.png')">Export
+                            PNG</button>
                         <button type="button" class="btn btn-success" id="export-attendance-report"
                             style="margin-left: 10px;">Export</button>
                     </div>
@@ -2005,10 +2090,9 @@
                             <label class="form-label">Search Student</label>
                             <input type="text" class="form-control" id="fee-student-search"
                                 placeholder="Search by Roll No. or Name">
-                        </div>
-                        <div class="form-group" style="flex: 0 0 auto;">
-                            <label class="form-label" style="visibility: hidden;">Search</label>
-                            <button type="button" class="btn btn-primary" id="search-student-fee">Search</button>
+                            <div id="fee-search-results"
+                                style="position: absolute; background-color: white; border: 1px solid #ddd; z-index: 100; width: calc(100% - 20px); max-height: 200px; overflow-y: auto; display: none;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2050,18 +2134,18 @@
                             <div class="form-group">
                                 <label class="form-label">Month</label>
                                 <select class="form-control" id="fee-month" required>
-                                    <option value="January">January</option>
-                                    <option value="February">February</option>
-                                    <option value="March">March</option>
-                                    <option value="April">April</option>
-                                    <option value="May">May</option>
-                                    <option value="June">June</option>
-                                    <option value="July">July</option>
-                                    <option value="August">August</option>
-                                    <option value="September">September</option>
-                                    <option value="October">October</option>
-                                    <option value="November">November</option>
-                                    <option value="December">December</option>
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -2308,7 +2392,9 @@
                         </tbody>
                     </table>
                     <div class="form-row">
-                        <button type="button" class="btn btn-primary" id="print-fee-report">Print</button>
+                        <button type="button" class="btn btn-primary"
+                            onclick="exportElementAsPNG('fee-report-table-container', 'FeeReport.png')">Export
+                            PNG</button>
                         <button type="button" class="btn btn-success" id="export-fee-report"
                             style="margin-left: 10px;">Export</button>
                     </div>
@@ -2368,7 +2454,9 @@
                         </tbody>
                     </table>
                     <div class="form-row">
-                        <button type="button" class="btn btn-primary" id="print-defaulters">Print</button>
+                        <button type="button" class="btn btn-primary"
+                            onclick="exportElementAsPNG('defaulters-table-container', 'FeeDefaulters.png')">Export
+                            PNG</button>
                         <button type="button" class="btn btn-success" id="send-reminders"
                             style="margin-left: 10px;">Send Reminders</button>
                     </div>
@@ -2396,10 +2484,6 @@
                             <label class="form-label">Search Employee</label>
                             <input type="text" class="form-control" id="salary-employee-search"
                                 placeholder="Search by Name or ID No.">
-                        </div>
-                        <div class="form-group" style="flex: 0 0 auto;">
-                            <label class="form-label" style="visibility: hidden;">Search</label>
-                            <button type="button" class="btn btn-primary" id="search-employee-salary">Search</button>
                         </div>
                     </div>
                 </div>
@@ -2714,7 +2798,9 @@
                         </tbody>
                     </table>
                     <div class="form-row">
-                        <button type="button" class="btn btn-primary" id="print-salary-report">Print</button>
+                        <button type="button" class="btn btn-primary"
+                            onclick="exportElementAsPNG('salary-report-table-container', 'SalaryReport.png')">Export
+                            PNG</button>
                         <button type="button" class="btn btn-success" id="export-salary-report"
                             style="margin-left: 10px;">Export</button>
                     </div>
@@ -3242,8 +3328,9 @@
                     </div>
                     <div class="form-row">
                         <button class="btn btn-primary" id="generate-id-cards-btn">Generate Cards</button>
-                        <button class="btn btn-success" onclick="window.print()"
-                            style="margin-left:10px;">Print</button>
+                        <button class="btn btn-success"
+                            onclick="exportElementAsPNG('id-card-output', 'All_ID_Cards_View.png')"
+                            style="margin-left:10px;">Export View as PNG</button>
                         <button class="btn btn-info" id="bulk-export-zip-btn" style="margin-left:10px;">Export All to
                             ZIP</button>
                     </div>
@@ -3278,8 +3365,9 @@
                     </div>
                     <div class="form-row">
                         <button class="btn btn-primary" id="generate-certificate-btn">Generate Certificate</button>
-                        <button class="btn btn-success" onclick="window.print()"
-                            style="margin-left:10px;">Print</button>
+                        <button class="btn btn-success"
+                            onclick="exportElementAsPNG('certificate-output', 'Certificate_View.png')"
+                            style="margin-left:10px;">Export View as PNG</button>
                     </div>
                 </div>
                 <div id="certificate-output"
@@ -3543,7 +3631,6 @@
                 };
             });
         }
-
         function showLoading() {
             if (typeof window._0xac7d9f !== 'function' || !window._0xac7d9f()) { console.error('Activation Error: Core component missing.'); return; }
             const loadingElement = document.getElementById('loading');
@@ -3909,6 +3996,47 @@
                 console.error('Error applying settings:', error);
             }
         }
+        async function showFeeReceipt(feeData, studentData) {
+            const modal = document.getElementById('fee-receipt-modal');
+            const contentArea = document.getElementById('receipt-content-area');
+            const schoolName = appSettings.schoolName || 'Deeni Madrasa';
+            if (!studentData) {
+                studentData = await getFromStore(STORES.STUDENTS, feeData.studentId);
+            }
+            const className = studentData.classId ? (await getFromStore(STORES.CLASSES, studentData.classId))?.name : 'N/A';
+            const monthName = new Date(feeData.year, feeData.month - 1, 1).toLocaleString('en-US', { month: 'long' });
+            contentArea.innerHTML = `
+        <div class="receipt-paper" id="printable-receipt">
+            <div class="receipt-watermark">PAID</div>
+            <h3>${schoolName}</h3>
+            <p style="text-align:center; font-size: 10px;">Fee Receipt</p>
+            <hr>
+            <p><strong>Receipt #:</strong> ${feeData.receiptNumber}</p>
+            <p><strong>Date:</strong> ${formatDate(feeData.date)}</p>
+            <hr>
+            <p><strong>Name:</strong> ${feeData.studentName}</p>
+            <p><strong>Roll #:</strong> ${studentData.rollNumber}</p>
+            <p><strong>Class:</strong> ${className}</p>
+            <p><strong>Fee for:</strong> ${monthName}, ${feeData.year}</p>
+            <hr>
+            <div class="receipt-item"><span>Monthly Fee:</span><span>${formatCurrency(feeData.amount)}</span></div>
+            <div class="receipt-item"><span>Late Fine:</span><span>${formatCurrency(feeData.fine)}</span></div>
+            <div class="receipt-item"><span>Discount:</span><span>-${formatCurrency(feeData.discount)}</span></div>
+            <hr>
+            <div class="receipt-item receipt-total"><span>TOTAL PAID:</span><span>${formatCurrency(feeData.total)}</span></div>
+        </div>
+    `;
+            document.getElementById('print-receipt-btn-final').onclick = function () {
+                exportElementAsPNG('printable-receipt', `Receipt-${feeData.receiptNumber}.png`);
+            };
+            modal.style.display = 'block';
+        }
+        async function viewFeeReceipt(feeId) {
+            const feeRecord = await getFromStore(STORES.FEES, feeId);
+            if (feeRecord) {
+                showFeeReceipt(feeRecord);
+            }
+        }
         async function populateLibraryDropdowns() {
             try {
                 const [books, students, issued] = await Promise.all([
@@ -3955,44 +4083,176 @@
                 showNotification('Error populating library dropdowns.', 'error');
             }
         }
-        async function loadDashboardData() {
-            try {
-                const totalStudents = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active').length;
-                document.getElementById('total-students').textContent = totalStudents;
-                const totalTeachers = await getCount(STORES.TEACHERS);
-                document.getElementById('total-teachers').textContent = totalTeachers;
-                const totalClasses = await getCount(STORES.CLASSES);
-                document.getElementById('total-classes').textContent = totalClasses;
-                const todayISO = new Date().toISOString().split('T')[0];
-                const attendancePercentage = await getTodayAttendancePercentage(todayISO);
-                document.getElementById('today-attendance').textContent = attendancePercentage + '%';
-                const currentMonth = new Date().getMonth() + 1;
-                const currentYear = new Date().getFullYear();
-                const monthlyFee = await getMonthlyFeeCollection(currentMonth, currentYear);
-                document.getElementById('monthly-fee').textContent = formatCurrency(monthlyFee);
-                const pendingFee = await getTotalPendingFee();
-                document.getElementById('pending-fee').textContent = formatCurrency(pendingFee);
-                await loadUpcomingEvents();
-                await loadRecentActivities();
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                showNotification('Error loading dashboard data.', 'error');
+
+        async function showDashboardDetailsPopup(title, contentGenerator) {
+    showLoading();
+    const modal = document.getElementById('student-details-modal');
+    const contentArea = document.getElementById('modal-content-area');
+    try {
+        const contentHTML = await contentGenerator();
+        contentArea.innerHTML = `<h3 class="form-title">${title}</h3>` + contentHTML;
+        modal.style.display = 'block';
+    } catch (e) {
+        console.error("Error generating details popup:", e);
+        showNotification("Could not load details.", "error");
+    } finally {
+        hideLoading();
+    }
+}
+async function loadDashboardData() {
+    try {
+        // --- 1. DEFINE THE CORRECT CARD STRUCTURE ---
+        const correctCards = [
+            { id: 'total-students', title: 'Total Students', subtitle: 'Registered Students' },
+            { id: 'total-teachers', title: 'Total Teachers', subtitle: 'Registered Teachers' },
+            { id: 'total-classes', title: 'Total Classes', subtitle: 'Active Classes' },
+            { id: 'today-attendance', title: "Today's Attendance", subtitle: 'Students Present' },
+            { id: 'monthly-fee', title: 'Monthly Fee Collection', subtitle: 'Current Month' },
+            { id: 'pending-fee', title: 'Outstanding Fees', subtitle: 'Pending Payments' }
+        ];
+
+        // --- 2. FORCE-UPDATE THE HTML TO MATCH THE CORRECT STRUCTURE ---
+        const dashboardCards = document.querySelectorAll('#dashboard-view .card');
+        if (dashboardCards.length >= correctCards.length) {
+            correctCards.forEach((cardData, index) => {
+                const cardElement = dashboardCards[index];
+                cardElement.querySelector('.card-title').textContent = cardData.title;
+                cardElement.querySelector('.card-subtitle').textContent = cardData.subtitle;
+                cardElement.querySelector('.card-value').id = cardData.id;
+            });
+        }
+
+        // --- 3. CALCULATE DATA ---
+        const totalStudents = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active').length;
+        const totalTeachers = await getCount(STORES.TEACHERS);
+        const totalClasses = await getCount(STORES.CLASSES);
+        const todayISO = new Date().toISOString().split('T')[0];
+        const attendancePercentage = await getTodayAttendancePercentage(todayISO);
+        const currentMonth = new Date().getMonth() + 1;
+        const currentYear = new Date().getFullYear();
+        const monthlyFee = await getMonthlyFeeCollection(currentMonth, currentYear);
+        const pendingFee = await getTotalPendingFee();
+
+        // --- 4. POPULATE THE NOW-CORRECTED CARDS ---
+        document.getElementById('total-students').textContent = totalStudents;
+        document.getElementById('total-teachers').textContent = totalTeachers;
+        document.getElementById('total-classes').textContent = totalClasses;
+        document.getElementById('today-attendance').textContent = attendancePercentage + '%';
+        document.getElementById('monthly-fee').textContent = formatCurrency(monthlyFee);
+        document.getElementById('pending-fee').textContent = formatCurrency(pendingFee);
+
+        // --- 5. ATTACH ONCLICK HANDLERS ---
+        document.getElementById('total-students').parentElement.onclick = () => showDashboardDetailsPopup('Active Students', generateStudentDetailsHTML);
+        document.getElementById('total-teachers').parentElement.onclick = () => showDashboardDetailsPopup('Teachers List', generateTeacherDetailsHTML);
+        document.getElementById('monthly-fee').parentElement.onclick = () => showDashboardDetailsPopup(`Fee Collection - ${new Date(currentYear, currentMonth - 1).toLocaleString('default', { month: 'long' })}`, () => generateMonthlyCollectionDetailsHTML(currentMonth, currentYear));
+        document.getElementById('pending-fee').parentElement.onclick = () => showDashboardDetailsPopup('Outstanding Fee Details', generatePendingFeeDetailsHTML);
+
+        // --- 6. RELOAD THE TABLES (THIS WAS MISSING) ---
+        await loadUpcomingEvents();
+        await loadRecentActivities();
+
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        showNotification('Error loading dashboard data.', 'error');
+    }
+}
+async function generateStudentDetailsHTML() {
+    const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active');
+    let html = `<div class="table-container" style="max-height: 70vh; overflow-y: auto;"><table class="table"><thead><tr><th>Roll No</th><th>Name</th><th>Father's Name</th><th>Class</th><th>Contact</th></tr></thead><tbody>`;
+    for (const student of students) {
+        const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+        html += `<tr><td>${student.rollNumber}</td><td>${student.name}</td><td>${student.fatherName}</td><td>${className}</td><td>${student.contact}</td></tr>`;
+    }
+    html += `</tbody></table></div>`;
+    return html;
+}
+
+async function generateTeacherDetailsHTML() {
+    const teachers = await getAllFromStore(STORES.TEACHERS);
+    let html = `<div class="table-container" style="max-height: 70vh; overflow-y: auto;"><table class="table"><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Contact</th><th>Joining Date</th></tr></thead><tbody>`;
+    for (const teacher of teachers) {
+        html += `<tr><td>${teacher.employeeId}</td><td>${teacher.name}</td><td>${teacher.specialization}</td><td>${teacher.contact}</td><td>${formatDate(teacher.joiningDate)}</td></tr>`;
+    }
+    html += `</tbody></table></div>`;
+    return html;
+}
+
+async function generateMonthlyCollectionDetailsHTML(month, year) {
+    const records = (await getAllFromStore(STORES.FEES)).filter(f => f.month === month && f.year === year);
+    const total = records.reduce((sum, rec) => sum + rec.total, 0);
+    let html = `<div class="dashboard-cards" style="margin-bottom: 15px;"><div class="card"><div class="card-title">Total Collected</div><div class="card-value">${formatCurrency(total)}</div></div><div class="card"><div class="card-title">Transactions</div><div class="card-value">${records.length}</div></div></div>`;
+    html += `<div class="table-container" style="max-height: 60vh; overflow-y: auto;"><table class="table"><thead><tr><th>Receipt #</th><th>Student</th><th>Date</th><th>Amount</th></tr></thead><tbody>`;
+    for (const record of records) {
+        html += `<tr><td>${record.receiptNumber}</td><td>${record.studentName}</td><td>${formatDate(record.date)}</td><td>${formatCurrency(record.total)}</td></tr>`;
+    }
+    html += `</tbody></table></div>`;
+    return html;
+}
+
+async function generatePendingFeeDetailsHTML() {
+    const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
+    const feeMap = new Map((await getAllFromStore(STORES.FEES)).map(f => [`${f.studentId}-${f.month}-${f.year}`, true]));
+    const currentDate = new Date();
+    
+    let defaulters = [];
+    let totalDueAmount = 0;
+
+    for (const student of students) {
+        let studentDue = 0;
+        let dueMonthsList = [];
+        const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+        const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+        if (studentMonthlyFee === 0 || !student.admissionDate) continue;
+
+        const startDate = new Date(student.admissionDate);
+        for (let d = new Date(startDate.getFullYear(), startDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+            if (!feeMap.has(`${student.id}-${d.getMonth() + 1}-${d.getFullYear()}`)) {
+                studentDue += studentMonthlyFee;
+                dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`);
             }
         }
-        async function getTodayAttendancePercentage(date) {
-            try {
-                const attendanceRecords = await getAllFromIndex(STORES.ATTENDANCE, 'date', date);
-                if (attendanceRecords.length === 0) {
-                    return 0;
-                }
-                const presentCount = attendanceRecords.filter(record => record.status === 'present').length;
-                const percentage = Math.round((presentCount / attendanceRecords.length) * 100);
-                return percentage;
-            } catch (error) {
-                console.error('Error getting today attendance percentage:', error);
-                return 0;
-            }
+        if (studentDue > 0) {
+            totalDueAmount += studentDue;
+            const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+            defaulters.push({ name: student.name, rollNumber: student.rollNumber, className, amount: studentDue, months: dueMonthsList.join(', ') });
         }
+    }
+
+    let html = `<div class="dashboard-cards" style="margin-bottom: 15px;"><div class="card"><div class="card-title">Total Outstanding</div><div class="card-value">${formatCurrency(totalDueAmount)}</div></div><div class="card"><div class="card-title">Defaulters</div><div class="card-value">${defaulters.length}</div></div></div>`;
+    html += `<div class="table-container" style="max-height: 60vh; overflow-y: auto;"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Class</th><th>Total Due</th><th>Due Months</th></tr></thead><tbody>`;
+    defaulters.forEach(defaulter => {
+        html += `<tr><td>${defaulter.rollNumber}</td><td>${defaulter.name}</td><td>${defaulter.className}</td><td>${formatCurrency(defaulter.amount)}</td><td style="font-size: 0.8em;">${defaulter.months}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+    return html;
+}       
+async function getTodayAttendancePercentage(date) {
+    try {
+        const attendanceRecordsForToday = await getAllFromIndex(STORES.ATTENDANCE, 'date', date);
+        if (attendanceRecordsForToday.length === 0) return 0;
+
+        const attendedClassSections = new Set(
+            attendanceRecordsForToday.map(r => `${r.classId}-${r.sectionId}`)
+        );
+
+        if (attendedClassSections.size === 0) return 0;
+
+        const allStudents = await getAllFromStore(STORES.STUDENTS);
+        const activeStudentsInAttendedClasses = allStudents.filter(s => {
+            const classSectionKey = `${s.classId}-${s.sectionId}`;
+            return (s.status === 'active' || !s.status) && attendedClassSections.has(classSectionKey);
+        });
+
+        if (activeStudentsInAttendedClasses.length === 0) return 0;
+
+        const presentCount = attendanceRecordsForToday.filter(record => record.status === 'present' && !record.isLeave).length;
+        const percentage = Math.round((presentCount / activeStudentsInAttendedClasses.length) * 100);
+        return isNaN(percentage) ? 0 : percentage;
+    } catch (error) {
+        console.error('Error getting today attendance percentage:', error);
+        return 0;
+    }
+}
         async function getMonthlyFeeCollection(month, year) {
             try {
                 const feeRecords = await getAllFromStore(STORES.FEES);
@@ -4106,7 +4366,6 @@
             }
         }
         async function loadAndCacheAppSettings() {
-            // Set defaults in case they don't exist in the database yet
             const defaults = {
                 libraryReturnDays: 14,
                 feeDueDay: 10,
@@ -4114,8 +4373,6 @@
                 weeklyHoliday: ['Sunday']
             };
             appSettings = await getFromStore(STORES.SETTINGS, 'general') || defaults;
-
-            // Ensure our required settings have values
             for (const key in defaults) {
                 if (appSettings[key] === undefined) {
                     appSettings[key] = defaults[key];
@@ -4594,7 +4851,6 @@
             try {
                 const allStudents = studentsToLoad === null ? await getAllFromStore(STORES.STUDENTS) : studentsToLoad;
                 const activeStudents = allStudents.filter(s => !s.status || s.status === 'active');
-
                 const tbody = document.querySelector('#students-table tbody');
                 tbody.innerHTML = '';
                 if (activeStudents.length === 0) {
@@ -4605,8 +4861,6 @@
                     const row = document.createElement('tr');
                     const classData = student.classId ? await getFromStore(STORES.CLASSES, student.classId) : null;
                     const sectionData = student.sectionId ? await getFromStore(STORES.SECTIONS, student.sectionId) : null;
-
-                    // --- MODIFICATION: Added "View" button ---
                     row.innerHTML = `
                 <td>${student.rollNumber}</td>
                 <td>${student.name}</td>
@@ -4627,21 +4881,15 @@
                 console.error('Error loading students table:', error);
             }
         }
-
-
-        // Function to export an HTML table to CSV format
         function exportTableToCSV(tableId, filename) {
             const table = document.getElementById(tableId);
             if (!table) return;
-
             let csv = [];
             const rows = table.querySelectorAll("tr");
-
             for (const row of rows) {
                 const cols = row.querySelectorAll("td, th");
                 const rowData = [];
                 for (const col of cols) {
-                    // Escape commas and wrap in quotes
                     let data = col.innerText.replace(/"/g, '""');
                     if (data.includes(',')) {
                         data = `"${data}"`;
@@ -4650,7 +4898,6 @@
                 }
                 csv.push(rowData.join(","));
             }
-
             const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
@@ -4660,30 +4907,23 @@
             link.click();
             document.body.removeChild(link);
         }
-
-
-        // Main function to orchestrate the modal view
         async function viewStudentDetails(studentId) {
             showLoading();
             const modal = document.getElementById('student-details-modal');
             const contentArea = document.getElementById('modal-content-area');
-            contentArea.innerHTML = ''; // Clear previous content
-
+            contentArea.innerHTML = '';
             try {
                 const student = await getFromStore(STORES.STUDENTS, studentId);
                 if (!student) {
                     showNotification('Student not found.', 'error');
                     return;
                 }
-
                 const profileHTML = await generateProfileSectionHTML(student);
                 const feeHTML = await generateFeeSectionHTML(student);
                 const attendanceHTML = await generateAttendanceSectionHTML(studentId);
                 const examHTML = await generateExamSectionHTML(studentId);
-
                 contentArea.innerHTML = profileHTML + feeHTML + attendanceHTML + examHTML;
                 modal.style.display = 'block';
-
             } catch (error) {
                 console.error('Error viewing student details:', error);
                 showNotification('Could not load student details.', 'error');
@@ -4691,8 +4931,6 @@
                 hideLoading();
             }
         }
-
-        // Helper to generate the top profile section
         async function generateProfileSectionHTML(student) {
             const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
             const sectionName = student.sectionId ? (await getFromStore(STORES.SECTIONS, student.sectionId))?.name : 'N/A';
@@ -4712,39 +4950,31 @@
         </div>
     `;
         }
-
-        // Helper to generate the complex Fee section with dues calculation
         async function generateFeeSectionHTML(student) {
             let html = `<div class="form-container" style="margin-top:20px;">
                     <div class="form-title">Fee History</div>`;
-
             const paidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
-            const paidMap = new Map(paidRecords.map(rec => `${rec.month}-${rec.year}`));
-
+            const paidMap = new Map(paidRecords.map(rec => [`${rec.month}-${rec.year}`, true]));
             const dueRecords = [];
             let totalPaid = 0;
             let totalDue = 0;
-
             const admissionDate = new Date(student.admissionDate);
-            admissionDate.setDate(1); // Start from the beginning of the admission month
+            admissionDate.setDate(1);
             const currentDate = new Date();
             currentDate.setDate(1);
-
             for (let d = new Date(admissionDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
-                const month = d.toLocaleString('en-US', { month: 'long' });
+                const month = d.getMonth() + 1;
+                const monthNameForDisplay = d.toLocaleString('en-US', { month: 'long' });
                 const year = d.getFullYear();
-
                 if (!paidMap.has(`${month}-${year}`)) {
                     const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
                     const dueAmount = feeStructure?.monthlyFee || student.monthlyFee || 0;
                     if (dueAmount > 0) {
-                        dueRecords.push({ month, year, amount: dueAmount });
+                        dueRecords.push({ month: monthNameForDisplay, year, amount: dueAmount });
                         totalDue += dueAmount;
                     }
                 }
             }
-
-            // Display Due Fees
             if (dueRecords.length > 0) {
                 html += `<h4>Due Fees (Total: ${formatCurrency(totalDue)})</h4>
                  <div class="table-container" style="max-height: 200px; overflow-y: auto;">
@@ -4755,8 +4985,6 @@
                 });
                 html += `</tbody></table></div>`;
             }
-
-            // Display Paid Fees
             html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                 <h4>Paid Fee History</h4>
                 <button class="btn btn-success btn-sm no-print" onclick="exportTableToCSV('student-paid-fees-table', 'FeeHistory_${student.rollNumber}.csv')">Export Paid</button>
@@ -4765,11 +4993,12 @@
                <table class="table" id="student-paid-fees-table">
                  <thead><tr><th>Receipt</th><th>Month/Year</th><th>Date</th><th>Amount</th><th>Fine</th><th>Discount</th><th>Total</th></tr></thead><tbody>`;
             if (paidRecords.length > 0) {
-                paidRecords.forEach(rec => {
+                paidRecords.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(rec => {
                     totalPaid += rec.total;
+                    const monthName = new Date(rec.year, rec.month - 1, 1).toLocaleString('en-US', { month: 'long' });
                     html += `<tr>
                 <td>${rec.receiptNumber}</td>
-                <td>${rec.month} ${rec.year}</td>
+                <td>${monthName} ${rec.year}</td>
                 <td>${formatDate(rec.date)}</td>
                 <td>${formatCurrency(rec.amount)}</td>
                 <td>${formatCurrency(rec.fine)}</td>
@@ -4783,8 +5012,6 @@
             html += `</tbody><tfoot><tr><td colspan="6" style="text-align:right; font-weight:bold;">Total Paid:</td><td>${formatCurrency(totalPaid)}</td></tr></tfoot></table></div></div>`;
             return html;
         }
-
-        // Helper to generate the attendance section
         async function generateAttendanceSectionHTML(studentId) {
             const records = await getAllFromIndex(STORES.ATTENDANCE, 'studentId', studentId);
             let html = `<div class="form-container" style="margin-top:20px;">
@@ -4811,8 +5038,6 @@
             html += `</tbody></table></div></div>`;
             return html;
         }
-
-        // Helper to generate the exam results section
         async function generateExamSectionHTML(studentId) {
             const records = await getAllFromIndex(STORES.MARKS, 'studentId', studentId);
             let html = `<div class="form-container" style="margin-top:20px;">
@@ -4944,6 +5169,30 @@
                 console.error('Error checking and loading sample data:', error);
                 showNotification('Error checking and loading sample data.', 'error');
             }
+        }
+        function showSendNoticePopup(name, phone, amount, month, year) {
+            const modal = document.getElementById('send-notice-modal');
+            const studentInfoDiv = document.getElementById('notice-student-info');
+            const messageTextarea = document.getElementById('notice-message-template');
+            studentInfoDiv.innerHTML = `<strong>To:</strong> ${name} <br> <strong>Phone:</strong> ${phone}`;
+            const schoolName = appSettings.schoolName || 'The School';
+            const message = `Dear Parent,\nThis is a reminder that the fee of ${formatCurrency(amount)} for your child ${name} for the month of ${month}, ${year} is due.\n\nKindly pay at your earliest convenience.\n\nThank you,\n${schoolName}`;
+            messageTextarea.value = message;
+            const smsBtn = document.getElementById('send-sms-btn');
+            const whatsappBtn = document.getElementById('send-whatsapp-btn');
+            smsBtn.onclick = function () {
+                const encodedMessage = encodeURIComponent(messageTextarea.value);
+                window.open(`sms:${phone}?body=${encodedMessage}`);
+            };
+            whatsappBtn.onclick = function () {
+                let whatsappPhone = phone.replace(/-/g, '');
+                if (whatsappPhone.startsWith('0')) {
+                    whatsappPhone = '92' + whatsappPhone.substring(1);
+                }
+                const encodedMessage = encodeURIComponent(messageTextarea.value);
+                window.open(`https://wa.me/${whatsappPhone}?text=${encodedMessage}`, '_blank');
+            };
+            modal.style.display = 'block';
         }
         async function loadSampleData() {
             try {
@@ -5715,7 +5964,6 @@
                     await addToStore(STORES.ACTIVITIES, activityData);
                 }
                 await loadDropdownData();
-                await loadDashboardData();
                 console.log('Sample data loaded successfully');
                 showNotification('Sample data loaded successfully.', 'success');
             } catch (error) {
@@ -5775,21 +6023,16 @@
             const classSelect = document.getElementById(classDropdownId);
             const sectionSelect = document.getElementById(sectionDropdownId);
             if (!classSelect || !sectionSelect) return;
-
             const classId = parseInt(classSelect.value);
-            sectionSelect.innerHTML = ''; // Clear previous options
-
-            // Add a default or "All" option if the parent dropdown supports it
+            sectionSelect.innerHTML = '';
             if (classSelect.querySelector('option[value="all"]')) {
                 sectionSelect.innerHTML = '<option value="all">All Sections</option>';
             } else {
                 sectionSelect.innerHTML = '<option value="">Select Section</option>';
             }
-
             if (isNaN(classId)) {
-                return; // No class selected, so do nothing more
+                return;
             }
-
             try {
                 const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
                 if (sections.length === 0) {
@@ -5902,13 +6145,10 @@
         async function populateSectionsForResults() {
             const classSelect = document.getElementById('result-class');
             const sectionSelect = document.getElementById('result-section');
-            if (!sectionSelect) return; // Exit if the element isn't there
-
-            sectionSelect.innerHTML = '<option value="">Select Section</option>'; // Clear previous options
-
+            if (!sectionSelect) return;
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
             const classId = parseInt(classSelect.value);
             if (isNaN(classId)) return;
-
             try {
                 const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
                 sections.forEach(section => {
@@ -6022,8 +6262,6 @@
                         loadClassDropdowns();
                         loadSubjectDropdowns();
                         loadExamDropdowns();
-
-                        // Attach listeners here to ensure they are active when the view is visible
                         document.getElementById('marks-class').addEventListener('change', populateSectionsForMarksEntry);
                         document.getElementById('result-class').addEventListener('change', populateSectionsForResults);
                         break;
@@ -6112,10 +6350,8 @@
                     feeCategory: document.getElementById('student-fee-category').value,
                     monthlyFee: parseFloat(document.getElementById('student-monthly-fee').value),
                     notes: document.getElementById('student-notes').value,
-                    // --- MODIFICATION: Set status based on add or edit mode ---
                     status: editId ? document.getElementById('student-status').value : 'active'
                 };
-
                 if (editId) {
                     await updateInStore(STORES.STUDENTS, editId, studentData);
                     showNotification('Student record updated successfully.', 'success');
@@ -6125,14 +6361,12 @@
                     await addToStore(STORES.STUDENTS, studentData);
                     showNotification('Student added successfully.', 'success');
                 }
-
                 form.reset();
                 delete form.dataset.editId;
-                statusContainer.style.display = 'none'; // Hide status on reset
+                statusContainer.style.display = 'none';
                 form.querySelector('button[type="submit"]').textContent = 'Add Student';
                 document.querySelector('.tab[data-tab="students-list"]').click();
                 await loadStudentsTable();
-
             } catch (error) {
                 console.error('Error saving student:', error);
                 showNotification('Failed to save student.', 'error');
@@ -6145,20 +6379,15 @@
             try {
                 const student = await getFromStore(STORES.STUDENTS, id);
                 if (!student) return;
-
                 const form = document.getElementById('student-form');
                 form.dataset.editId = id;
-
-                // Show and set the status field
                 document.getElementById('student-status-container').style.display = 'block';
                 document.getElementById('student-status').value = student.status || 'active';
-
                 document.getElementById('student-name').value = student.name;
                 document.getElementById('student-father').value = student.fatherName;
                 document.getElementById('student-dob').value = student.dob;
                 document.getElementById('student-gender').value = student.gender;
                 document.getElementById('student-class').value = student.classId;
-                // After setting class, populate and set section
                 await populateSectionsForStudentForm();
                 document.getElementById('student-section').value = student.sectionId;
                 document.getElementById('student-contact').value = student.contact;
@@ -6170,7 +6399,6 @@
                 document.getElementById('student-fee-category').value = student.feeCategory;
                 document.getElementById('student-monthly-fee').value = student.monthlyFee;
                 document.getElementById('student-notes').value = student.notes;
-
                 document.querySelector('.tab[data-tab="add-student"]').click();
                 form.querySelector('button[type="submit"]').textContent = 'Update Student';
             } catch (e) {
@@ -6186,28 +6414,59 @@
             }
             return null;
         }
-
-        function calculateLateFee() {
+        async function calculateLateFee() {
             const month = parseInt(document.getElementById('fee-month').value);
             const year = parseInt(document.getElementById('fee-year').value);
             const paymentDateStr = document.getElementById('fee-payment-date').value;
-
-            if (!month || !year || !paymentDateStr) return;
-
-            // Due date is the 'feeDueDay' of the NEXT month.
-            const dueDate = new Date(year, month, appSettings.feeDueDay);
-            const paymentDate = new Date(paymentDateStr);
-
+            const studentId = parseInt(document.getElementById('fee-roll-number').dataset.studentId);
             const fineInput = document.getElementById('fee-fine');
-
+            if (!month || !year || !paymentDateStr || !studentId) {
+                fineInput.value = 0;
+                calculateFeeTotal();
+                return;
+            }
+            const existingFee = await getAllFromIndex(STORES.FEES, 'studentMonthYear', [studentId, month, year]);
+            if (existingFee.length > 0) {
+                fineInput.value = 0;
+                showNotification('Fee for this month is already paid.', 'info');
+                calculateFeeTotal();
+                return;
+            }
+            const dueDate = new Date(year, month - 1, appSettings.feeDueDay);
+            const paymentDate = new Date(paymentDateStr);
             if (paymentDate > dueDate) {
                 fineInput.value = appSettings.feeLateFine || 0;
                 showNotification(`Late fee of ${formatCurrency(appSettings.feeLateFine)} applied.`, 'info');
             } else {
                 fineInput.value = 0;
             }
-            // Recalculate the total amount
             calculateFeeTotal();
+        }
+        async function calculateAndDisplayDueFee(student) {
+            let totalDue = 0;
+            const dueFeeInput = document.getElementById('fee-due');
+            dueFeeInput.value = "Calculating...";
+            const paidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
+            const paidMap = new Map(paidRecords.map(rec => [`${rec.month}-${rec.year}`, true]));
+            const admissionDate = new Date(student.admissionDate);
+            admissionDate.setDate(1);
+            const currentDate = new Date();
+            for (let d = new Date(admissionDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+                const month = d.getMonth() + 1;
+                const year = d.getFullYear();
+                if (!paidMap.has(`${month}-${year}`)) {
+                    const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                    const dueAmount = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                    if (dueAmount > 0) {
+                        totalDue += dueAmount;
+                    }
+                }
+            }
+            if (totalDue > 0) {
+                dueFeeInput.value = formatCurrency(totalDue);
+            } else {
+                dueFeeInput.value = "No Dues";
+            }
         }
         function setupEventListeners() {
             document.getElementById('marks-table-container').addEventListener('input', function (e) {
@@ -6215,6 +6474,14 @@
                     calculateMarksRow(e.target);
                 }
             });
+            document.addEventListener('click', function (e) {
+                const searchInput = document.getElementById('fee-student-search');
+                const resultsContainer = document.getElementById('fee-search-results');
+                if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+            document.getElementById('fee-student-search').addEventListener('input', searchStudentForFee);
             document.getElementById('modal-close-btn').addEventListener('click', () => {
                 document.getElementById('student-details-modal').style.display = 'none';
             });
@@ -6222,6 +6489,12 @@
                 if (['fee-month', 'fee-year', 'fee-payment-date'].includes(e.target.id)) {
                     calculateLateFee();
                 }
+            });
+            document.getElementById('send-notice-modal-close').addEventListener('click', () => {
+                document.getElementById('send-notice-modal').style.display = 'none';
+            });
+            document.getElementById('fee-receipt-modal-close').addEventListener('click', () => {
+                document.getElementById('fee-receipt-modal').style.display = 'none';
             });
             document.querySelector('[data-tab="students-list"]').addEventListener('click', () => loadStudentsTable());
             document.querySelector('[data-tab="teachers-list"]').addEventListener('click', () => loadTeachersTable());
@@ -6240,8 +6513,6 @@
             document.getElementById('search-student-btn').addEventListener('click', searchStudents);
             document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
             document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
-            document.getElementById('search-student-fee').addEventListener('click', searchStudentForFee);
-            document.getElementById('search-employee-salary').addEventListener('click', searchEmployeeForSalary);
             document.getElementById('load-attendance').addEventListener('click', loadStudentsForAttendance);
             document.getElementById('view-attendance-btn').addEventListener('click', viewAttendance);
             document.getElementById('generate-attendance-report').addEventListener('click', generateAttendanceReport);
@@ -6680,6 +6951,31 @@
                 hideLoading();
             }
         }
+        async function searchStudentForFee() {
+            const searchTerm = document.getElementById('fee-student-search').value.toLowerCase();
+            const resultsContainer = document.getElementById('fee-search-results');
+            resultsContainer.innerHTML = '';
+            resultsContainer.style.display = 'none';
+            if (searchTerm.length < 2) return;
+            const allStudents = await getAllFromStore(STORES.STUDENTS);
+            const activeStudents = allStudents.filter(s => !s.status || s.status === 'active');
+            const filteredStudents = activeStudents.filter(s =>
+                String(s.rollNumber).includes(searchTerm) ||
+                s.name.toLowerCase().includes(searchTerm)
+            ).slice(0, 10);
+            if (filteredStudents.length > 0) {
+                filteredStudents.forEach(student => {
+                    const resultItem = document.createElement('div');
+                    resultItem.textContent = `${student.name} (${student.rollNumber})`;
+                    resultItem.style.cssText = "padding: 8px 12px; cursor: pointer;";
+                    resultItem.onmouseover = () => resultItem.style.backgroundColor = '#f1f1f1';
+                    resultItem.onmouseout = () => resultItem.style.backgroundColor = 'white';
+                    resultItem.onclick = () => loadStudentForFeeCollection(student.id);
+                    resultsContainer.appendChild(resultItem);
+                });
+                resultsContainer.style.display = 'block';
+            }
+        }
         async function searchTeachers() {
             showLoading();
             try {
@@ -6720,17 +7016,12 @@
             const classSelect = document.getElementById('marks-class');
             const sectionSelect = document.getElementById('marks-section');
             const subjectSelect = document.getElementById('marks-subject');
-
-            // Clear both dependent dropdowns
             sectionSelect.innerHTML = '<option value="">Select Section</option>';
             subjectSelect.innerHTML = '<option value="">Select Subject</option>';
             document.getElementById('marks-table-container').style.display = 'none';
-
             const classId = parseInt(classSelect.value);
-            if (isNaN(classId)) return; // Stop if no valid class is selected
-
+            if (isNaN(classId)) return;
             try {
-                // Populate Sections
                 const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
                 if (sections.length > 0) {
                     sections.forEach(section => {
@@ -6739,8 +7030,6 @@
                 } else {
                     sectionSelect.innerHTML = '<option value="">No Sections</option>';
                 }
-
-                // Populate Subjects assigned to this class
                 const classSubjects = await getAllFromIndex(STORES.CLASS_SUBJECTS, 'classId', classId);
                 if (classSubjects.length > 0) {
                     for (const cs of classSubjects) {
@@ -6759,32 +7048,25 @@
         function calculateMarksRow(inputElement) {
             const row = inputElement.closest('tr');
             if (!row) return;
-
             const totalMarks = parseFloat(document.getElementById('marks-total').value) || 100;
             const obtainedMarks = parseFloat(inputElement.value);
-
             const percentageCell = row.children[3];
             const gradeCell = row.children[4];
-
             if (isNaN(obtainedMarks)) {
                 percentageCell.textContent = '-';
                 gradeCell.textContent = '-';
                 return;
             }
-
             const percentage = (obtainedMarks / totalMarks) * 100;
             percentageCell.textContent = percentage.toFixed(2) + '%';
-
             let grade = 'F';
             const passingPercent = parseFloat(document.getElementById('exam-passing-percent').value) || 33;
-
             if (percentage >= 90) grade = 'A+';
             else if (percentage >= 80) grade = 'A';
             else if (percentage >= 70) grade = 'B';
             else if (percentage >= 60) grade = 'C';
             else if (percentage >= 50) grade = 'D';
             else if (percentage >= passingPercent) grade = 'E';
-
             gradeCell.textContent = grade;
         }
         async function populateSectionsForStudentForm() {
@@ -6956,34 +7238,28 @@
             const classId = parseInt(document.getElementById('result-class').value);
             const sectionId = parseInt(document.getElementById('result-section').value);
             const container = document.getElementById('result-cards-container');
-
             if (isNaN(examId) || isNaN(classId) || isNaN(sectionId)) {
                 showNotification('Please select Exam, Class and Section.', 'error');
                 return;
             }
-
             showLoading();
             container.innerHTML = '';
             container.style.display = 'none';
-
             try {
                 const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.classId === classId && s.sectionId === sectionId);
                 const allMarks = (await getAllFromStore(STORES.MARKS)).filter(m => m.examId === examId);
                 const exam = await getFromStore(STORES.EXAMS, examId);
-
                 if (students.length === 0) {
                     container.innerHTML = `<div class="form-container"><p>No student found in this class/section.</p></div>`;
                     container.style.display = 'block';
                     hideLoading();
                     return;
                 }
-
                 for (const student of students) {
                     const studentMarks = allMarks.filter(m => m.studentId === student.id);
                     let totalObtained = 0;
                     let totalMarks = 0;
                     let resultStatus = 'Passed';
-
                     let marksTable = `
                 <table class="table" style="font-size: 14px; margin-top: 10px;">
                     <thead><tr><th>Subject</th><th>Total Marks</th><th>Obtained</th><th>Result</th></tr></thead>
@@ -6995,9 +7271,7 @@
                         totalMarks += mark.totalMarks;
                         const passingPercent = exam.passingPercent || 33;
                         const isPassed = ((mark.obtainedMarks / mark.totalMarks) * 100) >= passingPercent;
-
                         if (!isPassed) resultStatus = 'Failed';
-
                         marksTable += `
                     <tr>
                         <td>${subject ? subject.name : 'N/A'}</td>
@@ -7008,11 +7282,9 @@
                 `;
                     }
                     marksTable += `</tbody></table>`;
-
                     const percentage = totalMarks > 0 ? ((totalObtained / totalMarks) * 100).toFixed(2) : 0;
                     const cardId = `result-card-${student.id}`;
                     const selectedvaua = document.querySelector("#result-exam").selectedOptions[0].text;
-
                     const cardHTML = `
                 <div class="result-card-wrapper" style="position: relative; margin-bottom: 20px; page-break-inside: avoid;">
                     <button class="btn btn-info btn-sm no-print" 
@@ -7050,37 +7322,30 @@
                 hideLoading();
             }
         }
-
-        async function searchStudentForFee() {
-            const searchTerm = document.getElementById('fee-student-search').value;
-            if (!searchTerm) return;
+        async function loadStudentForFeeCollection(studentId) {
+            document.getElementById('fee-search-results').style.display = 'none';
+            document.getElementById('fee-student-search').value = '';
             showLoading();
             try {
-                const allStudents = await getAllFromStore(STORES.STUDENTS);
-                const student = allStudents.find(s => String(s.rollNumber) === searchTerm || s.name.toLowerCase().includes(searchTerm.toLowerCase()));
-                if (!student) {
-                    showNotification('Student not found.', 'error');
-                    document.getElementById('fee-student-details').style.display = 'none';
-                    document.getElementById('fee-payment-form').style.display = 'none';
-                    document.getElementById('fee-history-container').style.display = 'none';
-                    return;
-                }
+                const student = await getFromStore(STORES.STUDENTS, studentId);
+                if (!student) return;
+                calculateAndDisplayDueFee(student);
                 document.getElementById('fee-roll-number').value = student.rollNumber;
                 document.getElementById('fee-roll-number').dataset.studentId = student.id;
                 document.getElementById('fee-student-name').value = student.name;
                 document.getElementById('fee-class').value = student.className;
                 document.getElementById('fee-category').value = student.feeCategory;
-                document.getElementById('fee-monthly').value = student.monthlyFee;
-                document.getElementById('fee-amount').value = student.monthlyFee;
-                document.getElementById('fee-due').value = "0 (Calculation needed)";
+                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                const monthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                document.getElementById('fee-monthly').value = monthlyFee;
+                document.getElementById('fee-amount').value = monthlyFee;
                 document.getElementById('fee-student-details').style.display = 'block';
                 document.getElementById('fee-payment-form').style.display = 'block';
                 document.getElementById('fee-history-container').style.display = 'block';
-                calculateFeeTotal();
+                calculateLateFee();
                 loadFeeHistory(student.id);
             } catch (error) {
-                console.error("Error searching student for fee:", error);
-                showNotification('Failed to search student for fee.', 'error');
+                console.error("Error loading student for fee:", error);
             } finally {
                 hideLoading();
             }
@@ -7093,18 +7358,22 @@
                 historyTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No fee history available.</td></tr>';
                 return;
             }
+            allFees.sort((a, b) => new Date(b.date) - new Date(a.date));
             allFees.forEach(fee => {
                 const row = document.createElement('tr');
+                const monthName = new Date(fee.year, fee.month - 1, 1).toLocaleString('en-US', { month: 'long' });
                 row.innerHTML = `
-                    <td>${fee.receiptNumber}</td>
-                    <td>${fee.month} ${fee.year}</td>
-                    <td>${formatDate(fee.date)}</td>
-                    <td>${formatCurrency(fee.amount)}</td>
-                    <td>${formatCurrency(fee.fine)}</td>
-                    <td>${formatCurrency(fee.discount)}</td>
-                    <td>${formatCurrency(fee.total)}</td>
-                    <td><button class="btn btn-sm btn-primary">Receipt</button></td>
-                `;
+            <td>${fee.receiptNumber}</td>
+            <td>${monthName} ${fee.year}</td>
+            <td>${formatDate(fee.date)}</td>
+            <td>${formatCurrency(fee.amount)}</td>
+            <td>${formatCurrency(fee.fine)}</td>
+            <td>${formatCurrency(fee.discount)}</td>
+            <td>${formatCurrency(fee.total)}</td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="viewFeeReceipt(${fee.id})">Receipt</button>
+            </td>
+        `;
                 historyTbody.appendChild(row);
             });
         }
@@ -7206,20 +7475,25 @@
                     paidFees.set(key, true);
                 });
                 let hasDefaulters = false;
+                const monthName = new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'long' });
                 for (const student of students) {
                     const lookupKey = `${student.id}-${month}-${year}`;
                     if (!paidFees.has(lookupKey)) {
                         hasDefaulters = true;
+                        const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                        const expectedFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
                         const row = document.createElement('tr');
                         row.innerHTML = `
                     <td>${student.rollNumber}</td>
                     <td>${student.name}</td>
                     <td>${student.className}</td>
-                    <td>${formatCurrency(student.monthlyFee)}</td>
-                    <td>${month}, ${year}</td>
-                    <td>${formatCurrency(student.monthlyFee)}</td>
+                    <td>${formatCurrency(expectedFee)}</td>
+                    <td>${monthName}, ${year}</td>
+                    <td>${formatCurrency(expectedFee)}</td>
                     <td>${student.contact}</td>
-                    <td><button class="btn btn-primary btn-sm">Send Notice</button></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showSendNoticePopup('${student.name.replace(/'/g, "\\'")}', '${student.contact}', ${expectedFee}, '${monthName}', ${year})">Send Notice</button>
+                    </td>
                 `;
                         tbody.appendChild(row);
                     }
@@ -7542,7 +7816,6 @@
                 if (photoInput.files && photoInput.files[0]) {
                     photo = await fileToBase64(photoInput.files[0]);
                 }
-
                 const teacherData = {
                     name: document.getElementById('teacher-name').value,
                     fatherName: document.getElementById('teacher-father').value,
@@ -7562,11 +7835,9 @@
                     deductions: parseFloat(document.getElementById('teacher-deductions').value) || 0,
                     notes: document.getElementById('teacher-notes').value,
                 };
-
                 if (photo) {
                     teacherData.photo = photo;
                 }
-
                 if (editId) {
                     teacherData.updatedAt = new Date().toISOString();
                     await updateInStore(STORES.TEACHERS, editId, teacherData);
@@ -7578,14 +7849,12 @@
                     await addToStore(STORES.TEACHERS, teacherData);
                     showNotification('Teacher added successfully.', 'success');
                 }
-
                 form.reset();
                 delete form.dataset.editId;
                 form.querySelector('button[type="submit"]').textContent = 'Add Teacher';
                 document.querySelector('.tab[data-tab="teachers-list"]').click();
                 await loadTeachersTable();
                 await loadTeacherDropdowns();
-
             } catch (error) {
                 console.error('Error saving teacher:', error);
                 showNotification('Failed to save teacher.', 'error');
@@ -7920,50 +8189,33 @@
             try {
                 showLoading();
                 const studentId = parseInt(document.getElementById('fee-roll-number').getAttribute('data-student-id'));
-                const studentName = document.getElementById('fee-student-name').value;
-                const month = document.getElementById('fee-month').value;
+                const student = await getFromStore(STORES.STUDENTS, studentId);
+                const monthNumber = parseInt(document.getElementById('fee-month').value);
+                const monthName = document.getElementById('fee-month').options[document.getElementById('fee-month').selectedIndex].text;
                 const year = parseInt(document.getElementById('fee-year').value);
-                const amount = parseFloat(document.getElementById('fee-amount').value);
-                const fine = parseFloat(document.getElementById('fee-fine').value) || 0;
-                const discount = parseFloat(document.getElementById('fee-discount').value) || 0;
-                const total = parseFloat(document.getElementById('fee-total').value);
-                const paymentDate = document.getElementById('fee-payment-date').value;
-                const paymentMethod = document.getElementById('fee-payment-method').value;
-                const notes = document.getElementById('fee-notes').value;
-                const receiptNumber = 'FEE' + Date.now().toString().slice(-6);
                 const feeData = {
-                    receiptNumber: receiptNumber,
+                    receiptNumber: 'FEE' + Date.now().toString().slice(-6),
                     studentId: studentId,
-                    studentName: studentName,
-                    month: month,
+                    studentName: student.name,
+                    month: monthNumber,
                     year: year,
-                    amount: amount,
-                    fine: fine,
-                    discount: discount,
-                    total: total,
-                    date: paymentDate,
-                    paymentMethod: paymentMethod,
-                    notes: notes,
-                    createdAt: new Date().toISOString()
+                    amount: parseFloat(document.getElementById('fee-amount').value),
+                    fine: parseFloat(document.getElementById('fee-fine').value) || 0,
+                    discount: parseFloat(document.getElementById('fee-discount').value) || 0,
+                    total: parseFloat(document.getElementById('fee-total').value),
+                    date: document.getElementById('fee-payment-date').value,
+                    paymentMethod: document.getElementById('fee-payment-method').value,
+                    notes: document.getElementById('fee-notes').value,
                 };
-                const existingFee = await getAllFromIndex(STORES.FEES, 'studentMonthYear', [studentId, month, year]);
-                if (existingFee && existingFee.length > 0) {
+                const existingFee = await getAllFromIndex(STORES.FEES, 'studentMonthYear', [studentId, monthNumber, year]);
+                if (existingFee.length > 0) {
                     showNotification('Fee for this month has already been collected.', 'error');
                     return;
                 }
-                const feeId = await addToStore(STORES.FEES, feeData);
-                await addToStore(STORES.ACTIVITIES, {
-                    description: 'Fee collected',
-                    date: new Date().toISOString(),
-                    type: 'Fee',
-                    user: 'System Admin',
-                    userId: 1,
-                    details: `${studentName} paid ${total} Rs for ${month} ${year}`,
-                    createdAt: new Date().toISOString()
-                });
-                await loadFeeHistory(studentId);
+                await addToStore(STORES.FEES, feeData);
                 showNotification('Fee collected successfully.', 'success');
-                document.getElementById('print-receipt').disabled = false;
+                showFeeReceipt(feeData, student);
+                loadFeeHistory(studentId);
             } catch (error) {
                 console.error('Error collecting fee:', error);
                 showNotification('Failed to collect fee.', 'error');
@@ -8173,24 +8425,19 @@
                 const bookId = parseInt(document.getElementById('issue-book-select').value);
                 const studentId = parseInt(document.getElementById('issue-student-select').value);
                 const issueDate = document.getElementById('issue-date').value;
-                // --- MODIFICATION: Due date is now read-only and calculated automatically ---
                 const returnDueDate = document.getElementById('return-due-date').value;
-
                 if (!bookId || !studentId || !issueDate) {
                     showNotification('Please select a book, student, and issue date.', 'error');
                     hideLoading();
                     return;
                 }
-
                 const bookData = await getFromStore(STORES.BOOKS, bookId);
                 if (bookData.availableCopies <= 0) {
                     showNotification('No copies of this book are available.', 'error');
                     hideLoading();
                     return;
                 }
-
                 const studentData = await getFromStore(STORES.STUDENTS, studentId);
-
                 const issueData = {
                     bookId: bookId,
                     bookName: bookData.name,
@@ -8198,21 +8445,18 @@
                     memberName: studentData.name,
                     memberType: 'student',
                     issueDate: issueDate,
-                    returnDueDate: returnDueDate, // Use the calculated value
+                    returnDueDate: returnDueDate,
                     status: 'issued',
                 };
-
                 await addToStore(STORES.BOOK_ISSUES, issueData);
                 await updateInStore(STORES.BOOKS, bookId, {
                     availableCopies: bookData.availableCopies - 1
                 });
-
                 document.getElementById('issue-form').reset();
                 showNotification('Book issued successfully.', 'success');
                 loadIssuedBooksTable();
                 loadBooksTable();
                 populateLibraryDropdowns();
-
             } catch (error) {
                 console.error('Error issuing book:', error);
                 showNotification('Failed to issue book.', 'error');
@@ -8220,7 +8464,6 @@
                 hideLoading();
             }
         }
-
         async function returnBook() {
             try {
                 showLoading();
@@ -8554,73 +8797,59 @@
                 console.error('Error loading teacher dropdowns:', error);
             }
         }
-async function loadStudentsForAttendance() {
-    const dateElement = document.getElementById('attendance-date');
-    const classIdElement = document.getElementById('attendance-class');
-    const sectionIdElement = document.getElementById('attendance-section');
-    
-    // Use 'T00:00:00' to ensure the date is interpreted in the user's local timezone
-    const selectedDate = new Date(dateElement.value + 'T00:00:00'); 
-    const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
-
-    // --- Holiday Check ---
-    if (appSettings.weeklyHoliday && appSettings.weeklyHoliday.includes(dayName)) {
-        showNotification(`${dayName} is a holiday. Attendance cannot be marked.`, 'info');
-        document.getElementById('attendance-table-container').style.display = 'none';
-        return;
-    }
-
-    if (!classIdElement || !sectionIdElement || !dateElement) {
-        console.error("Attendance filter elements not found.");
-        showNotification('Required attendance elements not found.', 'error');
-        return;
-    }
-
-    const classId = parseInt(classIdElement.value);
-    const sectionId = parseInt(sectionIdElement.value);
-    const date = dateElement.value;
-
-    if (isNaN(classId) || isNaN(sectionId) || !date) {
-        showNotification('Please select date, class and section.', 'error');
-        return;
-    }
-
-    showLoading();
-    try {
-        const allStudents = await getAllFromStore(STORES.STUDENTS);
-        // --- Filter for active students only ---
-        const activeStudents = allStudents.filter(s => !s.status || s.status === 'active');
-        const classStudents = activeStudents.filter(s => s.classId === classId && s.sectionId === sectionId);
-        
-        const attendanceTableBody = document.querySelector('#attendance-table tbody');
-        const attendanceTableContainer = document.getElementById('attendance-table-container');
-        
-        if (!attendanceTableBody || !attendanceTableContainer) {
-            console.error("Attendance table elements not found.");
-            hideLoading();
-            return;
-        }
-
-        attendanceTableBody.innerHTML = '';
-        if (classStudents.length === 0) {
-            const row = document.createElement('tr');
-            row.innerHTML = '<td colspan="6" style="text-align:center;">No active students found for this class and section.</td>';
-            attendanceTableBody.appendChild(row);
-        } else {
-            const existingAttendanceRecords = await getAllFromIndex(STORES.ATTENDANCE, 'dateClassSection', [date, classId, sectionId]);
-            const existingAttendanceMap = new Map(existingAttendanceRecords.map(rec => [rec.studentId, rec]));
-
-            classStudents.forEach(student => {
-                const existingRecord = existingAttendanceMap.get(student.id);
-                const isPresent = existingRecord ? existingRecord.status === 'present' : true; // Default to present
-                const isAbsent = existingRecord ? existingRecord.status === 'absent' : false;
-                const isLate = existingRecord ? existingRecord.isLate : false;
-                const onLeave = existingRecord ? existingRecord.isLeave : false;
-                const notes = existingRecord ? existingRecord.notes : '';
-
-                const row = document.createElement('tr');
-                row.dataset.studentId = student.id;
-                row.innerHTML = `
+        async function loadStudentsForAttendance() {
+            const dateElement = document.getElementById('attendance-date');
+            const classIdElement = document.getElementById('attendance-class');
+            const sectionIdElement = document.getElementById('attendance-section');
+            const selectedDate = new Date(dateElement.value + 'T00:00:00');
+            const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+            if (appSettings.weeklyHoliday && appSettings.weeklyHoliday.includes(dayName)) {
+                showNotification(`${dayName} is a holiday. Attendance cannot be marked.`, 'info');
+                document.getElementById('attendance-table-container').style.display = 'none';
+                return;
+            }
+            if (!classIdElement || !sectionIdElement || !dateElement) {
+                console.error("Attendance filter elements not found.");
+                showNotification('Required attendance elements not found.', 'error');
+                return;
+            }
+            const classId = parseInt(classIdElement.value);
+            const sectionId = parseInt(sectionIdElement.value);
+            const date = dateElement.value;
+            if (isNaN(classId) || isNaN(sectionId) || !date) {
+                showNotification('Please select date, class and section.', 'error');
+                return;
+            }
+            showLoading();
+            try {
+                const allStudents = await getAllFromStore(STORES.STUDENTS);
+                const activeStudents = allStudents.filter(s => !s.status || s.status === 'active');
+                const classStudents = activeStudents.filter(s => s.classId === classId && s.sectionId === sectionId);
+                const attendanceTableBody = document.querySelector('#attendance-table tbody');
+                const attendanceTableContainer = document.getElementById('attendance-table-container');
+                if (!attendanceTableBody || !attendanceTableContainer) {
+                    console.error("Attendance table elements not found.");
+                    hideLoading();
+                    return;
+                }
+                attendanceTableBody.innerHTML = '';
+                if (classStudents.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="6" style="text-align:center;">No active students found for this class and section.</td>';
+                    attendanceTableBody.appendChild(row);
+                } else {
+                    const existingAttendanceRecords = await getAllFromIndex(STORES.ATTENDANCE, 'dateClassSection', [date, classId, sectionId]);
+                    const existingAttendanceMap = new Map(existingAttendanceRecords.map(rec => [rec.studentId, rec]));
+                    classStudents.forEach(student => {
+                        const existingRecord = existingAttendanceMap.get(student.id);
+                        const isPresent = existingRecord ? existingRecord.status === 'present' : true;
+                        const isAbsent = existingRecord ? existingRecord.status === 'absent' : false;
+                        const isLate = existingRecord ? existingRecord.isLate : false;
+                        const onLeave = existingRecord ? existingRecord.isLeave : false;
+                        const notes = existingRecord ? existingRecord.notes : '';
+                        const row = document.createElement('tr');
+                        row.dataset.studentId = student.id;
+                        row.innerHTML = `
                     <td>${student.rollNumber}</td>
                     <td>${student.name}</td>
                     <td>
@@ -8631,43 +8860,38 @@ async function loadStudentsForAttendance() {
                     <td><input type="checkbox" name="leave_${student.id}" ${onLeave ? 'checked' : ''}></td>
                     <td><input type="text" class="form-control" name="notes_${student.id}" value="${notes}"></td>
                 `;
-                attendanceTableBody.appendChild(row);
-
-                const leaveCheckbox = row.querySelector(`input[name="leave_${student.id}"]`);
-                const presentRadio = row.querySelector(`input[name="status_${student.id}"][value="present"]`);
-                const absentRadio = row.querySelector(`input[name="status_${student.id}"][value="absent"]`);
-
-                if (leaveCheckbox) {
-                    leaveCheckbox.addEventListener('change', (e) => {
-                        if (e.target.checked) {
-                            presentRadio.checked = false;
-                            absentRadio.checked = false;
-                            presentRadio.disabled = true;
-                            absentRadio.disabled = true;
-                        } else {
-                            presentRadio.disabled = false;
-                            absentRadio.disabled = false;
-                            presentRadio.checked = true; // Default back to present
+                        attendanceTableBody.appendChild(row);
+                        const leaveCheckbox = row.querySelector(`input[name="leave_${student.id}"]`);
+                        const presentRadio = row.querySelector(`input[name="status_${student.id}"][value="present"]`);
+                        const absentRadio = row.querySelector(`input[name="status_${student.id}"][value="absent"]`);
+                        if (leaveCheckbox) {
+                            leaveCheckbox.addEventListener('change', (e) => {
+                                if (e.target.checked) {
+                                    presentRadio.checked = false;
+                                    absentRadio.checked = false;
+                                    presentRadio.disabled = true;
+                                    absentRadio.disabled = true;
+                                } else {
+                                    presentRadio.disabled = false;
+                                    absentRadio.disabled = false;
+                                    presentRadio.checked = true;
+                                }
+                            });
+                            if (onLeave) {
+                                presentRadio.disabled = true;
+                                absentRadio.disabled = true;
+                            }
                         }
                     });
-
-                    // Set initial disabled state if on leave
-                    if (onLeave) {
-                        presentRadio.disabled = true;
-                        absentRadio.disabled = true;
-                    }
                 }
-            });
+                attendanceTableContainer.style.display = 'block';
+            } catch (error) {
+                console.error("Error loading students for attendance:", error);
+                showNotification('Failed to load students for attendance.', 'error');
+            } finally {
+                hideLoading();
+            }
         }
-        attendanceTableContainer.style.display = 'block';
-    } catch (error) {
-        console.error("Error loading students for attendance:", error);
-        showNotification('Failed to load students for attendance.', 'error');
-    } finally {
-        hideLoading();
-    }
-}
-       
         async function restoreBackup() {
             try {
                 showLoading();
@@ -8854,10 +9078,8 @@ async function loadStudentsForAttendance() {
         function calculateDueDate() {
             const issueDateStr = document.getElementById('issue-date').value;
             if (!issueDateStr) return;
-
             const issueDate = new Date(issueDateStr);
             issueDate.setDate(issueDate.getDate() + parseInt(appSettings.libraryReturnDays));
-
             document.getElementById('return-due-date').value = issueDate.toISOString().split('T')[0];
         }
         async function initializeLibraryView() {
@@ -9403,6 +9625,69 @@ async function loadStudentsForAttendance() {
                 options: { ...defaultOptions, ...chartOptions }
             });
         }
+        async function generateStudentDetailsHTML() {
+    const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active');
+    let html = `<div class="table-container"><table class="table"><thead><tr><th>Roll No</th><th>Name</th><th>Class</th><th>Contact</th></tr></thead><tbody>`;
+    for (const student of students) {
+        const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+        html += `<tr><td>${student.rollNumber}</td><td>${student.name}</td><td>${className}</td><td>${student.contact}</td></tr>`;
+    }
+    html += `</tbody></table></div>`;
+    return html;
+}
+async function generateTeacherDetailsHTML() {
+    const teachers = await getAllFromStore(STORES.TEACHERS);
+    let html = `<div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Contact</th></tr></thead><tbody>`;
+    for (const teacher of teachers) {
+        html += `<tr><td>${teacher.employeeId}</td><td>${teacher.name}</td><td>${teacher.specialization}</td><td>${teacher.contact}</td></tr>`;
+    }
+    html += `</tbody></table></div>`;
+    return html;
+}
+async function generateMonthlyCollectionDetailsHTML(month, year) {
+    const records = (await getAllFromStore(STORES.FEES)).filter(f => f.month === month && f.year === year);
+    let html = `<div class="table-container"><table class="table"><thead><tr><th>Receipt #</th><th>Student</th><th>Date</th><th>Amount</th></tr></thead><tbody>`;
+    for (const record of records) {
+        html += `<tr><td>${record.receiptNumber}</td><td>${record.studentName}</td><td>${formatDate(record.date)}</td><td>${formatCurrency(record.total)}</td></tr>`;
+    }
+    html += `</tbody></table></div>`;
+    return html;
+}
+async function generatePendingFeeDetailsHTML() {
+    let html = `<div class="table-container"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Class</th><th>Total Due</th><th>Due Months</th></tr></thead><tbody>`;
+    const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
+    const feeMap = new Map((await getAllFromStore(STORES.FEES)).map(f => [`${f.studentId}-${f.month}-${f.year}`, true]));
+    const currentDate = new Date();
+
+    for (const student of students) {
+        let studentDue = 0;
+        let dueMonthsList = [];
+        const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+        const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+        if (studentMonthlyFee === 0 || !student.admissionDate) continue;
+
+        const startDate = new Date(student.admissionDate);
+        for (let d = new Date(startDate.getFullYear(), startDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+            if (!feeMap.has(`${student.id}-${d.getMonth() + 1}-${d.getFullYear()}`)) {
+                studentDue += studentMonthlyFee;
+                dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`);
+            }
+        }
+
+        if (studentDue > 0) {
+            const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+            html += `<tr>
+                <td>${student.rollNumber}</td>
+                <td>${student.name}</td>
+                <td>${className}</td>
+                <td>${formatCurrency(studentDue)}</td>
+                <td style="font-size: 0.8em;">${dueMonthsList.join(', ')}</td>
+            </tr>`;
+        }
+    }
+    html += `</tbody></table></div>`;
+    return html;
+}
         async function generateStudentStrengthByClassReportJS(filters) {
             const classes = await getAllFromStore(STORES.CLASSES);
             const students = await getAllFromStore(STORES.STUDENTS);
@@ -10313,7 +10598,6 @@ async function loadStudentsForAttendance() {
                 }
                 const form = document.getElementById('teacher-form');
                 form.dataset.editId = id;
-
                 document.getElementById('teacher-name').value = teacher.name;
                 document.getElementById('teacher-father').value = teacher.fatherName;
                 document.getElementById('teacher-dob').value = teacher.dob;
@@ -10329,17 +10613,14 @@ async function loadStudentsForAttendance() {
                 document.getElementById('teacher-allowances').value = teacher.allowances;
                 document.getElementById('teacher-deductions').value = teacher.deductions;
                 document.getElementById('teacher-notes').value = teacher.notes;
-
                 Array.from(document.getElementById('teacher-subject').options).forEach(opt => {
                     opt.selected = teacher.subjects && teacher.subjects.includes(opt.value);
                 });
                 Array.from(document.getElementById('teacher-class').options).forEach(opt => {
                     opt.selected = teacher.classes && teacher.classes.includes(opt.value);
                 });
-
                 document.querySelector('.tab[data-tab="add-teacher"]').click();
                 form.querySelector('button[type="submit"]').textContent = 'Update Teacher';
-
             } catch (e) {
                 console.error('Error preparing teacher for edit:', e);
                 showNotification('Could not load teacher data.', 'error');
@@ -10409,11 +10690,12 @@ async function loadStudentsForAttendance() {
                 'sidebar_backup': { selector: 'li[data-view="backup"]', en: 'Backup', ur: 'بیک اپ' },
                 'sidebar_idcards': { selector: 'li[data-view="id-cards"]', en: 'ID Cards & Certificates', ur: 'شناختی کارڈ اور سرٹیفکیٹ' },
                 'dashboard_title': { selector: '#dashboard-view > h2', en: 'Dashboard', ur: 'ڈیش بورڈ' },
-                'dash_total_students': { selector: '.card:nth-child(1) .card-title', en: 'Total Students', ur: 'کل طلباء' },
-                'dash_total_classes': { selector: '.card:nth-child(3) .card-title', en: 'Total Classes', ur: 'کل کلاسیں' },
-                'dash_today_attendance': { selector: '.card:nth-child(4) .card-title', en: "Today's Attendance", ur: 'آج کی حاضری' },
-                'dash_monthly_fee': { selector: '.dashboard-cards:nth-child(2) .card:nth-child(1) .card-title', en: 'Monthly Fee Collection', ur: 'ماہانہ فیس وصولی' },
-                'dash_pending_fee': { selector: '.dashboard-cards:nth-child(2) .card:nth-child(2) .card-title', en: 'Outstanding Fees', ur: 'بقایا فیس' },
+'dash_total_students': { selector: '.card:has(#total-students) .card-title', en: 'Total Students', ur: 'کل طلباء' },
+'dash_total_teachers': { selector: '.card:has(#total-teachers) .card-title', en: 'Total Teachers', ur: 'کل اساتذہ' },
+'dash_total_classes': { selector: '.card:has(#total-classes) .card-title', en: 'Total Classes', ur: 'کل کلاسیں' },
+'dash_today_attendance': { selector: '.card:has(#today-attendance) .card-title', en: "Today's Attendance", ur: 'آج کی حاضری' },
+'dash_monthly_fee': { selector: '.card:has(#monthly-fee) .card-title', en: 'Monthly Fee Collection', ur: 'ماہانہ فیس وصولی' },
+'dash_pending_fee': { selector: '.card:has(#pending-fee) .card-title', en: 'Outstanding Fees', ur: 'بقایا فیس' },
                 'dash_events': { selector: '#dashboard-view .form-container:nth-of-type(1) .form-title', en: 'Upcoming Events', ur: 'آنے والے واقعات' },
                 'dash_activities': { selector: '#dashboard-view .form-container:nth-of-type(2) .form-title', en: 'Recent Activities', ur: 'حالیہ سرگرمیاں' },
                 'students_title': { selector: '#students-view > h2', en: 'Students', ur: 'طلباء' },
@@ -10535,12 +10817,9 @@ async function loadStudentsForAttendance() {
                 'settings_language': { selector: 'label[for="system-language"]', en: 'Language', ur: 'زبان' },
             };
             const rtlCss = `
-    /* --- Base Direction and Font Override --- */
     body.rtl-mode { 
         direction: rtl; 
     }
-    
-    /* FIX 1: Force Calibri font on ALL elements, including form inputs, when in RTL mode. */
     body.rtl-mode,
     body.rtl-mode *,
     body.rtl-mode input, 
@@ -10550,22 +10829,16 @@ async function loadStudentsForAttendance() {
     body.rtl-mode .form-control {
         font-family: Calibri, 'Noto Nastaliq Urdu', sans-serif !important;
     }
-    
-    /* Ensure default font for English mode */
     body:not(.rtl-mode),
     body:not(.rtl-mode) * {
         font-family: Arial, sans-serif;
     }
-
-    /* FIX 2: Force RTL direction on form controls to override the original LTR rule. */
     body.rtl-mode .form-control,
     body.rtl-mode input,
     body.rtl-mode select,
     body.rtl-mode textarea {
         direction: rtl !important;
     }
-
-    /* --- Existing Layout Adjustments --- */
     body.rtl-mode .sidebar { left: auto; right: 0; }
     body.rtl-mode .sidebar-menu li { padding: 10px 20px; text-align: right;}
     body.rtl-mode .sidebar-menu i { margin-right: 0; margin-left: 10px; }
@@ -10591,7 +10864,6 @@ async function loadStudentsForAttendance() {
         body.rtl-mode .sidebar.active { transform: translateX(0); }
     }
 `;
-
             function injectFonts() {
                 const fontLink = document.createElement('link');
                 fontLink.href = 'https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap';
