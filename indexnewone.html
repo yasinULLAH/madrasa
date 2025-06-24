@@ -968,40 +968,40 @@
         </div>
         <div class="section-view" id="dashboard-view" style="display: block;">
             <h2>Dashboard</h2>
-                    <div class="dashboard-cards">
-            <div class="card">
-                <div class="card-title">Total Students</div>
-                <div class="card-value" id="total-students">0</div>
-                <div class="card-subtitle">Registered Students</div>
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-title">Total Students</div>
+                    <div class="card-value" id="total-students">0</div>
+                    <div class="card-subtitle">Registered Students</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Total Teachers</div>
+                    <div class="card-value" id="total-teachers">0</div>
+                    <div class="card-subtitle">Registered Teachers</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Total Classes</div>
+                    <div class="card-value" id="total-classes">0</div>
+                    <div class="card-subtitle">Active Classes</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Today's Attendance</div>
+                    <div class="card-value" id="today-attendance">0%</div>
+                    <div class="card-subtitle">Students Present</div>
+                </div>
             </div>
-            <div class="card">
-                <div class="card-title">Total Teachers</div>
-                <div class="card-value" id="total-teachers">0</div>
-                <div class="card-subtitle">Registered Teachers</div>
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-title">Monthly Fee Collection</div>
+                    <div class="card-value" id="monthly-fee">0 Rs</div>
+                    <div class="card-subtitle">Current Month</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Outstanding Fees</div>
+                    <div class="card-value" id="pending-fee">0 Rs</div>
+                    <div class="card-subtitle">Pending Payments</div>
+                </div>
             </div>
-            <div class="card">
-                <div class="card-title">Total Classes</div>
-                <div class="card-value" id="total-classes">0</div>
-                <div class="card-subtitle">Active Classes</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Today's Attendance</div>
-                <div class="card-value" id="today-attendance">0%</div>
-                <div class="card-subtitle">Students Present</div>
-            </div>
-        </div>
-        <div class="dashboard-cards">
-            <div class="card">
-                <div class="card-title">Monthly Fee Collection</div>
-                <div class="card-value" id="monthly-fee">0 Rs</div>
-                <div class="card-subtitle">Current Month</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Outstanding Fees</div>
-                <div class="card-value" id="pending-fee">0 Rs</div>
-                <div class="card-subtitle">Pending Payments</div>
-            </div>
-        </div>
             <div class="form-container">
                 <div class="form-title">Upcoming Events</div>
                 <div id="upcoming-events">
@@ -4083,176 +4083,151 @@
                 showNotification('Error populating library dropdowns.', 'error');
             }
         }
-
         async function showDashboardDetailsPopup(title, contentGenerator) {
-    showLoading();
-    const modal = document.getElementById('student-details-modal');
-    const contentArea = document.getElementById('modal-content-area');
-    try {
-        const contentHTML = await contentGenerator();
-        contentArea.innerHTML = `<h3 class="form-title">${title}</h3>` + contentHTML;
-        modal.style.display = 'block';
-    } catch (e) {
-        console.error("Error generating details popup:", e);
-        showNotification("Could not load details.", "error");
-    } finally {
-        hideLoading();
-    }
-}
-async function loadDashboardData() {
-    try {
-        // --- 1. DEFINE THE CORRECT CARD STRUCTURE ---
-        const correctCards = [
-            { id: 'total-students', title: 'Total Students', subtitle: 'Registered Students' },
-            { id: 'total-teachers', title: 'Total Teachers', subtitle: 'Registered Teachers' },
-            { id: 'total-classes', title: 'Total Classes', subtitle: 'Active Classes' },
-            { id: 'today-attendance', title: "Today's Attendance", subtitle: 'Students Present' },
-            { id: 'monthly-fee', title: 'Monthly Fee Collection', subtitle: 'Current Month' },
-            { id: 'pending-fee', title: 'Outstanding Fees', subtitle: 'Pending Payments' }
-        ];
-
-        // --- 2. FORCE-UPDATE THE HTML TO MATCH THE CORRECT STRUCTURE ---
-        const dashboardCards = document.querySelectorAll('#dashboard-view .card');
-        if (dashboardCards.length >= correctCards.length) {
-            correctCards.forEach((cardData, index) => {
-                const cardElement = dashboardCards[index];
-                cardElement.querySelector('.card-title').textContent = cardData.title;
-                cardElement.querySelector('.card-subtitle').textContent = cardData.subtitle;
-                cardElement.querySelector('.card-value').id = cardData.id;
-            });
-        }
-
-        // --- 3. CALCULATE DATA ---
-        const totalStudents = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active').length;
-        const totalTeachers = await getCount(STORES.TEACHERS);
-        const totalClasses = await getCount(STORES.CLASSES);
-        const todayISO = new Date().toISOString().split('T')[0];
-        const attendancePercentage = await getTodayAttendancePercentage(todayISO);
-        const currentMonth = new Date().getMonth() + 1;
-        const currentYear = new Date().getFullYear();
-        const monthlyFee = await getMonthlyFeeCollection(currentMonth, currentYear);
-        const pendingFee = await getTotalPendingFee();
-
-        // --- 4. POPULATE THE NOW-CORRECTED CARDS ---
-        document.getElementById('total-students').textContent = totalStudents;
-        document.getElementById('total-teachers').textContent = totalTeachers;
-        document.getElementById('total-classes').textContent = totalClasses;
-        document.getElementById('today-attendance').textContent = attendancePercentage + '%';
-        document.getElementById('monthly-fee').textContent = formatCurrency(monthlyFee);
-        document.getElementById('pending-fee').textContent = formatCurrency(pendingFee);
-
-        // --- 5. ATTACH ONCLICK HANDLERS ---
-        document.getElementById('total-students').parentElement.onclick = () => showDashboardDetailsPopup('Active Students', generateStudentDetailsHTML);
-        document.getElementById('total-teachers').parentElement.onclick = () => showDashboardDetailsPopup('Teachers List', generateTeacherDetailsHTML);
-        document.getElementById('monthly-fee').parentElement.onclick = () => showDashboardDetailsPopup(`Fee Collection - ${new Date(currentYear, currentMonth - 1).toLocaleString('default', { month: 'long' })}`, () => generateMonthlyCollectionDetailsHTML(currentMonth, currentYear));
-        document.getElementById('pending-fee').parentElement.onclick = () => showDashboardDetailsPopup('Outstanding Fee Details', generatePendingFeeDetailsHTML);
-
-        // --- 6. RELOAD THE TABLES (THIS WAS MISSING) ---
-        await loadUpcomingEvents();
-        await loadRecentActivities();
-
-    } catch (error) {
-        console.error('Error loading dashboard data:', error);
-        showNotification('Error loading dashboard data.', 'error');
-    }
-}
-async function generateStudentDetailsHTML() {
-    const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active');
-    let html = `<div class="table-container" style="max-height: 70vh; overflow-y: auto;"><table class="table"><thead><tr><th>Roll No</th><th>Name</th><th>Father's Name</th><th>Class</th><th>Contact</th></tr></thead><tbody>`;
-    for (const student of students) {
-        const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
-        html += `<tr><td>${student.rollNumber}</td><td>${student.name}</td><td>${student.fatherName}</td><td>${className}</td><td>${student.contact}</td></tr>`;
-    }
-    html += `</tbody></table></div>`;
-    return html;
-}
-
-async function generateTeacherDetailsHTML() {
-    const teachers = await getAllFromStore(STORES.TEACHERS);
-    let html = `<div class="table-container" style="max-height: 70vh; overflow-y: auto;"><table class="table"><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Contact</th><th>Joining Date</th></tr></thead><tbody>`;
-    for (const teacher of teachers) {
-        html += `<tr><td>${teacher.employeeId}</td><td>${teacher.name}</td><td>${teacher.specialization}</td><td>${teacher.contact}</td><td>${formatDate(teacher.joiningDate)}</td></tr>`;
-    }
-    html += `</tbody></table></div>`;
-    return html;
-}
-
-async function generateMonthlyCollectionDetailsHTML(month, year) {
-    const records = (await getAllFromStore(STORES.FEES)).filter(f => f.month === month && f.year === year);
-    const total = records.reduce((sum, rec) => sum + rec.total, 0);
-    let html = `<div class="dashboard-cards" style="margin-bottom: 15px;"><div class="card"><div class="card-title">Total Collected</div><div class="card-value">${formatCurrency(total)}</div></div><div class="card"><div class="card-title">Transactions</div><div class="card-value">${records.length}</div></div></div>`;
-    html += `<div class="table-container" style="max-height: 60vh; overflow-y: auto;"><table class="table"><thead><tr><th>Receipt #</th><th>Student</th><th>Date</th><th>Amount</th></tr></thead><tbody>`;
-    for (const record of records) {
-        html += `<tr><td>${record.receiptNumber}</td><td>${record.studentName}</td><td>${formatDate(record.date)}</td><td>${formatCurrency(record.total)}</td></tr>`;
-    }
-    html += `</tbody></table></div>`;
-    return html;
-}
-
-async function generatePendingFeeDetailsHTML() {
-    const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
-    const feeMap = new Map((await getAllFromStore(STORES.FEES)).map(f => [`${f.studentId}-${f.month}-${f.year}`, true]));
-    const currentDate = new Date();
-    
-    let defaulters = [];
-    let totalDueAmount = 0;
-
-    for (const student of students) {
-        let studentDue = 0;
-        let dueMonthsList = [];
-        const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-        const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-        if (studentMonthlyFee === 0 || !student.admissionDate) continue;
-
-        const startDate = new Date(student.admissionDate);
-        for (let d = new Date(startDate.getFullYear(), startDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
-            if (!feeMap.has(`${student.id}-${d.getMonth() + 1}-${d.getFullYear()}`)) {
-                studentDue += studentMonthlyFee;
-                dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`);
+            showLoading();
+            const modal = document.getElementById('student-details-modal');
+            const contentArea = document.getElementById('modal-content-area');
+            try {
+                const contentHTML = await contentGenerator();
+                contentArea.innerHTML = `<h3 class="form-title">${title}</h3>` + contentHTML;
+                modal.style.display = 'block';
+            } catch (e) {
+                console.error("Error generating details popup:", e);
+                showNotification("Could not load details.", "error");
+            } finally {
+                hideLoading();
             }
         }
-        if (studentDue > 0) {
-            totalDueAmount += studentDue;
-            const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
-            defaulters.push({ name: student.name, rollNumber: student.rollNumber, className, amount: studentDue, months: dueMonthsList.join(', ') });
+        async function loadDashboardData() {
+            try {
+                const correctCards = [
+                    { id: 'total-students', title: 'Total Students', subtitle: 'Registered Students' },
+                    { id: 'total-teachers', title: 'Total Teachers', subtitle: 'Registered Teachers' },
+                    { id: 'total-classes', title: 'Total Classes', subtitle: 'Active Classes' },
+                    { id: 'today-attendance', title: "Today's Attendance", subtitle: 'Students Present' },
+                    { id: 'monthly-fee', title: 'Monthly Fee Collection', subtitle: 'Current Month' },
+                    { id: 'pending-fee', title: 'Outstanding Fees', subtitle: 'Pending Payments' }
+                ];
+                const dashboardCards = document.querySelectorAll('#dashboard-view .card');
+                if (dashboardCards.length >= correctCards.length) {
+                    correctCards.forEach((cardData, index) => {
+                        const cardElement = dashboardCards[index];
+                        cardElement.querySelector('.card-title').textContent = cardData.title;
+                        cardElement.querySelector('.card-subtitle').textContent = cardData.subtitle;
+                        cardElement.querySelector('.card-value').id = cardData.id;
+                    });
+                }
+                const totalStudents = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active').length;
+                const totalTeachers = await getCount(STORES.TEACHERS);
+                const totalClasses = await getCount(STORES.CLASSES);
+                const todayISO = new Date().toISOString().split('T')[0];
+                const attendancePercentage = await getTodayAttendancePercentage(todayISO);
+                const currentMonth = new Date().getMonth() + 1;
+                const currentYear = new Date().getFullYear();
+                const monthlyFee = await getMonthlyFeeCollection(currentMonth, currentYear);
+                const pendingFee = await getTotalPendingFee();
+                document.getElementById('total-students').textContent = totalStudents;
+                document.getElementById('total-teachers').textContent = totalTeachers;
+                document.getElementById('total-classes').textContent = totalClasses;
+                document.getElementById('today-attendance').textContent = attendancePercentage + '%';
+                document.getElementById('monthly-fee').textContent = formatCurrency(monthlyFee);
+                document.getElementById('pending-fee').textContent = formatCurrency(pendingFee);
+                document.getElementById('total-students').parentElement.onclick = () => showDashboardDetailsPopup('Active Students', generateStudentDetailsHTML);
+                document.getElementById('total-teachers').parentElement.onclick = () => showDashboardDetailsPopup('Teachers List', generateTeacherDetailsHTML);
+                document.getElementById('monthly-fee').parentElement.onclick = () => showDashboardDetailsPopup(`Fee Collection - ${new Date(currentYear, currentMonth - 1).toLocaleString('default', { month: 'long' })}`, () => generateMonthlyCollectionDetailsHTML(currentMonth, currentYear));
+                document.getElementById('pending-fee').parentElement.onclick = () => showDashboardDetailsPopup('Outstanding Fee Details', generatePendingFeeDetailsHTML);
+                await loadUpcomingEvents();
+                await loadRecentActivities();
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showNotification('Error loading dashboard data.', 'error');
+            }
         }
-    }
-
-    let html = `<div class="dashboard-cards" style="margin-bottom: 15px;"><div class="card"><div class="card-title">Total Outstanding</div><div class="card-value">${formatCurrency(totalDueAmount)}</div></div><div class="card"><div class="card-title">Defaulters</div><div class="card-value">${defaulters.length}</div></div></div>`;
-    html += `<div class="table-container" style="max-height: 60vh; overflow-y: auto;"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Class</th><th>Total Due</th><th>Due Months</th></tr></thead><tbody>`;
-    defaulters.forEach(defaulter => {
-        html += `<tr><td>${defaulter.rollNumber}</td><td>${defaulter.name}</td><td>${defaulter.className}</td><td>${formatCurrency(defaulter.amount)}</td><td style="font-size: 0.8em;">${defaulter.months}</td></tr>`;
-    });
-    html += `</tbody></table></div>`;
-    return html;
-}       
-async function getTodayAttendancePercentage(date) {
-    try {
-        const attendanceRecordsForToday = await getAllFromIndex(STORES.ATTENDANCE, 'date', date);
-        if (attendanceRecordsForToday.length === 0) return 0;
-
-        const attendedClassSections = new Set(
-            attendanceRecordsForToday.map(r => `${r.classId}-${r.sectionId}`)
-        );
-
-        if (attendedClassSections.size === 0) return 0;
-
-        const allStudents = await getAllFromStore(STORES.STUDENTS);
-        const activeStudentsInAttendedClasses = allStudents.filter(s => {
-            const classSectionKey = `${s.classId}-${s.sectionId}`;
-            return (s.status === 'active' || !s.status) && attendedClassSections.has(classSectionKey);
-        });
-
-        if (activeStudentsInAttendedClasses.length === 0) return 0;
-
-        const presentCount = attendanceRecordsForToday.filter(record => record.status === 'present' && !record.isLeave).length;
-        const percentage = Math.round((presentCount / activeStudentsInAttendedClasses.length) * 100);
-        return isNaN(percentage) ? 0 : percentage;
-    } catch (error) {
-        console.error('Error getting today attendance percentage:', error);
-        return 0;
-    }
-}
+        async function generateStudentDetailsHTML() {
+            const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active');
+            let html = `<div class="table-container" style="max-height: 70vh; overflow-y: auto;"><table class="table"><thead><tr><th>Roll No</th><th>Name</th><th>Father's Name</th><th>Class</th><th>Contact</th></tr></thead><tbody>`;
+            for (const student of students) {
+                const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+                html += `<tr><td>${student.rollNumber}</td><td>${student.name}</td><td>${student.fatherName}</td><td>${className}</td><td>${student.contact}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+            return html;
+        }
+        async function generateTeacherDetailsHTML() {
+            const teachers = await getAllFromStore(STORES.TEACHERS);
+            let html = `<div class="table-container" style="max-height: 70vh; overflow-y: auto;"><table class="table"><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Contact</th><th>Joining Date</th></tr></thead><tbody>`;
+            for (const teacher of teachers) {
+                html += `<tr><td>${teacher.employeeId}</td><td>${teacher.name}</td><td>${teacher.specialization}</td><td>${teacher.contact}</td><td>${formatDate(teacher.joiningDate)}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+            return html;
+        }
+        async function generateMonthlyCollectionDetailsHTML(month, year) {
+            const records = (await getAllFromStore(STORES.FEES)).filter(f => f.month === month && f.year === year);
+            const total = records.reduce((sum, rec) => sum + rec.total, 0);
+            let html = `<div class="dashboard-cards" style="margin-bottom: 15px;"><div class="card"><div class="card-title">Total Collected</div><div class="card-value">${formatCurrency(total)}</div></div><div class="card"><div class="card-title">Transactions</div><div class="card-value">${records.length}</div></div></div>`;
+            html += `<div class="table-container" style="max-height: 60vh; overflow-y: auto;"><table class="table"><thead><tr><th>Receipt #</th><th>Student</th><th>Date</th><th>Amount</th></tr></thead><tbody>`;
+            for (const record of records) {
+                html += `<tr><td>${record.receiptNumber}</td><td>${record.studentName}</td><td>${formatDate(record.date)}</td><td>${formatCurrency(record.total)}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+            return html;
+        }
+        async function generatePendingFeeDetailsHTML() {
+            const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
+            const feeMap = new Map((await getAllFromStore(STORES.FEES)).map(f => [`${f.studentId}-${f.month}-${f.year}`, true]));
+            const currentDate = new Date();
+            let defaulters = [];
+            let totalDueAmount = 0;
+            for (const student of students) {
+                let studentDue = 0;
+                let dueMonthsList = [];
+                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                if (studentMonthlyFee === 0 || !student.admissionDate) continue;
+                const startDate = new Date(student.admissionDate);
+                for (let d = new Date(startDate.getFullYear(), startDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+                    if (!feeMap.has(`${student.id}-${d.getMonth() + 1}-${d.getFullYear()}`)) {
+                        studentDue += studentMonthlyFee;
+                        dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`);
+                    }
+                }
+                if (studentDue > 0) {
+                    totalDueAmount += studentDue;
+                    const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+                    defaulters.push({ name: student.name, rollNumber: student.rollNumber, className, amount: studentDue, months: dueMonthsList.join(', ') });
+                }
+            }
+            let html = `<div class="dashboard-cards" style="margin-bottom: 15px;"><div class="card"><div class="card-title">Total Outstanding</div><div class="card-value">${formatCurrency(totalDueAmount)}</div></div><div class="card"><div class="card-title">Defaulters</div><div class="card-value">${defaulters.length}</div></div></div>`;
+            html += `<div class="table-container" style="max-height: 60vh; overflow-y: auto;"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Class</th><th>Total Due</th><th>Due Months</th></tr></thead><tbody>`;
+            defaulters.forEach(defaulter => {
+                html += `<tr><td>${defaulter.rollNumber}</td><td>${defaulter.name}</td><td>${defaulter.className}</td><td>${formatCurrency(defaulter.amount)}</td><td style="font-size: 0.8em;">${defaulter.months}</td></tr>`;
+            });
+            html += `</tbody></table></div>`;
+            return html;
+        }
+        async function getTodayAttendancePercentage(date) {
+            try {
+                const attendanceRecordsForToday = await getAllFromIndex(STORES.ATTENDANCE, 'date', date);
+                if (attendanceRecordsForToday.length === 0) return 0;
+                const attendedClassSections = new Set(
+                    attendanceRecordsForToday.map(r => `${r.classId}-${r.sectionId}`)
+                );
+                if (attendedClassSections.size === 0) return 0;
+                const allStudents = await getAllFromStore(STORES.STUDENTS);
+                const activeStudentsInAttendedClasses = allStudents.filter(s => {
+                    const classSectionKey = `${s.classId}-${s.sectionId}`;
+                    return (s.status === 'active' || !s.status) && attendedClassSections.has(classSectionKey);
+                });
+                if (activeStudentsInAttendedClasses.length === 0) return 0;
+                const presentCount = attendanceRecordsForToday.filter(record => record.status === 'present' && !record.isLeave).length;
+                const percentage = Math.round((presentCount / activeStudentsInAttendedClasses.length) * 100);
+                return isNaN(percentage) ? 0 : percentage;
+            } catch (error) {
+                console.error('Error getting today attendance percentage:', error);
+                return 0;
+            }
+        }
         async function getMonthlyFeeCollection(month, year) {
             try {
                 const feeRecords = await getAllFromStore(STORES.FEES);
@@ -9626,68 +9601,65 @@ async function getTodayAttendancePercentage(date) {
             });
         }
         async function generateStudentDetailsHTML() {
-    const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active');
-    let html = `<div class="table-container"><table class="table"><thead><tr><th>Roll No</th><th>Name</th><th>Class</th><th>Contact</th></tr></thead><tbody>`;
-    for (const student of students) {
-        const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
-        html += `<tr><td>${student.rollNumber}</td><td>${student.name}</td><td>${className}</td><td>${student.contact}</td></tr>`;
-    }
-    html += `</tbody></table></div>`;
-    return html;
-}
-async function generateTeacherDetailsHTML() {
-    const teachers = await getAllFromStore(STORES.TEACHERS);
-    let html = `<div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Contact</th></tr></thead><tbody>`;
-    for (const teacher of teachers) {
-        html += `<tr><td>${teacher.employeeId}</td><td>${teacher.name}</td><td>${teacher.specialization}</td><td>${teacher.contact}</td></tr>`;
-    }
-    html += `</tbody></table></div>`;
-    return html;
-}
-async function generateMonthlyCollectionDetailsHTML(month, year) {
-    const records = (await getAllFromStore(STORES.FEES)).filter(f => f.month === month && f.year === year);
-    let html = `<div class="table-container"><table class="table"><thead><tr><th>Receipt #</th><th>Student</th><th>Date</th><th>Amount</th></tr></thead><tbody>`;
-    for (const record of records) {
-        html += `<tr><td>${record.receiptNumber}</td><td>${record.studentName}</td><td>${formatDate(record.date)}</td><td>${formatCurrency(record.total)}</td></tr>`;
-    }
-    html += `</tbody></table></div>`;
-    return html;
-}
-async function generatePendingFeeDetailsHTML() {
-    let html = `<div class="table-container"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Class</th><th>Total Due</th><th>Due Months</th></tr></thead><tbody>`;
-    const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
-    const feeMap = new Map((await getAllFromStore(STORES.FEES)).map(f => [`${f.studentId}-${f.month}-${f.year}`, true]));
-    const currentDate = new Date();
-
-    for (const student of students) {
-        let studentDue = 0;
-        let dueMonthsList = [];
-        const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-        const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-        if (studentMonthlyFee === 0 || !student.admissionDate) continue;
-
-        const startDate = new Date(student.admissionDate);
-        for (let d = new Date(startDate.getFullYear(), startDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
-            if (!feeMap.has(`${student.id}-${d.getMonth() + 1}-${d.getFullYear()}`)) {
-                studentDue += studentMonthlyFee;
-                dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`);
+            const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => !s.status || s.status === 'active');
+            let html = `<div class="table-container"><table class="table"><thead><tr><th>Roll No</th><th>Name</th><th>Class</th><th>Contact</th></tr></thead><tbody>`;
+            for (const student of students) {
+                const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+                html += `<tr><td>${student.rollNumber}</td><td>${student.name}</td><td>${className}</td><td>${student.contact}</td></tr>`;
             }
+            html += `</tbody></table></div>`;
+            return html;
         }
-
-        if (studentDue > 0) {
-            const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
-            html += `<tr>
+        async function generateTeacherDetailsHTML() {
+            const teachers = await getAllFromStore(STORES.TEACHERS);
+            let html = `<div class="table-container"><table class="table"><thead><tr><th>ID</th><th>Name</th><th>Specialization</th><th>Contact</th></tr></thead><tbody>`;
+            for (const teacher of teachers) {
+                html += `<tr><td>${teacher.employeeId}</td><td>${teacher.name}</td><td>${teacher.specialization}</td><td>${teacher.contact}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+            return html;
+        }
+        async function generateMonthlyCollectionDetailsHTML(month, year) {
+            const records = (await getAllFromStore(STORES.FEES)).filter(f => f.month === month && f.year === year);
+            let html = `<div class="table-container"><table class="table"><thead><tr><th>Receipt #</th><th>Student</th><th>Date</th><th>Amount</th></tr></thead><tbody>`;
+            for (const record of records) {
+                html += `<tr><td>${record.receiptNumber}</td><td>${record.studentName}</td><td>${formatDate(record.date)}</td><td>${formatCurrency(record.total)}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+            return html;
+        }
+        async function generatePendingFeeDetailsHTML() {
+            let html = `<div class="table-container"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Class</th><th>Total Due</th><th>Due Months</th></tr></thead><tbody>`;
+            const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
+            const feeMap = new Map((await getAllFromStore(STORES.FEES)).map(f => [`${f.studentId}-${f.month}-${f.year}`, true]));
+            const currentDate = new Date();
+            for (const student of students) {
+                let studentDue = 0;
+                let dueMonthsList = [];
+                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                if (studentMonthlyFee === 0 || !student.admissionDate) continue;
+                const startDate = new Date(student.admissionDate);
+                for (let d = new Date(startDate.getFullYear(), startDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+                    if (!feeMap.has(`${student.id}-${d.getMonth() + 1}-${d.getFullYear()}`)) {
+                        studentDue += studentMonthlyFee;
+                        dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`);
+                    }
+                }
+                if (studentDue > 0) {
+                    const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+                    html += `<tr>
                 <td>${student.rollNumber}</td>
                 <td>${student.name}</td>
                 <td>${className}</td>
                 <td>${formatCurrency(studentDue)}</td>
                 <td style="font-size: 0.8em;">${dueMonthsList.join(', ')}</td>
             </tr>`;
+                }
+            }
+            html += `</tbody></table></div>`;
+            return html;
         }
-    }
-    html += `</tbody></table></div>`;
-    return html;
-}
         async function generateStudentStrengthByClassReportJS(filters) {
             const classes = await getAllFromStore(STORES.CLASSES);
             const students = await getAllFromStore(STORES.STUDENTS);
@@ -10690,12 +10662,12 @@ async function generatePendingFeeDetailsHTML() {
                 'sidebar_backup': { selector: 'li[data-view="backup"]', en: 'Backup', ur: 'بیک اپ' },
                 'sidebar_idcards': { selector: 'li[data-view="id-cards"]', en: 'ID Cards & Certificates', ur: 'شناختی کارڈ اور سرٹیفکیٹ' },
                 'dashboard_title': { selector: '#dashboard-view > h2', en: 'Dashboard', ur: 'ڈیش بورڈ' },
-'dash_total_students': { selector: '.card:has(#total-students) .card-title', en: 'Total Students', ur: 'کل طلباء' },
-'dash_total_teachers': { selector: '.card:has(#total-teachers) .card-title', en: 'Total Teachers', ur: 'کل اساتذہ' },
-'dash_total_classes': { selector: '.card:has(#total-classes) .card-title', en: 'Total Classes', ur: 'کل کلاسیں' },
-'dash_today_attendance': { selector: '.card:has(#today-attendance) .card-title', en: "Today's Attendance", ur: 'آج کی حاضری' },
-'dash_monthly_fee': { selector: '.card:has(#monthly-fee) .card-title', en: 'Monthly Fee Collection', ur: 'ماہانہ فیس وصولی' },
-'dash_pending_fee': { selector: '.card:has(#pending-fee) .card-title', en: 'Outstanding Fees', ur: 'بقایا فیس' },
+                'dash_total_students': { selector: '.card:has(#total-students) .card-title', en: 'Total Students', ur: 'کل طلباء' },
+                'dash_total_teachers': { selector: '.card:has(#total-teachers) .card-title', en: 'Total Teachers', ur: 'کل اساتذہ' },
+                'dash_total_classes': { selector: '.card:has(#total-classes) .card-title', en: 'Total Classes', ur: 'کل کلاسیں' },
+                'dash_today_attendance': { selector: '.card:has(#today-attendance) .card-title', en: "Today's Attendance", ur: 'آج کی حاضری' },
+                'dash_monthly_fee': { selector: '.card:has(#monthly-fee) .card-title', en: 'Monthly Fee Collection', ur: 'ماہانہ فیس وصولی' },
+                'dash_pending_fee': { selector: '.card:has(#pending-fee) .card-title', en: 'Outstanding Fees', ur: 'بقایا فیس' },
                 'dash_events': { selector: '#dashboard-view .form-container:nth-of-type(1) .form-title', en: 'Upcoming Events', ur: 'آنے والے واقعات' },
                 'dash_activities': { selector: '#dashboard-view .form-container:nth-of-type(2) .form-title', en: 'Recent Activities', ur: 'حالیہ سرگرمیاں' },
                 'students_title': { selector: '#students-view > h2', en: 'Students', ur: 'طلباء' },
