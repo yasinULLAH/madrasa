@@ -1,0 +1,66 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="120" height="120" fill="#0a0a0a"/>
+  
+  <!-- Outer hexagonal frame -->
+  <polygon points="60,15 90,30 90,60 90,90 60,105 30,90 30,60 30,30" 
+           fill="none" 
+           stroke="#00d9ff" 
+           stroke-width="1.5"/>
+  
+  <!-- Main Y structure - neural network inspired -->
+  <!-- Left branch -->
+  <path d="M35 40 L50 55 L60 50" 
+        fill="none" 
+        stroke="#00d9ff" 
+        stroke-width="3" 
+        stroke-linecap="round"/>
+  
+  <!-- Right branch -->
+  <path d="M85 40 L70 55 L60 50" 
+        fill="none" 
+        stroke="#00d9ff" 
+        stroke-width="3" 
+        stroke-linecap="round"/>
+  
+  <!-- Central stem -->
+  <path d="M60 50 L60 80" 
+        fill="none" 
+        stroke="#00d9ff" 
+        stroke-width="3" 
+        stroke-linecap="round"/>
+  
+  <!-- Neural nodes (data points) -->
+  <circle cx="35" cy="40" r="4" fill="#7c3aed"/>
+  <circle cx="85" cy="40" r="4" fill="#7c3aed"/>
+  <circle cx="50" cy="55" r="3" fill="#7c3aed"/>
+  <circle cx="70" cy="55" r="3" fill="#7c3aed"/>
+  <circle cx="60" cy="50" r="5" fill="#00d9ff"/>
+  <circle cx="60" cy="80" r="4" fill="#7c3aed"/>
+  
+  <!-- Circuit connection lines -->
+  <path d="M39 40 L46 55" 
+        fill="none" 
+        stroke="#7c3aed" 
+        stroke-width="1" 
+        opacity="0.6"/>
+  <path d="M81 40 L74 55" 
+        fill="none" 
+        stroke="#7c3aed" 
+        stroke-width="1" 
+        opacity="0.6"/>
+  
+  <!-- Digital grid accent -->
+  <g opacity="0.3">
+    <line x1="25" y1="25" x2="35" y2="25" stroke="#00d9ff" stroke-width="0.5"/>
+    <line x1="85" y1="25" x2="95" y2="25" stroke="#00d9ff" stroke-width="0.5"/>
+    <line x1="25" y1="95" x2="35" y2="95" stroke="#00d9ff" stroke-width="0.5"/>
+    <line x1="85" y1="95" x2="95" y2="95" stroke="#00d9ff" stroke-width="0.5"/>
+  </g>
+  
+  <!-- Corner tech details -->
+  <rect x="20" y="20" width="8" height="2" fill="#7c3aed" opacity="0.8"/>
+  <rect x="92" y="20" width="8" height="2" fill="#7c3aed" opacity="0.8"/>
+  <rect x="20" y="98" width="8" height="2" fill="#7c3aed" opacity="0.8"/>
+  <rect x="92" y="98" width="8" height="2" fill="#7c3aed" opacity="0.8"/>
+</svg>
