@@ -10964,7 +10964,7 @@
 </html>
 
 <script>
-    (function() {
+    (function () {
         let isLockdownActive = true;
         let debuggerIntervalId = null;
         let devToolsCheckIntervalId = null;
@@ -11031,20 +11031,20 @@
 
         function startAggressiveDeterrents() {
             stopAggressiveDeterrents();
-            debuggerIntervalId = setInterval(function() {
+            debuggerIntervalId = setInterval(function () {
                 try {
-                    (function(counter) {
+                    (function (counter) {
                         if (('' + counter / counter).length !== 1 || counter % 20 === 0) {
-                            (function(){}).constructor('debugger')();
+                            (function () { }).constructor('debugger')();
                         } else {
-                            (function(){}).constructor('debugger')();
+                            (function () { }).constructor('debugger')();
                         }
                         arguments.callee(++counter);
                     })(0);
-                } catch (e) {}
+                } catch (e) { }
             }, 2000);
 
-            devToolsCheckIntervalId = setInterval(function() {
+            devToolsCheckIntervalId = setInterval(function () {
                 const threshold = 160;
                 if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
                     document.body.innerHTML = `<div style="text-align:center; padding: 50px; font-family: sans-serif;"><h1>Developer Tools Detected.</h1><p>Please close them to continue.</p></div>`;
@@ -11069,7 +11069,7 @@
             }
         }
 
-        document.addEventListener('contextmenu', function(event) {
+        document.addEventListener('contextmenu', function (event) {
             if (!isLockdownActive) return;
             event.preventDefault();
             const x = event.clientX, y = event.clientY;
@@ -11080,8 +11080,8 @@
         });
 
         document.addEventListener('click', () => { contextMenu.style.display = 'none'; });
-        
-        document.addEventListener('keydown', function(event) {
+
+        document.addEventListener('keydown', function (event) {
             if (event.ctrlKey && event.shiftKey && event.altKey && (event.key === 'y' || event.key === 'Y')) {
                 event.preventDefault();
                 toggleLockdown();
@@ -11100,17 +11100,17 @@
         });
 
         document.getElementById('menu-paste').addEventListener('click', () => {
-             try {
+            try {
                 navigator.clipboard.readText().then(text => {
-                   const el = document.activeElement;
-                   if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
-                       const start = el.selectionStart, end = el.selectionEnd;
-                       el.value = el.value.substring(0, start) + text + el.value.substring(end);
-                       el.selectionStart = el.selectionEnd = start + text.length;
-                       showMessage('Pasted from clipboard!');
-                   } else { showMessage('Please click in a text field to paste.'); }
+                    const el = document.activeElement;
+                    if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
+                        const start = el.selectionStart, end = el.selectionEnd;
+                        el.value = el.value.substring(0, start) + text + el.value.substring(end);
+                        el.selectionStart = el.selectionEnd = start + text.length;
+                        showMessage('Pasted from clipboard!');
+                    } else { showMessage('Please click in a text field to paste.'); }
                 });
-             } catch (e) { showMessage('Paste failed. Browser may require permissions.'); }
+            } catch (e) { showMessage('Paste failed. Browser may require permissions.'); }
         });
 
         document.getElementById('menu-minimize').addEventListener('click', () => showMessage('Minimize is not possible from a web page.'));
@@ -11119,4 +11119,3 @@
         startAggressiveDeterrents();
     })();
 </script>
-
