@@ -5732,7 +5732,7 @@
                 <input type="date" id="certificateIssueDate" onchange="generateCertificate()">
             </div>
         </div>
-        <button class="print" onclick="printCertificate()" style="display: none;" id="printCertificateBtn">پرنٹ کریں</button>
+        <button class="print" onclick="printCertificate()" style="display: none;" id="printCertificateBtn">ایکسپورٹ کریں (PNG)</button>
         <div id="certificatePreviewContainer" class="printable" style="display: none; padding: 20px; background: #eee; margin-top: 20px;">
         </div>
     `;
@@ -7586,13 +7586,44 @@
                 printBtn.style.display = 'none';
             }
         }
-        function printCertificate() {
-            const preview = document.getElementById('certificatePreviewContainer');
-            if (preview.style.display === 'none' || !preview.innerHTML.trim()) {
-                alert('پہلے پرنٹ کرنے کے لیے ایک سرٹیفکیٹ بنائیں۔');
+        async function printCertificate() {
+            const previewContainer = document.getElementById('certificatePreviewContainer');
+            const certificateElement = previewContainer.querySelector('.certificate-paper');
+            const printBtn = document.getElementById('printCertificateBtn');
+            if (!certificateElement || previewContainer.style.display === 'none') {
+                alert('پہلے ایکسپورٹ کرنے کے لیے ایک سرٹیفکیٹ بنائیں۔');
                 return;
             }
-            window.print();
+            const originalButtonText = printBtn.textContent;
+            printBtn.textContent = 'ایکسپورٹ ہو رہا ہے...';
+            printBtn.disabled = true;
+            try {
+                const canvas = await html2canvas(certificateElement, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                });
+                const link = document.createElement('a');
+                const studentId = parseInt(document.getElementById('certificateStudentSelect').value);
+                let filename = `Certificate_${Date.now()}.png`;
+                if (studentId) {
+                    const student = await getById(STORE_STUDENTS, studentId);
+                    if (student) {
+                        filename = `Certificate_${student.name.replace(/\s/g, '_')}.png`;
+                    }
+                }
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Error exporting certificate:', error);
+                alert('سرٹیفکیٹ ایکسپورٹ کرنے میں خرابی۔');
+            } finally {
+                printBtn.textContent = originalButtonText;
+                printBtn.disabled = false;
+            }
         }
         const existingShowModule = window.showModule;
         window.showModule = function (moduleId) {
