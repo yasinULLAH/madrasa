@@ -176,7 +176,6 @@
         #attendancePrintContainer,
         #resultCardPrintContainer {
             display: none;
-
             border: 1px solid #000;
             padding: 20px;
             margin: 20px 0;
@@ -256,21 +255,13 @@
 
         .id-card .photo.qr-code-image {
             width: 104px;
-            /* Match the new QR size */
             height: 104px;
-            /* Match the new QR size */
             padding: 5px;
-            /* Add some padding around the QR code */
             box-sizing: border-box;
-            /* Ensure padding is included in width/height */
             object-fit: contain;
-            /* Make sure QR code is not stretched */
             background-color: #fff;
-            /* Ensure white background for QR if needed */
         }
 
-
-        /* Gradient transparent - color - transparent */
         hr.one {
             border: 0;
             height: 4px;
@@ -278,7 +269,6 @@
             margin-top: 32px !important;
         }
 
-        /* Flaired edges, by Tomas Theunissen */
         hr.two {
             overflow: visible;
             height: 30px;
@@ -308,6 +298,163 @@
 
         .id-card.front * {
             font-size: 15px !important;
+        }
+
+        .certificate-paper {
+            width: 800px;
+            height: 565px;
+            padding: 20px;
+            margin: auto;
+            border: 1px solid #666;
+            background: #fff;
+            position: relative;
+            box-sizing: border-box;
+            font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
+            direction: rtl;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .certificate-border {
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            position: absolute;
+            border: 10px solid #c0a062;
+            box-sizing: border-box;
+        }
+
+        .certificate-inner-border {
+            width: 100%;
+            height: 100%;
+            border: 2px solid #c0a062;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2px 40px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 300px;
+            background-blend-mode: luminosity;
+        }
+
+        .cert-header {
+            text-align: center;
+            width: 100%;
+        }
+
+        .cert-header .bismillah {
+            font-size: 24px;
+            font-family: 'Scheherazade New', serif;
+        }
+
+        .cert-header .school-name {
+            font-size: 36px;
+            font-weight: bold;
+            color: #004d00;
+            margin: 5px 0;
+        }
+
+        .cert-header .cert-title {
+            font-size: 28px;
+            text-decoration: underline;
+            margin: 15px 0;
+        }
+
+        .cert-body {
+            width: 100%;
+            margin-top: 30px;
+            font-size: 19px;
+            line-height: 2.2;
+            text-align: right;
+        }
+
+        .cert-body p {
+            margin: 10px 0;
+        }
+
+        .cert-body .field {
+            font-weight: bold;
+            color: #333;
+            display: inline-block;
+            padding: 0px 5px;
+            text-decoration: underline;
+            color: blue;
+            font-family: sans-serif;
+            font-size: larger;
+            text-underline-position: under;
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 4px;
+            padding-top: 43px;
+            font-size: 16px;
+            align-content: flex-start;
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+
+        .cert-footer .signature-line {
+            border-top: 1px solid #000;
+            padding-top: 5px;
+            width: 200px;
+            text-align: center;
+        }
+
+        @media print {
+            #certificatePreviewContainer {
+                background: none !important;
+                padding: 0 !important;
+            }
+
+            .certificate-paper {
+                width: 100%;
+                height: 100%;
+                box-shadow: none;
+                margin: 0;
+                border: 2px solid #000 !important;
+            }
+
+            button.print {
+                display: none !important;
+            }
+        }
+
+        .certificate-border {
+            width: 800px;
+            height: 550px;
+            border: 5px double #2c3e50;
+            padding: 25px;
+            background-color: white;
+            text-align: center;
+            page-break-inside: avoid;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            background-image: url(bgc.png);
+            background-repeat: no-repeat;
+            background-size: 102% 106%;
+            background-position: center;
+            background-origin: border-box;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .certificate-border::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url(logo2.png);
+            background-size: 63%;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.1;
+            pointer-events: none;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
@@ -453,8 +600,6 @@
                         <option value="marks">امتحانی نتائج کا خلاصہ</option>
                     </select>
                 </div>
-
-                <!-- Date Filter Controls -->
                 <div id="advDateControls" style="display: none; grid-column: 1 / -1;">
                     <div class="form-grid">
                         <div id="advDateRangeDiv">
@@ -473,8 +618,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Other Filters -->
                 <div id="advFinancialTypeDiv" style="display:none;">
                     <label for="advFinancialType">مالیاتی رپورٹ:</label>
                     <select id="advFinancialType">
@@ -492,16 +635,13 @@
                     <label for="advStudentFilter">طالب علم (ایک یا زیادہ منتخب کریں):</label>
                     <select id="advStudentFilter" multiple size="3" style="height: 80px;"></select>
                 </div>
-
                 <div style="grid-column: 1 / -1; text-align:left;">
                     <button id="generateAdvancedReportBtn">رپورٹ دیکھیں</button>
                     <button id="commFromReportBtn" style="display:none; background-color: #007bff;"
                         onclick="triggerCommFromAdvancedReport()">پیغام بھیجیں</button>
-
                 </div>
                 <div id="advancedReportOutput" class="full-width"
                     style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
-                    <!-- New report content will be displayed here -->
                 </div>
             </div>
         </div>
@@ -1061,7 +1201,7 @@
         const STORE_TIMETABLE = 'timetable';
         const STORE_SETTINGS = 'settings';
         const STORE_INVENTORY = 'inventory';
-        const LOW_STOCK_THRESHOLD = 3; // Threshold for low stock alerts
+        const LOW_STOCK_THRESHOLD = 3;
         function openDatabase() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -1072,21 +1212,17 @@
                 request.onsuccess = (event) => {
                     db = event.target.result;
                     console.log("Database opened successfully");
-
                     window.db = db;
                     window.addData = addData;
                     window.updateData = updateData;
                     window.getById = getById;
                     window.getAll = getAll;
                     window.getObjectStore = getObjectStore;
-
                     window.getClassName = getClassName;
                     window.getTeacherName = getTeacherName;
                     window.getStudentName = getStudentName;
                     window.showModule = showModule;
                     window.loadDashboardStats = loadDashboardStats;
-
-
                     window.STORE_SETTINGS = STORE_SETTINGS;
                     window.STORE_TEACHERS = STORE_TEACHERS;
                     window.STORE_CLASSES = STORE_CLASSES;
@@ -1207,7 +1343,6 @@
                     if (!db.objectStoreNames.contains(STORE_SETTINGS)) {
                         const settingsStore = db.createObjectStore(STORE_SETTINGS, { keyPath: 'key' });
                     }
-                    // Add Inventory store if it doesn't exist
                     if (!db.objectStoreNames.contains(STORE_INVENTORY)) {
                         const inventoryStore = db.createObjectStore(STORE_INVENTORY, { keyPath: 'id', autoIncrement: true });
                         inventoryStore.createIndex('itemName', 'itemName', { unique: false });
@@ -1317,7 +1452,6 @@
                 document.getElementById('periodNewAdmissions').textContent = 'خرابی';
             }
         }
-
         function showModule(moduleId) {
             document.querySelectorAll('.module').forEach(module => module.classList.remove('active', 'printable'));
             document.getElementById(moduleId).classList.add('active');
@@ -1366,7 +1500,6 @@
             }
             if (moduleId === 'feeStructures') { loadClassesForFeeStructureFilter(); loadFeeStructures(); }
             if (moduleId === 'timetable') { loadClassesForTimetable(); loadTeachersForRoaster(); loadTimetable(); }
-
             if (moduleId === 'dashboard') {
                 loadDashboardStats();
                 populateDashboardDateSelectors();
@@ -1552,7 +1685,6 @@
                 const inventory = await getAll(STORE_INVENTORY);
                 const tableBody = document.getElementById('inventoryTable').querySelector('tbody');
                 tableBody.innerHTML = '';
-
                 inventory.forEach(item => {
                     if (!searchTerm ||
                         item.itemName.toLowerCase().includes(searchTerm) ||
@@ -1576,25 +1708,21 @@
                 console.error("Error loading inventory:", error);
             }
         }
-
         async function loadInventoryCategories() {
             try {
                 const inventory = await getAll(STORE_INVENTORY);
                 const categories = [...new Set(inventory.map(item => item.itemCategory))];
                 const categoryInput = document.getElementById('itemCategory');
                 categoryInput.setAttribute('list', 'inventoryCategories');
-
                 const datalist = document.getElementById('inventoryCategories') ||
                     document.createElement('datalist');
                 datalist.id = 'inventoryCategories';
                 datalist.innerHTML = '';
-
                 categories.forEach(category => {
                     const option = document.createElement('option');
                     option.value = category;
                     datalist.appendChild(option);
                 });
-
                 if (!document.getElementById('inventoryCategories')) {
                     document.body.appendChild(datalist);
                 }
@@ -1602,12 +1730,10 @@
                 console.error("Error loading inventory categories:", error);
             }
         }
-
         async function checkLowStockItems() {
             try {
                 const inventory = await getAll(STORE_INVENTORY);
                 const lowStockItems = inventory.filter(item => item.quantity <= LOW_STOCK_THRESHOLD);
-
                 if (lowStockItems.length > 0) {
                     alert(`Warning: ${lowStockItems.length} items are low in stock!`);
                 }
@@ -1615,7 +1741,6 @@
                 console.error("Error checking low stock items:", error);
             }
         }
-
         async function editInventoryItem(id) {
             try {
                 const item = await getById(STORE_INVENTORY, id);
@@ -1632,7 +1757,6 @@
                 console.error("Error editing inventory item:", error);
             }
         }
-
         async function deleteInventoryItem(id) {
             if (confirm('کیا آپ واقعی یہ آئٹم حذف کرنا چاہتے ہیں؟')) {
                 try {
@@ -1643,15 +1767,12 @@
                 }
             }
         }
-
         function resetInventoryForm() {
             document.getElementById('inventoryForm').reset();
             document.getElementById('inventoryId').value = '';
         }
-
         document.getElementById('inventoryForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-
             const item = {
                 itemName: document.getElementById('itemName').value,
                 itemCategory: document.getElementById('itemCategory').value,
@@ -1660,32 +1781,27 @@
                 purchaseDate: document.getElementById('purchaseDate').value || null,
                 itemDescription: document.getElementById('itemDescription').value || null
             };
-
             const id = document.getElementById('inventoryId').value;
-
             try {
                 if (id) {
                     item.id = parseInt(id);
                     await updateData(STORE_INVENTORY, item);
                 } else {
                     await addData(STORE_INVENTORY, item);
-
-                    // Automatically add an expense record for the new inventory purchase
                     if (item.unitPrice > 0 && item.quantity > 0) {
                         const expenseAmount = item.quantity * item.unitPrice;
                         const expenseTransaction = {
                             date: item.purchaseDate || new Date().toISOString().split('T')[0],
                             recordType: 'expense',
-                            category: 'انوینٹری خریداری', // Inventory Purchase
+                            category: 'انوینٹری خریداری',
                             amount: expenseAmount,
                             description: `خریداری: ${item.quantity} عدد ${item.itemName} @ ${item.unitPrice} فی عدد`,
-                            paidTo: 'سپلائر' // Generic supplier
+                            paidTo: 'سپلائر'
                         };
                         await addData(STORE_EXPENSES, expenseTransaction);
-                        loadDashboardStats(); // Refresh dashboard with the new expense
+                        loadDashboardStats();
                     }
                 }
-
                 resetInventoryForm();
                 loadInventory();
                 loadInventoryCategories();
@@ -1694,7 +1810,6 @@
                 console.error("Error saving inventory item:", error);
             }
         });
-
         async function loadDashboardStats() {
             try {
                 const students = await getAll(STORE_STUDENTS);
@@ -1704,15 +1819,12 @@
                 document.getElementById('totalTeachers').textContent = teachers.length;
                 document.getElementById('totalClasses').textContent = classes.length;
                 const today = new Date().toISOString().split('T')[0];
-
                 const allTransactions = await getAll(STORE_EXPENSES);
-
                 const transactionsToday = allTransactions.filter(t => t.date === today);
                 const incomeToday = transactionsToday.filter(t => t.recordType === 'income');
                 const expensesToday = transactionsToday.filter(t => t.recordType === 'expense');
                 const totalIncomeToday = incomeToday.reduce((sum, inc) => sum + inc.amount, 0);
                 const totalExpensesToday = expensesToday.reduce((sum, exp) => sum + exp.amount, 0);
-
                 document.getElementById('todayFees').textContent = totalIncomeToday.toLocaleString();
                 document.getElementById('todayExpenses').textContent = totalExpensesToday.toLocaleString();
             } catch (error) {
@@ -1742,7 +1854,6 @@
                     await updateData(STORE_STUDENTS, student);
                     alert('طالب علم کی معلومات اپ ڈیٹ ہو گئی۔');
                 } else {
-
                     const store = await getObjectStore(STORE_STUDENTS, 'readonly');
                     const index = store.index('admissionNo');
                     const request = index.get(student.admissionNo);
@@ -1761,7 +1872,6 @@
                         console.error("Error checking admission number uniqueness:", event.target.error);
                         alert('ڈیٹا بیس میں خرابی۔');
                     };
-
                     return;
                 }
                 resetStudentForm();
@@ -1836,7 +1946,6 @@
             if (confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟')) {
                 try {
                     await deleteData(STORE_STUDENTS, id);
-
                     alert('طالب علم حذف ہو گیا۔');
                     loadStudents();
                     loadDashboardStats();
@@ -1935,7 +2044,6 @@
             if (confirm('کیا آپ واقعی اس استاد کو حذف کرنا چاہتے ہیں؟')) {
                 try {
                     await deleteData(STORE_TEACHERS, id);
-
                     alert('استاد حذف ہو گیا۔');
                     loadTeachers();
                     loadDashboardStats();
@@ -1964,7 +2072,6 @@
                     await updateData(STORE_CLASSES, cls);
                     alert('کلاس کی معلومات اپ ڈیٹ ہو گئیں۔');
                 } else {
-
                     const store = await getObjectStore(STORE_CLASSES, 'readonly');
                     const index = store.index('name');
                     const request = index.get(cls.name);
@@ -2057,19 +2164,16 @@
         async function deleteClass(id) {
             if (confirm('کیا آپ واقعی اس کلاس کو حذف کرنا چاہتے ہیں؟ اس سے متعلقہ طلباء، فیس اسٹرکچر، حاضری، نتائج اور ٹائم ٹیبل بھی متاثر ہو سکتے ہیں۔')) {
                 try {
-
                     const studentsInClass = await getAll(STORE_STUDENTS, 'classId', id);
                     if (studentsInClass.length > 0) {
                         alert(`کلاس حذف نہیں کی جا سکتی کیونکہ اس میں ${studentsInClass.length} طلباء ہیں۔ پہلے طلباء کو منتقل کریں یا حذف کریں۔`);
                         return;
                     }
-
                     const feeStructuresInClass = await getAll(STORE_FEE_STRUCTURES, 'classId', id);
                     if (feeStructuresInClass.length > 0) {
                         alert(`کلاس حذف نہیں کی جا سکتی کیونکہ اس کے لیے فیس اسٹرکچر موجود ہیں۔ پہلے فیس اسٹرکچر حذف کریں۔`);
                         return;
                     }
-
                     await deleteData(STORE_CLASSES, id);
                     alert('کلاس حذف ہو گئی۔');
                     loadClasses();
@@ -2089,7 +2193,6 @@
         async function loadTeachersForClassForm() {
             await loadTeachersIntoSelect('classTeacher');
         }
-
         const feeStructureForm = document.getElementById('feeStructureForm');
         const feeStructuresTableBody = document.getElementById('feeStructuresTable').querySelector('tbody');
         const filterFeeStructureClassSelect = document.getElementById('filterFeeStructureClass');
@@ -2211,7 +2314,6 @@
             await loadClassesIntoSelect('feeStructureClass');
             await loadClassesIntoSelect('filterFeeStructureClass');
         }
-
         const feeCollectionForm = document.getElementById('feeCollectionForm');
         const feeStudentSelect = document.getElementById('feeStudentSelect');
         const feeHistoryTableBody = document.getElementById('feeHistoryTable').querySelector('tbody');
@@ -2247,7 +2349,6 @@
                 if (typeof window.addFeeIncomeToTransactions === 'function') {
                     await window.addFeeIncomeToTransactions(fullFeeRecord);
                 }
-
                 loadStudentFeeDetails(studentId);
                 loadDashboardStats();
             } catch (error) {
@@ -2277,16 +2378,12 @@
                 if (!student || !student.classId) {
                     throw new Error('Student or student class not found.');
                 }
-
                 const feeStructures = await getAll(STORE_FEE_STRUCTURES, 'classId', student.classId);
-
                 const feePayments = await getAll(STORE_FEES, 'studentId', studentId);
-
                 const paidAmounts = feePayments.reduce((acc, payment) => {
                     acc[payment.feeType] = (acc[payment.feeType] || 0) + payment.paidAmount + payment.discount;
                     return acc;
                 }, {});
-
                 dueFeesList.innerHTML = '';
                 feeCollectionTypeSelect.innerHTML = '<option value="">-- فیس کی قسم منتخب کریں --</option>';
                 let hasDueFees = false;
@@ -2313,7 +2410,6 @@
                 } else {
                     feeCollectionTypeSelect.disabled = false;
                 }
-
                 feeHistoryTableBody.innerHTML = '';
                 feePayments
                     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -2380,11 +2476,9 @@
                 const receiptHeader = document.createElement('h3');
                 receiptHeader.textContent = `${schoolName} - فیس رسید`;
                 const receiptContainer = document.getElementById('feeReceiptContainer');
-
                 const existingHeader = receiptContainer.querySelector('h3');
                 if (existingHeader) existingHeader.remove();
                 receiptContainer.prepend(receiptHeader);
-
                 receiptContainer.style.display = 'block';
                 receiptContainer.classList.add('printable');
                 window.print();
@@ -2395,7 +2489,6 @@
                 alert('رسید بنانے میں خرابی۔');
             }
         }
-
         const attendanceClassSelect = document.getElementById('attendanceClass');
         const attendanceDateInput = document.getElementById('attendanceDate');
         const attendanceTableBody = document.getElementById('attendanceTable').querySelector('tbody');
@@ -2417,7 +2510,6 @@
                     attendanceTableBody.innerHTML = '<tr><td colspan="3">اس کلاس میں کوئی طالب علم نہیں۔</td></tr>';
                     return;
                 }
-
                 const existingAttendance = await getAll(STORE_ATTENDANCE, 'date_classId', [date, classId]);
                 const attendanceMap = existingAttendance.reduce((map, record) => {
                     map[record.studentId] = record.status;
@@ -2436,7 +2528,7 @@
                                 <label>
                                     <input type="radio" name="attendance_${student.id}" value="Present" data-student-id="${student.id}" ${existingStatus === 'Present' ? 'checked' : ''}> حاضر
                                 </label>
-                                <label style="/* margin-right: 15px; */">
+                                <label style="">
                                     <input type="radio" name="attendance_${student.id}" value="Absent" data-student-id="${student.id}" ${existingStatus === 'Absent' ? 'checked' : ''}> غیر حاضر
                                 </label>
                              </td>
@@ -2468,27 +2560,17 @@
                 const store = await getObjectStore(STORE_ATTENDANCE, 'readwrite');
                 const index = store.index('date_classId_studentId');
                 let completed = 0;
-
                 const transaction = store.transaction;
                 attendanceData.forEach(record => {
-
-
-
-
-
-
-
                     const request = index.get([record.date, record.classId, record.studentId]);
                     request.onsuccess = () => {
                         const existingRecord = request.result;
                         if (existingRecord) {
-
                             existingRecord.status = record.status;
                             const updateRequest = store.put(existingRecord);
                             updateRequest.onsuccess = () => checkCompletion();
                             updateRequest.onerror = (e) => console.error("Error updating attendance record:", e.target.error);
                         } else {
-
                             const addRequest = store.add(record);
                             addRequest.onsuccess = () => checkCompletion();
                             addRequest.onerror = (e) => console.error("Error adding attendance record:", e.target.error);
@@ -2506,15 +2588,10 @@
                             console.error("Transaction error saving attendance:", event.target.error);
                             alert('حاضری محفوظ کرنے میں خرابی: ٹرانزیکشن ناکام۔');
                         };
-
-
-
                     }
                 }
-
                 setTimeout(() => {
                     if (completed === attendanceData.length) {
-                        //alert('حاضری کامیابی سے محفوظ ہو گئی۔ (Fallback)');
                     }
                 }, 500);
             } catch (error) {
@@ -2580,7 +2657,6 @@
                 printTableBody.innerHTML = '<tr><td colspan="3">خرابی۔</td></tr>';
             }
         }
-
         const resultClassSelect = document.getElementById('resultClass');
         const resultSubjectSelect = document.getElementById('resultSubject');
         const resultsEntryTableBody = document.getElementById('resultsEntryTable').querySelector('tbody');
@@ -2600,7 +2676,6 @@
                 return;
             }
             try {
-
                 const cls = await getById(STORE_CLASSES, classId);
                 if (cls && cls.subjects && cls.subjects.length > 0) {
                     resultSubjectSelect.innerHTML = '<option value="">-- مضمون منتخب کریں --</option>';
@@ -2615,21 +2690,18 @@
                     resultsEntryTableBody.innerHTML = '<tr><td colspan="3">اس کلاس میں کوئی مضمون شامل نہیں۔</td></tr>';
                     return;
                 }
-
                 resultsEntryTableBody.innerHTML = '<tr><td colspan="3">لوڈ ہو رہا ہے...</td></tr>';
                 const students = await getAll(STORE_STUDENTS, 'classId', classId);
                 if (students.length === 0) {
                     resultsEntryTableBody.innerHTML = '<tr><td colspan="3">اس کلاس میں کوئی طالب علم نہیں۔</td></tr>';
                     return;
                 }
-
                 const examName = resultExamNameInput.value.trim();
                 const subject = resultSubjectSelect.value;
                 let marksMap = {};
                 if (examName && subject) {
                     const existingResults = await getAll(STORE_RESULTS, 'exam_class_subject_student');
                     existingResults.forEach(res => {
-
                         if (res.examName === examName && res.classId === classId && res.subject === subject) {
                             marksMap[res.studentId] = { total: res.totalMarks, obtained: res.obtainedMarks };
                         }
@@ -2653,7 +2725,6 @@
             }
         }
         resultClassSelect.addEventListener('change', loadStudentsAndSubjectsForResult);
-
         resultExamNameInput.addEventListener('change', loadStudentsAndSubjectsForResult);
         async function saveResults() {
             const examName = resultExamNameInput.value.trim();
@@ -2674,7 +2745,6 @@
                     const studentId = parseInt(obtainedInput.dataset.studentId);
                     const totalMarks = parseInt(totalInput.value);
                     const obtainedMarksStr = obtainedInput.value;
-
                     if (obtainedMarksStr !== '' && !isNaN(studentId) && !isNaN(totalMarks) && totalMarks > 0) {
                         const obtainedMarks = parseInt(obtainedMarksStr);
                         if (!isNaN(obtainedMarks) && obtainedMarks >= 0 && obtainedMarks <= totalMarks) {
@@ -2712,7 +2782,6 @@
                     request.onsuccess = () => {
                         const existingRecord = request.result;
                         if (existingRecord) {
-
                             existingRecord.totalMarks = record.totalMarks;
                             existingRecord.obtainedMarks = record.obtainedMarks;
                             existingRecord.date = record.date;
@@ -2720,7 +2789,6 @@
                             updateRequest.onsuccess = () => checkCompletion();
                             updateRequest.onerror = (e) => console.error("Error updating result record:", e.target.error);
                         } else {
-
                             const addRequest = store.add(record);
                             addRequest.onsuccess = () => checkCompletion();
                             addRequest.onerror = (e) => console.error("Error adding result record:", e.target.error);
@@ -2741,10 +2809,8 @@
                         };
                     }
                 }
-
                 setTimeout(() => {
                     if (completed === resultsData.length) {
-                        //alert('نتائج کامیابی سے محفوظ ہو گئے۔ (Fallback)');
                     }
                 }, 500);
             } catch (error) {
@@ -2787,7 +2853,6 @@
                 document.getElementById('printResultExamName').textContent = examName;
                 document.getElementById('printResultStudentName').textContent = student.name;
                 document.getElementById('printResultClassName').textContent = cls ? cls.name : 'N/A';
-
                 const allResults = await getAll(STORE_RESULTS, 'studentId', studentId);
                 const studentExamResults = allResults.filter(r => r.examName === examName);
                 if (studentExamResults.length === 0) {
@@ -2804,7 +2869,6 @@
                 let totalMarks = 0;
                 studentExamResults.forEach(res => {
                     const percentage = (res.obtainedMarks / res.totalMarks) * 100;
-
                     let grade = 'F';
                     if (percentage >= 90) grade = 'A+';
                     else if (percentage >= 80) grade = 'A';
@@ -2846,7 +2910,6 @@
                 printTableBody.innerHTML = '<tr><td colspan="4">خرابی۔</td></tr>';
             }
         }
-
         const timetableClassSelect = document.getElementById('timetableClass');
         const classTimetableTableBody = document.getElementById('classTimetableTable').querySelector('tbody');
         const dutyRoasterTeacherSelect = document.getElementById('dutyRoasterTeacher');
@@ -2884,7 +2947,6 @@
                     for (let period = 1; period <= periods; period++) {
                         const cell = row.insertCell();
                         const entry = timetableMap[day]?.[period] || { subject: '', teacherId: '' };
-
                         const subjectSelect = document.createElement('select');
                         subjectSelect.classList.add('timetable-subject');
                         subjectSelect.dataset.day = day;
@@ -2898,7 +2960,6 @@
                             subjectSelect.appendChild(option);
                         });
                         cell.appendChild(subjectSelect);
-
                         const teacherSelect = document.createElement('select');
                         teacherSelect.classList.add('timetable-teacher');
                         teacherSelect.dataset.day = day;
@@ -2936,7 +2997,6 @@
                     if (subjectSelect && teacherSelect) {
                         const subject = subjectSelect.value;
                         const teacherId = teacherSelect.value ? parseInt(teacherSelect.value) : null;
-
                         if (subject || teacherId) {
                             hasData = true;
                             timetableEntries.push({
@@ -2954,21 +3014,18 @@
                 if (!confirm("کوئی مضمون یا استاد منتخب نہیں کیا گیا۔ کیا آپ اس کلاس کا ٹائم ٹیبل صاف کرنا چاہتے ہیں؟")) {
                     return;
                 }
-
             }
             try {
                 const store = await getObjectStore(STORE_TIMETABLE, 'readwrite');
                 const index = store.index('classId_day_period');
                 let completed = 0;
                 const transaction = store.transaction;
-
                 timetableEntries.forEach(entry => {
                     const keyRange = IDBKeyRange.only([entry.classId, entry.day, entry.period]);
                     const request = index.get(keyRange);
                     request.onsuccess = () => {
                         const existingEntry = request.result;
                         if (existingEntry) {
-
                             if (entry.subject === null && entry.teacherId === null) {
                                 const deleteRequest = store.delete(existingEntry.id);
                                 deleteRequest.onsuccess = () => checkCompletion();
@@ -2985,7 +3042,6 @@
                             addRequest.onsuccess = () => checkCompletion();
                             addRequest.onerror = (e) => console.error("Error adding timetable entry:", e.target.error);
                         } else {
-
                             checkCompletion();
                         }
                     };
@@ -2996,7 +3052,6 @@
                     if (completed === timetableEntries.length) {
                         transaction.oncomplete = () => {
                             alert('ٹائم ٹیبل کامیابی سے محفوظ ہو گیا۔');
-
                             if (dutyRoasterTeacherSelect.value) loadTeacherRoaster();
                         };
                         transaction.onerror = (event) => {
@@ -3005,10 +3060,8 @@
                         };
                     }
                 }
-
                 setTimeout(() => {
                     if (completed === timetableEntries.length) {
-                        //alert('ٹائم ٹیبل کامیابی سے محفوظ ہو گیا۔ (Fallback)');
                     }
                 }, 500);
             } catch (error) {
@@ -3052,7 +3105,6 @@
                 teacherRoasterTableBody.innerHTML = `<tr><td colspan="${periods + 1}">ڈیوٹی روسٹر لوڈ کرنے میں خرابی۔</td></tr>`;
             }
         }
-
         const expenseForm = document.getElementById('expenseForm');
         const expensesTableBody = document.getElementById('expensesTable').querySelector('tbody');
         const expenseFilterDateInput = document.getElementById('expenseFilterDate');
@@ -3158,7 +3210,6 @@
                 }
             }
         }
-
         const reportContent = document.getElementById('reportContent');
         const reportTypeSelect = document.getElementById('reportType');
         const reportStartDateInput = document.getElementById('reportStartDate');
@@ -3336,7 +3387,6 @@
                 return dateMatch && classMatch;
             });
             if (filteredAttendance.length === 0) return '<p>اس معیار پر کوئی حاضری ریکارڈ نہیں ملا۔</p>';
-
             const summary = filteredAttendance.reduce((acc, att) => {
                 const studentId = att.studentId;
                 if (!acc[studentId]) {
@@ -3433,7 +3483,6 @@
             tableHTML += `</tbody></table>`;
             return tableHTML;
         }
-
         const importFileInput = document.getElementById('importFile');
         async function backupData() {
             if (!confirm('تمام ڈیٹا کو JSON فائل کے طور پر ایکسپورٹ کیا جائے گا۔ جاری رکھیں؟')) return;
@@ -3442,8 +3491,6 @@
                 const storeNames = db.objectStoreNames;
                 for (let i = 0; i < storeNames.length; i++) {
                     const storeName = storeNames[i];
-
-
                     backup[storeName] = await getAll(storeName);
                 }
                 const jsonString = JSON.stringify(backup, null, 2);
@@ -3474,14 +3521,12 @@
                 try {
                     const importedData = JSON.parse(e.target.result);
                     const storeNames = db.objectStoreNames;
-
                     const clearPromises = [];
                     for (let i = 0; i < storeNames.length; i++) {
                         clearPromises.push(clearStore(storeNames[i]));
                     }
                     await Promise.all(clearPromises);
                     console.log("Existing data cleared.");
-
                     const importPromises = [];
                     for (const storeName in importedData) {
                         if (db.objectStoreNames.contains(storeName)) {
@@ -3489,13 +3534,7 @@
                             if (Array.isArray(dataToImport)) {
                                 const store = await getObjectStore(storeName, 'readwrite');
                                 dataToImport.forEach(item => {
-
-
-
-
-
                                     importPromises.push(new Promise((resolve, reject) => {
-
                                         const req = store.put(item);
                                         req.onsuccess = resolve;
                                         req.onerror = reject;
@@ -3508,7 +3547,6 @@
                     }
                     await Promise.all(importPromises);
                     alert('ڈیٹا کامیابی سے امپورٹ ہو گیا۔ براہ کرم صفحہ ریفریش کریں۔');
-
                     showModule('dashboard');
                     loadDashboardStats();
                     location.reload();
@@ -3532,7 +3570,6 @@
                 console.error("Original 'expenses' module not found. Cannot transform.");
                 return;
             }
-
             expensesModule.innerHTML = `
         <h2>آمدنی و اخراجات کا انتظام</h2>
         <h3>نیا لین دین شامل کریں / ترمیم کریں</h3>
@@ -3606,10 +3643,6 @@
             </tbody>
         </table>
     `;
-
-
-
-
             const transactionForm = document.getElementById('transactionForm');
             const transactionsTableBody = document.getElementById('transactionsTable').querySelector('tbody');
             const transactionFilterDateInput = document.getElementById('transactionFilterDate');
@@ -3630,7 +3663,6 @@
                     transactionPaidToInput.value = '';
                 }
             }
-
             if (transactionRecordTypeSelect) toggleTransactionFields();
             if (transactionRecordTypeSelect) {
                 transactionRecordTypeSelect.addEventListener('change', window.toggleTransactionFields);
@@ -3777,7 +3809,6 @@
                     alert('لین دین حذف کرنے میں خرابی۔');
                 }
             }
-
             window.addFeeIncomeToTransactions = async function (feeRecord) {
                 const student = await window.getById(window.STORE_STUDENTS, feeRecord.studentId);
                 const className = student ? ((typeof window.getClassName === 'function') ? await window.getClassName(student.classId) : 'N/A') : 'N/A';
@@ -3800,7 +3831,6 @@
                     console.error("Error auto-adding fee income to transactions:", error);
                 }
             }
-
             console.log("Income & Expenses module setup complete.");
         }
         async function savePrintSettings() {
@@ -3827,7 +3857,6 @@
                 console.error("Error loading print settings:", error);
             }
         }
-
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDatabase();
@@ -3838,13 +3867,11 @@
                 alert("ڈیٹا بیس لوڈ کرنے میں ناکام: " + error);
             }
         });
-
         function applyUrduFont(elements) {
             elements.forEach(element => {
                 element.style.fontFamily = 'Calibri, Jameel Noori Nastaleeq, sans-serif';
             });
         }
-
         function updateLabels() {
             const labels = document.querySelectorAll('label, h1, h2, h3, h4, h5, h6, th');
             labels.forEach(label => {
@@ -3853,7 +3880,6 @@
                 }
             });
         }
-
         function addMadrasaFields() {
             const studentForm = document.getElementById('studentForm');
             if (studentForm) {
@@ -3871,20 +3897,14 @@
                 studentForm.appendChild(memorizationStatusInput);
             }
         }
-
         document.addEventListener('DOMContentLoaded', () => {
-
             const allTextElements = document.querySelectorAll('body *');
             applyUrduFont(allTextElements);
-
             updateLabels();
-
             addMadrasaFields();
         });
         document.addEventListener('DOMContentLoaded', async function () {
-
             try {
-
                 const scripts = [
                     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
                     'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js',
@@ -3905,7 +3925,6 @@
                 console.error('Error loading libraries:', error);
                 return;
             }
-
             function isTableVisible(table) {
                 const rect = table.getBoundingClientRect();
                 let parent = table;
@@ -3924,7 +3943,6 @@
                     rect.right > 0
                 );
             }
-
             function getParentZIndex(table) {
                 let parent = table;
                 while (parent && parent !== document.body) {
@@ -3936,17 +3954,14 @@
                 }
                 return 10;
             }
-
             function addExportIconToTables() {
                 const tables = document.querySelectorAll('table');
                 tables.forEach(table => {
                     if (!table.dataset.pdfIconAdded) {
-
                         const iconContainer = document.createElement('div');
                         iconContainer.className = 'pdf-export-container';
                         iconContainer.style.position = 'absolute';
                         iconContainer.style.pointerEvents = 'none';
-
                         const icon = document.createElement('span');
                         icon.className = 'pdf-export-icon';
                         icon.style.display = 'inline-block';
@@ -3961,14 +3976,12 @@
                         icon.style.transition = 'transform 0.2s';
                         icon.innerHTML = '📄';
                         icon.title = 'Export to PDF';
-
                         icon.addEventListener('mouseenter', () => {
                             icon.style.transform = 'scale(1.2)';
                         });
                         icon.addEventListener('mouseleave', () => {
                             icon.style.transform = 'scale(1)';
                         });
-
                         const updateIconPosition = () => {
                             if (isTableVisible(table)) {
                                 const tablePos = table.getBoundingClientRect();
@@ -3980,7 +3993,6 @@
                                 iconContainer.style.display = 'none';
                             }
                         };
-
                         icon.addEventListener('click', async () => {
                             try {
                                 if (!window.jspdf || !window.jspdf.jsPDF || !window.html2canvas) {
@@ -3988,7 +4000,6 @@
                                     return;
                                 }
                                 const { jsPDF } = window.jspdf;
-
                                 const loadingEl = document.createElement('div');
                                 loadingEl.style.position = 'fixed';
                                 loadingEl.style.top = '50%';
@@ -4001,12 +4012,9 @@
                                 loadingEl.style.zIndex = '9999';
                                 loadingEl.textContent = 'Generating PDF...';
                                 document.body.appendChild(loadingEl);
-
                                 const tableClone = table.cloneNode(true);
-                                // Find the index of the "Actions" column ('عمل')
                                 const actionColumnIndex = Array.from(tableClone.querySelectorAll('thead th'))
                                     .findIndex(th => th.textContent.trim() === 'عمل');
-                                // If the column is found, remove it from every row in the clone
                                 if (actionColumnIndex > -1) {
                                     const allRows = tableClone.querySelectorAll('tr');
                                     allRows.forEach(row => {
@@ -4019,18 +4027,15 @@
                                 tableClone.style.fontFamily = 'Arial, sans-serif';
                                 tableClone.style.borderCollapse = 'collapse';
                                 tableClone.style.direction = 'rtl';
-
                                 tableClone.querySelectorAll('th, td').forEach(cell => {
                                     cell.style.border = '1px solid #ddd';
                                     cell.style.padding = '8px';
                                     cell.style.textAlign = 'right';
                                 });
-
                                 tableClone.querySelectorAll('th').forEach(th => {
                                     th.style.backgroundColor = '#f2f2f2';
                                     th.style.fontWeight = 'bold';
                                 });
-
                                 const container = document.createElement('div');
                                 container.style.position = 'absolute';
                                 container.style.left = '-9999px';
@@ -4038,7 +4043,6 @@
                                 container.style.direction = 'rtl';
                                 container.appendChild(tableClone);
                                 document.body.appendChild(container);
-
                                 let title = '';
                                 const caption = table.querySelector('caption');
                                 if (caption) {
@@ -4046,16 +4050,13 @@
                                 } else {
                                     title = 'Table Export';
                                 }
-
                                 const titleEl = document.createElement('h2');
                                 titleEl.textContent = title;
                                 titleEl.style.textAlign = 'center';
                                 titleEl.style.margin = '10px 0';
                                 titleEl.style.fontFamily = 'Arial, sans-serif';
                                 container.insertBefore(titleEl, tableClone);
-
                                 await new Promise(resolve => setTimeout(resolve, 100));
-
                                 const canvas = await html2canvas(container, {
                                     scale: 2,
                                     useCORS: true,
@@ -4063,19 +4064,15 @@
                                     allowTaint: true,
                                     backgroundColor: '#ffffff'
                                 });
-
                                 const imgData = canvas.toDataURL('image/png');
                                 const imgWidth = 210;
                                 const pageHeight = 297;
                                 const imgHeight = canvas.height * imgWidth / canvas.width;
                                 const doc = new jsPDF('p', 'mm', 'a4');
                                 let position = 0;
-
                                 if (imgHeight < pageHeight) {
-
                                     doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                                 } else {
-
                                     let heightLeft = imgHeight;
                                     let page = 1;
                                     while (heightLeft > 0) {
@@ -4088,46 +4085,35 @@
                                         }
                                     }
                                 }
-
                                 document.body.removeChild(container);
                                 document.body.removeChild(loadingEl);
-
                                 const filename = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.pdf`;
                                 doc.save(filename);
                             } catch (error) {
                                 console.error('Error generating PDF:', error);
-
                                 const loadingEl = document.querySelector('div[style*="Generating PDF"]');
                                 if (loadingEl) document.body.removeChild(loadingEl);
                                 alert('Failed to export PDF. Check console for details.');
                             }
                         });
-
                         iconContainer.appendChild(icon);
                         document.body.appendChild(iconContainer);
-
                         table.dataset.pdfIconAdded = 'true';
-
                         updateIconPosition();
-
                         const mutationObserver = new MutationObserver(updateIconPosition);
                         mutationObserver.observe(table, { attributes: true, attributeFilter: ['style', 'class'] });
-
                         const resizeObserver = new ResizeObserver(updateIconPosition);
                         resizeObserver.observe(table);
-
                         window.addEventListener('scroll', updateIconPosition);
                         window.addEventListener('resize', updateIconPosition);
                     }
                 });
             }
-
             try {
                 addExportIconToTables();
             } catch (error) {
                 console.error('Error in initial table processing:', error);
             }
-
             let timeout;
             const observer = new MutationObserver(() => {
                 clearTimeout(timeout);
@@ -4147,12 +4133,8 @@
         (function () {
             async function savePageOffline() {
                 try {
-                    // 1. Capture the current localStorage and sessionStorage data
                     const localData = JSON.stringify(localStorage);
                     const sessionData = JSON.stringify(sessionStorage);
-
-                    // 2. Create the script that will restore the data when the offline file is opened.
-                    // This script is created as a string to be injected into the raw HTML.
                     const restoreScriptText = `
                 <script id="restore-storage-script">
                     try {
@@ -4164,23 +4146,16 @@
                         console.error('Error restoring storage:', e);
                     }
                 <\/script> 
-            `; // The <\/script> is to prevent parsing issues.
-
-                    // 3. Fetch the original HTML source of the current page. This is the key step.
+            `;
                     const response = await fetch(window.location.href);
                     if (!response.ok) {
                         throw new Error(`Failed to fetch page source: ${response.statusText}`);
                     }
                     let originalHtml = await response.text();
-
-                    // 4. Inject the restoration script right after the opening <head> tag using string replacement.
-                    // This ensures it runs before any other scripts on the page.
                     originalHtml = originalHtml.replace(
                         /(<head.*?>)/i,
                         `$1\n${restoreScriptText}`
                     );
-
-                    // 5. Create a Blob from the modified HTML string and trigger the download.
                     const blob = new Blob([originalHtml], { type: 'text/html' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -4190,14 +4165,11 @@
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-
                 } catch (error) {
                     console.error('Failed to save offline copy:', error);
                     alert('Could not save offline copy. Check the console for more details.');
                 }
             }
-
-            // This creates the save icon button on the page.
             const icon = document.createElement('div');
             icon.textContent = "💾";
             icon.title = "Save Offline Copy";
@@ -4218,7 +4190,6 @@
         })();
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Breadcrumb script running');
-
             const isMobile = window.matchMedia("(max-width: 768px)").matches;
             console.log('Is mobile:', isMobile);
             if (!isMobile) return;
@@ -4237,7 +4208,6 @@
                 console.error('Container not found');
                 return;
             }
-
             const breadcrumb = document.createElement('div');
             breadcrumb.className = 'breadcrumb';
             breadcrumb.style.cssText = `
@@ -4254,7 +4224,6 @@
         position: relative;
         z-index: 1000;
     `;
-
             const menuButton = document.createElement('button');
             menuButton.textContent = '☰';
             menuButton.style.cssText = `
@@ -4266,14 +4235,12 @@
         margin-left: 10px;
         padding: 5px 10px;
     `;
-
             const currentPage = document.createElement('span');
             currentPage.textContent = 'ڈیش بورڈ';
             currentPage.style.cssText = `
         flex: 1;
         text-align: right;
     `;
-
             const dropdown = document.createElement('div');
             dropdown.className = 'dropdown-menu';
             dropdown.style.cssText = `
@@ -4287,7 +4254,6 @@
         z-index: 1001;
         min-width: 200px;
     `;
-
             originalButtons.forEach(button => {
                 const moduleIdMatch = button.getAttribute('onclick')?.match(/showModule\('([^']+)'\)/);
                 if (!moduleIdMatch) {
@@ -4318,28 +4284,23 @@
                 });
                 dropdown.appendChild(menuItem);
             });
-
             menuButton.addEventListener('click', () => {
                 const isVisible = dropdown.style.display === 'block';
                 dropdown.style.display = isVisible ? 'none' : 'block';
                 console.log('Dropdown toggled:', dropdown.style.display);
             });
-
             document.addEventListener('click', (e) => {
                 if (!breadcrumb.contains(e.target) && !dropdown.contains(e.target)) {
                     dropdown.style.display = 'none';
                     console.log('Dropdown closed (outside click)');
                 }
             });
-
             breadcrumb.appendChild(menuButton);
             breadcrumb.appendChild(currentPage);
             breadcrumb.appendChild(dropdown);
-
             nav.style.display = 'none';
             container.insertBefore(breadcrumb, container.firstChild);
             console.log('Breadcrumb inserted');
-
             const originalShowModule = window.showModule;
             window.showModule = function (moduleId) {
                 console.log('showModule called:', moduleId);
@@ -4354,7 +4315,6 @@
             };
         });
         document.addEventListener('DOMContentLoaded', () => {
-
             const tableConfigs = [
                 { id: 'studentsTable', searchable: true, sortable: true, paginated: true },
                 { id: 'teachersTable', searchable: true, sortable: true, paginated: true },
@@ -4367,7 +4327,6 @@
                 { id: 'teacherRoasterTable', searchable: true, sortable: true, paginated: true },
                 { id: 'expensesTable', searchable: true, sortable: true, paginated: true }
             ];
-
             function debounce(func, wait) {
                 let timeout;
                 return function (...args) {
@@ -4375,7 +4334,6 @@
                     timeout = setTimeout(() => func(...args), wait);
                 };
             }
-
             function throttle(func, limit) {
                 let inThrottle;
                 return function (...args) {
@@ -4386,20 +4344,16 @@
                     }
                 };
             }
-
             function isTableVisible(table) {
                 return table && table.offsetParent !== null;
             }
-
             const initializedTables = new Set();
-
             function enhanceTable(config) {
                 const table = document.getElementById(config.id);
                 if (!table) {
                     console.warn(`Table with ID ${config.id} not found.`);
                     return;
                 }
-
                 if (!isTableVisible(table) || initializedTables.has(config.id)) {
                     return;
                 }
@@ -4411,7 +4365,6 @@
                     let rows = [...originalRows];
                     let currentPage = 1;
                     const rowsPerPage = 10;
-
                     let controlsContainer = table.parentNode.querySelector(`.controls-${config.id}`);
                     if (!controlsContainer) {
                         controlsContainer = document.createElement('div');
@@ -4426,7 +4379,6 @@
                 `;
                         table.parentNode.insertBefore(controlsContainer, table);
                     }
-
                     let searchInput;
                     if (config.searchable && !controlsContainer.querySelector('input')) {
                         searchInput = document.createElement('input');
@@ -4461,10 +4413,8 @@
                             }
                         }, 500));
                     }
-
                     if (config.sortable) {
                         headers.forEach((th, index) => {
-
                             if (th.textContent.includes('عمل')) return;
                             th.style.cursor = 'pointer';
                             th.dataset.sortDir = 'asc';
@@ -4498,7 +4448,6 @@
                             });
                         });
                     }
-
                     let paginationContainer;
                     if (config.paginated && !controlsContainer.querySelector('.pagination')) {
                         paginationContainer = document.createElement('div');
@@ -4512,7 +4461,6 @@
                     } else {
                         paginationContainer = controlsContainer.querySelector('.pagination');
                     }
-
                     function renderTable() {
                         try {
                             tbody.innerHTML = '';
@@ -4531,7 +4479,6 @@
                             tbody.innerHTML = `<tr><td colspan="${headers.length}">جدول رینڈر کرنے میں خرابی</td></tr>`;
                         }
                     }
-
                     function updatePagination() {
                         try {
                             paginationContainer.innerHTML = '';
@@ -4596,9 +4543,7 @@
                             console.error(`Error updating pagination for ${config.id}:`, error);
                         }
                     }
-
                     renderTable();
-
                     const observer = new MutationObserver(throttle(() => {
                         try {
                             originalRows = Array.from(tbody.querySelectorAll('tr'));
@@ -4614,7 +4559,6 @@
                     console.error(`Error initializing table ${config.id}:`, error);
                 }
             }
-
             function initializeTables() {
                 tableConfigs.forEach(config => {
                     try {
@@ -4624,20 +4568,16 @@
                     }
                 });
             }
-
             try {
                 initializeTables();
             } catch (error) {
                 console.error('Error during table initialization:', error);
             }
-
             const originalShowModule = window.showModule || function () { };
             window.showModule = function (moduleId) {
                 try {
                     originalShowModule(moduleId);
-
                     initializedTables.clear();
-
                     document.querySelectorAll('[class^="controls-"]').forEach(container => container.remove());
                     setTimeout(initializeTables, 500);
                 } catch (error) {
@@ -4650,12 +4590,10 @@
                 el.childNodes.forEach(node => {
                     if (node.nodeType === 3) {
                         let text = node.nodeValue;
-
                         text = text.replace(/পিরিয়ড/g, 'پیریڈ');
                         text = text.replace(/شروع/g, 'شروع');
                         text = text.replace(/শেষ/g, 'ختم');
                         text = text.replace(/দিন/g, 'دن');
-
                         const bengaliToUrduDigits = {
                             '০': '۰', '১': '۱', '২': '۲', '৩': '۳', '৪': '۴',
                             '৫': '۵', '৬': '۶', '৭': '۷', '৮': '۸', '৯': '۹'
@@ -4669,11 +4607,9 @@
         function createResultsModule() {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
-
             const h2 = document.createElement('h2');
             h2.textContent = 'نتائج کا انتظام';
             resultsDiv.appendChild(h2);
-
             const entryH3 = document.createElement('h3');
             entryH3.textContent = 'نتائج درج کریں';
             resultsDiv.appendChild(entryH3);
@@ -4721,7 +4657,6 @@
             saveButton.textContent = 'محفوظ کریں';
             saveButton.onclick = saveResults;
             resultsDiv.appendChild(saveButton);
-
             const viewH3 = document.createElement('h3');
             viewH3.textContent = 'موجودہ نتائج دیکھیں';
             resultsDiv.appendChild(viewH3);
@@ -4768,7 +4703,6 @@
         </tbody>
     `;
             resultsDiv.appendChild(pastTable);
-
             const printH3 = document.createElement('h3');
             printH3.textContent = 'رزلٹ کارڈ پرنٹ کریں';
             resultsDiv.appendChild(printH3);
@@ -4879,20 +4813,15 @@
                 console.error("Error loading exams:", error);
             }
         }
-        // --- QR Code Generation and Library Loader ---
-
-        let qrCodeLibraryLoaded = false; // Keep track of library loading status
-
+        let qrCodeLibraryLoaded = false;
         async function ensureQRCodeLibrary() {
-            if (qrCodeLibraryLoaded && window.QRCode) return true; // Already loaded and available
-
-            if (!window.QRCode) { // Check if QRCode constructor exists
+            if (qrCodeLibraryLoaded && window.QRCode) return true;
+            if (!window.QRCode) {
                 console.log("QRCode.js library not found, attempting to load...");
                 const script = document.createElement('script');
                 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
                 script.async = true;
                 document.head.appendChild(script);
-
                 try {
                     await new Promise((resolve, reject) => {
                         script.onload = () => {
@@ -4910,13 +4839,12 @@
                             alert("QR کوڈ لائبریری لوڈ کرنے میں ناکامی۔");
                             reject(new Error("QRCode.js library load failed"));
                         };
-                        // Timeout for loading
                         setTimeout(() => {
                             if (!qrCodeLibraryLoaded) {
                                 console.warn("QRCode.js loading timeout.");
                                 reject(new Error("QRCode.js loading timeout."));
                             }
-                        }, 5000); // 5 seconds timeout
+                        }, 5000);
                     });
                     return true;
                 } catch (error) {
@@ -4925,21 +4853,18 @@
                     return false;
                 }
             } else {
-                qrCodeLibraryLoaded = true; // Already present
+                qrCodeLibraryLoaded = true;
                 return true;
             }
         }
-
         async function generateQRCodeDataURL(textData, size = 80) {
             const libLoaded = await ensureQRCodeLibrary();
             if (!libLoaded || !window.QRCode) {
                 console.error("QRCode library is not available for QR generation.");
                 return null;
             }
-
             return new Promise((resolve) => {
                 const tempElement = document.createElement('div');
-                // QRCode.js appends to the element it's given
                 try {
                     new QRCode(tempElement, {
                         text: textData,
@@ -4947,25 +4872,20 @@
                         height: size,
                         colorDark: "#000000",
                         colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.L // Medium error correction
+                        correctLevel: QRCode.CorrectLevel.L
                     });
-
-                    // QRCode.js might create a canvas or an img tag
-                    // We need to wait for it to render
                     setTimeout(() => {
                         const canvas = tempElement.querySelector('canvas');
                         const img = tempElement.querySelector('img');
-
                         if (canvas) {
                             resolve(canvas.toDataURL('image/png'));
                         } else if (img && img.src.startsWith('data:image')) {
-                            // If it generated an img tag with a data URL (some versions might)
                             resolve(img.src);
                         } else {
                             console.warn("QR Code was generated, but couldn't extract data URL (no canvas or img found).");
-                            resolve(null); // Fallback
+                            resolve(null);
                         }
-                    }, 100); // Give it a moment to render
+                    }, 100);
                 } catch (e) {
                     console.error("Error during QRCode instantiation:", e);
                     resolve(null);
@@ -4990,7 +4910,6 @@
                 }
                 const students = await getAll(STORE_STUDENTS, 'classId', parseInt(classId));
                 students.sort((a, b) => a.name.localeCompare(b.name));
-
                 let subjects = [];
                 if (cls.subjects) {
                     if (typeof cls.subjects === 'string') {
@@ -5187,7 +5106,6 @@
             }
         }
         document.addEventListener('DOMContentLoaded', () => {
-
             async function printContent(containerId) {
                 try {
                     const container = document.getElementById(containerId);
@@ -5195,23 +5113,19 @@
                         alert('پرنٹ ایریا نہیں ملا۔');
                         return;
                     }
-
                     container.style.display = 'block';
-
                     const canvas = await html2canvas(container, {
                         scale: 2,
                         useCORS: true,
                         logging: false,
                         backgroundColor: '#ffffff'
                     });
-
                     const printWindow = window.open('', '_blank');
                     if (!printWindow) {
                         alert('پرنٹ ونڈو کھولنے میں ناکامی۔ براہ کرم پاپ اپ بلاکر چیک کریں۔');
                         container.style.display = 'none';
                         return;
                     }
-
                     printWindow.document.write(`
                 <!DOCTYPE html>
                 <html>
@@ -5228,14 +5142,12 @@
                 </html>
             `);
                     printWindow.document.close();
-
                     container.style.display = 'none';
                 } catch (error) {
                     console.error('پرنٹنگ میں خرابی:', error);
                     alert('پرنٹنگ میں خرابی: ' + error.message);
                 }
             }
-
             window.printAttendanceRegister = async function () {
                 const attendanceDate = document.getElementById('attendanceDate').value;
                 const classId = document.getElementById('attendanceClass').value;
@@ -5266,7 +5178,6 @@
                     alert('حاضری پرنٹ کرنے میں خرابی: ' + error.message);
                 }
             };
-
             window.printResultCard = async function () {
                 const studentId = parseInt(document.getElementById('resultCardStudent').value);
                 const examName = document.getElementById('resultCardExam').value;
@@ -5318,7 +5229,6 @@
                     alert('رزلٹ کارڈ پرنٹ کرنے میں خرابی: ' + error.message);
                 }
             };
-
             window.generateReceipt = async function () {
                 const studentId = parseInt(document.getElementById('feeStudentSelect').value);
                 const date = document.getElementById('feeCollectionDate').value;
@@ -5350,7 +5260,6 @@
                     alert('رسید بنانے میں خرابی: ' + error.message);
                 }
             };
-
             window.printReport = async function () {
                 const reportType = document.getElementById('reportType').value;
                 if (!reportType) {
@@ -5371,14 +5280,12 @@
             };
         });
         document.addEventListener('DOMContentLoaded', () => {
-
             if (!window.XLSX) {
                 const script = document.createElement('script');
                 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
                 script.async = false;
                 document.head.appendChild(script);
             }
-
             const excelIcon = document.createElement('div');
             excelIcon.id = 'excelExportIcon';
             excelIcon.style.cssText = `
@@ -5403,7 +5310,6 @@
 `;
             excelIcon.setAttribute('onclick', "showModule('exportData')");
             document.body.appendChild(excelIcon);
-
             const container = document.querySelector('.container');
             const exportModule = document.createElement('div');
             exportModule.id = 'exportData';
@@ -5452,7 +5358,6 @@
         </div>
     `;
             container.appendChild(exportModule);
-
             const storeConfigs = {
                 students: {
                     headers: ['داخلہ نمبر', 'نام', 'والد کا نام', 'کلاس', 'داخلہ تاریخ', 'رابطہ نمبر', 'پتہ'],
@@ -5495,7 +5400,6 @@
                     fields: ['key', 'value']
                 }
             };
-
             window.exportAllData = async function (storeName) {
                 try {
                     const data = await getAll(storeName);
@@ -5522,7 +5426,6 @@
                     alert('ایکسپورٹ میں خرابی: ' + error.message);
                 }
             };
-
             window.exportAllToOneFile = async function () {
                 try {
                     const wb = XLSX.utils.book_new();
@@ -5539,7 +5442,6 @@
                             }
                             rows.push(rowData);
                         }
-
                         if (rows.length > 0) {
                             const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
                             XLSX.utils.book_append_sheet(wb, ws, storeName);
@@ -5555,7 +5457,6 @@
                     alert('تمام ڈیٹا ایکسپورٹ کرنے میں خرابی: ' + error.message);
                 }
             };
-
             window.loadExportTable = async function () {
                 const storeName = document.getElementById('exportStoreSelect').value;
                 const tableContainer = document.getElementById('exportTableContainer');
@@ -5569,7 +5470,6 @@
                 try {
                     const data = await getAll(storeName);
                     const config = storeConfigs[storeName];
-
                     const headerRow = thead.insertRow();
                     headerRow.insertCell().innerHTML = '<input type="checkbox" class="select-all">';
                     config.headers.forEach(header => {
@@ -5577,7 +5477,6 @@
                         th.textContent = header;
                         headerRow.appendChild(th);
                     });
-
                     data.forEach(row => {
                         const tr = tbody.insertRow();
                         tr.dataset.id = row.id || JSON.stringify(row);
@@ -5587,7 +5486,6 @@
                             td.textContent = typeof field === 'function' ? await field(row) : row[field] || '';
                         });
                     });
-
                     const selectAll = thead.querySelector('.select-all');
                     selectAll.addEventListener('change', () => {
                         tbody.querySelectorAll('.row-select').forEach(cb => cb.checked = selectAll.checked);
@@ -5597,7 +5495,6 @@
                     tbody.innerHTML = '<tr><td colspan="' + (storeConfigs[storeName].headers.length + 1) + '">ڈیٹا لوڈ کرنے میں خرابی۔</td></tr>';
                 }
             };
-
             window.exportSelectedData = async function () {
                 const storeName = document.getElementById('exportStoreSelect').value;
                 const tbody = document.getElementById('exportTable').querySelector('tbody');
@@ -5627,7 +5524,6 @@
                     alert('منتخب ڈیٹا ایکسپورٹ کرنے میں خرابی: ' + error.message);
                 }
             };
-
             const originalShowModule = window.showModule || function () { };
             window.showModule = function (moduleId) {
                 originalShowModule(moduleId);
@@ -5741,7 +5637,7 @@
                 bottom: 8px;
             }
         </style>
-        <h2>آئی ڈی کارڈ جنریٹر</h2>
+        <h2>آئی ڈی اور سرٹیفیکٹ</h2>
         <h3>انفرادی آئی ڈی کارڈ جنریٹ کریں</h3>
         <div class="form-grid">
             <div>
@@ -5813,16 +5709,40 @@
                 <tbody></tbody>
             </table>
         </div>
+                <hr class="one" style="margin: 40px 0;">
+        <h2>سرٹیفکیٹ جنریٹر</h2>
+        <div class="form-grid">
+            <div>
+                <label for="certificateTypeSelect">سرٹیفکیٹ کی قسم</label>
+                <select id="certificateTypeSelect" onchange="generateCertificate()">
+                    <option value="hifz">تکمیلِ حفظ القرآن</option>
+                    <option value="character">حسنِ اخلاق</option>
+                    <option value="performance">حسنِ کارکردگی</option>
+                    <option value="leaving">سکول چھوڑنے کا سرٹیفکیٹ</option>
+                </select>
+            </div>
+            <div>
+                <label for="certificateStudentSelect">طالب علم منتخب کریں</label>
+                <select id="certificateStudentSelect" onchange="generateCertificate()" required>
+                    <option value="">-- طالب علم منتخب کریں --</option>
+                </select>
+            </div>
+            <div>
+                <label for="certificateIssueDate">تاریخِ اجراء</label>
+                <input type="date" id="certificateIssueDate" onchange="generateCertificate()">
+            </div>
+        </div>
+        <button class="print" onclick="printCertificate()" style="display: none;" id="printCertificateBtn">پرنٹ کریں</button>
+        <div id="certificatePreviewContainer" class="printable" style="display: none; padding: 20px; background: #eee; margin-top: 20px;">
+        </div>
     `;
             container.appendChild(idCardModule);
-
             const nav = document.querySelector('nav');
             const idCardButton = document.createElement('button');
-            idCardButton.textContent = 'آئی ڈی کارڈ جنریٹر';
+            idCardButton.textContent = 'آئی ڈی اور سرٹیفیکٹ';
             idCardButton.onclick = () => showModule('idCardGenerator');
             nav.appendChild(idCardButton);
             let currentPhoto = null;
-
             async function loadClassesForBulk() {
                 const select = document.getElementById('bulkIdCardClass');
                 select.innerHTML = '<option value="">-- تمام --</option>';
@@ -5838,7 +5758,6 @@
                     console.error("Error loading classes:", error);
                 }
             }
-
             window.loadIDCardSelect = async function () {
                 const type = document.getElementById('idCardType').value;
                 const select = document.getElementById('idCardSelect');
@@ -5857,7 +5776,6 @@
                     console.error("Error loading persons:", error);
                 }
             };
-
             window.loadBulkIDCardSelect = async function () {
                 const type = document.getElementById('bulkIdCardType').value;
                 const classId = document.getElementById('bulkIdCardClass').value;
@@ -5888,7 +5806,6 @@
                     table.style.display = 'table';
                 }
             };
-
             document.getElementById('idCardPhoto')?.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file && file.type.startsWith('image/')) {
@@ -5902,7 +5819,6 @@
                     alert('براہ کرم درست تصویر منتخب کریں۔');
                 }
             });
-
             async function tryLoadImage(id, name, type) {
                 const numericId = parseInt(id.toString().replace(/\D/g, '')) || 0;
                 const paddedId = numericId.toString().padStart(4, '0');
@@ -5937,13 +5853,10 @@
             window.tryLoadImage = async function (id, name, type, admissionNo = null) {
                 const numericId = parseInt(id.toString().replace(/\D/g, '')) || 0;
                 const paddedId = numericId.toString().padStart(4, '0');
-
                 const idVariants = [];
-                // Prioritize the full admission number if it exists
                 if (admissionNo) {
                     idVariants.push(admissionNo);
                 }
-                // Add other ID-based variants
                 idVariants.push(
                     id.toString(),
                     `TCH${paddedId}`,
@@ -5951,7 +5864,6 @@
                     paddedId,
                     numericId.toString()
                 );
-
                 const nameVariants = [
                     name,
                     name.replace(/_/g, ' '),
@@ -5980,13 +5892,11 @@
                 const template = document.getElementById('idCardTemplate').value;
                 const preview = document.getElementById('singleIDCardPreview');
                 const content = document.getElementById('idCardContent');
-
                 if (!type || !personId) {
                     if (content) content.textContent = 'براہ کرم تمام فیلڈز پُر کریں۔';
                     if (preview) preview.style.display = 'block';
                     return;
                 }
-
                 try {
                     const storeName = type === 'student' ? window.STORE_STUDENTS : window.STORE_TEACHERS;
                     const person = await window.getById(storeName, personId);
@@ -5995,17 +5905,12 @@
                         if (preview) preview.style.display = 'block';
                         return;
                     }
-
                     const schoolSetting = await window.getById(window.STORE_SETTINGS, 'schoolName');
                     const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
-
                     const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
                     const className = type === 'student' ? ((typeof window.getClassName === 'function') ? await window.getClassName(person.classId) : 'N/A') : 'N/A';
-
-                    // Pass admissionNo to the image search function
                     const autoImage = await window.tryLoadImage(person.id, person.name, type, person.admissionNo);
                     const photoSrc = currentPhoto || autoImage || null;
-
                     let imageElementHTML;
                     if (photoSrc) {
                         imageElementHTML = `<img src="${photoSrc}" class="photo" alt="تصویر">`;
@@ -6016,7 +5921,6 @@
                         } else {
                             qrData += `|T`;
                         }
-
                         const qrCodeDataURL = await generateQRCodeDataURL(qrData.trim(), 80);
                         if (qrCodeDataURL) {
                             imageElementHTML = `<img src="${qrCodeDataURL}" class="photo qr-code-image" alt="QR Code">`;
@@ -6024,7 +5928,6 @@
                             imageElementHTML = `<div class="photo"><span>کوئی تصویر/<br>کیو آر کوڈ نہیں</span></div>`;
                         }
                     }
-
                     if (content) {
                         content.innerHTML = template === 'front' ? `
                 <div class="id-card front">
@@ -6074,51 +5977,38 @@
                     alert('ایکسپورٹ میں خرابی: ' + error.message);
                 }
             };
-            // Bulk generate with QR Code Yasin
-
             window.generateBulkIDCards = async function () {
                 const type = document.getElementById('bulkIdCardType').value;
                 const template = document.getElementById('bulkIdCardTemplate').value;
                 const table = document.getElementById('bulkIDCardTable');
                 const tbody = table ? table.querySelector('tbody') : null;
-
                 if (!tbody) {
                     console.error("Bulk ID card table body not found.");
                     return;
                 }
-
                 if (!type) {
                     tbody.innerHTML = '<tr><td colspan="3">براہ کرم قسم منتخب کریں۔</td></tr>';
                     if (table) table.style.display = 'table';
                     return;
                 }
-
                 try {
                     const storeName = type === 'student' ? window.STORE_STUDENTS : window.STORE_TEACHERS;
                     let allPersonsInStore = await window.getAll(storeName);
-
                     const selectedIds = Array.from(tbody.querySelectorAll('tr .bulk-select:checked'))
                         .map(cb => parseInt(cb.closest('tr').dataset.id));
-
                     if (selectedIds.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="3">کوئی شخص منتخب نہیں کیا گیا۔</td></tr>';
                         table.style.display = 'table';
                         return;
                     }
-
                     const selectedPersons = allPersonsInStore.filter(p => selectedIds.includes(p.id));
-
                     const schoolSetting = await window.getById(window.STORE_SETTINGS, 'schoolName');
                     const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
-
                     tbody.innerHTML = '';
                     for (const person of selectedPersons.sort((a, b) => a.name.localeCompare(b.name))) {
                         const idNumber = type === 'student' ? person.admissionNo : `TCH${person.id.toString().padStart(4, '0')}`;
                         const currentClassName = type === 'student' ? (await window.getClassName(person.classId) || 'N/A') : 'N/A';
-
-                        // Pass admissionNo to the image search function
                         const autoImage = await window.tryLoadImage(person.id, person.name, type, person.admissionNo);
-
                         let imageElementHTMLBulk;
                         if (autoImage) {
                             if (document.querySelector("#bulkIdCardTemplate").value == "front") {
@@ -6128,13 +6018,11 @@
                             }
                         } else {
                             let qrData = `${idNumber}|${person.name}`;
-
                             if (type === 'student') {
                                 qrData += `|C:${currentClassName.substring(0, 10)}`;
                             } else {
                                 qrData += `|T`;
                             }
-
                             const qrCodeDataURL = await generateQRCodeDataURL(qrData.trim(), 98);
                             if (qrCodeDataURL) {
                                 if (document.querySelector("#bulkIdCardTemplate").value == "front") {
@@ -6146,7 +6034,6 @@
                                 imageElementHTMLBulk = `<div class="photo"><span>N/A</span></div>`;
                             }
                         }
-
                         const row = tbody.insertRow();
                         row.dataset.id = person.id;
                         row.innerHTML = `
@@ -6183,7 +6070,6 @@
                     if (table) table.style.display = 'table';
                 }
             };
-            //Bulk Generate without Qr Code
             /*          window.generateBulkIDCards = async function () {
                             const type = document.getElementById('bulkIdCardType').value;
                             const classId = document.getElementById('bulkIdCardClass').value;
@@ -6251,7 +6137,6 @@
                             }
                         };
              */
-
             window.exportBulkIDCards = async function () {
                 const table = document.getElementById('bulkIDCardTable');
                 const rows = table.querySelectorAll('tbody tr');
@@ -6285,7 +6170,6 @@
                     alert('ایکسپورٹ میں خرابی: ' + error.message);
                 }
             };
-
             const originalShowModule = window.showModule || function () { };
             window.showModule = function (moduleId) {
                 originalShowModule(moduleId);
@@ -6299,29 +6183,24 @@
                     if (typeof loadBulkIDCardSelect === 'function') loadBulkIDCardSelect();
                 }
             };
-
             if (!window.JSZip) {
                 const script = document.createElement('script');
                 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
                 script.async = false;
                 document.head.appendChild(script);
             }
-
             const link = document.createElement('link');
             link.href = 'https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap';
             link.rel = 'stylesheet';
             document.head.appendChild(link);
         });
-
         function initializeMobileNav() {
             const nav = document.querySelector('nav');
             if (!nav) {
                 console.error('Navigation element not found');
                 return;
             }
-
             nav.innerHTML = '';
-
             const navButtons = [
                 { text: 'ڈیش بورڈ', module: 'dashboard' },
                 { text: 'طلباء', module: 'students' },
@@ -6334,12 +6213,11 @@
                 { text: 'ٹائم ٹیبل / ڈیوٹی روسٹر', module: 'timetable' },
                 { text: 'اخراجات', module: 'expenses' },
                 { text: 'رپورٹس', module: 'reports' },
-                { text: 'انوینٹری', module: 'inventory' }, // Add this line
+                { text: 'انوینٹری', module: 'inventory' },
                 { text: 'سیٹنگز', module: 'settings' },
                 { text: 'ڈیٹا ایکسپورٹ', module: 'exportData' },
-                { text: 'آئی ڈی کارڈ جنریٹر', module: 'idCardGenerator' }
+                { text: 'آئی ڈی اور سرٹیفیکٹ', module: 'idCardGenerator' }
             ];
-
             const navDesktop = document.createElement('div');
             navDesktop.className = 'nav-desktop';
             navButtons.forEach(btn => {
@@ -6349,7 +6227,6 @@
                 navDesktop.appendChild(button);
             });
             nav.appendChild(navDesktop);
-
             const navMobile = document.createElement('div');
             navMobile.className = 'nav-mobile';
             const hamburger = document.createElement('button');
@@ -6359,7 +6236,6 @@
             const mobileMenu = document.createElement('div');
             mobileMenu.className = 'mobile-menu';
             mobileMenu.id = 'mobileMenu';
-
             function populateMobileMenu() {
                 mobileMenu.innerHTML = '';
                 navButtons.forEach(btn => {
@@ -6368,7 +6244,6 @@
                     button.onclick = () => showModule(btn.module);
                     mobileMenu.appendChild(button);
                 });
-
                 const desktopButtons = Array.from(navDesktop.querySelectorAll('button'));
                 desktopButtons.forEach(desktopBtn => {
                     if (!navButtons.some(b => b.text === desktopBtn.textContent)) {
@@ -6379,12 +6254,10 @@
                     }
                 });
             }
-
             populateMobileMenu();
             navMobile.appendChild(hamburger);
             navMobile.appendChild(mobileMenu);
             nav.appendChild(navMobile);
-
             const existingStyle = document.head.querySelector('style[data-nav-mobile]');
             if (existingStyle) existingStyle.remove();
             const style = document.createElement('style');
@@ -6456,26 +6329,21 @@
         }
     `;
             document.head.appendChild(style);
-
             const observer = new MutationObserver(() => {
                 populateMobileMenu();
             });
             observer.observe(navDesktop, { childList: true });
-
             window.dispatchEvent(new Event('resize'));
         }
-
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobileMenu');
             if (mobileMenu) {
                 mobileMenu.classList.toggle('active');
             }
         }
-
         const originalShowModule = window.showModule || function () { };
         window.showModule = function (moduleId) {
             originalShowModule(moduleId);
-
             const allButtons = document.querySelectorAll('nav button');
             allButtons.forEach(button => {
                 button.classList.remove('active');
@@ -6495,20 +6363,17 @@
                     (moduleId === 'reports' && button.textContent === 'رپورٹس') ||
                     (moduleId === 'settings' && button.textContent === 'سیٹنگز') ||
                     (moduleId === 'exportData' && button.textContent === 'ڈیٹا ایکسپورٹ') ||
-                    (moduleId === 'idCardGenerator' && button.textContent === 'آئی ڈی کارڈ جنریٹر')
+                    (moduleId === 'idCardGenerator' && button.textContent === 'آئی ڈی اور سرٹیفیکٹ')
                 ) {
                     button.classList.add('active');
                 }
             });
-
             const mobileMenu = document.getElementById('mobileMenu');
             if (mobileMenu && mobileMenu.classList.contains('active')) {
                 mobileMenu.classList.remove('active');
             }
         };
-
         document.addEventListener('DOMContentLoaded', () => {
-
             setTimeout(initializeMobileNav, 200);
         });
     </script>
@@ -6953,7 +6818,6 @@
             }
         })();
         const target = document.querySelector('#dashboardDetailedReportOutput > div');
-
         const observer = new MutationObserver(() => {
             const el = document.querySelector('#dashboardDetailedReportOutput > div > div:nth-child(3)');
             if (!el) return;
@@ -6968,24 +6832,15 @@
                 el.style.color = '';
             }
         });
-
         observer.observe(target, { childList: true, subtree: true, characterData: true });
-
-
-
         (function () {
-            // --- Start of Communication Module ---
-
             function initializeCommunicationModule() {
-                // 1. Create the button in the Settings module to launch the new feature
                 const settingsModule = document.getElementById('settings');
                 if (settingsModule) {
                     const launcherButton = document.createElement('button');
                     launcherButton.textContent = 'SMS / WhatsApp براڈکاسٹ';
                     launcherButton.style.backgroundColor = '#007bff';
                     launcherButton.onclick = () => launchCommunicationModal();
-
-                    // Find the "Print Settings" section to insert the button before it
                     const printSettingsHeader = Array.from(settingsModule.querySelectorAll('h3')).find(h => h.textContent.includes('Print Settings'));
                     if (printSettingsHeader) {
                         printSettingsHeader.parentNode.insertBefore(launcherButton, printSettingsHeader);
@@ -6993,8 +6848,6 @@
                         settingsModule.appendChild(launcherButton);
                     }
                 }
-
-                // 2. Create the Modal HTML structure dynamically
                 const modal = document.createElement('div');
                 modal.id = 'communicationModal';
                 modal.className = 'comm-modal';
@@ -7006,23 +6859,19 @@
                 </div>
                 <div class="comm-modal-body">
                     <div class="comm-grid">
-                        <!-- Column 1: Configuration -->
                         <div class="comm-config-panel">
                             <h3>مرحلہ ۱: سیٹ اپ</h3>
-                            
                             <label for="commPlatform">پلیٹ فارم منتخب کریں:</label>
                             <select id="commPlatform">
                                 <option value="sms">SMS (Text Message)</option>
                                 <option value="whatsapp">WhatsApp</option>
                             </select>
-
                             <label for="commRecipientType">وصول کنندہ کی قسم:</label>
                             <select id="commRecipientType" onchange="handleRecipientTypeChange()">
                                 <option value="">-- منتخب کریں --</option>
                                 <option value="students">طلباء</option>
                                 <option value="teachers">اساتذہ</option>
                             </select>
-
                             <div id="commClassFilterContainer" style="display:none;">
                                 <label for="commClassFilter">کلاس کے لحاظ سے فلٹر کریں:</label>
                                 <select id="commClassFilter" onchange="handleRecipientTypeChange()">
@@ -7030,8 +6879,6 @@
                                 </select>
                             </div>
                         </div>
-
-                        <!-- Column 2: Recipient List -->
                         <div class="comm-recipients-panel">
                             <h3>مرحلہ ۲: وصول کنندگان منتخب کریں</h3>
                             <div class="comm-select-all-container">
@@ -7042,8 +6889,6 @@
                                 <p>براہ کرم وصول کنندہ کی قسم منتخب کریں۔</p>
                             </div>
                         </div>
-
-                        <!-- Column 3: Message Composition -->
                         <div class="comm-message-panel">
                             <h3>مرحلہ ۳: پیغام لکھیں</h3>
                             <label for="commMessageType">پیغام کی قسم:</label>
@@ -7054,13 +6899,11 @@
                                 <option value="exam_result">امتحانی نتیجہ</option>
                                 <option value="salary_notification">تنخواہ کی اطلاع</option>
                             </select>
-
                             <label for="commMessageBody">پیغام کا متن:</label>
                             <textarea id="commMessageBody" rows="6" placeholder="یہاں اپنا پیغام لکھیں۔"></textarea>
                             <div class="comm-placeholders">
                                 <strong>Placeholders:</strong> [name], [father_name], [class], [contact], [date]
                             </div>
-
                             <label>پیغام کا پیش نظارہ (پہلے وصول کنندہ کی بنیاد پر):</label>
                             <div id="commMessagePreview"></div>
                         </div>
@@ -7076,7 +6919,6 @@
                 if (messageBodyTextarea) {
                     messageBodyTextarea.addEventListener('input', updateMessagePreview);
                 }
-                // 3. Inject the necessary CSS
                 const style = document.createElement('style');
                 style.textContent = `
             .comm-modal {
@@ -7099,7 +6941,6 @@
                 border-radius: 8px;
                 width: 95%;
                 max-width: 1400px;
-                /* height: 90vh; */
                 display: flex;
                 flex-direction: column;
                 box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -7171,7 +7012,6 @@
                 border: none; border-radius: 5px; cursor: pointer; font-size: 1.2rem;
             }
             #commSendButton:hover { background-color: #218838; }
-
             @media (max-width: 992px) {
                 .comm-grid { grid-template-columns: 1fr; }
                 .comm-recipients-panel { min-height: 250px; }
@@ -7179,14 +7019,10 @@
         `;
                 document.head.appendChild(style);
             }
-
-            // --- Module Logic ---
-
             window.launchCommunicationModal = async function () {
                 const modal = document.getElementById('communicationModal');
                 if (modal) {
                     modal.style.display = 'flex';
-                    // Populate class filter dropdown
                     const classSelect = document.getElementById('commClassFilter');
                     classSelect.innerHTML = '<option value="">تمام کلاسیں</option>';
                     try {
@@ -7202,44 +7038,36 @@
                     }
                 }
             }
-
             window.closeCommunicationModal = function () {
                 const modal = document.getElementById('communicationModal');
                 if (modal) {
                     modal.style.display = 'none';
                 }
             }
-
             window.handleRecipientTypeChange = async function () {
                 const type = document.getElementById('commRecipientType').value;
                 const classFilterContainer = document.getElementById('commClassFilterContainer');
                 const recipientListDiv = document.getElementById('commRecipientList');
                 const classId = document.getElementById('commClassFilter').value;
-
                 classFilterContainer.style.display = type === 'students' ? 'block' : 'none';
                 recipientListDiv.innerHTML = '<p>لوڈ ہو رہا ہے...</p>';
-
                 if (!type) {
                     recipientListDiv.innerHTML = '<p>براہ کرم وصول کنندہ کی قسم منتخب کریں۔</p>';
                     return;
                 }
-
                 try {
                     const storeName = type === 'students' ? STORE_STUDENTS : STORE_TEACHERS;
                     let recipients = await getAll(storeName);
-
                     if (type === 'students' && classId) {
                         recipients = recipients.filter(s => s.classId === parseInt(classId));
                     }
-
                     if (recipients.length === 0) {
                         recipientListDiv.innerHTML = '<p>کوئی وصول کنندہ نہیں ملا۔</p>';
                         return;
                     }
-
                     let listHtml = '';
                     for (const person of recipients) {
-                        if (person.contact) { // Only show recipients with a contact number
+                        if (person.contact) {
                             const className = type === 'students' ? `(${await getClassName(person.classId) || 'N/A'})` : '';
                             listHtml += `
                         <div class="comm-recipient-item">
@@ -7261,27 +7089,22 @@
                             }
                         });
                     }, 500);
-
                     updateMessagePreview();
-
                 } catch (error) {
                     console.error("Error fetching recipients:", error);
                     recipientListDiv.innerHTML = '<p>وصول کنندگان کو لوڈ کرنے میں خرابی۔</p>';
                 }
             }
-
             window.toggleSelectAllRecipients = function (checked) {
                 document.querySelectorAll('.comm-recipient-checkbox').forEach(cb => {
                     cb.checked = checked;
                 });
                 updateMessagePreview();
             }
-
             window.handleMessageTypeChange = function () {
                 const type = document.getElementById('commMessageType').value;
                 const messageBody = document.getElementById('commMessageBody');
                 let template = '';
-
                 switch (type) {
                     case 'fee_reminder':
                         template = 'محترم والد/سرپرست صاحب،\n[name] کی فیس واجب الادا ہے۔ برائے مہربانی جلد از جلد جمع کرائیں۔\nشکریہ،\n[مدرسہ کا نام]';
@@ -7303,89 +7126,73 @@
                 messageBody.value = template;
                 updateMessagePreview();
             }
-
             window.updateMessagePreview = async function () {
                 const previewDiv = document.getElementById('commMessagePreview');
                 const messageTemplate = document.getElementById('commMessageBody').value;
                 const firstSelected = document.querySelector('.comm-recipient-checkbox:checked');
-
                 if (!firstSelected) {
                     previewDiv.textContent = 'ایک پیغام دیکھنے کے لیے کم از کم ایک وصول کنندہ منتخب کریں۔';
                     return;
                 }
-
                 try {
                     const recipientType = document.getElementById('commRecipientType').value;
                     const storeName = recipientType === 'students' ? STORE_STUDENTS : STORE_TEACHERS;
                     const person = await getById(storeName, parseInt(firstSelected.value));
                     if (!person) return;
-
                     const schoolNameSetting = await getById(STORE_SETTINGS, 'schoolName');
                     const schoolName = schoolNameSetting ? schoolNameSetting.value : "مدرسہ";
-
                     let personalizedMessage = messageTemplate
                         .replace(/\[name\]/g, person.name || '')
                         .replace(/\[father_name\]/g, person.fatherName || '')
                         .replace(/\[contact\]/g, person.contact || '')
                         .replace(/\[date\]/g, new Date().toLocaleDateString('ur-PK'))
                         .replace(/\[مدرسہ کا نام\]/g, schoolName);
-
                     if (recipientType === 'students') {
                         const className = await getClassName(person.classId);
                         personalizedMessage = personalizedMessage.replace(/\[class\]/g, className || '');
                     }
-
                     previewDiv.textContent = personalizedMessage;
                 } catch (error) {
                     console.error("Error updating preview:", error);
                     previewDiv.textContent = 'پیش نظارہ بنانے میں خرابی۔';
                 }
             }
-
             function formatPhoneNumberForWhatsApp(number) {
                 if (!number) return null;
-                let cleaned = number.replace(/[^0-9]/g, ''); // Remove all non-numeric characters
+                let cleaned = number.replace(/[^0-9]/g, '');
                 if (cleaned.startsWith('03')) {
-                    return '92' + cleaned.substring(1); // Replace leading 0 with 92
+                    return '92' + cleaned.substring(1);
                 }
                 if (cleaned.startsWith('92')) {
-                    return cleaned; // Already in correct format
+                    return cleaned;
                 }
-                // Add other country code logic here if needed
-                return cleaned; // Fallback
+                return cleaned;
             }
-
             window.handleSendMessages = async function () {
                 const platform = document.getElementById('commPlatform').value;
                 const messageTemplate = document.getElementById('commMessageBody').value;
                 const selectedCheckboxes = Array.from(document.querySelectorAll('.comm-recipient-checkbox:checked'));
-
                 if (selectedCheckboxes.length === 0) {
                     alert('براہ کرم کم از کم ایک وصول کنندہ منتخب کریں۔');
                     return;
                 }
-
                 if (!messageTemplate.trim()) {
                     alert('پیغام خالی نہیں ہو سکتا۔');
                     return;
                 }
-
                 const confirmMessage = `آپ ${selectedCheckboxes.length} وصول کنندگان کو پیغام بھیجنے والے ہیں۔\nنوٹ: یہ آپ کے آلہ پر ${platform.toUpperCase()} ایپ میں ہر وصول کنندہ کے لیے ایک نیا چیٹ/ڈرافٹ کھولے گا۔\n\nکیا آپ جاری رکھنا چاہتے ہیں؟`;
                 if (!confirm(confirmMessage)) {
                     return;
                 }
-
                 const recipientType = document.getElementById('commRecipientType').value;
                 const storeName = recipientType === 'students' ? STORE_STUDENTS : STORE_TEACHERS;
                 const schoolNameSetting = await getById(STORE_SETTINGS, 'schoolName');
                 const schoolName = schoolNameSetting ? schoolNameSetting.value : "مدرسہ";
-
                 let sentCount = 0;
                 for (const cb of selectedCheckboxes) {
                     try {
                         const person = await getById(storeName, parseInt(cb.value));
                         if (!person || !person.contact) continue;
-
                         let personalizedMessage = messageTemplate
                             .replace(/\[name\]/g, person.name || '')
                             .replace(/\[father_name\]/g, person.fatherName || '')
@@ -7396,13 +7203,11 @@
                             const className = await getClassName(person.classId);
                             personalizedMessage = personalizedMessage.replace(/\[class\]/g, className || '');
                         }
-
                         const encodedMessage = encodeURIComponent(personalizedMessage);
                         let url;
-
                         if (platform === 'sms') {
                             url = `sms:${person.contact}?body=${encodedMessage}`;
-                        } else { // whatsapp
+                        } else {
                             const formattedNumber = formatPhoneNumberForWhatsApp(person.contact);
                             if (formattedNumber) {
                                 url = `https://wa.me/${formattedNumber}?text=${encodedMessage}`;
@@ -7411,57 +7216,36 @@
                                 continue;
                             }
                         }
-
                         window.open(url, '_blank');
                         sentCount++;
-                        // A small delay to prevent browsers from blocking too many popups at once
                         if (sentCount % 5 === 0) {
                             await new Promise(resolve => setTimeout(resolve, 300));
                         }
-
                     } catch (error) {
                         console.error(`Failed to generate message link for person ID ${cb.value}:`, error);
                     }
                 }
-
                 alert(`${sentCount} پیغامات کے لیے لنکس تیار کر دیے گئے ہیں۔ براہ کرم ہر ٹیب/ایپ میں بھیجنے کی تصدیق کریں۔`);
             }
-
-            // Initialize the module when the DOM is ready
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initializeCommunicationModule);
             } else {
                 initializeCommunicationModule();
             }
-
         })();
-
-
-
-        // --- START: COMPLETE Advanced Dashboard Reporting & Communication Code ---
-
         let advancedReportRecipients = [];
-
-        // Populates all filter dropdowns when the dashboard is shown
         async function loadAdvancedFilterData() {
-            // Populate Classes
             const classSelect = document.getElementById('advClassFilter');
             if (classSelect.options.length <= 1) {
                 const classes = await getAll(STORE_CLASSES);
                 classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(c => classSelect.add(new Option(c.name, c.id)));
             }
-
-            // Populate Students
             updateStudentFilterByClass();
-
-            // Populate Months
             const monthSelect = document.getElementById('advReportMonths');
             if (monthSelect.options.length === 0) {
                 const urduMonths = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
                 urduMonths.forEach((month, index) => monthSelect.add(new Option(month, index + 1)));
             }
-
-            // Populate Years
             const yearSelect = document.getElementById('advReportYears');
             if (yearSelect.options.length === 0) {
                 const currentYear = new Date().getFullYear();
@@ -7471,51 +7255,37 @@
                 yearSelect.value = currentYear;
             }
         }
-
-        // Filters the student list based on the selected class
         async function updateStudentFilterByClass() {
             const classId = document.getElementById('advClassFilter').value;
             const studentSelect = document.getElementById('advStudentFilter');
             studentSelect.innerHTML = '';
             let students = await getAll(STORE_STUDENTS);
-
             if (classId) {
                 students = students.filter(s => s.classId === parseInt(classId));
             }
-
             students.sort((a, b) => a.name.localeCompare(b.name)).forEach(s => studentSelect.add(new Option(`${s.name} (${s.admissionNo})`, s.id)));
         }
-
-        // Shows/hides filters based on the main report type
         function updateAdvancedFilterVisibility() {
             const reportType = document.getElementById('advReportType').value;
             const show = (id, type = 'block') => document.getElementById(id).style.display = type;
             const hide = (id) => document.getElementById(id).style.display = 'none';
-
             if (!reportType) {
                 hide('advDateControls'); hide('advFinancialTypeDiv'); hide('advClassFilterDiv'); hide('advStudentFilterDiv');
                 return;
             }
-
             show('advDateControls', 'grid');
             show('advClassFilterDiv');
             show('advStudentFilterDiv');
             reportType === 'financial' ? show('advFinancialTypeDiv') : hide('advFinancialTypeDiv');
         }
-
-        // Creates a function to check if a date string falls within selected criteria
         function getDateChecker() {
             const selectedMonths = Array.from(document.getElementById('advReportMonths').selectedOptions).map(opt => parseInt(opt.value));
             const selectedYears = Array.from(document.getElementById('advReportYears').selectedOptions).map(opt => parseInt(opt.value));
             const startDate = document.getElementById('advStartDate').value;
             const endDate = document.getElementById('advEndDate').value;
-
-            // If start/end dates are used, they take priority
             if (startDate && endDate) {
                 return (dateStr) => dateStr >= startDate && dateStr <= endDate;
             }
-
-            // If months and years are selected
             if (selectedMonths.length > 0 && selectedYears.length > 0) {
                 return (dateStr) => {
                     if (!dateStr) return false;
@@ -7523,8 +7293,6 @@
                     return selectedYears.includes(d.getFullYear()) && selectedMonths.includes(d.getMonth() + 1);
                 };
             }
-
-            // If only years are selected
             if (selectedYears.length > 0) {
                 return (dateStr) => {
                     if (!dateStr) return false;
@@ -7532,12 +7300,8 @@
                     return selectedYears.includes(d.getFullYear());
                 };
             }
-
-            // Default: no date filter
             return (dateStr) => true;
         }
-
-        // Triggers the communication modal for a single person
         function triggerSingleComm(id, type) {
             const recipient = [{ id: parseInt(id), type: type }];
             const reportType = document.getElementById('advReportType').value;
@@ -7548,22 +7312,17 @@
             if (reportType === 'marks') messageType = 'exam_result';
             launchAndPopulateCommModal(recipient, messageType);
         }
-
-        // Main function to generate the selected report
         async function generateAdvancedReport() {
             const reportType = document.getElementById('advReportType').value;
             const outputDiv = document.getElementById('advancedReportOutput');
             const commBtn = document.getElementById('commFromReportBtn');
-
             outputDiv.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
             commBtn.style.display = 'none';
             advancedReportRecipients = [];
-
             if (!reportType) {
                 outputDiv.innerHTML = '<p>براہ کرم رپورٹ کی قسم منتخب کریں۔</p>';
                 return;
             }
-
             try {
                 let reportData = { html: '', recipients: [] };
                 switch (reportType) {
@@ -7577,34 +7336,27 @@
                         reportData = await generateAdvancedMarksReport();
                         break;
                 }
-
                 outputDiv.innerHTML = reportData.html || '<p>اس معیار پر کوئی ڈیٹا نہیں ملا۔</p>';
                 advancedReportRecipients = reportData.recipients || [];
-
                 if (advancedReportRecipients.length > 0) {
                     commBtn.style.display = 'inline-block';
                 }
-
             } catch (error) {
                 console.error("Error generating advanced report:", error);
                 outputDiv.innerHTML = `<p>رپورٹ بنانے میں خرابی: ${error.message}</p>`;
             }
         }
-
         async function generateAdvancedFinancialReport() {
             const financialType = document.getElementById('advFinancialType').value;
             const classId = document.getElementById('advClassFilter').value;
             const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
             const dateChecker = getDateChecker();
-
             let allStudents = await getAll(STORE_STUDENTS);
             if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
             if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-
             let html = `<h4>${financialType === 'fee_due' ? 'واجب الادا فیس' : 'وصول شدہ فیس'} رپورٹ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>تفصیل</th><th>رقم</th><th>عمل</th></tr></thead><tbody>`;
             let recipients = [];
             let totalAmount = 0;
-
             if (financialType === 'fee_due') {
                 const feeStructures = await getAll(STORE_FEE_STRUCTURES);
                 const feePayments = await getAll(STORE_FEES);
@@ -7626,7 +7378,7 @@
                         if (student.contact) recipients.push({ id: student.id, type: 'students' });
                     }
                 }
-            } else { // fee_paid
+            } else {
                 const feePayments = await getAll(STORE_FEES);
                 for (const student of allStudents) {
                     const paymentsInDate = feePayments.filter(p => p.studentId === student.id && dateChecker(p.date));
@@ -7643,20 +7395,16 @@
             html += `</tbody><tfoot><tr><td colspan="4"><b>کل</b></td><td><b>${totalAmount.toLocaleString()}</b></td></tr></tfoot></table>`;
             return { html, recipients };
         }
-
         async function generateAdvancedAttendanceReport() {
             const classId = document.getElementById('advClassFilter').value;
             const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
             const dateChecker = getDateChecker();
-
             let allStudents = await getAll(STORE_STUDENTS);
             if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
             if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-
             const attendanceRecords = await getAll(STORE_ATTENDANCE);
             let html = `<h4>حاضری کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>کل دن</th><th>حاضر</th><th>غیر حاضر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
             let recipients = [];
-
             for (const student of allStudents) {
                 const studentRecords = attendanceRecords.filter(r => r.studentId === student.id && dateChecker(r.date));
                 if (studentRecords.length === 0) continue;
@@ -7669,19 +7417,15 @@
             html += '</tbody></table>';
             return { html, recipients };
         }
-
         async function generateAdvancedMarksReport() {
-            // (This function doesn't use dates, so it remains largely the same but with the action button)
             const classId = document.getElementById('advClassFilter').value;
             const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
             let allStudents = await getAll(STORE_STUDENTS);
             if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
             if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-
             const results = await getAll(STORE_RESULTS);
             let html = `<h4>نتائج کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>امتحان</th><th>کل حاصل کردہ</th><th>کل نمبر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
             let recipients = [];
-
             for (const student of allStudents) {
                 const studentResults = results.filter(r => r.studentId === student.id);
                 const resultsByExam = studentResults.reduce((acc, r) => {
@@ -7709,56 +7453,41 @@
                 alert('کمیونیکیشن ماڈیول نہیں ملا۔');
                 return;
             }
-
-            // Show the modal using the existing function
             launchCommunicationModal();
-
-            // Use a short delay to ensure modal elements are ready after being displayed
             setTimeout(async () => {
                 try {
-                    // Determine recipient type from the first recipient object
                     const recipientType = recipients[0]?.type || 'students';
-
-                    // Set recipient type dropdown and trigger list loading
                     const commRecipientTypeSelect = document.getElementById('commRecipientType');
                     if (commRecipientTypeSelect) {
                         commRecipientTypeSelect.value = recipientType;
-                        await handleRecipientTypeChange(); // This rebuilds the list
+                        await handleRecipientTypeChange();
                     }
-
-                    // Now, check the boxes for the specific recipients passed in
                     const recipientIds = recipients.map(r => r.id);
                     document.querySelectorAll('.comm-recipient-checkbox').forEach(cb => {
                         cb.checked = recipientIds.includes(parseInt(cb.value));
                     });
-
-                    // Set the message template dropdown
                     const commMessageTypeSelect = document.getElementById('commMessageType');
                     if (commMessageTypeSelect) {
                         commMessageTypeSelect.value = messageType;
-                        // Trigger the function that populates the textarea based on the template
                         handleMessageTypeChange();
                     }
-
                 } catch (error) {
                     console.error("Error populating communication modal:", error);
                     alert("کمیونیکیشن ماڈیول کو آباد کرنے میں خرابی۔");
                 }
-            }, 300); // A short delay for the DOM to update
+            }, 300);
         }
         function triggerCommFromAdvancedReport() {
             if (!advancedReportRecipients || advancedReportRecipients.length === 0) {
                 alert('پیغام بھیجنے کے لیے کوئی وصول کنندہ نہیں ہے۔');
                 return;
             }
-            // Logic to determine message type remains the same
             const reportType = document.getElementById('advReportType').value;
             const financialType = document.getElementById('advFinancialType').value;
             let messageType = 'custom';
             if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
             if (reportType === 'attendance') messageType = 'attendance_absent';
             if (reportType === 'marks') messageType = 'exam_result';
-
             launchAndPopulateCommModal(advancedReportRecipients, messageType);
         }
         document.addEventListener('DOMContentLoaded', () => {
@@ -7767,7 +7496,111 @@
                 genReportBtn.addEventListener('click', generateAdvancedReport);
             }
         });
-        // --- END: COMPLETE Advanced Dashboard Reporting & Communication Code ---
+        async function loadStudentsForCertificate() {
+            const select = document.getElementById('certificateStudentSelect');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- طالب علم منتخب کریں --</option>';
+            try {
+                const students = await getAll(STORE_STUDENTS);
+                students.sort((a, b) => a.name.localeCompare(b.name)).forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = `${student.name} (${student.admissionNo})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error loading students for certificate:", error);
+            }
+        }
+        async function generateCertificate() {
+            const studentId = parseInt(document.getElementById('certificateStudentSelect').value);
+            const certType = document.getElementById('certificateTypeSelect').value;
+            const issueDateEl = document.getElementById('certificateIssueDate');
+            if (!issueDateEl.value) {
+                issueDateEl.value = new Date().toISOString().split('T')[0];
+            }
+            const issueDate = issueDateEl.value;
+            const previewContainer = document.getElementById('certificatePreviewContainer');
+            const printBtn = document.getElementById('printCertificateBtn');
+            if (!studentId) {
+                previewContainer.style.display = 'none';
+                printBtn.style.display = 'none';
+                return;
+            }
+            try {
+                const student = await getById(STORE_STUDENTS, studentId);
+                if (!student) throw new Error('Student not found');
+                const className = await getClassName(student.classId);
+                const schoolSetting = await getById(STORE_SETTINGS, 'schoolName');
+                const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
+                let title, bodyText;
+                switch (certType) {
+                    case 'hifz':
+                        title = "سند تکمیلِ حفظ القرآن الكريم";
+                        bodyText = `<p>تصدیق کی جاتی ہے کہ <span class="field">${student.name}</span> ولد <span class="field">${student.fatherName}</span>، جو ہمارے مدرسہ کے طالب علم ہیں، نے کامیابی کے ساتھ قرآنِ کریم کا حفظ مکمل کر لیا ہے۔ ہم ان کے لئے دنیا و آخرت میں کامیابی کی دعا کرتے ہیں۔</p>`;
+                        break;
+                    case 'character':
+                        title = "سرٹیفکیٹ برائے حسنِ اخلاق";
+                        bodyText = `<p>تصدیق کی جاتی ہے کہ <span class="field">${student.name}</span> ولد <span class="field">${student.fatherName}</span>، جماعت <span class="field">${className}</span> کے طالب علم، اپنے تعلیمی دور میں بہترین اخلاق اور عمدہ کردار کے حامل رہے۔</p>`;
+                        break;
+                    case 'performance':
+                        title = "سرٹیفکیٹ برائے حسنِ کارکردگی";
+                        bodyText = `<p>یہ سرٹیفکیٹ <span class="field">${student.name}</span> ولد <span class="field">${student.fatherName}</span>، جماعت <span class="field">${className}</span>، کو ان کی نمایاں تعلیمی کارکردگی اور مدرسہ کی سرگرمیوں میں بہترین حصہ لینے پر دیا جا رہا ہے۔</p>`;
+                        break;
+                    case 'leaving':
+                        title = "سکول چھوڑنے کا سرٹیفکیٹ";
+                        bodyText = `<p>تصدیق کی جاتی ہے کہ <span class="field">${student.name}</span> ولد <span class="field">${student.fatherName}</span>، جن کا داخلہ نمبر <span class="field">${student.admissionNo}</span> ہے، ہمارے مدرسہ میں زیرِ تعلیم رہے۔ ان کی تاریخِ داخلہ <span class="field">${student.admissionDate}</span> ہے۔ ہم ان کے اچھے چال چلن کی تصدیق کرتے ہیں اور ان کے مستقبل کے لیے نیک خواہشات کا اظہار کرتے ہیں۔</p>`;
+                        break;
+                }
+                const certificateHTML = `
+                    <div class="certificate-paper">
+                        <div class="certificate-border">
+                            <div class="certificate-inner-border">
+                                <div class="cert-header">
+                                    <p class="bismillah">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</p>
+                                    <h2 class="school-name">${schoolName}</h2>
+                                    <h3 class="cert-title">${title}</h3>
+                                </div>
+                                <div class="cert-body">
+                                    ${bodyText}
+                                </div>
+                                <div class="cert-footer">
+                                    <div class="date-section">
+                                        <p>تاریخِ اجراء: ${new Date(issueDate).toLocaleDateString('ur-PK')}</p>
+                                    </div>
+                                    <div class="signature-section">
+                                        <p class="signature-line">دستخط مدیر</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                previewContainer.innerHTML = certificateHTML;
+                previewContainer.style.display = 'block';
+                printBtn.style.display = 'inline-block';
+            } catch (error) {
+                console.error("Error generating certificate:", error);
+                alert('سرٹیفکیٹ بنانے میں خرابی: ' + error.message);
+                previewContainer.style.display = 'none';
+                printBtn.style.display = 'none';
+            }
+        }
+        function printCertificate() {
+            const preview = document.getElementById('certificatePreviewContainer');
+            if (preview.style.display === 'none' || !preview.innerHTML.trim()) {
+                alert('پہلے پرنٹ کرنے کے لیے ایک سرٹیفکیٹ بنائیں۔');
+                return;
+            }
+            window.print();
+        }
+        const existingShowModule = window.showModule;
+        window.showModule = function (moduleId) {
+            existingShowModule(moduleId);
+            if (moduleId === 'idCardGenerator') {
+                loadStudentsForCertificate();
+            }
+        };
     </script>
 </body>
 
