@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدرسہ منظوری سسٹم - Madrasa Management System</title>
+    <title>مدرسہ منجمنٹ سسٹم - Madrasa Management System</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 
@@ -560,7 +560,7 @@
     <div class="app">
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>مدرسہ منظوری سسٹم</h2>
+                <h2>مدرسہ منجمنٹ سسٹم</h2>
                 <small>Author: Yasin Ullah - Pakistani</small>
             </div>
             <div class="nav-menu">
@@ -1547,7 +1547,7 @@
                         cardsHtml += `
                 <div class="card">
                     <div class="header">
-                        <h3>مدرسہ منظوری سسٹم</h3>
+                        <h3>مدرسہ منجمنٹ سسٹم</h3>
                         <h4>طالب علم کا شناختی کارڈ</h4>
                     </div>
                     <div class="info"><strong>نام:</strong> ${student.name}</div>
@@ -1853,7 +1853,7 @@
                         </head>
                         <body>
                             <div class="header">
-                                <h2>مدرسہ منظوری سسٹم</h2>
+                                <h2>مدرسہ منجمنٹ سسٹم</h2>
                                 <h3>فیس کی رسید</h3>
                             </div>
                             <div class="content">
@@ -1867,7 +1867,7 @@
                                 <div class="row"><span>وقت:</span><span>${fee.time}</span></div>
                             </div>
                             <div class="footer">
-                                <p>شکریہ - مدرسہ منظوری سسٹم</p>
+                                <p>شکریہ - مدرسہ منجمنٹ سسٹم</p>
                                 <p>Author: Yasin Ullah - Pakistani</p>
                             </div>
                         </body>
@@ -2943,7 +2943,8 @@
         function restoreBackup() {
             app.restoreBackup();
         }
-        const app = new MadrasaMS();
+        //const app = new MadrasaMS();
+        window.app = new MadrasaMS();
         (function () {
             const forceDBUpgrade = async function () {
                 if (app.db) {
@@ -3765,7 +3766,7 @@
             app.sendFeeReminder = async function (studentId) {
                 try {
                     const student = await this.getData('students', studentId);
-                    const message = `عزیز والدین، ${student.name} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منظوری سسٹم`;
+                    const message = `عزیز والدین، ${student.name} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منجمنٹ سسٹم`;
                     await this.addData('reminders', {
                         studentId: studentId,
                         studentName: student.name,
@@ -3827,7 +3828,7 @@
                 </head>
                 <body>
                     <div class="header">
-                        <h2>مدرسہ منظوری سسٹم</h2>
+                        <h2>مدرسہ منجمنٹ سسٹم</h2>
                         <h3>${title}</h3>
                     </div>
                     <div class="report-info">
@@ -3862,7 +3863,7 @@
                     }
                     html += `
                     <div class="footer">
-                        <p>مدرسہ منظوری سسٹم - Author: Yasin Ullah, Pakistani</p>
+                        <p>مدرسہ منجمنٹ سسٹم - Author: Yasin Ullah, Pakistani</p>
                         <p>پرنٹ کی تاریخ: ${new Date().toLocaleString('ur-PK')}</p>
                     </div>
                 </body>
@@ -4546,27 +4547,27 @@
                         <div id="messageTemplates">
                             <div class="template-item">
                                 <h4>فیس کی یاد دہانی</h4>
-                                <p>عزیز والدین، {student_name} کی {month} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منظوری سسٹم</p>
+                                <p>عزیز والدین، {student_name} کی {month} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منجمنٹ سسٹم</p>
                                 <button class="btn btn-secondary" onclick="app.useTemplate('fee_reminder')">استعمال کریں</button>
                             </div>
                             <div class="template-item">
                                 <h4>حاضری کی اطلاع</h4>
-                                <p>عزیز والدین، {student_name} کی حاضری کم ہے ({attendance_percentage}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منظوری سسٹم</p>
+                                <p>عزیز والدین، {student_name} کی حاضری کم ہے ({attendance_percentage}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منجمنٹ سسٹم</p>
                                 <button class="btn btn-secondary" onclick="app.useTemplate('attendance_alert')">استعمال کریں</button>
                             </div>
                             <div class="template-item">
                                 <h4>امتحان کی اطلاع</h4>
-                                <p>محترم والدین، {student_name} کا {subject} کا امتحان {exam_date} کو {exam_time} بجے ہے۔ - مدرسہ منظوری سسٹم</p>
+                                <p>محترم والدین، {student_name} کا {subject} کا امتحان {exam_date} کو {exam_time} بجے ہے۔ - مدرسہ منجمنٹ سسٹم</p>
                                 <button class="btn btn-secondary" onclick="app.useTemplate('exam_notice')">استعمال کریں</button>
                             </div>
                             <div class="template-item">
                                 <h4>نتائج کی اطلاع</h4>
-                                <p>مبارک ہو! {student_name} نے {exam_name} میں {marks}/{total_marks} حاصل کیے ہیں۔ - مدرسہ منظوری سسٹم</p>
+                                <p>مبارک ہو! {student_name} نے {exam_name} میں {marks}/{total_marks} حاصل کیے ہیں۔ - مدرسہ منجمنٹ سسٹم</p>
                                 <button class="btn btn-secondary" onclick="app.useTemplate('result_notification')">استعمال کریں</button>
                             </div>
                             <div class="template-item">
                                 <h4>تنخواہ کی پرچی</h4>
-                                <p>عزیز {employee_name}، آپ کی {month} کی تنخواہ {amount} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منظوری سسٹم</p>
+                                <p>عزیز {employee_name}، آپ کی {month} کی تنخواہ {amount} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منجمنٹ سسٹم</p>
                                 <button class="btn btn-secondary" onclick="app.useTemplate('salary_slip')">استعمال کریں</button>
                             </div>
                         </div>
@@ -4706,13 +4707,13 @@
                 const messageType = document.getElementById('messageType').value;
                 const messageContent = document.getElementById('messageContent');
                 const templates = {
-                    fee_reminder: 'عزیز والدین، {student_name} کی {month} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منظوری سسٹم',
-                    attendance_alert: 'عزیز والدین، {student_name} کی حاضری کم ہے ({attendance_percentage}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منظوری سسٹم',
-                    exam_notice: 'محترم والدین، {student_name} کا {subject} کا امتحان {exam_date} کو {exam_time} بجے ہے۔ - مدرسہ منظوری سسٹم',
-                    result_notification: 'مبارک ہو! {student_name} نے {exam_name} میں {marks}/{total_marks} حاصل کیے ہیں۔ - مدرسہ منظوری سسٹم',
-                    salary_slip: 'عزیز {employee_name}، آپ کی {month} کی تنخواہ {amount} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منظوری سسٹم',
-                    event_invitation: 'آپ کو {event_name} میں شرکت کی دعوت دی جاتی ہے۔ تاریخ: {event_date}، وقت: {event_time}۔ - مدرسہ منظوری سسٹم',
-                    holiday_notice: 'اطلاع: {holiday_date} سے {end_date} تک مدرسہ بند رہے گا۔ وجہ: {reason}۔ - مدرسہ منظوری سسٹم'
+                    fee_reminder: 'عزیز والدین، {student_name} کی {month} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منجمنٹ سسٹم',
+                    attendance_alert: 'عزیز والدین، {student_name} کی حاضری کم ہے ({attendance_percentage}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منجمنٹ سسٹم',
+                    exam_notice: 'محترم والدین، {student_name} کا {subject} کا امتحان {exam_date} کو {exam_time} بجے ہے۔ - مدرسہ منجمنٹ سسٹم',
+                    result_notification: 'مبارک ہو! {student_name} نے {exam_name} میں {marks}/{total_marks} حاصل کیے ہیں۔ - مدرسہ منجمنٹ سسٹم',
+                    salary_slip: 'عزیز {employee_name}، آپ کی {month} کی تنخواہ {amount} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منجمنٹ سسٹم',
+                    event_invitation: 'آپ کو {event_name} میں شرکت کی دعوت دی جاتی ہے۔ تاریخ: {event_date}، وقت: {event_time}۔ - مدرسہ منجمنٹ سسٹم',
+                    holiday_notice: 'اطلاع: {holiday_date} سے {end_date} تک مدرسہ بند رہے گا۔ وجہ: {reason}۔ - مدرسہ منجمنٹ سسٹم'
                 };
                 if (templates[messageType]) {
                     messageContent.value = templates[messageType];
@@ -4935,7 +4936,7 @@
                     this.showLoading();
                     for (let i = 0; i < defaulters.length; i++) {
                         const student = defaulters[i];
-                        const message = `عزیز والدین، ${student.name} کی ${currentMonth} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منظوری سسٹم`;
+                        const message = `عزیز والدین، ${student.name} کی ${currentMonth} کی ماہانہ فیس کی ادائیگی باقی ہے۔ براہ کرم جلد ادا کریں۔ - مدرسہ منجمنٹ سسٹم`;
                         setTimeout(() => {
                             this.sendWhatsAppMessage(student.contact, message);
                         }, i * 2000);
@@ -4963,7 +4964,7 @@
                         const presentDays = studentAttendance.filter(a => a.status === 'حاضر').length;
                         const percentage = totalDays > 0 ? ((presentDays / totalDays) * 100) : 0;
                         if (percentage < 75) {
-                            const message = `عزیز والدین، ${student.name} کی حاضری کم ہے (${percentage.toFixed(1)}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منظوری سسٹم`;
+                            const message = `عزیز والدین، ${student.name} کی حاضری کم ہے (${percentage.toFixed(1)}%)۔ براہ کرم توجہ دیں۔ - مدرسہ منجمنٹ سسٹم`;
                             setTimeout(() => {
                                 this.sendWhatsAppMessage(student.contact, message);
                             }, alertCount * 2000);
@@ -5000,7 +5001,7 @@
                         const classStudents = students.filter(s => s.class === exam.class);
                         for (let i = 0; i < classStudents.length; i++) {
                             const student = classStudents[i];
-                            const message = `محترم والدین، ${student.name} کا ${exam.subject} کا امتحان ${exam.date} کو ${exam.time} بجے ہے۔ - مدرسہ منظوری سسٹم`;
+                            const message = `محترم والدین، ${student.name} کا ${exam.subject} کا امتحان ${exam.date} کو ${exam.time} بجے ہے۔ - مدرسہ منجمنٹ سسٹم`;
                             setTimeout(() => {
                                 this.sendWhatsAppMessage(student.contact, message);
                             }, notificationCount * 2000);
@@ -5024,7 +5025,7 @@
                     for (let i = 0; i < currentMonthSalaries.length; i++) {
                         const salary = currentMonthSalaries[i];
                         const totalAmount = salary.basicSalary + salary.allowance;
-                        const message = `عزیز ${salary.employeeName}، آپ کی ${currentMonth} کی تنخواہ ${totalAmount.toLocaleString()} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منظوری سسٹم`;
+                        const message = `عزیز ${salary.employeeName}، آپ کی ${currentMonth} کی تنخواہ ${totalAmount.toLocaleString()} روپے آپ کے اکاؤنٹ میں جمع کر دی گئی ہے۔ - مدرسہ منجمنٹ سسٹم`;
                         const phoneNumber = '03000000000';
                         setTimeout(() => {
                             this.sendWhatsAppMessage(phoneNumber, message);
@@ -5248,6 +5249,7 @@
             console.log('- Bulk messaging with smart delays');
         })();
     </script>
+
 </body>
 
 </html>
