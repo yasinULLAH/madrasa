@@ -6134,7 +6134,7 @@
                 console.error('Error populating sections for results tab:', error);
             }
         }
-        async function showView(viewName) {
+/*         async function showView(viewName) {
             document.querySelectorAll('.section-view').forEach(view => {
                 view.style.display = 'none';
             });
@@ -6280,6 +6280,9 @@
                 }
             }
         }
+         */
+        
+         
         async function loadExamDropdowns() {
             try {
                 const exams = await getAllFromStore(STORES.EXAMS);
