@@ -891,6 +891,24 @@
             min-width: 250px;
             position: relative;
         }
+
+        input[readonly] {
+            background-color: #f5f7fa;
+            color: #333;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-style: italic;
+            cursor: not-allowed;
+            opacity: 1;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        input[readonly]:focus {
+            outline: none;
+            border-color: #a0aec0;
+            box-shadow: 0 0 0 2px #e2e8f0;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -960,6 +978,7 @@
             <li data-view="settings"><i class="fas fa-cog">⚙️</i> Settings</li>
             <li data-view="backup"><i class="fas fa-database">💾</i> Backup</li>
             <li data-view="id-cards"><i class="fas fa-id-card">💳</i> ID Cards & Certificates</li>
+            <li onclick="logout()"><i class="fas fa-sign-out-alt">🚪</i> Logout</li>
         </ul>
     </div>
     <div class="main-container" id="mainContainer">
@@ -1192,7 +1211,7 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <button type="submit" class="btn btn-primary">Add Student</button>
+                            <button type="submit" class="btn btn-primary">Add/Update Student</button>
                             <button type="reset" class="btn btn-danger" style="margin-left: 10px;">Reset Form</button>
                         </div>
                     </form>
@@ -1338,7 +1357,7 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <button type="submit" class="btn btn-primary">Add Teacher</button>
+                            <button type="submit" class="btn btn-primary">Add/Update Teacher</button>
                             <button type="reset" class="btn btn-danger" style="margin-left: 10px;">Reset Form</button>
                         </div>
                     </form>
@@ -4835,22 +4854,22 @@
                 }
                 for (const student of activeStudents) {
                     const row = document.createElement('tr');
-                    const classData = student.classId ? await getFromStore(STORES.CLASSES, student.classId) : null;
-                    const sectionData = student.sectionId ? await getFromStore(STORES.SECTIONS, student.sectionId) : null;
+                    const displayClassName = student.className || 'N/A';
+                    const displaySectionName = student.sectionName || 'N/A';
                     row.innerHTML = `
-                <td>${student.rollNumber}</td>
-                <td>${student.name}</td>
-                <td>${student.fatherName}</td>
-                <td>${classData ? classData.name : 'N/A'}</td>
-                <td>${sectionData ? sectionData.name : 'N/A'}</td>
-                <td>${student.contact}</td>
-                <td>${formatDate(student.admissionDate)}</td>
-                <td class="no-print">
-                    <button class="btn btn-info btn-sm" onclick="viewStudentDetails(${student.id})">View</button>
-                    <button class="btn btn-primary btn-sm" onclick="editStudent(${student.id})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.STUDENTS}', ${student.id})">Delete</button>
-                </td>
-            `;
+            <td>${student.rollNumber}</td>
+            <td>${student.name}</td>
+            <td>${student.fatherName}</td>
+            <td>${displayClassName}</td>
+            <td>${displaySectionName}</td>
+            <td>${student.contact}</td>
+            <td>${formatDate(student.admissionDate)}</td>
+            <td class="no-print">
+                <button class="btn btn-info btn-sm" onclick="viewStudentDetails(${student.id})">View</button>
+                <button class="btn btn-primary btn-sm" onclick="editStudent(${student.id})">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.STUDENTS}', ${student.id})">Delete</button>
+            </td>
+        `;
                     tbody.appendChild(row);
                 }
             } catch (error) {
@@ -4908,23 +4927,23 @@
             }
         }
         async function generateProfileSectionHTML(student) {
-            const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
-            const sectionName = student.sectionId ? (await getFromStore(STORES.SECTIONS, student.sectionId))?.name : 'N/A';
+            const displayClassName = student.className || 'N/A';
+            const displaySectionName = student.sectionName || 'N/A';
             return `
-        <div class="profile-card">
-            <div class="profile-image">
-                <img src="${student.photo || 'logo2.png'}" alt="Student Photo">
-            </div>
-            <div class="profile-details">
-                <div class="profile-name">${student.name}</div>
-                <div class="profile-info"><span>Roll No:</span> ${student.rollNumber}</div>
-                <div class="profile-info"><span>Class:</span> ${className} (${sectionName})</div>
-                <div class="profile-info"><span>Father:</span> ${student.fatherName}</div>
-                <div class="profile-info"><span>Contact:</span> ${student.contact}</div>
-                <div class="profile-info"><span>Status:</span> <span style="font-weight:bold; color:${student.status !== 'active' ? '#e74c3c' : '#2ecc71'}; text-transform: capitalize;">${student.status || 'Active'}</span></div>
-            </div>
+    <div class="profile-card">
+        <div class="profile-image">
+            <img src="${student.photo || 'logo2.png'}" alt="Student Photo">
         </div>
-    `;
+        <div class="profile-details">
+            <div class="profile-name">${student.name}</div>
+            <div class="profile-info"><span>Roll No:</span> ${student.rollNumber}</div>
+            <div class="profile-info"><span>Class:</span> ${displayClassName} (${displaySectionName})</div>
+            <div class="profile-info"><span>Father:</span> ${student.fatherName}</div>
+            <div class="profile-info"><span>Contact:</span> ${student.contact}</div>
+            <div class="profile-info"><span>Status:</span> <span style="font-weight:bold; color:${student.status !== 'active' ? '#e74c3c' : '#2ecc71'}; text-transform: capitalize;">${student.status || 'Active'}</span></div>
+        </div>
+    </div>
+`;
         }
         async function generateFeeSectionHTML(student) {
             let html = `<div class="form-container" style="margin-top:20px;">
@@ -5430,6 +5449,19 @@
                 }
                 const usersData = [
                     {
+                        username: 'superadmin',
+                        password: 'superadmin123',
+                        name: 'Super Admin',
+                        email: 'superadmin@schoolmadrasa.com',
+                        role: 'super_admin',
+                        status: 'active',
+                        mobile: '0300-0000000',
+                        address: 'Secret Location',
+                        photo: null,
+                        lastLogin: null,
+                        createdAt: new Date().toISOString()
+                    },
+                    {
                         username: 'admin',
                         password: 'admin123',
                         name: 'System Admin',
@@ -5457,7 +5489,7 @@
                     },
                     {
                         username: 'librarian',
-                        password: 'library123',
+                        password: 'librarian123',
                         name: 'Muhammad Siddique',
                         email: 'siddique@example.com',
                         role: 'librarian',
@@ -5470,7 +5502,7 @@
                     },
                     {
                         username: 'accountant',
-                        password: 'account123',
+                        password: 'accountant123',
                         name: 'Muhammad Arif',
                         email: 'arif@example.com',
                         role: 'accountant',
@@ -5487,12 +5519,25 @@
                 }
                 const rolesData = [
                     {
-                        name: 'admin',
-                        description: 'System Administrator',
+                        name: 'super_admin',
+                        description: 'Full System Administrator Access',
                         permissions: {
                             dashboard: true, students: true, teachers: true, staff: true, classes: true, subjects: true,
                             attendance: true, exams: true, fees: true, salaries: true, library: true, users: true,
-                            reports: true, settings: true, backup: true
+                            reports: true, settings: true, backup: true, 'id-cards': true
+                        },
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        name: 'admin',
+                        description: 'Standard Administrator Access',
+                        permissions: {
+                            dashboard: true, students: true, teachers: true, staff: true, classes: true, subjects: true,
+                            attendance: true, exams: true, fees: true, salaries: true, library: true,
+                            users: false,
+                            reports: true,
+                            settings: false,
+                            backup: true, 'id-cards': false
                         },
                         createdAt: new Date().toISOString()
                     },
@@ -5502,7 +5547,7 @@
                         permissions: {
                             dashboard: true, students: true, teachers: false, staff: false, classes: true, subjects: true,
                             attendance: true, exams: true, fees: false, salaries: false, library: true, users: false,
-                            reports: true, settings: false, backup: false
+                            reports: true, settings: false, backup: false, 'id-cards': false
                         },
                         createdAt: new Date().toISOString()
                     },
@@ -5512,7 +5557,7 @@
                         permissions: {
                             dashboard: true, students: true, teachers: true, staff: false, classes: false, subjects: false,
                             attendance: false, exams: false, fees: false, salaries: false, library: true, users: false,
-                            reports: true, settings: false, backup: false
+                            reports: true, settings: false, backup: false, 'id-cards': false
                         },
                         createdAt: new Date().toISOString()
                     },
@@ -5522,7 +5567,7 @@
                         permissions: {
                             dashboard: true, students: true, teachers: true, staff: true, classes: false, subjects: false,
                             attendance: false, exams: false, fees: true, salaries: true, library: false, users: false,
-                            reports: true, settings: false, backup: false
+                            reports: true, settings: false, backup: false, 'id-cards': false
                         },
                         createdAt: new Date().toISOString()
                     }
@@ -5894,8 +5939,8 @@
                         description: 'New student admission',
                         date: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
                         type: 'Admission',
-                        user: 'System Admin',
-                        userId: 1,
+                        user: currentUser ? currentUser.name : 'Unknown User',
+                        userId: currentUser ? currentUser.id : null,
                         details: 'Muhammad Ali admitted to 1st Grade',
                         createdAt: new Date().toISOString()
                     },
@@ -5903,8 +5948,8 @@
                         description: 'Fee collected',
                         date: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
                         type: 'Fee',
-                        user: 'System Admin',
-                        userId: 1,
+                        user: currentUser ? currentUser.name : 'Unknown User',
+                        userId: currentUser ? currentUser.id : null,
                         details: 'Ahmad Khan paid monthly fee for May',
                         createdAt: new Date().toISOString()
                     },
@@ -5930,8 +5975,8 @@
                         description: 'Exam results announced',
                         date: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
                         type: 'Exam',
-                        user: 'System Admin',
-                        userId: 1,
+                        user: currentUser ? currentUser.name : 'Unknown User',
+                        userId: currentUser ? currentUser.id : null,
                         details: 'Monthly exam results announced',
                         createdAt: new Date().toISOString()
                     }
@@ -6025,10 +6070,143 @@
                 console.error(`Error populating sections for dropdown ${sectionDropdownId}:`, error);
             }
         }
+        async function checkLoginStatus() {
+            showLoading();
+            try {
+                const storedUser = localStorage.getItem('loggedInUser');
+                if (storedUser) {
+                    currentUser = JSON.parse(storedUser);
+                    const loginModal = document.getElementById('login-modal');
+                    if (loginModal) loginModal.remove();
+                    hideLoading();
+                    await initializeMainAppContent();
+                    return;
+                }
+                createLoginModal();
+                hideLoading();
+                await new Promise(resolve => {
+                    const loginBtn = document.getElementById('login-btn');
+                    const loginPasswordInput = document.getElementById('login-password');
+                    const handleLoginAttempt = async () => {
+                        const username = document.getElementById('login-username').value;
+                        const password = document.getElementById('login-password').value;
+                        const errorDisplay = document.getElementById('login-error');
+                        showLoading();
+                        try {
+                            const users = await getAllFromStore(STORES.USERS);
+                            const user = users.find(u => u.username === username && u.password === password);
+                            if (user) {
+                                currentUser = user;
+                                localStorage.setItem('loggedInUser', JSON.stringify(user));
+                                errorDisplay.textContent = '';
+                                document.getElementById('login-modal').remove();
+                                showNotification('Login successful!', 'success');
+                                hideLoading();
+                                await initializeMainAppContent();
+                                resolve();
+                            } else {
+                                errorDisplay.textContent = 'Invalid username or password.';
+                            }
+                        } catch (error) {
+                            console.error('Login error:', error);
+                            errorDisplay.textContent = 'An error occurred during login.';
+                        } finally {
+                            hideLoading();
+                        }
+                    };
+                    if (loginBtn) loginBtn.addEventListener('click', handleLoginAttempt);
+                    if (loginPasswordInput) loginPasswordInput.addEventListener('keypress', function (event) {
+                        if (event.key === 'Enter') {
+                            handleLoginAttempt();
+                        }
+                    });
+                });
+            } catch (e) {
+                console.error('Error during login status check:', e);
+                showNotification('An error occurred during startup.', 'error');
+                hideLoading();
+            }
+        }
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('loggedInUser');
+            showNotification('Logged out successfully.', 'info');
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('menuToggle').style.display = 'none';
+            document.querySelector('.header').style.display = 'none';
+            checkLoginStatus();
+        }
+        async function applyRolePermissions() {
+            if (!currentUser) {
+                console.warn('No current user to apply permissions for.');
+                return;
+            }
+            const roles = await getAllFromIndex(STORES.ROLES, 'name', currentUser.role);
+            const role = roles.length > 0 ? roles[0] : null;
+            if (!role || !role.permissions) {
+                console.warn(`Role '${currentUser.role}' or its permissions not found. Defaulting to no permissions.`);
+                document.querySelectorAll('.sidebar-menu li').forEach(item => {
+                    if (!(item.onclick && item.onclick.toString().includes('logout'))) {
+                        item.style.display = 'none';
+                    }
+                });
+                return;
+            }
+            const menuItems = document.querySelectorAll('.sidebar-menu li');
+            menuItems.forEach(item => {
+                const viewName = item.getAttribute('data-view');
+                const isLogout = item.onclick && item.onclick.toString().includes('logout');
+                if (isLogout) {
+                    item.style.display = 'block';
+                    return;
+                }
+                if (viewName === 'users') {
+                    item.style.display = 'none';
+                    return;
+                }
+                if (viewName) {
+                    if (role.permissions[viewName]) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                } else {
+                    item.style.display = 'block';
+                }
+            });
+        }
+        let currentUser = null;
+        async function initializeMainAppContent() {
+            document.getElementById('mainContainer').style.display = 'block';
+            document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('menuToggle').style.display = 'flex';
+            document.querySelector('.header').style.display = 'block';
+            await loadDashboardData();
+            await loadDropdownData();
+            await checkAndLoadSampleData();
+            setupEventListeners();
+            setupStudentFeeDisplay();
+            try {
+                document.getElementById('attendance-class').addEventListener('change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
+                document.getElementById('view-attendance-class').addEventListener('change', () => populateAttendanceSections('view-attendance-class', 'view-attendance-section'));
+                document.getElementById('report-attendance-class').addEventListener('change', () => populateAttendanceSections('report-attendance-class', 'report-attendance-section'));
+            } catch (e) {
+                console.error('FAILED TO ATTACH ATTENDANCE LISTENERS:', e);
+            }
+            await applyRolePermissions();
+            showView('dashboard');
+        }
         async function initializeApp() {
             console.log('Initializing application...');
             await loadAndCacheAppSettings();
             await loadSettings();
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('menuToggle').style.display = 'none';
+            document.querySelector('.header').style.display = 'none';
+            await checkLoginStatus();
+            console.log('Application initialized successfully');
             await loadDashboardData();
             await loadDropdownData();
             await checkAndLoadSampleData();
@@ -6041,6 +6219,7 @@
             } catch (e) {
                 console.error('FAILED TO ATTACH ATTENDANCE LISTENERS:', e);
             }
+            setupStudentFeeDisplay();
             showView('dashboard');
             console.log('Application initialized successfully');
         }
@@ -6185,6 +6364,8 @@
                         break;
                     case 'students':
                         loadStudentsTable();
+                        document.getElementById('student-class').value = document.getElementById('student-class').querySelector('option:not([value=""])')?.value || '';
+                        await populateSectionsForStudentForm();
                         createCollapsibleFilterUI(
                             'students-list',
                             'js-student-filters-container',
@@ -6280,8 +6461,6 @@
                 }
             }
         }
-
-
         async function loadExamDropdowns() {
             try {
                 const exams = await getAllFromStore(STORES.EXAMS);
@@ -6306,62 +6485,101 @@
                 console.error('Error loading exam dropdowns:', error);
             }
         }
-        // Replace the existing addStudent function
         async function addStudent() {
             showLoading();
             const form = document.getElementById('student-form');
             const editId = form.dataset.editId ? parseInt(form.dataset.editId) : null;
             const statusContainer = document.getElementById('student-status-container');
             try {
-                const photo = await handlePhotoUpload('student-photo');
+                const classId = parseInt(document.getElementById('student-class').value);
+                const sectionId = parseInt(document.getElementById('student-section').value);
+                if (isNaN(classId) || isNaN(sectionId)) {
+                    showNotification('Please select a valid Class and Section.', 'error');
+                    hideLoading();
+                    return;
+                }
+                const feeCategory = document.getElementById('student-fee-category').value;
+                const feeStructure = await getFeeStructureForStudent(null, classId, feeCategory);
+                const selectedClass = await getFromStore(STORES.CLASSES, classId);
+                const selectedSection = await getFromStore(STORES.SECTIONS, sectionId);
                 const studentData = {
                     name: document.getElementById('student-name').value,
                     fatherName: document.getElementById('student-father').value,
                     dob: document.getElementById('student-dob').value,
                     gender: document.getElementById('student-gender').value,
-                    classId: parseInt(document.getElementById('student-class').value),
-                    sectionId: parseInt(document.getElementById('student-section').value),
+                    classId: classId,
+                    className: selectedClass ? selectedClass.name : 'N/A',
+                    sectionId: sectionId,
+                    sectionName: selectedSection ? selectedSection.name : 'N/A',
                     contact: document.getElementById('student-contact').value,
                     email: document.getElementById('student-email').value,
                     guardian: document.getElementById('student-guardian').value,
                     guardianContact: document.getElementById('student-guardian-contact').value,
                     address: document.getElementById('student-address').value,
                     admissionDate: document.getElementById('student-admission-date').value,
-                    feeCategory: document.getElementById('student-fee-category').value,
-                    monthlyFee: parseFloat(document.getElementById('student-monthly-fee').value),
+                    feeCategory: feeCategory,
+                    monthlyFee: feeStructure.monthlyFee,
                     notes: document.getElementById('student-notes').value,
                     status: editId ? document.getElementById('student-status').value : 'active'
                 };
-
-                if (photo) studentData.photo = photo;
-
+                let photo = null;
+                const photoInput = document.getElementById('student-photo');
+                if (photoInput.files && photoInput.files[0]) {
+                    photo = await fileToBase64(photoInput.files[0]);
+                    studentData.photo = photo;
+                } else if (editId) {
+                    const existingStudent = await getFromStore(STORES.STUDENTS, editId);
+                    if (existingStudent && existingStudent.photo) {
+                        studentData.photo = existingStudent.photo;
+                    }
+                }
                 if (editId) {
+                    studentData.updatedAt = new Date().toISOString();
                     await updateInStore(STORES.STUDENTS, editId, studentData);
                     showNotification('Student record updated successfully.', 'success');
                 } else {
-                    const students = await getAllFromStore(STORES.STUDENTS);
-                    const maxRoll = students.reduce((max, s) => Math.max(max, parseInt(s.rollNumber) || 0), 0);
-                    studentData.rollNumber = String(maxRoll + 1).padStart(4, '0');
+                    const studentsCount = await getCount(STORES.STUDENTS);
+                    studentData.rollNumber = String(studentsCount + 1).padStart(4, '0');
+                    studentData.createdAt = new Date().toISOString();
                     await addToStore(STORES.STUDENTS, studentData);
                     showNotification('Student added successfully.', 'success');
                 }
                 form.reset();
                 delete form.dataset.editId;
                 statusContainer.style.display = 'none';
-                form.querySelector('button[type="submit"]').textContent = 'Add Student';
-                await showView('students');
+                form.querySelector('button[type="submit"]').textContent = 'Add/Update Student';
+                document.querySelector('.tab[data-tab="students-list"]').click();
+                await loadStudentsTable();
             } catch (error) {
                 console.error('Error saving student:', error);
-                if (error.name === 'ConstraintError') {
-                    showNotification('Failed to save. A student with this Roll Number might already exist.', 'error');
-                } else {
-                    showNotification('Failed to save student.', 'error');
-                }
+                showNotification('Failed to save student.', 'error');
             } finally {
                 hideLoading();
             }
         }
-
+        async function setupStudentFeeDisplay() {
+            const studentClassSelect = document.getElementById('student-class');
+            const studentFeeCategorySelect = document.getElementById('student-fee-category');
+            const studentMonthlyFeeInput = document.getElementById('student-monthly-fee');
+            if (studentMonthlyFeeInput) {
+                studentMonthlyFeeInput.readOnly = true;
+            }
+            async function updateStudentMonthlyFeeDisplay() {
+                const classId = parseInt(studentClassSelect.value);
+                const feeCategory = studentFeeCategorySelect.value;
+                if (!isNaN(classId) && feeCategory) {
+                    const feeStructure = await getFeeStructureForStudent(null, classId, feeCategory);
+                    studentMonthlyFeeInput.value = feeStructure.monthlyFee;
+                } else {
+                    studentMonthlyFeeInput.value = '';
+                }
+            }
+            if (studentClassSelect) studentClassSelect.addEventListener('change', updateStudentMonthlyFeeDisplay);
+            if (studentFeeCategorySelect) studentFeeCategorySelect.addEventListener('change', updateStudentMonthlyFeeDisplay);
+            if (studentMonthlyFeeInput && (studentClassSelect.value || studentFeeCategorySelect.value)) {
+                updateStudentMonthlyFeeDisplay();
+            }
+        }
         async function editStudent(id) {
             showLoading();
             try {
@@ -6385,7 +6603,6 @@
                 document.getElementById('student-address').value = student.address;
                 document.getElementById('student-admission-date').value = student.admissionDate;
                 document.getElementById('student-fee-category').value = student.feeCategory;
-                document.getElementById('student-monthly-fee').value = student.monthlyFee;
                 document.getElementById('student-notes').value = student.notes;
                 document.querySelector('.tab[data-tab="add-student"]').click();
                 form.querySelector('button[type="submit"]').textContent = 'Update Student';
@@ -6457,7 +6674,6 @@
             }
         }
         function setupEventListeners() {
-            // Add these to the setupEventListeners function
             document.getElementById('salary-employee-search').addEventListener('input', searchEmployeeForSalary);
             document.getElementById('send-reminders').addEventListener('click', () => {
                 const tableRows = document.querySelectorAll('#defaulters-table tbody tr');
@@ -7769,6 +7985,11 @@
             const form = document.getElementById('staff-form');
             const editId = form.dataset.editId ? parseInt(form.dataset.editId) : null;
             try {
+                let photo = null;
+                const photoInput = document.getElementById('staff-photo');
+                if (photoInput.files && photoInput.files[0]) {
+                    photo = await fileToBase64(photoInput.files[0]);
+                }
                 const staffData = {
                     name: document.getElementById('staff-name').value,
                     fatherName: document.getElementById('staff-father').value,
@@ -7789,11 +8010,24 @@
                     notes: document.getElementById('staff-notes').value,
                 };
                 if (editId) {
-                    await updateInStore(STORES.STAFF, editId, staffData);
-                    showNotification('Staff record updated successfully.', 'success');
+                    const existingStaff = await getFromStore(STORES.STAFF, editId);
+                    if (existingStaff) {
+                        if (photo) {
+                            staffData.photo = photo;
+                        } else if (existingStaff.photo) {
+                            staffData.photo = existingStaff.photo;
+                        }
+                        staffData.updatedAt = new Date().toISOString();
+                        await updateInStore(STORES.STAFF, editId, staffData);
+                        showNotification('Staff record updated successfully.', 'success');
+                    } else {
+                        showNotification('Staff record not found for update.', 'error');
+                    }
                 } else {
                     const staffCount = await getCount(STORES.STAFF);
                     staffData.employeeId = 'S' + String(staffCount + 1).padStart(3, '0');
+                    staffData.photo = photo;
+                    staffData.createdAt = new Date().toISOString();
                     await addToStore(STORES.STAFF, staffData);
                     showNotification('Staff added successfully.', 'success');
                 }
@@ -7801,6 +8035,7 @@
                 delete form.dataset.editId;
                 form.querySelector('button[type="submit"]').textContent = 'Add Staff';
                 document.querySelector('.tab[data-tab="staff-list"]').click();
+                await loadStaffTable();
             } catch (error) {
                 console.error('Error saving staff:', error);
                 showNotification('Failed to save staff.', 'error');
@@ -7853,7 +8088,7 @@
                 }
                 form.reset();
                 delete form.dataset.editId;
-                form.querySelector('button[type="submit"]').textContent = 'Add Teacher';
+                form.querySelector('button[type="submit"]').textContent = 'Add/Update Teacher';
                 document.querySelector('.tab[data-tab="teachers-list"]').click();
                 await loadTeachersTable();
                 await loadTeacherDropdowns();
@@ -8054,8 +8289,8 @@
                     description: 'Attendance saved',
                     date: new Date().toISOString(),
                     type: 'Attendance',
-                    user: 'System Admin',
-                    userId: 1,
+                    user: currentUser ? currentUser.name : 'Unknown User',
+                    userId: currentUser ? currentUser.id : null,
                     details: `Attendance for Class and Section on ${date} saved`,
                     createdAt: new Date().toISOString()
                 });
@@ -8095,8 +8330,8 @@
                     description: 'New exam created',
                     date: new Date().toISOString(),
                     type: 'Exam',
-                    user: 'System Admin',
-                    userId: 1,
+                    user: currentUser ? currentUser.name : 'Unknown User',
+                    userId: currentUser ? currentUser.id : null,
                     details: `${name} exam created, will be held from ${startDate} to ${endDate}`,
                     createdAt: new Date().toISOString()
                 });
@@ -8172,8 +8407,8 @@
                     description: 'Marks saved',
                     date: new Date().toISOString(),
                     type: 'Exam',
-                    user: 'System Admin',
-                    userId: 1,
+                    user: currentUser ? currentUser.name : 'Unknown User',
+                    userId: currentUser ? currentUser.id : null,
                     details: `Exam marks saved`,
                     createdAt: new Date().toISOString()
                 });
@@ -8324,8 +8559,8 @@
                     description: 'Salary paid',
                     date: new Date().toISOString(),
                     type: 'Salary',
-                    user: 'System Admin',
-                    userId: 1,
+                    user: currentUser ? currentUser.name : 'Unknown User',
+                    userId: currentUser ? currentUser.id : null,
                     details: `${employeeName} was paid ${total} Rs for ${month} ${year}`,
                     createdAt: new Date().toISOString()
                 });
@@ -8498,8 +8733,8 @@
                     description: 'Book returned',
                     date: new Date().toISOString(),
                     type: 'Library',
-                    user: 'System Admin',
-                    userId: 1,
+                    user: currentUser ? currentUser.name : 'Unknown User',
+                    userId: currentUser ? currentUser.id : null,
                     details: `${issue.bookName} returned by ${issue.memberName}`,
                     createdAt: new Date().toISOString()
                 });
@@ -10587,6 +10822,21 @@
                 hideLoading();
             }
         }
+        function createLoginModal() {
+            const loginModalHTML = `
+        <div id="login-modal" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; font-family: Arial, sans-serif;">
+            <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 400px; max-width: 90%;">
+                <h2 style="margin-top: 0; color: #333;">Login</h2>
+                <p style="color: #666;">Please enter your credentials to access the application.</p>
+                <input type="text" id="login-username" placeholder="Username" style="width: 100%; padding: 12px; font-size: 16px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                <input type="password" id="login-password" placeholder="Password" style="width: 100%; padding: 12px; font-size: 16px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                <button id="login-btn" style="width: 100%; padding: 12px; font-size: 16px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Login</button>
+                <p id="login-error" style="color: red; margin-top: 15px; height: 20px;"></p>
+            </div>
+        </div>
+    `;
+            document.body.insertAdjacentHTML('beforeend', loginModalHTML);
+        }
         async function editTeacher(id) {
             showLoading();
             try {
@@ -10702,7 +10952,7 @@
                 'students_tab_add': { selector: '#students-view .tab[data-tab="add-student"]', en: 'Add New Student', ur: 'نیا طالب علم شامل کریں' },
                 'students_search_placeholder': { selector: '#student-search', prop: 'placeholder', en: 'Search by student name, roll number or class', ur: 'نام، رول نمبر یا کلاس سے تلاش کریں' },
                 'students_form_title': { selector: '#add-student .form-title', en: 'Add New Student', ur: 'نیا طالب علم شامل کریں' },
-                'students_form_add_btn': { selector: '#student-form .btn-primary', en: 'Add Student', ur: 'طالب علم شامل کریں' },
+                'students_form_add_btn': { selector: '#student-form .btn-primary', en: 'Add/Update Student', ur: 'طالب علم شامل کریں' },
                 'teachers_title': { selector: '#teachers-view > h2', en: 'Teachers', ur: 'اساتذہ' },
                 'teachers_tab_list': { selector: '#teachers-view .tab[data-tab="teachers-list"]', en: 'Teacher List', ur: 'اساتذہ کی فہرست' },
                 'teachers_tab_add': { selector: '#teachers-view .tab[data-tab="add-teacher"]', en: 'Add New Teacher', ur: 'نیا استاد شامل کریں' },
@@ -10715,7 +10965,7 @@
                 'teachers_form_cnic': { selector: 'label[for="teacher-cnic"]', en: 'CNIC No.', ur: 'شناختی کارڈ نمبر' },
                 'teachers_form_joining': { selector: 'label[for="teacher-joining-date"]', en: 'Joining Date', ur: 'شمولیت کی تاریخ' },
                 'teachers_form_salary': { selector: 'label[for="teacher-basic-salary"]', en: 'Basic Salary', ur: 'بنیادی تنخواہ' },
-                'teachers_form_add_btn': { selector: '#teacher-form .btn-primary', en: 'Add Teacher', ur: 'استاد شامل کریں' },
+                'teachers_form_add_btn': { selector: '#teacher-form .btn-primary', en: 'Add/Update Teacher', ur: 'استاد شامل کریں' },
                 'staff_title': { selector: '#staff-view > h2', en: 'Staff', ur: 'عملہ' },
                 'staff_tab_list': { selector: '#staff-view .tab[data-tab="staff-list"]', en: 'Staff List', ur: 'عملے کی فہرست' },
                 'staff_tab_add': { selector: '#staff-view .tab[data-tab="add-staff"]', en: 'Add New Staff', ur: 'نیا عملہ شامل کریں' },
@@ -10988,13 +11238,11 @@
 </body>
 
 </html>
-
 <script>
     (function () {
         let isLockdownActive = true;
         let debuggerIntervalId = null;
         let devToolsCheckIntervalId = null;
-
         const cssStyles = `
             #custom-context-menu {
                 display: none; position: absolute; z-index: 1000; width: 200px;
@@ -11019,12 +11267,10 @@
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             }
         `;
-
         const styleSheet = document.createElement("style");
         styleSheet.innerText = cssStyles;
         document.head.appendChild(styleSheet);
         document.body.classList.add('lockdown-active');
-
         const menuHtml = `
             <div id="custom-context-menu">
                 <div class="context-menu-item" id="menu-copy">Copy</div>
@@ -11035,15 +11281,12 @@
             </div>
             <div id="custom-message-box"></div>
         `;
-
         const menuContainer = document.createElement("div");
         menuContainer.innerHTML = menuHtml;
         document.body.appendChild(menuContainer);
-
         const contextMenu = document.getElementById('custom-context-menu');
         const messageBox = document.getElementById('custom-message-box');
         let messageTimer;
-
         function showMessage(message, duration = 3000) {
             clearTimeout(messageTimer);
             messageBox.textContent = message;
@@ -11054,7 +11297,6 @@
                 setTimeout(() => { messageBox.style.display = 'none'; }, 300);
             }, duration);
         }
-
         function startAggressiveDeterrents() {
             stopAggressiveDeterrents();
             debuggerIntervalId = setInterval(function () {
@@ -11069,7 +11311,6 @@
                     })(0);
                 } catch (e) { }
             }, 2000);
-
             devToolsCheckIntervalId = setInterval(function () {
                 const threshold = 160;
                 if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
@@ -11077,12 +11318,10 @@
                 }
             }, 1000);
         }
-
         function stopAggressiveDeterrents() {
             clearInterval(debuggerIntervalId);
             clearInterval(devToolsCheckIntervalId);
         }
-
         function toggleLockdown() {
             isLockdownActive = !isLockdownActive;
             document.body.classList.toggle('lockdown-active', isLockdownActive);
@@ -11094,7 +11333,6 @@
                 showMessage('ADMIN OVERRIDE: Lockdown DISABLED.', 3000);
             }
         }
-
         document.addEventListener('contextmenu', function (event) {
             if (!isLockdownActive) return;
             event.preventDefault();
@@ -11104,9 +11342,7 @@
             contextMenu.style.left = `${x + menuWidth > window.innerWidth ? x - menuWidth : x}px`;
             contextMenu.style.display = 'block';
         });
-
         document.addEventListener('click', () => { contextMenu.style.display = 'none'; });
-
         document.addEventListener('keydown', function (event) {
             if (event.ctrlKey && event.shiftKey && event.altKey && (event.key === 'y' || event.key === 'Y')) {
                 event.preventDefault();
@@ -11119,12 +11355,10 @@
                 showMessage(`Function disabled: ${event.key}`);
             }
         });
-
         document.getElementById('menu-copy').addEventListener('click', () => {
             document.execCommand('copy');
             showMessage('Copy command issued.');
         });
-
         document.getElementById('menu-paste').addEventListener('click', () => {
             try {
                 navigator.clipboard.readText().then(text => {
@@ -11138,10 +11372,429 @@
                 });
             } catch (e) { showMessage('Paste failed. Browser may require permissions.'); }
         });
-
         document.getElementById('menu-minimize').addEventListener('click', () => showMessage('Minimize is not possible from a web page.'));
         document.getElementById('menu-close').addEventListener('click', () => showMessage('Closing the app is not possible from a web page.'));
-
         startAggressiveDeterrents();
     })();
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadScriptsAndInitialize();
+    });
+
+    function loadScriptsAndInitialize() {
+        const jspdfSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        const autotableSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+        const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf';
+
+        const loadScript = (src) => new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+
+        const loadFont = () => new Promise((resolve, reject) => {
+            fetch(fontUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        window.amiriFontBase64 = reader.result.split(',')[1];
+                        console.log('Amiri font loaded.');
+                        resolve();
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(error => {
+                    console.error("Failed to load Amiri font:", error);
+                    resolve();
+                });
+        });
+
+        loadScript(jspdfSrc)
+            .then(() => loadScript(autotableSrc))
+            .then(() => loadFont())
+            .then(() => {
+                console.log('All dependencies loaded in correct order.');
+                initializeTableEnhancements();
+                observeForNewTables();
+            })
+            .catch(error => {
+                console.error("A script failed to load:", error);
+            });
+    }
+    
+    function initializeTableEnhancements() {
+        const tableContainers = document.querySelectorAll('.table-container');
+        tableContainers.forEach(container => {
+            const table = container.querySelector('table.table');
+            if (table && !container.dataset.enhanced) {
+                const uniqueId = `table-enhancer-${Math.random().toString(36).substring(2, 9)}`;
+                container.dataset.enhanced = 'true';
+                container.dataset.tableId = uniqueId;
+                createControls(container, uniqueId);
+                attachEventListeners(container, table, uniqueId);
+                applySavedState(table, uniqueId);
+            }
+        });
+    }
+
+    function createControls(container, uniqueId) {
+        if (container.querySelector('.table-controls')) return;
+
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'table-controls';
+        controlsDiv.style.display = 'flex';
+        controlsDiv.style.justifyContent = 'space-between';
+        controlsDiv.style.alignItems = 'center';
+        controlsDiv.style.padding = '10px 0';
+        controlsDiv.style.flexWrap = 'wrap';
+
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.id = `${uniqueId}-search`;
+        searchInput.placeholder = 'Search this table...';
+        searchInput.className = 'form-control';
+        searchInput.style.width = '250px';
+        searchInput.style.maxWidth = '100%';
+        searchInput.style.marginBottom = '5px';
+
+        const pdfButton = document.createElement('button');
+        pdfButton.id = `${uniqueId}-pdf-export`;
+        pdfButton.className = 'btn btn-danger';
+        pdfButton.innerHTML = '🖨️ PDF';
+        pdfButton.title = 'Export to PDF';
+        pdfButton.style.height = 'fit-content';
+        
+        controlsDiv.appendChild(pdfButton);
+        controlsDiv.appendChild(searchInput);
+        
+        container.prepend(controlsDiv);
+    }
+
+    function attachEventListeners(container, table, uniqueId) {
+        const searchInput = document.getElementById(`${uniqueId}-search`);
+        searchInput.addEventListener('keyup', () => {
+            saveState(uniqueId, { search: searchInput.value });
+            runFiltersAndSort(table, uniqueId);
+        });
+
+        const pdfButton = document.getElementById(`${uniqueId}-pdf-export`);
+        pdfButton.addEventListener('click', () => exportTableToPDF(table));
+
+        const headers = table.querySelectorAll('thead th');
+        headers.forEach((header, colIndex) => {
+            if (header.querySelector('.header-content-wrapper')) return;
+
+            if (!header.innerText.toLowerCase().includes('action')) {
+                const originalText = header.textContent.trim();
+                header.innerHTML = '';
+                header.style.cursor = 'pointer';
+                header.style.position = 'relative';
+
+                const headerContent = document.createElement('div');
+                headerContent.className = 'header-content-wrapper';
+                headerContent.style.display = 'flex';
+                headerContent.style.alignItems = 'center';
+                headerContent.style.justifyContent = 'space-between';
+                
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = originalText;
+                
+                const iconsWrapper = document.createElement('div');
+                iconsWrapper.style.display = 'flex';
+                iconsWrapper.style.alignItems = 'center';
+                iconsWrapper.style.marginLeft = '5px';
+
+                const sortIcon = document.createElement('span');
+                sortIcon.innerHTML = '&#x2195;';
+                sortIcon.style.opacity = '0.5';
+                sortIcon.title = "Sort column";
+                sortIcon.style.padding = "0 3px";
+                sortIcon.onclick = (e) => {
+                    e.stopPropagation();
+                    const currentState = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
+                    const oldDir = (currentState.sortCol === colIndex) ? currentState.sortDir : 'none';
+                    const newDir = oldDir === 'asc' ? 'desc' : 'asc';
+                    saveState(uniqueId, { sortCol: colIndex, sortDir: newDir });
+                    runFiltersAndSort(table, uniqueId);
+                };
+
+                const filterIcon = document.createElement('span');
+                filterIcon.innerHTML = '&#x1F4D9;';
+                filterIcon.style.opacity = '0.5';
+                filterIcon.title = "Filter column";
+                filterIcon.className = 'filter-icon';
+                filterIcon.style.padding = "0 3px";
+                filterIcon.onclick = (e) => {
+                    e.stopPropagation();
+                    showColumnFilterMenu(e.target, table, colIndex, uniqueId);
+                };
+
+                iconsWrapper.appendChild(sortIcon);
+                iconsWrapper.appendChild(filterIcon);
+
+                headerContent.appendChild(titleSpan);
+                headerContent.appendChild(iconsWrapper);
+                header.appendChild(headerContent);
+            }
+        });
+    }
+    
+    function showColumnFilterMenu(iconElement, table, colIndex, uniqueId) {
+        document.getElementById('column-filter-menu')?.remove();
+
+        const menu = document.createElement('div');
+        menu.id = 'column-filter-menu';
+        menu.style.cssText = `position: absolute; background-color: white; border: 1px solid #ccc; border-radius: 4px; padding: 10px; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.2); max-height: 300px; overflow-y: auto;`;
+
+        const values = new Set();
+        table.querySelectorAll('tbody tr').forEach(row => {
+            const cell = row.querySelectorAll('td')[colIndex];
+            if (cell) values.add(cell.innerText.trim());
+        });
+
+        const savedState = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
+        const activeFilters = savedState.columnFilters?.[colIndex] || [];
+        
+        Array.from(values).sort().forEach(value => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = value;
+            checkbox.id = `filter-val-${value.replace(/\s/g, '-')}`;
+            checkbox.checked = activeFilters.includes(value);
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.style.display = 'block';
+            label.style.whiteSpace = 'nowrap';
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(` ${value}`));
+            menu.appendChild(label);
+        });
+
+        const applyButton = document.createElement('button');
+        applyButton.textContent = 'Apply';
+        applyButton.className = 'btn btn-primary btn-sm';
+        applyButton.style.marginTop = '10px';
+        applyButton.onclick = () => {
+            const selectedValues = Array.from(menu.querySelectorAll('input:checked')).map(cb => cb.value);
+            const currentState = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
+            if (!currentState.columnFilters) currentState.columnFilters = {};
+            
+            if (selectedValues.length > 0 && selectedValues.length < values.size) {
+                currentState.columnFilters[colIndex] = selectedValues;
+            } else {
+                delete currentState.columnFilters[colIndex];
+            }
+
+            saveState(uniqueId, { columnFilters: currentState.columnFilters });
+            runFiltersAndSort(table, uniqueId);
+            menu.remove();
+        };
+        menu.appendChild(applyButton);
+
+        document.body.appendChild(menu);
+        const rect = iconElement.getBoundingClientRect();
+        menu.style.top = `${rect.bottom + window.scrollY}px`;
+        menu.style.left = `${rect.left + window.scrollX}px`;
+
+        const closeMenu = (e) => {
+            if (!menu.contains(e.target)) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu, true);
+            }
+        };
+        setTimeout(() => document.addEventListener('click', closeMenu, true), 0);
+    }
+    
+    function runFiltersAndSort(table, uniqueId) {
+        const state = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
+        const searchTerm = state.search || '';
+        const columnFilters = state.columnFilters || {};
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+
+        rows.forEach(row => {
+            let isVisible = true;
+            if (searchTerm) {
+                isVisible = row.innerText.toLowerCase().includes(searchTerm.toLowerCase());
+            }
+
+            if (isVisible && Object.keys(columnFilters).length > 0) {
+                isVisible = Object.entries(columnFilters).every(([colIndex, filterValues]) => {
+                    if (filterValues.length === 0) return true;
+                    const cellValue = row.querySelectorAll('td')[colIndex]?.innerText.trim();
+                    return filterValues.includes(cellValue);
+                });
+            }
+            row.style.display = isVisible ? '' : 'none';
+        });
+
+        if (state.sortCol !== undefined && state.sortDir) {
+            sortTable(table, state.sortCol, state.sortDir);
+        }
+    }
+
+    function sortTable(table, colIndex, direction) {
+        table.querySelectorAll('thead th').forEach((th, index) => {
+            const sortIcon = th.querySelector('span[title="Sort column"]');
+            if(sortIcon) {
+                if(index === colIndex) {
+                    sortIcon.innerHTML = direction === 'asc' ? ' &#x2191;' : ' &#x2193;';
+                } else {
+                    sortIcon.innerHTML = ' &#x2195;';
+                }
+            }
+        });
+
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const dirModifier = direction === 'asc' ? 1 : -1;
+       
+        const sortedRows = rows.sort((rowA, rowB) => {
+            const cellA = rowA.querySelectorAll('td')[colIndex]?.innerText.trim() || '';
+            const cellB = rowB.querySelectorAll('td')[colIndex]?.innerText.trim() || '';
+            const isNumeric = !isNaN(parseFloat(cellA)) && isFinite(cellA) && !isNaN(parseFloat(cellB)) && isFinite(cellB);
+
+            if (isNumeric) {
+                return (parseFloat(cellA) - parseFloat(cellB)) * dirModifier;
+            } else {
+                return cellA.localeCompare(cellB, ['en', 'ur'], { sensitivity: 'base' }) * dirModifier;
+            }
+        });
+        
+        const fragment = document.createDocumentFragment();
+        sortedRows.forEach(row => fragment.appendChild(row));
+        tbody.innerHTML = '';
+        tbody.appendChild(fragment);
+    }
+    
+    async function exportTableToPDF(table) {
+        if (typeof jspdf === 'undefined' || !window.jspdf.jsPDF?.autoTable) {
+            alert('PDF library not fully loaded. Please wait a moment and try again.');
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape' });
+
+        if (window.amiriFontBase64) {
+            doc.addFileToVFS('Amiri-Regular.ttf', window.amiriFontBase64);
+            doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
+            doc.setFont('Amiri');
+        } else {
+             doc.setFont('Helvetica');
+        }
+
+        const head = [[]];
+        const body = [];
+        const visibleColumnIndices = [];
+        const urduRegex = /[\u0600-\u06FF]/;
+        
+        table.querySelectorAll('thead th').forEach((th, index) => {
+            if (th.offsetParent !== null && !th.classList.contains('no-print')) {
+                visibleColumnIndices.push(index);
+                const titleSpan = th.querySelector('div > span:first-child');
+                let text = titleSpan ? titleSpan.textContent.trim() : th.textContent.trim();
+                head[0].push(text);
+            }
+        });
+        
+        table.querySelectorAll('tbody tr').forEach(tr => {
+            if (tr.style.display !== 'none') {
+                const rowData = [];
+                const cells = tr.querySelectorAll('td');
+                visibleColumnIndices.forEach(colIndex => {
+                    if (cells[colIndex]) {
+                        rowData.push(cells[colIndex].innerText);
+                    }
+                });
+                if (rowData.length > 0) body.push(rowData);
+            }
+        });
+        
+        doc.autoTable({
+            head: head,
+            body: body,
+            styles: { font: window.amiriFontBase64 ? 'Amiri' : 'Helvetica', fontSize: 8 },
+            headStyles: { fillColor: [44, 62, 80], textColor: 255, fontStyle: 'bold' },
+            didDrawCell: (data) => {
+                if (urduRegex.test(data.cell.text)) {
+                    doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height);
+                    doc.text(data.cell.text, data.cell.x + data.cell.width - data.cell.padding('right'), data.cell.y + data.cell.height / 2, {
+                        halign: 'right',
+                        valign: 'middle'
+                    });
+                    return false; 
+                }
+            }
+        });
+        
+        doc.save(`${table.id || 'table'}-export.pdf`);
+    }
+    
+    function saveState(tableId, state) {
+        try {
+            const existingState = JSON.parse(localStorage.getItem('tableStates')) || {};
+            existingState[tableId] = { ...existingState[tableId], ...state };
+            localStorage.setItem('tableStates', JSON.stringify(existingState));
+        } catch (e) {
+            console.error('Could not save table state:', e);
+        }
+    }
+
+    function applySavedState(table, uniqueId) {
+        try {
+            const savedStates = JSON.parse(localStorage.getItem('tableStates'));
+            if (!savedStates || !savedStates[uniqueId]) return;
+
+            const state = savedStates[uniqueId];
+            if (state.search) {
+                const searchInput = document.getElementById(`${uniqueId}-search`);
+                if(searchInput) searchInput.value = state.search;
+            }
+            if (state.columnFilters) {
+                Object.entries(state.columnFilters).forEach(([colIndex, values]) => {
+                     if (values && values.length > 0) {
+                        const header = table.querySelectorAll('thead th')[colIndex];
+                        const filterIcon = header?.querySelector('.filter-icon');
+                        if(filterIcon) {
+                            filterIcon.style.opacity = '1';
+                            filterIcon.style.color = '#e74c3c';
+                        }
+                    }
+                });
+            }
+            runFiltersAndSort(table, uniqueId);
+        } catch (e) {
+            console.error('Could not apply saved table state:', e);
+        }
+    }
+
+    function observeForNewTables() {
+        const observer = new MutationObserver((mutations) => {
+            let needsInit = false;
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes.length) {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.nodeType === 1) { 
+                             if (node.matches('.table-container') || node.querySelector('.table-container')) {
+                                needsInit = true;
+                             }
+                        }
+                    });
+                }
+            });
+            if (needsInit) {
+                 initializeTableEnhancements();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
 </script>
