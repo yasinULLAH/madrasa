@@ -11401,7 +11401,7 @@
                 .then(response => response.blob())
                 .then(blob => {
                     const reader = new FileReader();
-                    reader.onloadend = function() {
+                    reader.onloadend = function () {
                         window.amiriFontBase64 = reader.result.split(',')[1];
                         console.log('Amiri font loaded.');
                         resolve();
@@ -11426,7 +11426,7 @@
                 console.error("A script failed to load:", error);
             });
     }
-    
+
     function initializeTableEnhancements() {
         const tableContainers = document.querySelectorAll('.table-container');
         tableContainers.forEach(container => {
@@ -11468,10 +11468,10 @@
         pdfButton.innerHTML = '🖨️ PDF';
         pdfButton.title = 'Export to PDF';
         pdfButton.style.height = 'fit-content';
-        
+
         controlsDiv.appendChild(pdfButton);
         controlsDiv.appendChild(searchInput);
-        
+
         container.prepend(controlsDiv);
     }
 
@@ -11500,10 +11500,10 @@
                 headerContent.style.display = 'flex';
                 headerContent.style.alignItems = 'center';
                 headerContent.style.justifyContent = 'space-between';
-                
+
                 const titleSpan = document.createElement('span');
                 titleSpan.textContent = originalText;
-                
+
                 const iconsWrapper = document.createElement('div');
                 iconsWrapper.style.display = 'flex';
                 iconsWrapper.style.alignItems = 'center';
@@ -11543,7 +11543,7 @@
             }
         });
     }
-    
+
     function showColumnFilterMenu(iconElement, table, colIndex, uniqueId) {
         document.getElementById('column-filter-menu')?.remove();
 
@@ -11559,7 +11559,7 @@
 
         const savedState = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
         const activeFilters = savedState.columnFilters?.[colIndex] || [];
-        
+
         Array.from(values).sort().forEach(value => {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -11583,7 +11583,7 @@
             const selectedValues = Array.from(menu.querySelectorAll('input:checked')).map(cb => cb.value);
             const currentState = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
             if (!currentState.columnFilters) currentState.columnFilters = {};
-            
+
             if (selectedValues.length > 0 && selectedValues.length < values.size) {
                 currentState.columnFilters[colIndex] = selectedValues;
             } else {
@@ -11609,7 +11609,7 @@
         };
         setTimeout(() => document.addEventListener('click', closeMenu, true), 0);
     }
-    
+
     function runFiltersAndSort(table, uniqueId) {
         const state = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
         const searchTerm = state.search || '';
@@ -11640,8 +11640,8 @@
     function sortTable(table, colIndex, direction) {
         table.querySelectorAll('thead th').forEach((th, index) => {
             const sortIcon = th.querySelector('span[title="Sort column"]');
-            if(sortIcon) {
-                if(index === colIndex) {
+            if (sortIcon) {
+                if (index === colIndex) {
                     sortIcon.innerHTML = direction === 'asc' ? ' &#x2191;' : ' &#x2193;';
                 } else {
                     sortIcon.innerHTML = ' &#x2195;';
@@ -11652,7 +11652,7 @@
         const tbody = table.querySelector('tbody');
         const rows = Array.from(tbody.querySelectorAll('tr'));
         const dirModifier = direction === 'asc' ? 1 : -1;
-       
+
         const sortedRows = rows.sort((rowA, rowB) => {
             const cellA = rowA.querySelectorAll('td')[colIndex]?.innerText.trim() || '';
             const cellB = rowB.querySelectorAll('td')[colIndex]?.innerText.trim() || '';
@@ -11664,13 +11664,13 @@
                 return cellA.localeCompare(cellB, ['en', 'ur'], { sensitivity: 'base' }) * dirModifier;
             }
         });
-        
+
         const fragment = document.createDocumentFragment();
         sortedRows.forEach(row => fragment.appendChild(row));
         tbody.innerHTML = '';
         tbody.appendChild(fragment);
     }
-    
+
     async function exportTableToPDF(table) {
         if (typeof jspdf === 'undefined' || !window.jspdf.jsPDF?.autoTable) {
             alert('PDF library not fully loaded. Please wait a moment and try again.');
@@ -11685,14 +11685,14 @@
             doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
             doc.setFont('Amiri');
         } else {
-             doc.setFont('Helvetica');
+            doc.setFont('Helvetica');
         }
 
         const head = [[]];
         const body = [];
         const visibleColumnIndices = [];
         const urduRegex = /[\u0600-\u06FF]/;
-        
+
         table.querySelectorAll('thead th').forEach((th, index) => {
             if (th.offsetParent !== null && !th.classList.contains('no-print')) {
                 visibleColumnIndices.push(index);
@@ -11701,7 +11701,7 @@
                 head[0].push(text);
             }
         });
-        
+
         table.querySelectorAll('tbody tr').forEach(tr => {
             if (tr.style.display !== 'none') {
                 const rowData = [];
@@ -11714,7 +11714,7 @@
                 if (rowData.length > 0) body.push(rowData);
             }
         });
-        
+
         doc.autoTable({
             head: head,
             body: body,
@@ -11727,14 +11727,14 @@
                         halign: 'right',
                         valign: 'middle'
                     });
-                    return false; 
+                    return false;
                 }
             }
         });
-        
+
         doc.save(`${table.id || 'table'}-export.pdf`);
     }
-    
+
     function saveState(tableId, state) {
         try {
             const existingState = JSON.parse(localStorage.getItem('tableStates')) || {};
@@ -11753,14 +11753,14 @@
             const state = savedStates[uniqueId];
             if (state.search) {
                 const searchInput = document.getElementById(`${uniqueId}-search`);
-                if(searchInput) searchInput.value = state.search;
+                if (searchInput) searchInput.value = state.search;
             }
             if (state.columnFilters) {
                 Object.entries(state.columnFilters).forEach(([colIndex, values]) => {
-                     if (values && values.length > 0) {
+                    if (values && values.length > 0) {
                         const header = table.querySelectorAll('thead th')[colIndex];
                         const filterIcon = header?.querySelector('.filter-icon');
-                        if(filterIcon) {
+                        if (filterIcon) {
                             filterIcon.style.opacity = '1';
                             filterIcon.style.color = '#e74c3c';
                         }
@@ -11779,16 +11779,16 @@
             mutations.forEach((mutation) => {
                 if (mutation.addedNodes.length) {
                     mutation.addedNodes.forEach(node => {
-                        if (node.nodeType === 1) { 
-                             if (node.matches('.table-container') || node.querySelector('.table-container')) {
+                        if (node.nodeType === 1) {
+                            if (node.matches('.table-container') || node.querySelector('.table-container')) {
                                 needsInit = true;
-                             }
+                            }
                         }
                     });
                 }
             });
             if (needsInit) {
-                 initializeTableEnhancements();
+                initializeTableEnhancements();
             }
         });
 
