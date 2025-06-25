@@ -6304,52 +6304,62 @@
                 console.error('Error loading exam dropdowns:', error);
             }
         }
-        async function addStudent() {
-            showLoading();
-            const form = document.getElementById('student-form');
-            const editId = form.dataset.editId ? parseInt(form.dataset.editId) : null;
-            const statusContainer = document.getElementById('student-status-container');
-            try {
-                const studentData = {
-                    name: document.getElementById('student-name').value,
-                    fatherName: document.getElementById('student-father').value,
-                    dob: document.getElementById('student-dob').value,
-                    gender: document.getElementById('student-gender').value,
-                    classId: parseInt(document.getElementById('student-class').value),
-                    sectionId: parseInt(document.getElementById('student-section').value),
-                    contact: document.getElementById('student-contact').value,
-                    email: document.getElementById('student-email').value,
-                    guardian: document.getElementById('student-guardian').value,
-                    guardianContact: document.getElementById('student-guardian-contact').value,
-                    address: document.getElementById('student-address').value,
-                    admissionDate: document.getElementById('student-admission-date').value,
-                    feeCategory: document.getElementById('student-fee-category').value,
-                    monthlyFee: parseFloat(document.getElementById('student-monthly-fee').value),
-                    notes: document.getElementById('student-notes').value,
-                    status: editId ? document.getElementById('student-status').value : 'active'
-                };
-                if (editId) {
-                    await updateInStore(STORES.STUDENTS, editId, studentData);
-                    showNotification('Student record updated successfully.', 'success');
-                } else {
-                    const studentsCount = await getCount(STORES.STUDENTS);
-                    studentData.rollNumber = String(studentsCount + 1).padStart(4, '0');
-                    await addToStore(STORES.STUDENTS, studentData);
-                    showNotification('Student added successfully.', 'success');
-                }
-                form.reset();
-                delete form.dataset.editId;
-                statusContainer.style.display = 'none';
-                form.querySelector('button[type="submit"]').textContent = 'Add Student';
-                document.querySelector('.tab[data-tab="students-list"]').click();
-                await loadStudentsTable();
-            } catch (error) {
-                console.error('Error saving student:', error);
-                showNotification('Failed to save student.', 'error');
-            } finally {
-                hideLoading();
-            }
+// Replace the existing addStudent function
+async function addStudent() {
+    showLoading();
+    const form = document.getElementById('student-form');
+    const editId = form.dataset.editId ? parseInt(form.dataset.editId) : null;
+    const statusContainer = document.getElementById('student-status-container');
+    try {
+        const photo = await handlePhotoUpload('student-photo');
+        const studentData = {
+            name: document.getElementById('student-name').value,
+            fatherName: document.getElementById('student-father').value,
+            dob: document.getElementById('student-dob').value,
+            gender: document.getElementById('student-gender').value,
+            classId: parseInt(document.getElementById('student-class').value),
+            sectionId: parseInt(document.getElementById('student-section').value),
+            contact: document.getElementById('student-contact').value,
+            email: document.getElementById('student-email').value,
+            guardian: document.getElementById('student-guardian').value,
+            guardianContact: document.getElementById('student-guardian-contact').value,
+            address: document.getElementById('student-address').value,
+            admissionDate: document.getElementById('student-admission-date').value,
+            feeCategory: document.getElementById('student-fee-category').value,
+            monthlyFee: parseFloat(document.getElementById('student-monthly-fee').value),
+            notes: document.getElementById('student-notes').value,
+            status: editId ? document.getElementById('student-status').value : 'active'
+        };
+
+        if (photo) studentData.photo = photo;
+
+        if (editId) {
+            await updateInStore(STORES.STUDENTS, editId, studentData);
+            showNotification('Student record updated successfully.', 'success');
+        } else {
+            const students = await getAllFromStore(STORES.STUDENTS);
+            const maxRoll = students.reduce((max, s) => Math.max(max, parseInt(s.rollNumber) || 0), 0);
+            studentData.rollNumber = String(maxRoll + 1).padStart(4, '0');
+            await addToStore(STORES.STUDENTS, studentData);
+            showNotification('Student added successfully.', 'success');
         }
+        form.reset();
+        delete form.dataset.editId;
+        statusContainer.style.display = 'none';
+        form.querySelector('button[type="submit"]').textContent = 'Add Student';
+        await showView('students');
+    } catch (error) {
+        console.error('Error saving student:', error);
+        if (error.name === 'ConstraintError') {
+            showNotification('Failed to save. A student with this Roll Number might already exist.', 'error');
+        } else {
+            showNotification('Failed to save student.', 'error');
+        }
+    } finally {
+        hideLoading();
+    }
+}
+       
         async function editStudent(id) {
             showLoading();
             try {
@@ -6445,6 +6455,20 @@
             }
         }
         function setupEventListeners() {
+            // Add these to the setupEventListeners function
+document.getElementById('salary-employee-search').addEventListener('input', searchEmployeeForSalary);
+document.getElementById('send-reminders').addEventListener('click', () => {
+    const tableRows = document.querySelectorAll('#defaulters-table tbody tr');
+    if (tableRows.length > 0) {
+        tableRows.forEach(row => {
+            const noticeButton = row.querySelector('button');
+            if(noticeButton) noticeButton.click();
+        });
+        showNotification(`${tableRows.length} reminder notices opened.`, 'info');
+    } else {
+        showNotification('No defaulters in the list to send reminders to.', 'info');
+    }
+});
             document.getElementById('marks-table-container').addEventListener('input', function (e) {
                 if (e.target && e.target.matches('input[name^="marks_"]')) {
                     calculateMarksRow(e.target);
