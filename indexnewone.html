@@ -6205,11 +6205,11 @@
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('menuToggle').style.display = 'none';
             document.querySelector('.header').style.display = 'none';
+            await checkAndLoadSampleData();
             await checkLoginStatus();
             console.log('Application initialized successfully');
             await loadDashboardData();
             await loadDropdownData();
-            await checkAndLoadSampleData();
             setupEventListeners();
             try {
                 document.getElementById('attendance-class').addEventListener('change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
