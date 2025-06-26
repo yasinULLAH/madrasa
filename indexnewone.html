@@ -354,6 +354,7 @@
         .profile-details {
             flex: 1;
             padding: 20px;
+            text-align: center;
         }
 
         .profile-name {
@@ -913,6 +914,26 @@
         select#language-switcher {
             display: none;
         }
+        .table-controls .btn-danger {
+    transition: opacity 0.3s, background-color 0.3s;
+}
+
+body.pdf-loading .table-controls .btn-danger[id*='pdf-export'] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #6c757d;
+}
+
+body.pdf-error .table-controls .btn-danger[id*='pdf-export'] {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    cursor: not-allowed;
+}
+
+body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
+    content: ' (Error)';
+    font-size: 0.8em;
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -5058,7 +5079,7 @@
                 <h4>Paid Fee History</h4>
                 <button class="btn btn-success btn-sm no-print" onclick="exportTableToCSV('student-paid-fees-table', 'FeeHistory_${student.rollNumber}.csv')">Export Paid</button>
              </div>
-             <div class="table-container" style="max-height: 200px; overflow-y: auto;">
+             <div class="table-container" style=" overflow-y: auto;">
                <table class="table" id="student-paid-fees-table">
                  <thead><tr><th>Receipt</th><th>Month/Year</th><th>Date</th><th>Amount</th><th>Fine</th><th>Discount</th><th>Total</th></tr></thead><tbody>`;
             if (paidRecords.length > 0) {
@@ -5166,6 +5187,7 @@
                 <td>${formatDate(teacher.joiningDate)}</td>
                 <td>${teacher.basicSalary ? formatCurrency(teacher.basicSalary) : 'N/A'}</td>
                 <td class="no-print">
+                    <button class="btn btn-info btn-sm" onclick="viewTeacherDetails(${teacher.id})">View</button>
                     <button class="btn btn-primary btn-sm" onclick="editTeacher(${teacher.id})">Edit</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.TEACHERS}', ${teacher.id})">Delete</button>
                 </td>
@@ -11580,46 +11602,58 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadScriptsAndInitialize();
     });
-    function loadScriptsAndInitialize() {
-        const jspdfSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-        const autotableSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
-        const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf';
-        const loadScript = (src) => new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-        const loadFont = () => new Promise((resolve, reject) => {
-            fetch(fontUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const reader = new FileReader();
-                    reader.onloadend = function () {
-                        window.amiriFontBase64 = reader.result.split(',')[1];
-                        console.log('Amiri font loaded.');
-                        resolve();
-                    };
-                    reader.readAsDataURL(blob);
-                })
-                .catch(error => {
-                    console.error("Failed to load Amiri font:", error);
+function loadScriptsAndInitialize() {
+    document.body.classList.add('pdf-loading');
+
+    const jspdfSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    const autotableSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+    const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf';
+
+    const loadScript = (src) => new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+
+    const loadFont = () => new Promise((resolve, reject) => {
+        fetch(fontUrl)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.blob();
+            })
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    window.amiriFontBase64 = reader.result.split(',')[1];
+                    console.log('Amiri font loaded.');
                     resolve();
-                });
-        });
-        loadScript(jspdfSrc)
-            .then(() => loadScript(autotableSrc))
-            .then(() => loadFont())
-            .then(() => {
-                console.log('All dependencies loaded in correct order.');
-                initializeTableEnhancements();
-                observeForNewTables();
+                };
+                reader.readAsDataURL(blob);
             })
             .catch(error => {
-                console.error("A script failed to load:", error);
+                console.error("Failed to load Amiri font:", error);
+                resolve();
             });
-    }
+    });
+
+    Promise.all([loadScript(jspdfSrc), loadScript(autotableSrc), loadFont()])
+        .then(() => {
+            console.log('All PDF dependencies loaded.');
+            document.body.classList.remove('pdf-loading');
+            document.body.classList.add('pdf-ready');
+            initializeTableEnhancements();
+            observeForNewTables();
+        })
+        .catch(error => {
+            console.error("A script or font failed to load:", error);
+            document.body.classList.remove('pdf-loading');
+            document.body.classList.add('pdf-error');
+            showNotification('PDF export functionality failed to load.', 'error');
+        });
+}
+    
     function initializeTableEnhancements() {
         const tableContainers = document.querySelectorAll('.table-container');
         tableContainers.forEach(container => {
@@ -11828,10 +11862,11 @@
         tbody.appendChild(fragment);
     }
     async function exportTableToPDF(table) {
-        if (typeof jspdf === 'undefined' || !window.jspdf.jsPDF?.autoTable) {
-            alert('PDF library not fully loaded. Please wait a moment and try again.');
-            return;
-        }
+        if (!document.body.classList.contains('pdf-ready')) {
+    const status = document.body.classList.contains('pdf-loading') ? 'loading' : 'in an error state';
+    showNotification(`PDF library is currently ${status}. Please wait.`, 'info');
+    return;
+}
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape' });
         if (window.amiriFontBase64) {
@@ -11941,4 +11976,119 @@
             subtree: true
         });
     }
+
+    async function viewTeacherDetails(teacherId) {
+    showLoading();
+    const modal = document.getElementById('student-details-modal');
+    const contentArea = document.getElementById('modal-content-area');
+    contentArea.innerHTML = '';
+    try {
+        const teacher = await getFromStore(STORES.TEACHERS, teacherId);
+        if (!teacher) {
+            showNotification('Teacher not found.', 'error');
+            return;
+        }
+        const profileHTML = await generateTeacherProfileSectionHTML(teacher);
+        const scheduleHTML = await generateTeacherScheduleSectionHTML(teacher.id);
+        const salaryHTML = await generateTeacherSalarySectionHTML(teacher.id);
+        contentArea.innerHTML = profileHTML + scheduleHTML + salaryHTML;
+        modal.style.display = 'block';
+    } catch (error) {
+        console.error('Error viewing teacher details:', error);
+        showNotification('Could not load teacher details.', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function generateTeacherProfileSectionHTML(teacher) {
+    return `
+    <div class="profile-card">
+        <div class="profile-image">
+            <img src="${teacher.photo || 'logo2.png'}" alt="Teacher Photo">
+        </div>
+        <div class="profile-details">
+            <div class="profile-name">${teacher.name}</div>
+            <div class="profile-info"><span>Employee ID:</span> ${teacher.employeeId}</div>
+            <div class="profile-info"><span>Qualification:</span> ${teacher.qualification}</div>
+            <div class="profile-info"><span>Specialization:</span> ${teacher.specialization}</div>
+            <div class="profile-info"><span>Contact:</span> ${teacher.contact}</div>
+            <div class="profile-info"><span>Joined:</span> ${formatDate(teacher.joiningDate)}</div>
+        </div>
+    </div>
+    `;
+}
+
+async function generateTeacherScheduleSectionHTML(teacherId) {
+    let html = `<div class="form-container" style="margin-top:20px;">
+                    <div class="form-title">Assigned Classes & Subjects</div>`;
+    const assignedSubjects = await getAllFromIndex(STORES.CLASS_SUBJECTS, 'teacherId', teacherId);
+    if (assignedSubjects.length > 0) {
+        html += `<div class="table-container" style="max-height: 250px; overflow-y: auto;">
+                   <table class="table" id="teacher-schedule-table">
+                     <thead><tr><th>Class</th><th>Subject</th></tr></thead><tbody>`;
+        for (const assignment of assignedSubjects) {
+            const classData = await getFromStore(STORES.CLASSES, assignment.classId);
+            const subjectData = await getFromStore(STORES.SUBJECTS, assignment.subjectId);
+            html += `<tr>
+                        <td>${classData ? classData.name : 'N/A'}</td>
+                        <td>${subjectData ? subjectData.name : 'N/A'}</td>
+                     </tr>`;
+        }
+        html += `</tbody></table></div>`;
+    } else {
+        html += `<p>No classes or subjects assigned.</p>`;
+    }
+    html += `</div>`;
+    return html;
+}
+
+async function generateTeacherSalarySectionHTML(teacherId) {
+    let html = `<div class="form-container" style="margin-top:20px;">
+                    <div class="form-title">Salary Information</div>`;
+    const salaryStructure = (await getAllFromIndex(STORES.SALARY_STRUCTURE, 'employeeId', teacherId)).find(s => s.employeeType === 'teacher');
+    let totalPaid = 0;
+    if (salaryStructure) {
+        html += `<h4>Salary Structure</h4>
+                 <div class="form-row">
+                    <div class="form-group"><label>Basic:</label> <input class="form-control" value="${formatCurrency(salaryStructure.basicSalary)}" readonly></div>
+                    <div class="form-group"><label>Allowances:</label> <input class="form-control" value="${formatCurrency((salaryStructure.houseRent || 0) + (salaryStructure.transport || 0) + (salaryStructure.medical || 0) + (salaryStructure.otherAllowances || 0))}" readonly></div>
+                    <div class="form-group"><label>Net Salary:</label> <input class="form-control" value="${formatCurrency(salaryStructure.totalSalary)}" readonly></div>
+                 </div>`;
+    } else {
+        const teacher = await getFromStore(STORES.TEACHERS, teacherId);
+        html += `<h4>Salary Structure (From Profile)</h4>
+                 <div class="form-row">
+                    <div class="form-group"><label>Basic:</label> <input class="form-control" value="${formatCurrency(teacher.basicSalary)}" readonly></div>
+                    <div class="form-group"><label>Allowances:</label> <input class="form-control" value="${formatCurrency(teacher.allowances)}" readonly></div>
+                    <div class="form-group"><label>Net Salary:</label> <input class="form-control" value="${formatCurrency((teacher.basicSalary || 0) + (teacher.allowances || 0))}" readonly></div>
+                 </div>`;
+    }
+    const paidRecords = (await getAllFromIndex(STORES.SALARY, 'employeeId', teacherId)).filter(s => s.employeeType === 'teacher');
+    html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <h4>Paid Salary History</h4>
+                <button class="btn btn-success btn-sm no-print" onclick="exportTableToCSV('teacher-paid-salary-table', 'SalaryHistory_${teacherId}.csv')">Export Paid</button>
+             </div>
+             <div class="table-container" style=" overflow-y: auto;">
+               <table class="table" id="teacher-paid-salary-table">
+                 <thead><tr><th>Voucher</th><th>Month/Year</th><th>Date</th><th>Amount Paid</th><th>Bonus</th><th>Deductions</th><th>Total</th></tr></thead><tbody>`;
+    if (paidRecords.length > 0) {
+        paidRecords.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(rec => {
+            totalPaid += rec.total;
+            html += `<tr>
+                <td>${rec.voucherNumber}</td>
+                <td>${rec.month} ${rec.year}</td>
+                <td>${formatDate(rec.date)}</td>
+                <td>${formatCurrency(rec.amountPaid)}</td>
+                <td>${formatCurrency(rec.bonus)}</td>
+                <td>${formatCurrency(rec.deductions)}</td>
+                <td>${formatCurrency(rec.total)}</td>
+            </tr>`;
+        });
+    } else {
+        html += `<tr><td colspan="7" style="text-align:center;">No paid salary records found.</td></tr>`;
+    }
+    html += `</tbody><tfoot><tr><td colspan="6" style="text-align:right; font-weight:bold;">Total Paid (All Time):</td><td>${formatCurrency(totalPaid)}</td></tr></tfoot></table></div></div>`;
+    return html;
+}
 </script>
