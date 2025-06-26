@@ -913,6 +913,12 @@
         select#language-switcher {
             display: none;
         }
+
+        #fee-form>div:nth-child(3)>div:nth-child(3) {
+            display: block;
+            position: relative;
+            top: 47px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -923,12 +929,12 @@
 
 <body>
     <div id="salary-slip-modal" class="modal">
-        <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-content" style="max-width: 400px;">
             <span class="close" id="salary-slip-modal-close">×</span>
-            <div id="slip-content-area">
+            <div id="salary-slip-content-area">
             </div>
             <div class="form-row no-print" style="margin-top: 15px;">
-                <button id="print-slip-btn-final" class="btn btn-primary" style="width:100%;">Print Salary Slip</button>
+                <button id="print-slip-btn-final" class="btn btn-primary" style="width:100%;">Print Slip</button>
             </div>
         </div>
     </div>
@@ -2189,16 +2195,9 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Remaining Balance for Month</label>
-                                <input type="number" class="form-control" id="fee-balance" readonly
-                                    style="font-weight:bold; color:#c0392b;">
+                                <label class="form-label">Monthly Fee</label>
+                                <input type="number" class="form-control" id="fee-amount" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Amount Paying Now</label>
-                                <input type="number" class="form-control" id="fee-paying-now" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Fine</label>
                                 <input type="number" class="form-control" id="fee-fine" value="0">
@@ -2209,34 +2208,40 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Total to be Collected</label>
-                                <input type="number" class="form-control" id="fee-total" readonly>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Net Payable This Month</label>
+                                    <input type="number" class="form-control" id="fee-net-payable" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Amount Paid Now</label>
+                                    <input type="number" class="form-control" id="fee-amount-paid" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Payment Date</label>
+                                    <input type="date" class="form-control" id="fee-payment-date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Payment Method</label>
+                                    <select class="form-control" id="fee-payment-method" required>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Payment Date</label>
-                                <input type="date" class="form-control" id="fee-payment-date" required>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Note</label>
+                                    <textarea class="form-control" id="fee-notes" rows="3"
+                                        style="width: 537px; height: 111px;"></textarea>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Payment Method</label>
-                                <select class="form-control" id="fee-payment-method" required>
-                                    <option value="Cash">Cash</option>
-                                    <option value="Cheque">Cheque</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                </select>
+                            <div class="form-row">
+                                <button type="submit" class="btn btn-primary">Collect Fee</button>
+                                <button type="button" class="btn btn-success" id="print-receipt"
+                                    style="margin-left: 10px;">Print Receipt</button>
                             </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Note</label>
-                                <textarea class="form-control" id="fee-notes" rows="3"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <button type="submit" class="btn btn-primary">Collect Fee</button>
-                            <button type="button" class="btn btn-success" id="print-receipt"
-                                style="margin-left: 10px;">Print Receipt</button>
-                        </div>
                     </form>
                 </div>
                 <div class="table-container" id="fee-history-container" style="display: none;">
@@ -2617,6 +2622,10 @@
                             <div class="form-group">
                                 <label class="form-label">Net Payable</label>
                                 <input type="number" class="form-control" id="salary-payment-total" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Amount Paid Now</label>
+                                <input type="number" class="form-control" id="salary-amount-paid" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Payment Date</label>
@@ -3420,7 +3429,7 @@
         let db;
         let appSettings = {};
         const DB_NAME = 'SchoolMadrasaDB';
-        const DB_VERSION = 2;
+        const DB_VERSION = 1;
         const STORES = {
             STUDENTS: 'students',
             TEACHERS: 'teachers',
@@ -3446,7 +3455,6 @@
             BACKUP: 'backup'
         };
         document.addEventListener('DOMContentLoaded', function () {
-            modifySalaryFormUI();
             showLoading();
             openDatabase()
                 .then(initializeApp)
@@ -3463,20 +3471,12 @@
             menuItems.forEach(item => {
                 item.addEventListener('click', function () {
                     const viewName = this.getAttribute('data-view');
-                    showView(viewName);
+                    if (viewName) { 
+                        showView(viewName);
+                    }
                 });
             });
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function () {
-                    const tabGroup = this.parentElement;
-                    const tabContentId = this.getAttribute('data-tab');
-                    tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    tabGroup.parentElement.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById(tabContentId).classList.add('active');
-                });
-            });
+           
             document.getElementById('school-settings-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const existing = await getFromStore(STORES.SETTINGS, 'general') || { id: 'general' };
@@ -3505,11 +3505,11 @@
             document.getElementById('auto-backup-enable').addEventListener('change', function () {
                 document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none';
             });
-            const salaryInputs = document.querySelectorAll('#salary-paying-now, #salary-payment-bonus, #salary-payment-deductions');
+            const salaryInputs = document.querySelectorAll('#salary-payment-basic, #salary-payment-allowances, #salary-payment-bonus, #salary-payment-deductions, #salary-payment-absence, #salary-payment-tax');
             salaryInputs.forEach(input => {
                 input.addEventListener('input', calculateSalaryTotal);
             });
-            const feeInputs = document.querySelectorAll('#fee-paying-now, #fee-fine, #fee-discount');
+            const feeInputs = document.querySelectorAll('#fee-amount, #fee-fine, #fee-discount');
             feeInputs.forEach(input => {
                 input.addEventListener('input', calculateFeeTotal);
             });
@@ -3601,7 +3601,7 @@
                         feesStore.createIndex('date', 'date', { unique: false });
                         feesStore.createIndex('month', 'month', { unique: false });
                         feesStore.createIndex('year', 'year', { unique: false });
-                        feesStore.createIndex('studentMonthYear', ['studentId', 'month', 'year'], { unique: false });
+                        feesStore.createIndex('studentMonthYear', ['studentId', 'month', 'year'], { unique: true });
                     }
                     if (!db.objectStoreNames.contains(STORES.FEE_STRUCTURE)) {
                         const feeStructureStore = db.createObjectStore(STORES.FEE_STRUCTURE, { keyPath: 'id', autoIncrement: true });
@@ -3616,7 +3616,7 @@
                         salaryStore.createIndex('month', 'month', { unique: false });
                         salaryStore.createIndex('year', 'year', { unique: false });
                         salaryStore.createIndex('date', 'date', { unique: false });
-                        salaryStore.createIndex('employeeMonthYear', ['employeeId', 'month', 'year'], { unique: false });
+                        salaryStore.createIndex('employeeMonthYear', ['employeeId', 'month', 'year'], { unique: true });
                     }
                     if (!db.objectStoreNames.contains(STORES.SALARY_STRUCTURE)) {
                         const salaryStructureStore = db.createObjectStore(STORES.SALARY_STRUCTURE, { keyPath: 'id', autoIncrement: true });
@@ -3715,25 +3715,28 @@
             });
         }
         function formatCurrency(amount) {
-            const number = parseFloat(amount);
-            if (isNaN(number)) {
-                return '0 Rs';
-            }
-            return number.toLocaleString('en-US') + ' Rs';
+
+            const numericAmount = (typeof amount === 'number' && !isNaN(amount)) ? amount : 0;
+            return numericAmount.toLocaleString('en-US') + ' Rs';
         }
         function calculateSalaryTotal() {
-            const payingNow = parseFloat(document.getElementById('salary-paying-now').value) || 0;
+            const basicSalary = parseFloat(document.getElementById('salary-payment-basic').value) || 0;
+            const allowances = parseFloat(document.getElementById('salary-payment-allowances').value) || 0;
             const bonus = parseFloat(document.getElementById('salary-payment-bonus').value) || 0;
             const deductions = parseFloat(document.getElementById('salary-payment-deductions').value) || 0;
-            const totalSalary = payingNow + bonus - deductions;
-            document.getElementById('salary-payment-total').value = totalSalary.toFixed(2);
+            const absenceDeduction = parseFloat(document.getElementById('salary-payment-absence').value) || 0;
+            const tax = parseFloat(document.getElementById('salary-payment-tax').value) || 0;
+            const totalSalary = basicSalary + allowances + bonus - deductions - absenceDeduction - tax;
+            document.getElementById('salary-payment-total').value = totalSalary;
+            document.getElementById('salary-amount-paid').value = totalSalary;
         }
         function calculateFeeTotal() {
-            const feeAmount = parseFloat(document.getElementById('fee-paying-now').value) || 0;
+            const feeAmount = parseFloat(document.getElementById('fee-amount').value) || 0;
             const fine = parseFloat(document.getElementById('fee-fine').value) || 0;
             const discount = parseFloat(document.getElementById('fee-discount').value) || 0;
             const totalFee = feeAmount + fine - discount;
-            document.getElementById('fee-total').value = totalFee.toFixed(2);
+            document.getElementById('fee-net-payable').value = totalFee;
+            document.getElementById('fee-amount-paid').value = totalFee;
         }
         function getFromStore(storeName, id) {
             return new Promise((resolve, reject) => {
@@ -4039,7 +4042,7 @@
                 console.error('Error applying settings:', error);
             }
         }
-        async function showFeeReceipt(feeData, studentData) {
+        async function showFeeReceipt(feeData, studentData, transactionAmount) {
             const modal = document.getElementById('fee-receipt-modal');
             const contentArea = document.getElementById('receipt-content-area');
             const schoolName = appSettings.schoolName || 'Deeni Madrasa';
@@ -4048,15 +4051,13 @@
             }
             const className = studentData.classId ? (await getFromStore(STORES.CLASSES, studentData.classId))?.name : 'N/A';
             const monthName = new Date(feeData.year, feeData.month - 1, 1).toLocaleString('en-US', { month: 'long' });
-            const feeStructure = await getFeeStructureForStudent(studentData.id, studentData.classId, studentData.feeCategory);
-            const fullMonthlyFee = feeStructure?.monthlyFee || studentData.monthlyFee || 0;
-            const allPaidRecordsForMonth = (await getAllFromIndex(STORES.FEES, 'studentMonthYear', [feeData.studentId, feeData.month, feeData.year]));
-            const totalPaidForMonth = allPaidRecordsForMonth.reduce((sum, rec) => sum + rec.amount - rec.discount, 0);
-            const totalFinePaid = allPaidRecordsForMonth.reduce((sum, rec) => sum + rec.fine, 0);
-            const remainingBalance = fullMonthlyFee - totalPaidForMonth;
+
+            const watermarkText = (feeData.balance <= 0) ? "PAID" : "PARTIALLY PAID";
+            const amountPaidThisTransaction = transactionAmount ?? feeData.totalPaid;
+
             contentArea.innerHTML = `
                 <div class="receipt-paper" id="printable-receipt">
-                    <div class="receipt-watermark">PAID</div>
+                    <div class="receipt-watermark">${watermarkText}</div>
                     <h3>${schoolName}</h3>
                     <p style="text-align:center; font-size: 10px;">Fee Receipt</p>
                     <hr>
@@ -4068,14 +4069,12 @@
                     <p><strong>Class:</strong> ${className}</p>
                     <p><strong>Fee for:</strong> ${monthName}, ${feeData.year}</p>
                     <hr>
-                    <div class="receipt-item"><span>Total Monthly Fee:</span><span>${formatCurrency(fullMonthlyFee)}</span></div>
-                    <div class="receipt-item"><span>This Payment:</span><span>${formatCurrency(feeData.amount)}</span></div>
-                    <div class="receipt-item"><span>Discount on this Payment:</span><span>-${formatCurrency(feeData.discount)}</span></div>
-                    <div class="receipt-item"><span>Fine on this Payment:</span><span>${formatCurrency(feeData.fine)}</span></div>
+                    <div class="receipt-item"><span>Total Due for Month:</span><span>${formatCurrency(feeData.expectedAmount)}</span></div>
+                    <div class="receipt-item"><span>Discount Applied:</span><span>-${formatCurrency(feeData.discount || 0)}</span></div>
+                    <div class="receipt-item"><span>Amount Paid Now:</span><span>${formatCurrency(amountPaidThisTransaction)}</span></div>
                     <hr>
-                    <div class="receipt-item receipt-total"><span>TOTAL PAID (This Receipt):</span><span>${formatCurrency(feeData.total)}</span></div>
-                    <hr>
-                    <div class="receipt-item" style="font-weight:bold;"><span>Month's Remaining Balance:</span><span>${formatCurrency(remainingBalance)}</span></div>
+                    <div class="receipt-item receipt-total"><span>REMAINING BALANCE:</span><span>${formatCurrency(feeData.balance)}</span></div>
+                    <div class="receipt-item" style="font-size:10px; margin-top:5px;"><span>Total Paid this Month:</span><span>${formatCurrency(feeData.totalPaid)}</span></div>
                 </div>
             `;
             document.getElementById('print-receipt-btn-final').onclick = function () {
@@ -4214,52 +4213,6 @@
             html += `</tbody></table></div>`;
             return html;
         }
-        function modifySalaryFormUI() {
-            const salaryForm = document.getElementById('salary-payment-form');
-            if (!salaryForm || salaryForm.dataset.uiModified === 'true') return;
-            const basicSalaryGroup = salaryForm.querySelector('input#salary-payment-basic')?.closest('.form-group');
-            const allowancesGroup = salaryForm.querySelector('input#salary-payment-allowances')?.closest('.form-group');
-            const bonusGroup = salaryForm.querySelector('input#salary-payment-bonus')?.closest('.form-group');
-            const deductionsGroup = salaryForm.querySelector('input#salary-payment-deductions')?.closest('.form-group');
-            const absenceGroup = salaryForm.querySelector('input#salary-payment-absence')?.closest('.form-group');
-            const taxGroup = salaryForm.querySelector('input#salary-payment-tax')?.closest('.form-group');
-            const netPayableGroup = salaryForm.querySelector('input#salary-payment-total')?.closest('.form-group');
-            const monthYearRow = salaryForm.querySelector('select#salary-month')?.closest('.form-row');
-            if (!basicSalaryGroup || !monthYearRow) {
-                console.log('Salary form UI appears to be already modified. Skipping.');
-                return;
-            }
-            const newRowsHTML = `
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Remaining Balance for Month</label>
-                        <input type="number" class="form-control" id="salary-balance" readonly style="font-weight:bold; color:#c0392b;">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Amount Paying Now</label>
-                        <input type="number" class="form-control" id="salary-paying-now" required>
-                    </div>
-                     <div class="form-group">
-                        <label class="form-label">Bonus (This Payment)</label>
-                        <input type="number" class="form-control" id="salary-payment-bonus" value="0">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Deductions (This Payment)</label>
-                        <input type="number" class="form-control" id="salary-payment-deductions" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Net Payable</label>
-                        <input type="number" class="form-control" id="salary-payment-total" readonly>
-                    </div>
-                </div>
-            `;
-            [basicSalaryGroup, allowancesGroup, bonusGroup, deductionsGroup, absenceGroup, taxGroup, netPayableGroup]
-                .forEach(group => group?.remove());
-            monthYearRow.insertAdjacentHTML('afterend', newRowsHTML);
-            salaryForm.dataset.uiModified = 'true';
-        }
         async function generateMonthlyCollectionDetailsHTML(month, year) {
             const records = (await getAllFromStore(STORES.FEES)).filter(f => f.month === month && f.year === year);
             const total = records.reduce((sum, rec) => sum + rec.total, 0);
@@ -4343,25 +4296,33 @@
         }
         async function getTotalPendingFee() {
             try {
-                const students = await getAllFromStore(STORES.STUDENTS);
-                const allFeeRecords = await getAllFromStore(STORES.FEES);
                 let totalPendingFee = 0;
+                const allFeeRecords = await getAllFromStore(STORES.FEES);
+                const students = await getAllFromStore(STORES.STUDENTS);
+                const feeMap = new Map();
+                allFeeRecords.forEach(rec => {
+                    const key = `${rec.studentId}-${rec.month}-${rec.year}`;
+                    feeMap.set(key, rec);
+                    if (rec.balance > 0) {
+                        totalPendingFee += rec.balance;
+                    }
+                });
+
                 const currentDate = new Date();
+
                 for (const student of students) {
-                    if (!student.admissionDate || (student.status && student.status !== 'active')) continue;
-                    const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                    const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-                    if (studentMonthlyFee === 0) continue;
-                    const studentPayments = allFeeRecords.filter(rec => rec.studentId === student.id);
+                    if (!student.admissionDate) continue;
                     const admissionDate = new Date(student.admissionDate);
-                    for (let d = new Date(admissionDate.getFullYear(), admissionDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+
+                    for (let d = new Date(admissionDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
                         const month = d.getMonth() + 1;
                         const year = d.getFullYear();
-                        const totalPaidForMonth = studentPayments
-                            .filter(p => p.month === month && p.year === year)
-                            .reduce((sum, p) => sum + p.total, 0);
-                        if (totalPaidForMonth < studentMonthlyFee) {
-                            totalPendingFee += (studentMonthlyFee - totalPaidForMonth);
+                        const key = `${student.id}-${month}-${year}`;
+
+                        if (!feeMap.has(key)) {
+                            const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                            const monthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                            totalPendingFee += monthlyFee;
                         }
                     }
                 }
@@ -4371,6 +4332,7 @@
                 return 0;
             }
         }
+
         async function loadUpcomingEvents() {
             try {
                 const today = new Date();
@@ -4981,17 +4943,50 @@
             const modal = document.getElementById('student-details-modal');
             const contentArea = document.getElementById('modal-content-area');
             contentArea.innerHTML = '';
+
             try {
                 const student = await getFromStore(STORES.STUDENTS, studentId);
                 if (!student) {
                     showNotification('Student not found.', 'error');
                     return;
                 }
-                const profileHTML = await generateProfileSectionHTML(student);
-                const feeHTML = await generateFeeSectionHTML(student);
-                const attendanceHTML = await generateAttendanceSectionHTML(studentId);
-                const examHTML = await generateExamSectionHTML(studentId);
-                contentArea.innerHTML = profileHTML + feeHTML + attendanceHTML + examHTML;
+
+                const tabsHTML = `
+                    <div class="tabs" style="margin-bottom: 0;">
+                        <div class="tab active" data-tab-modal="profile">Profile</div>
+                        <div class="tab" data-tab-modal="fees">Fees</div>
+                        <div class="tab" data-tab-modal="attendance">Attendance</div>
+                        <div class="tab" data-tab-modal="exams">Exams</div>
+                    </div>
+                `;
+
+                const tabContentsHTML = `
+                    <div id="modal-tab-contents" style="border: 1px solid #ddd; border-top: none; padding: 15px;">
+                        <div class="tab-content active" id="profile-content-modal"></div>
+                        <div class="tab-content" id="fees-content-modal" style="display:none;"></div>
+                        <div class="tab-content" id="attendance-content-modal" style="display:none;"></div>
+                        <div class="tab-content" id="exams-content-modal" style="display:none;"></div>
+                    </div>
+                `;
+
+                contentArea.innerHTML = tabsHTML + tabContentsHTML;
+
+                document.getElementById('profile-content-modal').innerHTML = await generateProfileSectionHTML(student);
+                document.getElementById('fees-content-modal').innerHTML = await generateFeeSectionHTML(student);
+                document.getElementById('attendance-content-modal').innerHTML = await generateAttendanceSectionHTML(studentId);
+                document.getElementById('exams-content-modal').innerHTML = await generateExamSectionHTML(studentId);
+
+                contentArea.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        contentArea.querySelector('.tab.active').classList.remove('active');
+                        this.classList.add('active');
+
+                        contentArea.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+                        const tabId = this.getAttribute('data-tab-modal');
+                        document.getElementById(`${tabId}-content-modal`).style.display = 'block';
+                    });
+                });
+
                 modal.style.display = 'block';
             } catch (error) {
                 console.error('Error viewing student details:', error);
@@ -6144,68 +6139,6 @@
                 console.error(`Error populating sections for dropdown ${sectionDropdownId}:`, error);
             }
         }
-        async function showSalarySlip(salaryData) {
-            const modal = document.getElementById('salary-slip-modal');
-            const contentArea = document.getElementById('slip-content-area');
-            const schoolName = appSettings.schoolName || 'Deeni Madrasa';
-            const employeeStore = salaryData.employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
-            const employee = await getFromStore(employeeStore, salaryData.employeeId);
-            if (!employee) {
-                showNotification('Could not find employee details for this slip.', 'error');
-                return;
-            }
-            const allPaidRecordsForMonth = await getAllFromIndex(STORES.SALARY, 'employeeMonthYear', [salaryData.employeeId, salaryData.month, salaryData.year]);
-            const baseSalary = employee.basicSalary || 0;
-            const allowances = employee.allowances || 0;
-            const grossMonthlySalary = baseSalary + allowances;
-            const totalBonusPaid = allPaidRecordsForMonth.reduce((sum, rec) => sum + (rec.bonus || 0), 0);
-            const totalDeductionsPaid = allPaidRecordsForMonth.reduce((sum, rec) => sum + (rec.deductions || 0), 0);
-            const totalAmountPaid = allPaidRecordsForMonth.reduce((sum, rec) => sum + (rec.amountPaid || 0), 0);
-            const totalPaidNet = totalAmountPaid + totalBonusPaid - totalDeductionsPaid;
-            const finalRemainingBalance = grossMonthlySalary - totalPaidNet;
-            contentArea.innerHTML = `
-                <div class="receipt-paper" id="printable-slip" style="width: 420px; font-size: 14px;">
-                    <h3>${schoolName}</h3>
-                    <p style="text-align:center; font-size: 12px; margin-bottom: 10px;">Salary Slip</p>
-                    <hr>
-                    <div style="display: flex; justify-content: space-between;">
-                        <p><strong>Voucher #:</strong> ${salaryData.voucherNumber}</p>
-                        <p><strong>Date:</strong> ${formatDate(salaryData.date)}</p>
-                    </div>
-                    <p><strong>For Month:</strong> ${salaryData.month}, ${salaryData.year}</p>
-                    <hr>
-                    <p><strong>Name:</strong> ${employee.name}</p>
-                    <p><strong>ID:</strong> ${employee.employeeId}</p>
-                    <p><strong>Designation:</strong> ${employee.designation || employee.specialization}</p>
-                    <hr>
-                    <div class="receipt-item"><strong>Base Salary:</strong><span>${formatCurrency(baseSalary)}</span></div>
-                    <div class="receipt-item"><strong>Allowances:</strong><span>${formatCurrency(allowances)}</span></div>
-                    <div class="receipt-item receipt-total"><strong>Gross Monthly Salary:</strong><span>${formatCurrency(grossMonthlySalary)}</span></div>
-                    <hr style="border-style: dotted;">
-                    <p style="text-align:center; font-weight:bold; margin: 8px 0;">This Transaction</p>
-                    <div class="receipt-item"><span>Amount Paid:</span><span>${formatCurrency(salaryData.amountPaid)}</span></div>
-                    <div class="receipt-item"><span>Bonus:</span><span>${formatCurrency(salaryData.bonus)}</span></div>
-                    <div class="receipt-item"><span>Deductions:</span><span>-${formatCurrency(salaryData.deductions)}</span></div>
-                    <div class="receipt-item receipt-total"><strong>Total Paid (This Slip):</strong><span>${formatCurrency(salaryData.total)}</span></div>
-                    <hr style="border-style: dotted;">
-                    <p style="text-align:center; font-weight:bold; margin: 8px 0;">Month's Summary</p>
-                    <div class="receipt-item"><strong>Total Paid This Month:</strong><span>${formatCurrency(totalPaidNet)}</span></div>
-                    <div class="receipt-item receipt-total" style="color: #c0392b;"><strong>Remaining Balance:</strong><span>${formatCurrency(finalRemainingBalance)}</span></div>
-                </div>
-            `;
-            document.getElementById('print-slip-btn-final').onclick = function () {
-                exportElementAsPNG('printable-slip', `SalarySlip-${employee.employeeId}-${salaryData.month}.png`);
-            };
-            modal.style.display = 'block';
-        }
-        async function viewSalarySlip(salaryId) {
-            const salaryRecord = await getFromStore(STORES.SALARY, salaryId);
-            if (salaryRecord) {
-                await showSalarySlip(salaryRecord);
-            } else {
-                showNotification('Could not find salary record.', 'error');
-            }
-        }
         async function checkLoginStatus() {
             showLoading();
             try {
@@ -6312,6 +6245,7 @@
                 }
             });
         }
+        
         let currentUser = null;
         async function initializeMainAppContent() {
             document.getElementById('mainContainer').style.display = 'block';
@@ -6343,6 +6277,7 @@
             document.querySelector('.header').style.display = 'none';
             await checkAndLoadSampleData();
             await checkLoginStatus();
+            initializeSingleTabListener(); // <-- ADD THIS LINE
             console.log('Application initialized successfully');
             await loadDashboardData();
             await loadDropdownData();
@@ -6450,146 +6385,89 @@
             }
         }
         async function showView(viewName) {
+            // This check prevents errors from the logout button which has no 'data-view'
+            if (!viewName) return;
+
+            console.log(`[DEBUG] Final Fix: Navigating to view: ${viewName}`);
+
+            // 1. Hide all views
             document.querySelectorAll('.section-view').forEach(view => {
                 view.style.display = 'none';
             });
             const selectedView = document.getElementById(viewName + '-view');
-            if (selectedView) {
-                selectedView.style.display = 'block';
-            } else {
-                console.error(`View not found for: ${viewName}`);
+            if (!selectedView) {
+                console.error(`[ERROR] View container not found for: ${viewName}`);
                 return;
             }
-            const filterContainerIds = [
-                'js-student-filters-container',
-                'js-teacher-filters-container',
-                'js-staff-filters-container'
-            ];
-            filterContainerIds.forEach(id => {
-                const container = document.getElementById(id);
-                let parentListOfContainer = null;
-                if (container && container.parentElement) {
-                    parentListOfContainer = container.parentElement.id;
-                }
-                if (container) {
-                    let shouldRemove = true;
-                    if (viewName === 'students' && parentListOfContainer === 'students-list' && id === 'js-student-filters-container') {
-                        shouldRemove = false;
-                    } else if (viewName === 'teachers' && parentListOfContainer === 'teachers-list' && id === 'js-teacher-filters-container') {
-                        shouldRemove = false;
-                    } else if (viewName === 'staff' && parentListOfContainer === 'staff-list' && id === 'js-staff-filters-container') {
-                        shouldRemove = false;
-                    }
-                    if (shouldRemove) {
-                        container.remove();
-                    }
-                }
-            });
-            if (viewName !== 'reports') {
-                const reportOutputArea = document.getElementById('js-report-output-area');
-                if (reportOutputArea) reportOutputArea.innerHTML = '';
-                if (currentReportChart) {
-                    currentReportChart.destroy();
-                    currentReportChart = null;
-                }
-            }
+
+            // 2. Show the correct view
+            selectedView.style.display = 'block';
+
+            // 3. --- THIS IS THE FIX ---
+            //    Load the specific content required for the selected view.
             try {
                 switch (viewName) {
                     case 'dashboard':
-                        loadDashboardData();
+                        await loadDashboardData();
                         break;
                     case 'students':
-                        loadStudentsTable();
-                        document.getElementById('student-class').value = document.getElementById('student-class').querySelector('option:not([value=""])')?.value || '';
-                        await populateSectionsForStudentForm();
-                        createCollapsibleFilterUI(
-                            'students-list',
-                            'js-student-filters-container',
-                            'Student Filters',
-                            createStudentFilterRows,
-                            populateStudentFilterDropdownsJS,
-                            applyStudentFiltersJS,
-                            resetStudentFiltersJS,
-                            [{ dropdownId: 'js-filter-student-class', handlerFn: populateStudentFilterSectionsJS }]
-                        );
+                        await loadStudentsTable();
                         break;
                     case 'teachers':
-                        loadTeachersTable();
-                        createCollapsibleFilterUI(
-                            'teachers-list',
-                            'js-teacher-filters-container',
-                            'Teacher Filters',
-                            createTeacherFilterRows,
-                            populateTeacherFilterDropdownsJS,
-                            applyTeacherFiltersJS,
-                            resetTeacherFiltersJS
-                        );
-                        break;
-                    case 'id-cards':
-                        initializeIdCardsView();
+                        await loadTeachersTable();
                         break;
                     case 'staff':
-                        loadStaffTable();
-                        createCollapsibleFilterUI(
-                            'staff-list',
-                            'js-staff-filters-container',
-                            'Staff Filters',
-                            createStaffFilterRows,
-                            null,
-                            applyStaffFiltersJS,
-                            resetStaffFiltersJS
-                        );
+                        await loadStaffTable();
                         break;
                     case 'classes':
-                        loadClassesTable();
+                        await loadClassesTable();
                         break;
                     case 'subjects':
-                        loadSubjectsTable();
+                        await loadSubjectsTable();
                         break;
                     case 'attendance':
-                        loadClassDropdowns();
-                        populateAttendanceSections('attendance-class', 'attendance-section');
+                        // Attendance loads its content when you click "Load Students"
                         break;
                     case 'exams':
-                        loadExamsTable();
-                        loadClassDropdowns();
-                        loadSubjectDropdowns();
-                        loadExamDropdowns();
-                        document.getElementById('marks-class').addEventListener('change', populateSectionsForMarksEntry);
-                        document.getElementById('result-class').addEventListener('change', populateSectionsForResults);
+                        await loadExamsTable();
                         break;
                     case 'fees':
-                        loadFeeStructureTable();
-                        loadClassDropdowns();
+                        // Fees loads its content when you search for a student
                         break;
                     case 'salaries':
-                        loadSalaryStructureTable();
-                        loadEmployeesForSalaryStructure();
+                        // Salaries loads its content when you search for an employee
+                        await loadSalaryStructureTable();
                         break;
                     case 'library':
-                        loadBooksTable();
-                        populateLibraryDropdowns();
+                        if (selectedView.children.length <= 1) initializeLibraryView();
+                        await loadBooksTable();
+                        await populateLibraryDropdowns();
                         break;
                     case 'users':
-                        loadUsersTable();
-                        loadRolesTable();
+                         if (selectedView.children.length <= 1) initializeUserRolesForm();
+                        await loadUsersTable();
+                        await loadRolesTable();
                         break;
                     case 'reports':
-                        initializeReportsViewJS();
+                        if (selectedView.children.length <= 1) initializeReportsViewJS();
                         break;
                     case 'settings':
-                        loadSchoolSettings();
+                        await loadSchoolSettings();
                         break;
                     case 'backup':
-                        loadBackupHistoryTable();
+                        await loadBackupHistoryTable();
                         break;
-                    default:
-                        console.warn(`No specific load actions defined for view: ${viewName}`);
+                    case 'id-cards':
+                        if (selectedView.children.length <= 1) initializeIdCardsView();
+                        break;
                 }
-            } catch (e) {
-                console.error(`Error in showView during content loading for '${viewName}':`, e);
-                showNotification(`Failed to load '${viewName}' view.`, 'error');
+                console.log(`[DEBUG] Final Fix: Successfully loaded content for ${viewName}`);
+            } catch (err) {
+                console.error(`[ERROR] Failed to load content for ${viewName}:`, err);
             }
+
+
+            // 4. Handle mobile sidebar
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
                 if (sidebar && sidebar.classList.contains('active')) {
@@ -6597,6 +6475,7 @@
                 }
             }
         }
+        
         async function loadExamDropdowns() {
             try {
                 const exams = await getAllFromStore(STORES.EXAMS);
@@ -6674,8 +6553,12 @@
                     await updateInStore(STORES.STUDENTS, editId, studentData);
                     showNotification('Student record updated successfully.', 'success');
                 } else {
-                    const studentsCount = await getCount(STORES.STUDENTS);
-                    studentData.rollNumber = String(studentsCount + 1).padStart(4, '0');
+                    const allStudents = await getAllFromStore(STORES.STUDENTS);
+                    const maxRollNumber = allStudents.reduce((max, s) => {
+                        const rollNum = parseInt(s.rollNumber, 10);
+                        return rollNum > max ? rollNum : max;
+                    }, 0);
+                    studentData.rollNumber = String(maxRollNumber + 1).padStart(4, '0');
                     studentData.createdAt = new Date().toISOString();
                     await addToStore(STORES.STUDENTS, studentData);
                     showNotification('Student added successfully.', 'success');
@@ -6688,7 +6571,7 @@
                 await loadStudentsTable();
             } catch (error) {
                 console.error('Error saving student:', error);
-                showNotification('Failed to save student.', 'error');
+                showNotification('Failed to save student: ' + error.message, 'error');
             } finally {
                 hideLoading();
             }
@@ -6697,24 +6580,34 @@
             const studentClassSelect = document.getElementById('student-class');
             const studentFeeCategorySelect = document.getElementById('student-fee-category');
             const studentMonthlyFeeInput = document.getElementById('student-monthly-fee');
+
             if (studentMonthlyFeeInput) {
                 studentMonthlyFeeInput.readOnly = true;
             }
+
             async function updateStudentMonthlyFeeDisplay() {
+                if (!studentClassSelect || !studentFeeCategorySelect || !studentMonthlyFeeInput) return;
+
                 const classId = parseInt(studentClassSelect.value);
                 const feeCategory = studentFeeCategorySelect.value;
+
                 if (!isNaN(classId) && feeCategory) {
-                    const feeStructure = await getFeeStructureForStudent(null, classId, feeCategory);
-                    studentMonthlyFeeInput.value = feeStructure.monthlyFee;
+                    try {
+                        const feeStructure = await getFeeStructureForStudent(null, classId, feeCategory);
+                        studentMonthlyFeeInput.value = feeStructure.monthlyFee;
+                    } catch (error) {
+                        console.error('Error fetching fee structure:', error);
+                        studentMonthlyFeeInput.value = '';
+                    }
                 } else {
                     studentMonthlyFeeInput.value = '';
                 }
             }
+
             if (studentClassSelect) studentClassSelect.addEventListener('change', updateStudentMonthlyFeeDisplay);
             if (studentFeeCategorySelect) studentFeeCategorySelect.addEventListener('change', updateStudentMonthlyFeeDisplay);
-            if (studentMonthlyFeeInput && (studentClassSelect.value || studentFeeCategorySelect.value)) {
-                updateStudentMonthlyFeeDisplay();
-            }
+
+            updateStudentMonthlyFeeDisplay();
         }
         async function editStudent(id) {
             showLoading();
@@ -6756,57 +6649,51 @@
             return null;
         }
         async function calculateLateFee() {
-            const fineInput = document.getElementById('fee-fine');
-            const studentId = parseInt(document.getElementById('fee-roll-number').dataset.studentId);
-            if (!studentId) {
-                fineInput.value = 0;
-                calculateFeeTotal();
-                return;
-            }
             const month = parseInt(document.getElementById('fee-month').value);
             const year = parseInt(document.getElementById('fee-year').value);
             const paymentDateStr = document.getElementById('fee-payment-date').value;
-            const student = await getFromStore(STORES.STUDENTS, studentId);
-            const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-            const fullMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-            const allPaidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
-            const totalPaidForMonth = allPaidRecords
-                .filter(rec => rec.month === month && rec.year === year)
-                .reduce((sum, rec) => sum + (rec.amount - rec.discount), 0);
-            if (fullMonthlyFee - totalPaidForMonth <= 0) {
+            const studentId = parseInt(document.getElementById('fee-roll-number').dataset.studentId);
+            const fineInput = document.getElementById('fee-fine');
+            if (!month || !year || !paymentDateStr || !studentId) {
                 fineInput.value = 0;
                 calculateFeeTotal();
                 return;
             }
-            const dueDate = new Date(year, month - 1, appSettings.feeDueDay || 10);
+            const existingFee = await getAllFromIndex(STORES.FEES, 'studentMonthYear', [studentId, month, year]);
+            if (existingFee.length > 0) {
+                fineInput.value = 0;
+                showNotification('Fee for this month is already paid.', 'info');
+                calculateFeeTotal();
+                return;
+            }
+            const dueDate = new Date(year, month - 1, appSettings.feeDueDay);
             const paymentDate = new Date(paymentDateStr);
             if (paymentDate > dueDate) {
-                fineInput.value = appSettings.feeLateFine || 50;
+                fineInput.value = appSettings.feeLateFine || 0;
+                showNotification(`Late fee of ${formatCurrency(appSettings.feeLateFine)} applied.`, 'info');
             } else {
                 fineInput.value = 0;
             }
             calculateFeeTotal();
         }
         async function calculateAndDisplayDueFee(student) {
+            let totalDue = 0;
             const dueFeeInput = document.getElementById('fee-due');
             dueFeeInput.value = "Calculating...";
-            let totalDue = 0;
-            const allPaidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
+            const paidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
+            const paidMap = new Map(paidRecords.map(rec => [`${rec.month}-${rec.year}`, true]));
             const admissionDate = new Date(student.admissionDate);
             admissionDate.setDate(1);
             const currentDate = new Date();
             for (let d = new Date(admissionDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
                 const month = d.getMonth() + 1;
                 const year = d.getFullYear();
-                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                const expectedFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-                if (expectedFee === 0) continue;
-                const totalPaidForMonth = allPaidRecords
-                    .filter(rec => rec.month === month && rec.year === year)
-                    .reduce((sum, rec) => sum + (rec.amount - (rec.discount || 0)), 0);
-                const balanceForMonth = expectedFee - totalPaidForMonth;
-                if (balanceForMonth > 0) {
-                    totalDue += balanceForMonth;
+                if (!paidMap.has(`${month}-${year}`)) {
+                    const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                    const dueAmount = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                    if (dueAmount > 0) {
+                        totalDue += dueAmount;
+                    }
                 }
             }
             if (totalDue > 0) {
@@ -6815,98 +6702,157 @@
                 dueFeeInput.value = "No Dues";
             }
         }
-        function setupEventListeners() {
-            document.getElementById('salary-slip-modal-close').addEventListener('click', () => {
-                document.getElementById('salary-slip-modal').style.display = 'none';
-            });
-            document.getElementById('salary-month').addEventListener('change', searchEmployeeForSalary);
-            document.getElementById('salary-year').addEventListener('input', searchEmployeeForSalary);
-            document.getElementById('salary-employee-search').addEventListener('input', searchEmployeeForSalary);
-            document.getElementById('send-reminders').addEventListener('click', () => {
-                const tableRows = document.querySelectorAll('#defaulters-table tbody tr');
-                if (tableRows.length > 0) {
-                    tableRows.forEach(row => {
-                        const noticeButton = row.querySelector('button');
-                        if (noticeButton) noticeButton.click();
+        function safeQuerySelector(selector, parent = document) {
+            const element = parent.querySelector(selector);
+            if (!element) {
+                console.warn(`[WARN] Element not found for selector: ${selector}`);
+            }
+            return element;
+        }
+        function loadContentForActiveTab(tabName) {
+            console.log(`[DEBUG] Loading content for active tab: ${tabName}`);
+            switch(tabName) {
+                case 'students-list': loadStudentsTable(); break;
+                case 'teachers-list': loadTeachersTable(); break;
+                case 'staff-list': loadStaffTable(); break;
+                case 'classes-list': loadClassesTable(); break;
+                case 'sections': loadSectionsTable(); break;
+                case 'subjects-list': loadSubjectsTable(); break;
+                case 'class-subjects': loadClassSubjectsTable(); break;
+                case 'exams-list': loadExamsTable(); break;
+                case 'fee-structure': loadFeeStructureTable(); break;
+                case 'salary-structure': loadSalaryStructureTable(); break;
+                case 'books-list': loadBooksTable(); break;
+                case 'issue-book': loadIssuedBooksTable(); populateLibraryDropdowns(); break;
+                case 'return-book': populateLibraryDropdowns(); break;
+                case 'users-list': loadUsersTable(); break;
+                case 'user-roles': loadRolesTable(); break;
+                default: 
+                    // No specific action needed for other tabs on click, they are self-contained.
+                    break;
+            }
+        }
+
+        function initializeSingleTabListener() {
+            const mainContainer = document.getElementById('mainContainer');
+            mainContainer.addEventListener('click', (e) => {
+                if (e.target.matches('.tab')) {
+                    const tab = e.target;
+                    const tabContentId = tab.getAttribute('data-tab');
+                    
+                    const tabGroup = tab.parentElement;
+                    const tabContainer = tabGroup.parentElement;
+
+                    tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    tabContainer.querySelectorAll('.tab-content').forEach(tc => {
+                        tc.classList.remove('active');
+                        tc.style.display = 'none';
                     });
-                    showNotification(`${tableRows.length} reminder notices opened.`, 'info');
-                } else {
-                    showNotification('No defaulters in the list to send reminders to.', 'info');
+                    
+                    const activeContent = document.getElementById(tabContentId);
+                    if(activeContent) {
+                        activeContent.classList.add('active');
+                        activeContent.style.display = 'block';
+                        loadContentForActiveTab(tabContentId);
+                    } else {
+                        console.error(`[ERROR] Tab content not found for ID: #${tabContentId}`);
+                    }
                 }
             });
-            document.getElementById('marks-table-container').addEventListener('input', function (e) {
-                if (e.target && e.target.matches('input[name^="marks_"]')) {
-                    calculateMarksRow(e.target);
+        }
+        
+        function setupEventListeners() {
+            console.log("[DEBUG] Attaching all application event listeners...");
+
+            const addSafeListener = (selector, event, handler) => {
+                const element = safeQuerySelector(selector);
+                if (element) {
+                    element.addEventListener(event, handler);
                 }
+            };
+            
+            addSafeListener('#search-student-btn', 'click', searchStudents);
+            addSafeListener('#search-teacher-btn', 'click', searchTeachers);
+            addSafeListener('#search-staff-btn', 'click', searchStaff);
+            
+            addSafeListener('#student-form', 'submit', (e) => { e.preventDefault(); addStudent(); });
+            addSafeListener('#teacher-form', 'submit', (e) => { e.preventDefault(); addTeacher(); });
+            addSafeListener('#staff-form', 'submit', (e) => { e.preventDefault(); addStaff(); });
+            addSafeListener('#class-form', 'submit', (e) => { e.preventDefault(); addClass(); });
+            addSafeListener('#subject-form', 'submit', (e) => { e.preventDefault(); addSubject(); });
+            addSafeListener('#exam-form', 'submit', (e) => { e.preventDefault(); addExam(); });
+            addSafeListener('#fee-form', 'submit', (e) => { e.preventDefault(); collectFee(); });
+            addSafeListener('#salary-form', 'submit', (e) => { e.preventDefault(); paySalary(); });
+            addSafeListener('#book-form', 'submit', (e) => { e.preventDefault(); addBook(); });
+            addSafeListener('#issue-form', 'submit', (e) => { e.preventDefault(); issueBook(); });
+            addSafeListener('#return-form', 'submit', (e) => { e.preventDefault(); returnBook(); });
+            addSafeListener('#user-form', 'submit', (e) => { e.preventDefault(); addUser(); });
+            addSafeListener('#role-form', 'submit', (e) => { e.preventDefault(); addRole(); });
+
+            addSafeListener('#save-section', 'click', saveSection);
+            addSafeListener('#save-class-subject', 'click', saveClassSubject);
+            addSafeListener('#save-salary-structure', 'click', saveSalaryStructure);
+            addSafeListener('#fee-structure-form', 'submit', (e) => { e.preventDefault(); saveFeeStructure(); });
+            
+            addSafeListener('#load-attendance', 'click', loadStudentsForAttendance);
+            addSafeListener('#attendance-form', 'submit', (e) => { e.preventDefault(); saveAttendance(); });
+            addSafeListener('#view-attendance-btn', 'click', viewAttendance);
+            addSafeListener('#generate-attendance-report', 'click', generateAttendanceReport);
+            
+            addSafeListener('#load-students-marks', 'click', loadStudentsForMarks);
+            addSafeListener('#marks-form', 'submit', (e) => { e.preventDefault(); saveMarks(); });
+            addSafeListener('#generate-result-cards', 'click', generateResultCards);
+            
+            addSafeListener('#generate-fee-report', 'click', generateFeeReport);
+            addSafeListener('#generate-defaulters', 'click', generateDefaultersReport);
+            addSafeListener('#generate-salary-report', 'click', generateSalaryReport);
+
+            addSafeListener('#create-backup', 'click', createBackup);
+            addSafeListener('#restore-backup', 'click', restoreBackup);
+
+            addSafeListener('#school-settings-form', 'submit', (e) => { e.preventDefault(); saveGeneralSettings(); });
+            addSafeListener('#academic-settings-form', 'submit', saveAcademicSettings);
+            addSafeListener('#theme-settings-form', 'submit', saveThemeSettings);
+            addSafeListener('#reset-theme-btn', 'click', resetThemeSettings);
+            addSafeListener('#system-settings-form', 'submit', async (e) => {
+                e.preventDefault();
+                await addToStore(STORES.SETTINGS, { id: 'general', autoBackupFrequency: safeQuerySelector('#auto-backup-freq').value, language: safeQuerySelector('#system-language').value }, true);
+                showNotification('System settings saved.', 'success');
             });
-            document.addEventListener('click', function (e) {
-                const searchInput = document.getElementById('fee-student-search');
-                const resultsContainer = document.getElementById('fee-search-results');
-                if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
-                    resultsContainer.style.display = 'none';
-                }
+            
+            addSafeListener('#student-class', 'change', populateSectionsForStudentForm);
+            addSafeListener('#attendance-class', 'change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
+            addSafeListener('#view-attendance-class', 'change', () => populateAttendanceSections('view-attendance-class', 'view-attendance-section'));
+            addSafeListener('#report-attendance-class', 'change', () => populateAttendanceSections('report-attendance-class', 'report-attendance-section'));
+            addSafeListener('#fee-report-type', 'change', toggleFeeReportFields);
+            addSafeListener('#salary-report-type', 'change', toggleSalaryReportFields);
+            addSafeListener('#structure-employee-type', 'change', loadEmployeesForSalaryStructure);
+            
+            addSafeListener('#fee-student-search', 'input', searchStudentForFee);
+            addSafeListener('#salary-employee-search', 'input', searchEmployeeForSalary);
+
+            addSafeListener('#modal-close-btn', 'click', () => { safeQuerySelector('#student-details-modal').style.display = 'none'; });
+            addSafeListener('#fee-receipt-modal-close', 'click', () => { safeQuerySelector('#fee-receipt-modal').style.display = 'none'; });
+            addSafeListener('#send-notice-modal-close', 'click', () => { safeQuerySelector('#send-notice-modal').style.display = 'none'; });
+
+            document.querySelectorAll('[data-tab]').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    console.log(`[DEBUG] Tab clicked, loading content for: ${tabName}`);
+                    switch(tabName) {
+                        case 'fee-structure': loadFeeStructureTable(); break;
+                        case 'salary-structure': loadSalaryStructureTable(); break;
+                        case 'books-list': loadBooksTable(); break;
+                        case 'issue-book': loadIssuedBooksTable(); populateLibraryDropdowns(); break;
+                        case 'return-book': populateLibraryDropdowns(); break;
+                        case 'users-list': loadUsersTable(); break;
+                        case 'user-roles': loadRolesTable(); break;
+                    }
+                });
             });
-            document.getElementById('fee-student-search').addEventListener('input', searchStudentForFee);
-            document.getElementById('modal-close-btn').addEventListener('click', () => {
-                document.getElementById('student-details-modal').style.display = 'none';
-            });
-            document.getElementById('fee-payment-form').addEventListener('change', (e) => {
-                if (['fee-month', 'fee-year', 'fee-payment-date'].includes(e.target.id)) {
-                    calculateLateFee();
-                }
-            });
-            document.getElementById('send-notice-modal-close').addEventListener('click', () => {
-                document.getElementById('send-notice-modal').style.display = 'none';
-            });
-            document.getElementById('fee-receipt-modal-close').addEventListener('click', () => {
-                document.getElementById('fee-receipt-modal').style.display = 'none';
-            });
-            document.getElementById('fee-month').addEventListener('change', () => {
-                const studentId = document.getElementById('fee-roll-number').dataset.studentId;
-                if (studentId) loadStudentForFeeCollection(parseInt(studentId));
-            });
-            document.getElementById('fee-year').addEventListener('input', () => {
-                const studentId = document.getElementById('fee-roll-number').dataset.studentId;
-                if (studentId) loadStudentForFeeCollection(parseInt(studentId));
-            });
-            document.querySelector('[data-tab="students-list"]').addEventListener('click', () => loadStudentsTable());
-            document.querySelector('[data-tab="teachers-list"]').addEventListener('click', () => loadTeachersTable());
-            document.querySelector('[data-tab="staff-list"]').addEventListener('click', () => loadStaffTable());
-            document.querySelector('[data-tab="classes-list"]').addEventListener('click', () => loadClassesTable());
-            document.querySelector('[data-tab="sections"]').addEventListener('click', () => loadSectionsTable());
-            document.querySelector('[data-tab="subjects-list"]').addEventListener('click', () => loadSubjectsTable());
-            document.querySelector('[data-tab="class-subjects"]').addEventListener('click', () => loadClassSubjectsTable());
-            document.querySelector('[data-tab="exams-list"]').addEventListener('click', () => loadExamsTable());
-            document.querySelector('[data-tab="user-roles"]').addEventListener('click', () => loadRolesTable());
-            document.querySelector('[data-tab="fee-structure"]').addEventListener('click', () => loadFeeStructureTable());
-            document.querySelector('[data-tab="salary-structure"]').addEventListener('click', () => loadSalaryStructureTable());
-            document.querySelector('[data-view="library"]').addEventListener('click', () => loadBooksTable());
-            document.querySelector('[data-view="users"]').addEventListener('click', () => loadUsersTable());
-            document.querySelector('[data-view="backup"]').addEventListener('click', () => loadBackupHistoryTable());
-            document.getElementById('search-student-btn').addEventListener('click', searchStudents);
-            document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
-            document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
-            document.getElementById('load-attendance').addEventListener('click', loadStudentsForAttendance);
-            document.getElementById('view-attendance-btn').addEventListener('click', viewAttendance);
-            document.getElementById('generate-attendance-report').addEventListener('click', generateAttendanceReport);
-            document.getElementById('load-students-marks').addEventListener('click', loadStudentsForMarks);
-            document.getElementById('generate-result-cards').addEventListener('click', generateResultCards);
-            document.getElementById('generate-fee-report').addEventListener('click', generateFeeReport);
-            document.getElementById('generate-defaulters').addEventListener('click', generateDefaultersReport);
-            document.getElementById('generate-salary-report').addEventListener('click', generateSalaryReport);
-            document.getElementById('create-backup').addEventListener('click', createBackup);
-            document.getElementById('restore-backup').addEventListener('click', restoreBackup);
-            document.getElementById('save-auto-backup').addEventListener('click', saveAutoBackupSettings);
-            document.getElementById('auto-backup-enable').addEventListener('change', function () {
-                document.getElementById('auto-backup-options').style.display = this.checked ? 'block' : 'none';
-            });
-            document.getElementById('student-class').addEventListener('change', populateSectionsForStudentForm);
-            document.getElementById('attendance-class').addEventListener('change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
-            document.getElementById('view-attendance-class').addEventListener('change', () => populateAttendanceSections('view-attendance-class', 'view-attendance-section'));
-            document.getElementById('report-attendance-class').addEventListener('change', () => populateAttendanceSections('report-attendance-class', 'report-attendance-section'));
-            document.getElementById('fee-report-type').addEventListener('change', toggleFeeReportFields);
-            document.getElementById('salary-report-type').addEventListener('change', toggleSalaryReportFields);
-            document.getElementById('structure-employee-type').addEventListener('change', loadEmployeesForSalaryStructure);
+            console.log("[DEBUG] All event listeners attached.");
         }
         async function loadStaffTable() {
             try {
@@ -7702,36 +7648,33 @@
             try {
                 const student = await getFromStore(STORES.STUDENTS, studentId);
                 if (!student) return;
+
+
                 document.getElementById('fee-roll-number').value = student.rollNumber;
                 document.getElementById('fee-roll-number').dataset.studentId = student.id;
                 document.getElementById('fee-student-name').value = student.name;
                 document.getElementById('fee-class').value = student.className;
                 document.getElementById('fee-category').value = student.feeCategory;
-                const selectedMonth = parseInt(document.getElementById('fee-month').value);
-                const selectedYear = parseInt(document.getElementById('fee-year').value);
-                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                const fullMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-                document.getElementById('fee-monthly').value = fullMonthlyFee;
-                const allPaidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
-                const paymentsForMonth = allPaidRecords
-                    .filter(rec => rec.month === selectedMonth && rec.year === selectedYear)
-                    .reduce((sum, rec) => sum + (rec.amount - (rec.discount || 0)), 0);
-                const remainingBalance = fullMonthlyFee - paymentsForMonth;
-                document.getElementById('fee-balance').value = remainingBalance.toFixed(2);
-                document.getElementById('fee-paying-now').value = remainingBalance > 0 ? remainingBalance.toFixed(2) : 0;
+
+
                 document.getElementById('fee-student-details').style.display = 'block';
                 document.getElementById('fee-payment-form').style.display = 'block';
                 document.getElementById('fee-history-container').style.display = 'block';
-                await calculateAndDisplayDueFee(student);
-                await calculateLateFee();
-                calculateFeeTotal();
+
+
+                await updateFeeFormForSelectedMonth();
+
+
                 loadFeeHistory(student.id);
+                calculateAndDisplayDueFee(student);
+
             } catch (error) {
                 console.error("Error loading student for fee:", error);
             } finally {
                 hideLoading();
             }
         }
+
         async function loadFeeHistory(studentId) {
             const allFees = await getAllFromIndex(STORES.FEES, 'studentId', studentId);
             const historyTbody = document.querySelector('#fee-history-table tbody');
@@ -7751,7 +7694,7 @@
             <td>${formatCurrency(fee.amount)}</td>
             <td>${formatCurrency(fee.fine)}</td>
             <td>${formatCurrency(fee.discount)}</td>
-            <td>${formatCurrency(fee.total)}</td>
+            <td>${formatCurrency(fee.totalPaid || 0)}</td>
             <td>
                 <button class="btn btn-sm btn-primary" onclick="viewFeeReceipt(${fee.id})">Receipt</button>
             </td>
@@ -7759,57 +7702,116 @@
                 historyTbody.appendChild(row);
             });
         }
+        async function updateFeeFormForSelectedMonth() {
+            const studentId = parseInt(document.getElementById('fee-roll-number').dataset.studentId);
+            const month = parseInt(document.getElementById('fee-month').value);
+            const year = parseInt(document.getElementById('fee-year').value);
+
+            if (!studentId || !month || !year) return;
+
+            const feeAmountInput = document.getElementById('fee-amount');
+            const fineInput = document.getElementById('fee-fine');
+            const discountInput = document.getElementById('fee-discount');
+            const netPayableInput = document.getElementById('fee-net-payable');
+            const amountPaidInput = document.getElementById('fee-amount-paid');
+
+            const existingRecord = (await getAllFromIndex(STORES.FEES, 'studentMonthYear', [studentId, month, year]))[0];
+
+            if (existingRecord && existingRecord.balance > 0) {
+
+                feeAmountInput.value = existingRecord.amount;
+                fineInput.value = existingRecord.fine;
+                discountInput.value = existingRecord.discount;
+
+
+                fineInput.readOnly = true;
+                discountInput.readOnly = true;
+                fineInput.style.backgroundColor = '#e9ecef';
+                discountInput.style.backgroundColor = '#e9ecef';
+
+
+                netPayableInput.value = existingRecord.balance.toFixed(2);
+                amountPaidInput.value = existingRecord.balance.toFixed(2);
+
+            } else {
+
+                const student = await getFromStore(STORES.STUDENTS, studentId);
+                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                const monthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+
+
+                fineInput.readOnly = false;
+                discountInput.readOnly = false;
+                fineInput.style.backgroundColor = '';
+                discountInput.style.backgroundColor = '';
+                fineInput.value = 0;
+                discountInput.value = 0;
+
+                feeAmountInput.value = monthlyFee;
+                const netPayable = monthlyFee;
+                netPayableInput.value = netPayable;
+                amountPaidInput.value = netPayable;
+
+                if (existingRecord && existingRecord.balance <= 0) {
+                    showNotification('This month is already fully paid.', 'info');
+                    amountPaidInput.value = 0;
+                    netPayableInput.value = 0;
+                }
+            }
+        }
         async function generateFeeReport() {
             const reportType = document.getElementById('fee-report-type').value;
             const tbody = document.querySelector('#fee-report-table tbody');
             const container = document.getElementById('fee-report-table-container');
             const summaryContainer = document.getElementById('fee-report-summary');
+
+            if (!reportType) {
+                showNotification('Please select a report type.', 'error');
+                return;
+            }
+
             showLoading();
             tbody.innerHTML = '';
             container.style.display = 'none';
             summaryContainer.style.display = 'none';
+
             try {
                 let allFees = await getAllFromStore(STORES.FEES);
-                let allStudents = await getAllFromStore(STORES.STUDENTS);
                 let filteredFees = [];
-                let studentsInScope = allStudents.filter(s => s.status === 'active' || !s.status);
-                const month = parseInt(document.getElementById('fee-report-month').value);
-                const year = parseInt(document.getElementById('fee-report-year').value);
-                const date = document.getElementById('fee-report-date').value;
-                const classId = parseInt(document.getElementById('fee-report-class').value);
+
                 switch (reportType) {
                     case 'daily':
-                        if (!date) { showNotification('Please select a date.', 'error'); return; }
+                        const date = document.getElementById('fee-report-date').value;
+                        if (!date) { showNotification('Please select a date.', 'error'); hideLoading(); return; }
                         filteredFees = allFees.filter(fee => fee.date === date);
                         break;
                     case 'monthly':
-                        if (!month || !year) { showNotification('Please select month and year.', 'error'); return; }
+                        const month = parseInt(document.getElementById('fee-report-month').value);
+                        const year = parseInt(document.getElementById('fee-report-year').value);
+                        if (!month || isNaN(year)) { showNotification('Please select month and year.', 'error'); hideLoading(); return; }
                         filteredFees = allFees.filter(fee => fee.month === month && fee.year === year);
                         break;
                     case 'yearly':
-                        if (!year) { showNotification('Please select a year.', 'error'); return; }
-                        filteredFees = allFees.filter(fee => fee.year === year);
+                        const yearly_report_year = parseInt(document.getElementById('fee-report-year').value);
+                        if (isNaN(yearly_report_year)) { showNotification('Please select a year.', 'error'); hideLoading(); return; }
+                        filteredFees = allFees.filter(fee => fee.year === yearly_report_year);
                         break;
                     case 'class':
-                        if (!classId || !month || !year) { showNotification('Please select class, month, and year.', 'error'); return; }
-                        studentsInScope = allStudents.filter(s => s.classId === classId);
-                        const studentIdsInClass = studentsInScope.map(s => s.id);
-                        filteredFees = allFees.filter(fee =>
-                            studentIdsInClass.includes(fee.studentId) &&
-                            fee.month === month &&
-                            fee.year === year
-                        );
+                        const classId = parseInt(document.getElementById('fee-report-class').value);
+                        if (isNaN(classId)) { showNotification('Please select a class.', 'error'); hideLoading(); return; }
+                        const studentsInClass = (await getAllFromIndex(STORES.STUDENTS, 'classId', classId)).map(s => s.id);
+                        filteredFees = allFees.filter(fee => studentsInClass.includes(fee.studentId));
                         break;
                     default:
-                        showNotification('Please select a valid report type.', 'error');
-                        return;
+                        filteredFees = allFees;
                 }
+
                 let totalCollected = 0;
-                let paidStudentIds = new Set();
+                let paidStudents = new Set();
                 for (const fee of filteredFees) {
-                    const student = allStudents.find(s => s.id === fee.studentId);
-                    totalCollected += fee.total;
-                    paidStudentIds.add(fee.studentId);
+                    const student = await getFromStore(STORES.STUDENTS, fee.studentId);
+                    totalCollected += (fee.totalPaid || fee.total);
+                    paidStudents.add(fee.studentId);
                     const row = document.createElement('tr');
                     const monthName = new Date(fee.year, fee.month - 1, 1).toLocaleString('en-US', { month: 'long' });
                     row.innerHTML = `
@@ -7821,7 +7823,7 @@
                         <td>${formatCurrency(fee.amount)}</td>
                         <td>${formatCurrency(fee.fine)}</td>
                         <td>${formatCurrency(fee.discount)}</td>
-                        <td>${formatCurrency(fee.total)}</td>
+                        <td>${formatCurrency(fee.totalPaid || fee.total)}</td>
                     `;
                     tbody.appendChild(row);
                 }
@@ -7829,8 +7831,8 @@
                     tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No fee records found for this criteria.</td></tr>';
                 }
                 document.getElementById('fee-report-total-collected').value = formatCurrency(totalCollected);
-                document.getElementById('fee-report-total-students').value = studentsInScope.length;
-                document.getElementById('fee-report-paid-students').value = paidStudentIds.size;
+                document.getElementById('fee-report-total-students').value = (await getCount(STORES.STUDENTS));
+                document.getElementById('fee-report-paid-students').value = paidStudents.size;
                 summaryContainer.style.display = 'block';
                 container.style.display = 'block';
             } catch (error) {
@@ -7841,54 +7843,87 @@
             }
         }
         async function generateDefaultersReport() {
-            const classId = document.getElementById('defaulter-class').value;
-            const month = parseInt(document.getElementById('defaulter-month').value);
-            const year = parseInt(document.getElementById('defaulter-year').value);
+            const classIdFilter = document.getElementById('defaulter-class').value;
+            const monthValue = parseInt(document.getElementById('defaulter-month').value);
+            const yearValue = parseInt(document.getElementById('defaulter-year').value);
+            const asOfDate = new Date(yearValue, monthValue, 0);
+
             const tbody = document.querySelector('#defaulters-table tbody');
             const container = document.getElementById('defaulters-table-container');
-            if (isNaN(month) || isNaN(year)) {
-                showNotification('Please select month and year.', 'error');
-                return;
-            }
+
             showLoading();
             tbody.innerHTML = '';
             container.style.display = 'none';
             try {
-                let students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
-                if (classId !== 'all') {
-                    students = students.filter(s => s.classId === parseInt(classId));
+                let students = await getAllFromStore(STORES.STUDENTS);
+                if (classIdFilter !== 'all') {
+                    students = students.filter(s => s.classId === parseInt(classIdFilter));
                 }
+
                 const allFeeRecords = await getAllFromStore(STORES.FEES);
-                let hasDefaulters = false;
-                const monthName = new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'long' });
+                const feeMap = new Map();
+                allFeeRecords.forEach(rec => {
+                    const key = `${rec.studentId}-${rec.month}-${rec.year}`;
+                    feeMap.set(key, rec);
+                });
+
+                const defaulters = [];
+
                 for (const student of students) {
-                    const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                    const expectedFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-                    if (expectedFee === 0) continue;
-                    const totalPaidForMonth = allFeeRecords
-                        .filter(rec => rec.studentId === student.id && rec.month === month && rec.year === year)
-                        .reduce((sum, rec) => sum + rec.total, 0);
-                    const dueAmount = expectedFee - totalPaidForMonth;
-                    if (dueAmount > 0) {
-                        hasDefaulters = true;
+                    if (!student.admissionDate || (student.monthlyFee || 0) === 0) continue;
+
+                    let totalDue = 0;
+                    let dueMonthsList = [];
+                    const admissionDate = new Date(student.admissionDate);
+
+
+                    for (let d = new Date(admissionDate.getFullYear(), admissionDate.getMonth(), 1); d <= asOfDate; d.setMonth(d.getMonth() + 1)) {
+                        const month = d.getMonth() + 1;
+                        const year = d.getFullYear();
+                        const key = `${student.id}-${month}-${year}`;
+
+                        const feeRecord = feeMap.get(key);
+
+                        if (feeRecord) {
+                            if (feeRecord.balance > 0) {
+                                totalDue += feeRecord.balance;
+                                dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(year).slice(2)} (Partial)`);
+                            }
+                        } else {
+                            const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                            const monthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                            if (monthlyFee > 0) {
+                                totalDue += monthlyFee;
+                                dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(year).slice(2)}`);
+                            }
+                        }
+                    }
+
+                    if (totalDue > 0) {
+                        defaulters.push({ student, totalDue, dueMonthsList });
+                    }
+                }
+
+                if (defaulters.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No defaulters found for the selected criteria.</td></tr>';
+                } else {
+                    for (const item of defaulters) {
                         const row = document.createElement('tr');
+                        const monthName = asOfDate.toLocaleString('en-US', { month: 'long' });
                         row.innerHTML = `
-                            <td>${student.rollNumber}</td>
-                            <td>${student.name}</td>
-                            <td>${student.className}</td>
-                            <td>${formatCurrency(expectedFee)}</td>
-                            <td>${monthName}, ${year}</td>
-                            <td>${formatCurrency(dueAmount)}</td>
-                            <td>${student.contact}</td>
+                            <td>${item.student.rollNumber}</td>
+                            <td>${item.student.name}</td>
+                            <td>${item.student.className}</td>
+                            <td>${formatCurrency(item.student.monthlyFee)}</td>
+                            <td>${item.dueMonthsList.join(', ')}</td>
+                            <td>${formatCurrency(item.totalDue)}</td>
+                            <td>${item.student.contact}</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="showSendNoticePopup('${student.name.replace(/'/g, "\\'")}', '${student.contact}', ${dueAmount}, '${monthName}', ${year})">Send Notice</button>
+                                <button class="btn btn-primary btn-sm" onclick="showSendNoticePopup('${item.student.name.replace(/'/g, "\\'")}', '${item.student.contact}', ${item.totalDue}, '${monthName}', ${asOfDate.getFullYear()})">Send Notice</button>
                             </td>
                         `;
                         tbody.appendChild(row);
                     }
-                }
-                if (!hasDefaulters) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No defaulters for this month.</td></tr>';
                 }
                 container.style.display = 'block';
             } catch (error) {
@@ -7898,6 +7933,7 @@
                 hideLoading();
             }
         }
+
         async function searchEmployeeForSalary() {
             const searchTerm = document.getElementById('salary-employee-search').value;
             const employeeType = document.getElementById('salary-employee-type').value;
@@ -7906,32 +7942,23 @@
             try {
                 const storeName = employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
                 const allEmployees = await getAllFromStore(storeName);
-                const employee = allEmployees.find(e => String(e.employeeId).includes(searchTerm) || e.name.toLowerCase().includes(searchTerm.toLowerCase()));
+                const employee = allEmployees.find(e => e.employeeId === searchTerm || e.name.toLowerCase().includes(searchTerm.toLowerCase()));
                 if (!employee) {
                     showNotification('Employee not found.', 'error');
                     document.getElementById('salary-employee-details').style.display = 'none';
                     document.getElementById('salary-payment-form').style.display = 'none';
                     document.getElementById('salary-history-container').style.display = 'none';
-                    hideLoading();
                     return;
                 }
                 document.getElementById('salary-employee-id').value = employee.employeeId;
                 document.getElementById('salary-employee-id').dataset.employeeId = employee.id;
                 document.getElementById('salary-employee-name').value = employee.name;
                 document.getElementById('salary-employee-designation').value = employee.designation || employee.qualification;
-                const fullSalary = (employee.basicSalary || 0) + (employee.allowances || 0);
                 document.getElementById('salary-basic').value = employee.basicSalary;
+                document.getElementById('salary-payment-basic').value = employee.basicSalary;
                 document.getElementById('salary-allowances').value = employee.allowances || 0;
-                document.getElementById('salary-total').value = fullSalary;
-                const selectedMonth = document.getElementById('salary-month').value;
-                const selectedYear = parseInt(document.getElementById('salary-year').value);
-                const allPaidRecords = await getAllFromIndex(STORES.SALARY, 'employeeId', employee.id);
-                const paymentsForMonth = allPaidRecords
-                    .filter(rec => rec.month === selectedMonth && rec.year === selectedYear)
-                    .reduce((sum, rec) => sum + rec.total, 0);
-                const remainingBalance = fullSalary - paymentsForMonth;
-                document.getElementById('salary-balance').value = remainingBalance.toFixed(2);
-                document.getElementById('salary-paying-now').value = remainingBalance > 0 ? remainingBalance.toFixed(2) : 0;
+                document.getElementById('salary-payment-allowances').value = employee.allowances || 0;
+                document.getElementById('salary-total').value = (employee.basicSalary || 0) + (employee.allowances || 0);
                 document.getElementById('salary-employee-details').style.display = 'block';
                 document.getElementById('salary-payment-form').style.display = 'block';
                 calculateSalaryTotal();
@@ -7945,40 +7972,26 @@
         }
         async function loadSalaryHistory(employeeId, employeeType) {
             const allSalaries = await getAllFromIndex(STORES.SALARY, 'employeeId', employeeId);
-            const historyTbody = document.getElementById('salary-history-table');
-            if (!historyTbody) return;
-            const tbody = historyTbody.querySelector('tbody');
-            tbody.innerHTML = '';
-            const thead = historyTbody.querySelector('thead tr');
-            if (thead) {
-                thead.innerHTML = `
-                    <th>Voucher No.</th>
-                    <th>Month</th>
-                    <th>Date</th>
-                    <th>Amount Paid</th>
-                    <th>Bonus</th>
-                    <th>Deductions</th>
-                    <th>Total Paid</th>
-                    <th>Action</th>
-                `;
-            }
+            const historyTbody = document.querySelector('#salary-history-table tbody');
+            historyTbody.innerHTML = '';
             if (allSalaries.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No salary history available.</td></tr>';
+                historyTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No salary history available.</td></tr>';
                 return;
             }
             allSalaries.forEach(salary => {
                 const row = document.createElement('tr');
+                const totalDeductions = (salary.deductions || 0) + (salary.absenceDeduction || 0) + (salary.tax || 0);
                 row.innerHTML = `
                     <td>${salary.voucherNumber || '-'}</td>
                     <td>${salary.month} ${salary.year}</td>
                     <td>${formatDate(salary.date)}</td>
-                    <td>${formatCurrency(salary.amountPaid)}</td>
-                    <td>${formatCurrency(salary.bonus)}</td>
-                    <td>${formatCurrency(salary.deductions)}</td>
+                    <td>${formatCurrency(salary.basicSalary)}</td>
+                    <td>${formatCurrency(salary.allowances + salary.bonus)}</td>
+                    <td>${formatCurrency(totalDeductions)}</td>
                     <td>${formatCurrency(salary.total)}</td>
-                    <td><button class="btn btn-sm btn-primary" onclick="viewSalarySlip(${salary.id})">Slip</button></td>
+                    <td><button class="btn btn-sm btn-primary">Slip</button></td>
                 `;
-                tbody.appendChild(row);
+                historyTbody.appendChild(row);
             });
             document.getElementById('salary-history-container').style.display = 'block';
         }
@@ -7988,111 +8001,76 @@
             const tbody = document.querySelector('#salary-report-table tbody');
             const container = document.getElementById('salary-report-table-container');
             const summaryContainer = document.getElementById('salary-report-summary');
-
             showLoading();
             tbody.innerHTML = '';
             container.style.display = 'none';
             summaryContainer.style.display = 'none';
-
             try {
                 let allSalaries = await getAllFromStore(STORES.SALARY);
-                let filteredSalaries = allSalaries;
-
-                // --- New, Simplified, and Correct Filtering Logic ---
-
-                // 1. Filter by Time Period (Month/Year/Employee)
-                if (reportType === 'monthly') {
-                    const month = document.getElementById('salary-report-month').value;
-                    const year = parseInt(document.getElementById('salary-report-year').value);
-                    if (!month || isNaN(year)) {
-                        showNotification('Please select a valid month and year.', 'error');
-                        hideLoading();
-                        return;
-                    }
-                    filteredSalaries = filteredSalaries.filter(s => s.month === month && s.year === year);
-                } else if (reportType === 'yearly') {
-                    const year = parseInt(document.getElementById('salary-report-year').value);
-                    if (isNaN(year)) {
-                        showNotification('Please select a year.', 'error');
-                        hideLoading();
-                        return;
-                    }
-                    filteredSalaries = filteredSalaries.filter(s => s.year === year);
-                } else if (reportType === 'employee') {
-                    const employeeIdVal = document.getElementById('salary-report-employee').value;
-                    if (!employeeIdVal) {
-                        showNotification('Please select a specific employee.', 'error');
-                        hideLoading();
-                        return;
-                    }
-                    const [type, id] = employeeIdVal.split('_');
-                    filteredSalaries = filteredSalaries.filter(s => s.employeeId === parseInt(id) && s.employeeType === type);
+                let filteredSalaries = [];
+                switch (reportType) {
+                    case 'monthly':
+                        const month = document.getElementById('salary-report-month').value;
+                        const year = parseInt(document.getElementById('salary-report-year').value);
+                        if (!month || isNaN(year)) {
+                            showNotification('Please select month and year.', 'error');
+                            return;
+                        }
+                        filteredSalaries = allSalaries.filter(s => s.month === month && s.year === year);
+                        break;
+                    case 'employee':
+                        const employeeIdVal = document.getElementById('salary-report-employee').value;
+                        if (!employeeIdVal || employeeIdVal === 'all') {
+                            showNotification('Please select an employee.', 'error');
+                            return;
+                        }
+                        const employeeId = parseInt(employeeIdVal.split('_').pop());
+                        filteredSalaries = allSalaries.filter(s => s.employeeId === employeeId);
+                        break;
+                    case 'yearly':
+                        const reportYear = parseInt(document.getElementById('salary-report-year').value);
+                        if (isNaN(reportYear)) {
+                            showNotification('Please select a year.', 'error');
+                            return;
+                        }
+                        filteredSalaries = allSalaries.filter(s => s.year === reportYear);
+                        break;
+                    default:
+                        filteredSalaries = allSalaries;
                 }
-
-                // 2. Further Filter by Employee Type (if not 'all')
-                if (employeeTypeFilter !== 'all' && reportType !== 'employee') {
+                if (employeeTypeFilter !== 'all') {
                     filteredSalaries = filteredSalaries.filter(s => s.employeeType === employeeTypeFilter);
                 }
-
-                // --- End of Corrected Logic ---
-
-                const thead = document.querySelector('#salary-report-table thead tr');
-                if (thead) {
-                    thead.innerHTML = `
-                        <th>Voucher No.</th>
-                        <th>Employee Name</th>
-                        <th>Designation</th>
-                        <th>Month</th>
-                        <th>Date</th>
-                        <th>Amount Paid</th>
-                        <th>Bonus</th>
-                        <th>Deductions</th>
-                        <th>Total Paid</th>
-                    `;
-                }
-
                 let totalPaid = 0;
                 let paidEmployees = new Set();
-
                 for (const salary of filteredSalaries) {
                     const employeeStore = salary.employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
                     const employee = await getFromStore(employeeStore, salary.employeeId);
-                    totalPaid += (salary.total || 0);
+                    totalPaid += salary.total;
                     paidEmployees.add(salary.employeeId);
-
                     const row = document.createElement('tr');
+                    const totalDeductions = (salary.deductions || 0) + (salary.absenceDeduction || 0) + (salary.tax || 0);
                     row.innerHTML = `
-                        <td>${salary.voucherNumber || '-'}</td>
-                        <td>${salary.employeeName || 'N/A'}</td>
-                        <td>${employee ? (employee.designation || employee.specialization) : 'N/A'}</td>
-                        <td>${salary.month}, ${salary.year}</td>
-                        <td>${formatDate(salary.date)}</td>
-                        <td>${formatCurrency(salary.amountPaid)}</td>
-                        <td>${formatCurrency(salary.bonus)}</td>
-                        <td>${formatCurrency(salary.deductions)}</td>
-                        <td>${formatCurrency(salary.total)}</td>
-                    `;
+                <td>${salary.voucherNumber || '-'}</td>
+                <td>${salary.employeeName}</td>
+                <td>${employee ? (employee.designation || employee.specialization) : 'N/A'}</td>
+                <td>${salary.month}, ${salary.year}</td>
+                <td>${formatDate(salary.date)}</td>
+                <td>${formatCurrency(salary.basicSalary)}</td>
+                <td>${formatCurrency(salary.allowances + salary.bonus)}</td>
+                <td>${formatCurrency(totalDeductions)}</td>
+                <td>${formatCurrency(salary.total)}</td>
+            `;
                     tbody.appendChild(row);
                 }
-
                 if (filteredSalaries.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No salary record found for this criteria.</td></tr>';
                 }
-
-                const allTeachersCount = await getCount(STORES.TEACHERS);
-                const allStaffCount = await getCount(STORES.STAFF);
-                let totalEmployeesInScope = allTeachersCount + allStaffCount;
-                if (employeeTypeFilter === 'teacher') totalEmployeesInScope = allTeachersCount;
-                if (employeeTypeFilter === 'staff') totalEmployeesInScope = allStaffCount;
-
-
                 document.getElementById('salary-report-total-paid').value = formatCurrency(totalPaid);
-                document.getElementById('salary-report-total-employees').value = totalEmployeesInScope;
+                document.getElementById('salary-report-total-employees').value = (await getCount(STORES.TEACHERS)) + (await getCount(STORES.STAFF));
                 document.getElementById('salary-report-paid-employees').value = paidEmployees.size;
-
                 summaryContainer.style.display = 'block';
                 container.style.display = 'block';
-
             } catch (error) {
                 console.error("Error generating salary report:", error);
                 showNotification('Failed to generate salary report.', 'error');
@@ -8100,37 +8078,43 @@
                 hideLoading();
             }
         }
-
         function toggleFeeReportFields() {
             const reportType = document.getElementById('fee-report-type').value;
-            document.getElementById('fee-report-date-row').style.display = 'none';
-            document.getElementById('fee-report-month-row').style.display = 'none';
-            document.getElementById('fee-report-class-row').style.display = 'none';
+            const dateRow = document.getElementById('fee-report-date-row');
+            const monthRow = document.getElementById('fee-report-month-row');
+            const classRow = document.getElementById('fee-report-class-row');
+
+
+            dateRow.style.display = 'none';
+            monthRow.style.display = 'none';
+            classRow.style.display = 'none';
+
+
+            const monthSelectGroup = monthRow.querySelector('div:first-child');
+            if (monthSelectGroup) monthSelectGroup.style.display = 'block';
+
+
             switch (reportType) {
                 case 'daily':
-                    document.getElementById('fee-report-date-row').style.display = 'flex';
+                    dateRow.style.display = 'flex';
                     break;
                 case 'monthly':
+                    monthRow.style.display = 'flex';
+                    break;
                 case 'yearly':
-                    document.getElementById('fee-report-month-row').style.display = 'flex';
-                    if (reportType === 'yearly') {
-                        document.getElementById('fee-report-month').value = '';
-                    }
+                    monthRow.style.display = 'flex';
+
+                    if (monthSelectGroup) monthSelectGroup.style.display = 'none';
                     break;
                 case 'class':
-                    document.getElementById('fee-report-class-row').style.display = 'flex';
-                    document.getElementById('fee-report-month-row').style.display = 'flex';
+                    classRow.style.display = 'flex';
                     break;
             }
         }
         function toggleSalaryReportFields() {
             const reportType = document.getElementById('salary-report-type').value;
-            const employeeTypeSelect = document.getElementById('salary-report-employee-type');
-
             document.getElementById('salary-report-month-row').style.display = 'none';
             document.getElementById('salary-report-employee-row').style.display = 'none';
-            employeeTypeSelect.style.display = 'block'; // Ensure this is visible by default
-
             switch (reportType) {
                 case 'monthly':
                 case 'yearly':
@@ -8145,34 +8129,53 @@
                     break;
             }
         }
-
         async function loadEmployeesForSalaryReport() {
             try {
                 const employeeType = document.getElementById('salary-report-employee-type').value;
                 const dropdown = document.getElementById('salary-report-employee');
-                dropdown.innerHTML = '<option value="">-- Select Employee --</option>'; // Clear and add a default
-
-                let employees = [];
+                dropdown.innerHTML = '';
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.textContent = 'All Employees';
+                dropdown.appendChild(allOption);
                 if (employeeType === 'all') {
                     const teachers = await getAllFromStore(STORES.TEACHERS);
                     const staff = await getAllFromStore(STORES.STAFF);
-                    employees = [...teachers.map(t => ({ ...t, type: 'teacher' })), ...staff.map(s => ({ ...s, type: 'staff' }))];
+                    const teachersGroup = document.createElement('optgroup');
+                    teachersGroup.label = 'Teachers';
+                    teachers.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = `teacher_${teacher.id}`;
+                        option.textContent = teacher.name;
+                        teachersGroup.appendChild(option);
+                    });
+                    dropdown.appendChild(teachersGroup);
+                    const staffGroup = document.createElement('optgroup');
+                    staffGroup.label = 'Staff';
+                    staff.forEach(staffMember => {
+                        const option = document.createElement('option');
+                        option.value = `staff_${staffMember.id}`;
+                        option.textContent = staffMember.name;
+                        staffGroup.appendChild(option);
+                    });
+                    dropdown.appendChild(staffGroup);
                 } else if (employeeType === 'teacher') {
-                    employees = (await getAllFromStore(STORES.TEACHERS)).map(t => ({ ...t, type: 'teacher' }));
-                } else { // staff
-                    employees = (await getAllFromStore(STORES.STAFF)).map(s => ({ ...s, type: 'staff' }));
+                    const teachers = await getAllFromStore(STORES.TEACHERS);
+                    teachers.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = teacher.id;
+                        option.textContent = teacher.name;
+                        dropdown.appendChild(option);
+                    });
+                } else {
+                    const staff = await getAllFromStore(STORES.STAFF);
+                    staff.forEach(staffMember => {
+                        const option = document.createElement('option');
+                        option.value = staffMember.id;
+                        option.textContent = staffMember.name;
+                        dropdown.appendChild(option);
+                    });
                 }
-
-                employees.sort((a, b) => a.name.localeCompare(b.name));
-
-                employees.forEach(employee => {
-                    const option = document.createElement('option');
-                    // We store both type and id in the value for easy retrieval
-                    option.value = `${employee.type}_${employee.id}`;
-                    option.textContent = `${employee.name} (${employee.employeeType || employee.type})`;
-                    dropdown.appendChild(option);
-                });
-
                 console.log('Employees loaded for salary report');
             } catch (error) {
                 console.error('Error loading employees for salary report:', error);
@@ -8649,37 +8652,91 @@
                 showLoading();
                 const studentId = parseInt(document.getElementById('fee-roll-number').getAttribute('data-student-id'));
                 const student = await getFromStore(STORES.STUDENTS, studentId);
-                const monthNumber = parseInt(document.getElementById('fee-month').value);
+                const month = parseInt(document.getElementById('fee-month').value);
                 const year = parseInt(document.getElementById('fee-year').value);
-                const payingNow = parseFloat(document.getElementById('fee-paying-now').value);
-                const fine = parseFloat(document.getElementById('fee-fine').value) || 0;
-                const discount = parseFloat(document.getElementById('fee-discount').value) || 0;
-                const feeData = {
-                    receiptNumber: 'FEE' + Date.now().toString().slice(-6),
-                    studentId: studentId,
-                    studentName: student.name,
-                    month: monthNumber,
-                    year: year,
-                    amount: payingNow,
-                    fine: fine,
-                    discount: discount,
-                    total: payingNow + fine - discount,
-                    date: document.getElementById('fee-payment-date').value,
-                    paymentMethod: document.getElementById('fee-payment-method').value,
-                    notes: document.getElementById('fee-notes').value,
-                };
-                if (feeData.total <= 0) {
-                    showNotification('Total collected amount must be greater than zero.', 'error');
+                const amountPaidNow = parseFloat(document.getElementById('fee-amount-paid').value);
+
+                if (isNaN(amountPaidNow) || amountPaidNow <= 0) {
+                    showNotification("Please enter a valid amount paid.", "error");
                     hideLoading();
                     return;
                 }
-                await addToStore(STORES.FEES, feeData);
-                showNotification('Fee collected successfully.', 'success');
-                await showFeeReceipt(feeData, student);
-                loadStudentForFeeCollection(studentId);
+
+                const existingFeeRecord = (await getAllFromIndex(STORES.FEES, 'studentMonthYear', [studentId, month, year]))[0];
+
+                if (existingFeeRecord) {
+
+                    if (existingFeeRecord.balance <= 0) {
+                        showNotification('Fee for this month is already fully paid.', 'info');
+                        hideLoading();
+                        return;
+                    }
+                    if (amountPaidNow > existingFeeRecord.balance) {
+                        showNotification(`Amount paid (${formatCurrency(amountPaidNow)}) cannot be more than the remaining balance (${formatCurrency(existingFeeRecord.balance)}).`, 'error');
+                        hideLoading();
+                        return;
+                    }
+
+                    const newTotalPaid = (existingFeeRecord.totalPaid || 0) + amountPaidNow;
+                    const newBalance = existingFeeRecord.balance - amountPaidNow;
+
+                    const updatedData = {
+                        ...existingFeeRecord,
+                        totalPaid: newTotalPaid,
+                        balance: newBalance,
+                        lastPaymentDate: new Date().toISOString()
+                    };
+
+                    await updateInStore(STORES.FEES, existingFeeRecord.id, updatedData);
+                    showNotification('Additional payment added successfully.', 'success');
+                    await showFeeReceipt(updatedData, student, amountPaidNow);
+
+                } else {
+
+                    const baseFee = parseFloat(document.getElementById('fee-amount').value);
+                    const fine = parseFloat(document.getElementById('fee-fine').value) || 0;
+                    const discount = parseFloat(document.getElementById('fee-discount').value) || 0;
+                    const netPayable = baseFee + fine - discount;
+
+                    if (amountPaidNow > netPayable) {
+                        showNotification(`Amount paid (${formatCurrency(amountPaidNow)}) cannot be more than the net payable amount (${formatCurrency(netPayable)}).`, 'error');
+                        hideLoading();
+                        return;
+                    }
+
+                    const balance = netPayable - amountPaidNow;
+                    const expectedAmount = baseFee + fine;
+
+                    const newFeeRecord = {
+                        receiptNumber: 'FEE' + Date.now().toString().slice(-6),
+                        studentId: studentId,
+                        studentName: student.name,
+                        month: month,
+                        year: year,
+                        expectedAmount: expectedAmount,
+                        discount: discount,
+                        amount: baseFee,
+                        fine: fine,
+                        totalPaid: amountPaidNow,
+                        balance: balance,
+                        date: document.getElementById('fee-payment-date').value,
+                        paymentMethod: document.getElementById('fee-payment-method').value,
+                        notes: document.getElementById('fee-notes').value,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    const newRecordId = await addToStore(STORES.FEES, newFeeRecord);
+                    const finalRecord = await getFromStore(STORES.FEES, newRecordId);
+                    showNotification('Fee collected successfully.', 'success');
+                    await showFeeReceipt(finalRecord, student, amountPaidNow);
+                }
+
+                loadFeeHistory(studentId);
+                calculateAndDisplayDueFee(student);
+
             } catch (error) {
                 console.error('Error collecting fee:', error);
-                showNotification('Failed to collect fee.', 'error');
+                showNotification('Failed to collect fee: ' + error.message, 'error');
             } finally {
                 hideLoading();
             }
@@ -8733,6 +8790,55 @@
                 hideLoading();
             }
         }
+        async function showSalarySlip(salaryData) {
+            const modal = document.getElementById('salary-slip-modal');
+            const contentArea = document.getElementById('salary-slip-content-area');
+            const settings = await getFromStore(STORES.SETTINGS, 'general');
+            const schoolName = settings?.schoolName || 'Deeni Madrasa';
+
+            const employeeStore = salaryData.employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
+            const employee = await getFromStore(employeeStore, salaryData.employeeId);
+            const designation = employee.designation || employee.specialization || 'Employee';
+
+            const totalEarnings = (salaryData.basicSalary || 0) + (salaryData.allowances || 0) + (salaryData.bonus || 0);
+            const totalDeductions = (salaryData.deductions || 0) + (salaryData.absenceDeduction || 0) + (salaryData.tax || 0);
+
+            contentArea.innerHTML = `
+                <div class="receipt-paper" id="printable-slip" style="font-size: 11px;">
+                    <h3>${schoolName}</h3>
+                    <p style="text-align:center; font-size: 10px;">Salary Slip - ${salaryData.month} ${salaryData.year}</p>
+                    <hr>
+                    <p><strong>Voucher #:</strong> ${salaryData.voucherNumber}</p>
+                    <p><strong>Date:</strong> ${formatDate(salaryData.date)}</p>
+                    <hr>
+                    <p><strong>Name:</strong> ${salaryData.employeeName}</p>
+                    <p><strong>Designation:</strong> ${designation}</p>
+                    <hr>
+                    <div style="font-weight: bold;">Earnings:</div>
+                    <div class="receipt-item"><span>Basic Salary:</span><span>${formatCurrency(salaryData.basicSalary)}</span></div>
+                    <div class="receipt-item"><span>Allowances:</span><span>${formatCurrency(salaryData.allowances)}</span></div>
+                    <div class="receipt-item"><span>Bonus:</span><span>${formatCurrency(salaryData.bonus)}</span></div>
+                    <div class="receipt-item receipt-total" style="border-top: 1px solid #000; padding-top: 5px;"><span>Total Earnings:</span><span>${formatCurrency(totalEarnings)}</span></div>
+                    <hr>
+                    <div style="font-weight: bold;">Deductions:</div>
+                    <div class="receipt-item"><span>Fixed Deductions:</span><span>${formatCurrency(salaryData.deductions)}</span></div>
+                    <div class="receipt-item"><span>Absence:</span><span>${formatCurrency(salaryData.absenceDeduction)}</span></div>
+                    <div class="receipt-item"><span>Tax:</span><span>${formatCurrency(salaryData.tax)}</span></div>
+                    <div class="receipt-item receipt-total" style="border-top: 1px solid #000; padding-top: 5px;"><span>Total Deductions:</span><span>${formatCurrency(totalDeductions)}</span></div>
+                    <hr>
+                    <div class="receipt-item receipt-total" style="font-size: 15px;"><span>NET SALARY:</span><span>${formatCurrency(salaryData.total)}</span></div>
+                </div>
+            `;
+
+            document.getElementById('print-slip-btn-final').onclick = function () {
+                exportElementAsPNG('printable-slip', `SalarySlip-${salaryData.voucherNumber}.png`);
+            };
+
+            document.getElementById('salary-slip-modal-close').onclick = () => modal.style.display = 'none';
+
+            modal.style.display = 'block';
+        }
+
         async function paySalary() {
             try {
                 showLoading();
@@ -8741,31 +8847,60 @@
                 const employeeName = document.getElementById('salary-employee-name').value;
                 const month = document.getElementById('salary-month').value;
                 const year = parseInt(document.getElementById('salary-year').value);
-                const salaryData = {
-                    voucherNumber: 'SAL' + Date.now().toString().slice(-6),
-                    employeeId: employeeId,
-                    employeeType: employeeType,
-                    employeeName: employeeName,
-                    month: month,
-                    year: year,
-                    amountPaid: parseFloat(document.getElementById('salary-paying-now').value),
-                    bonus: parseFloat(document.getElementById('salary-payment-bonus').value) || 0,
-                    deductions: parseFloat(document.getElementById('salary-payment-deductions').value) || 0,
-                    total: parseFloat(document.getElementById('salary-payment-total').value),
-                    date: document.getElementById('salary-payment-date').value,
-                    paymentMethod: document.getElementById('salary-payment-method').value,
-                    transactionId: document.getElementById('salary-payment-transaction').value,
-                    notes: document.getElementById('salary-payment-notes').value,
-                };
-                if (salaryData.total <= 0) {
-                    showNotification('Total paid amount must be greater than zero.', 'error');
-                    hideLoading();
+
+                const netPayable = parseFloat(document.getElementById('salary-payment-total').value);
+                const amountPaidNow = parseFloat(document.getElementById('salary-amount-paid').value);
+
+                if (isNaN(amountPaidNow) || amountPaidNow <= 0) {
+                    showNotification("Please enter a valid amount paid.", "error");
                     return;
                 }
-                await addToStore(STORES.SALARY, salaryData);
-                showNotification('Salary paid successfully.', 'success');
-                await showSalarySlip(salaryData);
-                searchEmployeeForSalary();
+
+                const existingSalaryRecord = (await getAllFromIndex(STORES.SALARY, 'employeeMonthYear', [employeeId, month, year]))[0];
+
+                if (existingSalaryRecord) {
+                    const newTotalPaid = (existingSalaryRecord.totalPaid || 0) + amountPaidNow;
+                    const updatedData = {
+                        ...existingSalaryRecord,
+                        totalPaid: newTotalPaid,
+                        balance: existingSalaryRecord.netPayable - newTotalPaid,
+                        lastPaymentDate: new Date().toISOString()
+                    };
+                    await updateInStore(STORES.SALARY, existingSalaryRecord.id, updatedData);
+                    showNotification('Partial salary payment added successfully.', 'success');
+                    showSalarySlip(updatedData);
+
+                } else {
+                    const salaryData = {
+                        voucherNumber: 'SAL' + Date.now().toString().slice(-6),
+                        employeeId: employeeId,
+                        employeeType: employeeType,
+                        employeeName: employeeName,
+                        month: month,
+                        year: year,
+                        netPayable: netPayable,
+                        totalPaid: amountPaidNow,
+                        balance: netPayable - amountPaidNow,
+                        basicSalary: parseFloat(document.getElementById('salary-payment-basic').value),
+                        allowances: parseFloat(document.getElementById('salary-payment-allowances').value) || 0,
+                        bonus: parseFloat(document.getElementById('salary-payment-bonus').value) || 0,
+                        deductions: parseFloat(document.getElementById('salary-payment-deductions').value) || 0,
+                        absenceDeduction: parseFloat(document.getElementById('salary-payment-absence').value) || 0,
+                        tax: parseFloat(document.getElementById('salary-payment-tax').value) || 0,
+                        date: document.getElementById('salary-payment-date').value,
+                        paymentMethod: document.getElementById('salary-payment-method').value,
+                        transactionId: document.getElementById('salary-payment-transaction').value,
+                        notes: document.getElementById('salary-payment-notes').value,
+                        createdAt: new Date().toISOString()
+                    };
+                    await addToStore(STORES.SALARY, salaryData);
+                    showNotification('Salary paid successfully.', 'success');
+                    showSalarySlip(salaryData);
+                }
+
+                await loadSalaryHistory(employeeId, employeeType);
+                document.getElementById('print-salary-slip').disabled = false;
+
             } catch (error) {
                 console.error('Error paying salary:', error);
                 showNotification('Failed to pay salary.', 'error');
@@ -11576,14 +11711,17 @@
         startAggressiveDeterrents();
     })();
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         loadScriptsAndInitialize();
     });
+
     function loadScriptsAndInitialize() {
         const jspdfSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
         const autotableSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
         const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf';
+
         const loadScript = (src) => new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = src;
@@ -11591,6 +11729,7 @@
             script.onerror = reject;
             document.head.appendChild(script);
         });
+
         const loadFont = () => new Promise((resolve, reject) => {
             fetch(fontUrl)
                 .then(response => response.blob())
@@ -11608,6 +11747,7 @@
                     resolve();
                 });
         });
+
         loadScript(jspdfSrc)
             .then(() => loadScript(autotableSrc))
             .then(() => loadFont())
@@ -11620,6 +11760,7 @@
                 console.error("A script failed to load:", error);
             });
     }
+
     function initializeTableEnhancements() {
         const tableContainers = document.querySelectorAll('.table-container');
         tableContainers.forEach(container => {
@@ -11634,8 +11775,10 @@
             }
         });
     }
+
     function createControls(container, uniqueId) {
         if (container.querySelector('.table-controls')) return;
+
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'table-controls';
         controlsDiv.style.display = 'flex';
@@ -11643,6 +11786,7 @@
         controlsDiv.style.alignItems = 'center';
         controlsDiv.style.padding = '10px 0';
         controlsDiv.style.flexWrap = 'wrap';
+
         const searchInput = document.createElement('input');
         searchInput.type = 'text';
         searchInput.id = `${uniqueId}-search`;
@@ -11651,43 +11795,54 @@
         searchInput.style.width = '250px';
         searchInput.style.maxWidth = '100%';
         searchInput.style.marginBottom = '5px';
+
         const pdfButton = document.createElement('button');
         pdfButton.id = `${uniqueId}-pdf-export`;
         pdfButton.className = 'btn btn-danger';
         pdfButton.innerHTML = '🖨️ PDF';
         pdfButton.title = 'Export to PDF';
         pdfButton.style.height = 'fit-content';
+
         controlsDiv.appendChild(pdfButton);
         controlsDiv.appendChild(searchInput);
+
         container.prepend(controlsDiv);
     }
+
     function attachEventListeners(container, table, uniqueId) {
         const searchInput = document.getElementById(`${uniqueId}-search`);
         searchInput.addEventListener('keyup', () => {
             saveState(uniqueId, { search: searchInput.value });
             runFiltersAndSort(table, uniqueId);
         });
+
         const pdfButton = document.getElementById(`${uniqueId}-pdf-export`);
         pdfButton.addEventListener('click', () => exportTableToPDF(table));
+
         const headers = table.querySelectorAll('thead th');
         headers.forEach((header, colIndex) => {
             if (header.querySelector('.header-content-wrapper')) return;
+
             if (!header.innerText.toLowerCase().includes('action')) {
                 const originalText = header.textContent.trim();
                 header.innerHTML = '';
                 header.style.cursor = 'pointer';
                 header.style.position = 'relative';
+
                 const headerContent = document.createElement('div');
                 headerContent.className = 'header-content-wrapper';
                 headerContent.style.display = 'flex';
                 headerContent.style.alignItems = 'center';
                 headerContent.style.justifyContent = 'space-between';
+
                 const titleSpan = document.createElement('span');
                 titleSpan.textContent = originalText;
+
                 const iconsWrapper = document.createElement('div');
                 iconsWrapper.style.display = 'flex';
                 iconsWrapper.style.alignItems = 'center';
                 iconsWrapper.style.marginLeft = '5px';
+
                 const sortIcon = document.createElement('span');
                 sortIcon.innerHTML = '&#x2195;';
                 sortIcon.style.opacity = '0.5';
@@ -11701,6 +11856,7 @@
                     saveState(uniqueId, { sortCol: colIndex, sortDir: newDir });
                     runFiltersAndSort(table, uniqueId);
                 };
+
                 const filterIcon = document.createElement('span');
                 filterIcon.innerHTML = '&#x1F4D9;';
                 filterIcon.style.opacity = '0.5';
@@ -11711,26 +11867,33 @@
                     e.stopPropagation();
                     showColumnFilterMenu(e.target, table, colIndex, uniqueId);
                 };
+
                 iconsWrapper.appendChild(sortIcon);
                 iconsWrapper.appendChild(filterIcon);
+
                 headerContent.appendChild(titleSpan);
                 headerContent.appendChild(iconsWrapper);
                 header.appendChild(headerContent);
             }
         });
     }
+
     function showColumnFilterMenu(iconElement, table, colIndex, uniqueId) {
         document.getElementById('column-filter-menu')?.remove();
+
         const menu = document.createElement('div');
         menu.id = 'column-filter-menu';
         menu.style.cssText = `position: absolute; background-color: white; border: 1px solid #ccc; border-radius: 4px; padding: 10px; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.2); max-height: 300px; overflow-y: auto;`;
+
         const values = new Set();
         table.querySelectorAll('tbody tr').forEach(row => {
             const cell = row.querySelectorAll('td')[colIndex];
             if (cell) values.add(cell.innerText.trim());
         });
+
         const savedState = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
         const activeFilters = savedState.columnFilters?.[colIndex] || [];
+
         Array.from(values).sort().forEach(value => {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -11745,6 +11908,7 @@
             label.appendChild(document.createTextNode(` ${value}`));
             menu.appendChild(label);
         });
+
         const applyButton = document.createElement('button');
         applyButton.textContent = 'Apply';
         applyButton.className = 'btn btn-primary btn-sm';
@@ -11753,20 +11917,24 @@
             const selectedValues = Array.from(menu.querySelectorAll('input:checked')).map(cb => cb.value);
             const currentState = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
             if (!currentState.columnFilters) currentState.columnFilters = {};
+
             if (selectedValues.length > 0 && selectedValues.length < values.size) {
                 currentState.columnFilters[colIndex] = selectedValues;
             } else {
                 delete currentState.columnFilters[colIndex];
             }
+
             saveState(uniqueId, { columnFilters: currentState.columnFilters });
             runFiltersAndSort(table, uniqueId);
             menu.remove();
         };
         menu.appendChild(applyButton);
+
         document.body.appendChild(menu);
         const rect = iconElement.getBoundingClientRect();
         menu.style.top = `${rect.bottom + window.scrollY}px`;
         menu.style.left = `${rect.left + window.scrollX}px`;
+
         const closeMenu = (e) => {
             if (!menu.contains(e.target)) {
                 menu.remove();
@@ -11775,16 +11943,19 @@
         };
         setTimeout(() => document.addEventListener('click', closeMenu, true), 0);
     }
+
     function runFiltersAndSort(table, uniqueId) {
         const state = JSON.parse(localStorage.getItem('tableStates'))?.[uniqueId] || {};
         const searchTerm = state.search || '';
         const columnFilters = state.columnFilters || {};
         const rows = Array.from(table.querySelectorAll('tbody tr'));
+
         rows.forEach(row => {
             let isVisible = true;
             if (searchTerm) {
                 isVisible = row.innerText.toLowerCase().includes(searchTerm.toLowerCase());
             }
+
             if (isVisible && Object.keys(columnFilters).length > 0) {
                 isVisible = Object.entries(columnFilters).every(([colIndex, filterValues]) => {
                     if (filterValues.length === 0) return true;
@@ -11794,10 +11965,12 @@
             }
             row.style.display = isVisible ? '' : 'none';
         });
+
         if (state.sortCol !== undefined && state.sortDir) {
             sortTable(table, state.sortCol, state.sortDir);
         }
     }
+
     function sortTable(table, colIndex, direction) {
         table.querySelectorAll('thead th').forEach((th, index) => {
             const sortIcon = th.querySelector('span[title="Sort column"]');
@@ -11809,31 +11982,38 @@
                 }
             }
         });
+
         const tbody = table.querySelector('tbody');
         const rows = Array.from(tbody.querySelectorAll('tr'));
         const dirModifier = direction === 'asc' ? 1 : -1;
+
         const sortedRows = rows.sort((rowA, rowB) => {
             const cellA = rowA.querySelectorAll('td')[colIndex]?.innerText.trim() || '';
             const cellB = rowB.querySelectorAll('td')[colIndex]?.innerText.trim() || '';
             const isNumeric = !isNaN(parseFloat(cellA)) && isFinite(cellA) && !isNaN(parseFloat(cellB)) && isFinite(cellB);
+
             if (isNumeric) {
                 return (parseFloat(cellA) - parseFloat(cellB)) * dirModifier;
             } else {
                 return cellA.localeCompare(cellB, ['en', 'ur'], { sensitivity: 'base' }) * dirModifier;
             }
         });
+
         const fragment = document.createDocumentFragment();
         sortedRows.forEach(row => fragment.appendChild(row));
         tbody.innerHTML = '';
         tbody.appendChild(fragment);
     }
+
     async function exportTableToPDF(table) {
         if (typeof jspdf === 'undefined' || !window.jspdf.jsPDF?.autoTable) {
             alert('PDF library not fully loaded. Please wait a moment and try again.');
             return;
         }
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape' });
+
         if (window.amiriFontBase64) {
             doc.addFileToVFS('Amiri-Regular.ttf', window.amiriFontBase64);
             doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
@@ -11841,10 +12021,12 @@
         } else {
             doc.setFont('Helvetica');
         }
+
         const head = [[]];
         const body = [];
         const visibleColumnIndices = [];
         const urduRegex = /[\u0600-\u06FF]/;
+
         table.querySelectorAll('thead th').forEach((th, index) => {
             if (th.offsetParent !== null && !th.classList.contains('no-print')) {
                 visibleColumnIndices.push(index);
@@ -11853,6 +12035,7 @@
                 head[0].push(text);
             }
         });
+
         table.querySelectorAll('tbody tr').forEach(tr => {
             if (tr.style.display !== 'none') {
                 const rowData = [];
@@ -11865,6 +12048,7 @@
                 if (rowData.length > 0) body.push(rowData);
             }
         });
+
         doc.autoTable({
             head: head,
             body: body,
@@ -11881,8 +12065,10 @@
                 }
             }
         });
+
         doc.save(`${table.id || 'table'}-export.pdf`);
     }
+
     function saveState(tableId, state) {
         try {
             const existingState = JSON.parse(localStorage.getItem('tableStates')) || {};
@@ -11892,10 +12078,12 @@
             console.error('Could not save table state:', e);
         }
     }
+
     function applySavedState(table, uniqueId) {
         try {
             const savedStates = JSON.parse(localStorage.getItem('tableStates'));
             if (!savedStates || !savedStates[uniqueId]) return;
+
             const state = savedStates[uniqueId];
             if (state.search) {
                 const searchInput = document.getElementById(`${uniqueId}-search`);
@@ -11918,6 +12106,7 @@
             console.error('Could not apply saved table state:', e);
         }
     }
+
     function observeForNewTables() {
         const observer = new MutationObserver((mutations) => {
             let needsInit = false;
@@ -11936,6 +12125,7 @@
                 initializeTableEnhancements();
             }
         });
+
         observer.observe(document.body, {
             childList: true,
             subtree: true
