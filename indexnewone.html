@@ -969,7 +969,7 @@
         </div>
     </div>
     <div id="fee-receipt-modal" class="modal">
-        <div class="modal-content" style="max-width: 320px;">
+        <div class="modal-content" style="max-width: 336px !important;">
             <span class="close" id="fee-receipt-modal-close">×</span>
             <div id="receipt-content-area">
             </div>
@@ -2934,7 +2934,6 @@
                     </div>
                 </div>
                 <div id="auto-backup-options" style="display: none;">
-                    <!-- Inside the #auto-backup-options div -->
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Backup Frequency</label>
@@ -2944,16 +2943,13 @@
                                 <option value="monthly" selected>Monthly</option>
                             </select>
                         </div>
-                        <!-- ADD THIS NEW BLOCK -->
                         <div class="form-group" id="auto-backup-time-container" style="display: none;">
                             <label class="form-label">Backup Time (approx.)</label>
                             <input type="time" class="form-control" id="auto-backup-time">
                         </div>
-                        <!-- END OF NEW BLOCK -->
                         <div class="form-group">
                             <label class="form-label">Backup Retention Period</label>
                             <select class="form-control" id="auto-backup-retention" required>
-                                <!-- Options will be populated by script -->
                             </select>
                         </div>
                     </div>
@@ -3607,19 +3603,15 @@
                         classSubjectStore.createIndex('teacherId', 'teacherId', { unique: false });
                         classSubjectStore.createIndex('classSubject', ['classId', 'subjectId'], { unique: true });
                     }
-                    // --- THIS IS THE CORRECT, MERGED SCHEMA ---
                     if (!db.objectStoreNames.contains(STORES.ATTENDANCE)) {
                         const attendanceStore = db.createObjectStore(STORES.ATTENDANCE, { keyPath: 'id', autoIncrement: true });
-                        // Indexes for the main app
                         attendanceStore.createIndex('date', 'date', { unique: false });
                         attendanceStore.createIndex('classId', 'classId', { unique: false });
                         attendanceStore.createIndex('sectionId', 'sectionId', { unique: false });
                         attendanceStore.createIndex('studentId', 'studentId', { unique: false });
                         attendanceStore.createIndex('dateClassSection', ['date', 'classId', 'sectionId'], { unique: false });
-                        // Index for both kiosk and main app (for preventing duplicates)
                         attendanceStore.createIndex('dateStudent', ['date', 'studentId'], { unique: true });
                     }
-                    // --- END OF FIX ---
                     if (!db.objectStoreNames.contains(STORES.EXAMS)) {
                         const examStore = db.createObjectStore(STORES.EXAMS, { keyPath: 'id', autoIncrement: true });
                         examStore.createIndex('name', 'name', { unique: false });
@@ -4036,7 +4028,6 @@
                 document.getElementById('setting-font-family').value = settings.fontFamily || 'Arial, sans-serif';
                 document.getElementById('setting-sidebar-position').value = settings.sidebarPosition || 'left';
                 document.getElementById('setting-sidebar-theme').value = settings.sidebarTheme || 'dark';
-                //document.getElementById('auto-backup-freq').value = settings.autoBackupFrequency || 'monthly';
                 document.getElementById('system-language').value = settings.language || 'en';
                 document.getElementById('auto-backup-enable').checked = settings.autoBackupEnabled || false;
                 if (settings.autoBackupRetention) {
@@ -5366,10 +5357,8 @@
             const retentionSelect = document.getElementById('auto-backup-retention');
             const timeContainer = document.getElementById('auto-backup-time-container');
             const frequency = freqSelect.value;
-
             const currentRetentionValue = retentionSelect.value;
             retentionSelect.innerHTML = '';
-
             let options = {};
             if (frequency === 'daily') {
                 options = { '7': '7 Days', '15': '15 Days', '30': '30 Days' };
@@ -5377,23 +5366,20 @@
             } else if (frequency === 'weekly') {
                 options = { '4': '4 Weeks', '8': '8 Weeks', '12': '12 Weeks' };
                 timeContainer.style.display = 'none';
-            } else { // monthly
+            } else {
                 options = { '3': '3 Months', '6': '6 Months', '12': '12 Months' };
                 timeContainer.style.display = 'none';
             }
-
             for (const [value, text] of Object.entries(options)) {
                 const option = document.createElement('option');
                 option.value = value;
                 option.textContent = text;
                 retentionSelect.appendChild(option);
             }
-
             if (retentionSelect.querySelector(`option[value="${currentRetentionValue}"]`)) {
                 retentionSelect.value = currentRetentionValue;
             }
         }
-
         async function loadBackupViewSettings() {
             try {
                 const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
@@ -5401,12 +5387,8 @@
                 document.getElementById('auto-backup-frequency').value = settings.autoBackupFrequency || 'monthly';
                 document.getElementById('auto-backup-time').value = settings.autoBackupTime || '02:00';
                 document.getElementById('auto-backup-options').style.display = settings.autoBackupEnabled ? 'block' : 'none';
-
-                updateBackupOptions(); // Generate correct initial options
-
-                // This must come after updateBackupOptions to select the correct value
+                updateBackupOptions();
                 document.getElementById('auto-backup-retention').value = String(settings.autoBackupRetention || 3);
-
             } catch (e) {
                 console.error("Failed to load backup settings into view:", e);
             }
@@ -6729,8 +6711,6 @@
                     case 'settings':
                         loadSchoolSettings();
                         break;
-
-                    // Inside the switch statement in your showView function
                     case 'backup':
                         loadBackupViewSettings();
                         loadBackupHistoryTable();
@@ -7033,13 +7013,13 @@
                         const canvas = await html2canvas(elementToCapture, {
                             scale: 2,
                             useCORS: true,
-                            backgroundColor: '#ffffff' // Force a background
+                            backgroundColor: '#ffffff'
                         });
                         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                         const filename = `Reminder_${student.rollNumber}_${student.name}.png`;
                         return { filename, blob };
                     } finally {
-                        printArea.innerHTML = ''; // Clean up after capture
+                        printArea.innerHTML = '';
                     }
                 };
                 try {
@@ -7056,7 +7036,6 @@
                     link.download = `Fee_Reminders_${new Date().toISOString().slice(0, 10)}.zip`;
                     link.click();
                     URL.revokeObjectURL(link.href);
-                    // --- Show the new modal with the combined message ---
                     combinedWhatsappMessage += `\nThank you for your cooperation.`;
                     const modal = document.getElementById('combined-message-modal');
                     const textarea = document.getElementById('combined-message-textarea');
@@ -7517,17 +7496,14 @@
             const tbody = document.querySelector('#backup-history-table tbody');
             tbody.innerHTML = '';
             const history = (await getAllFromStore(STORES.BACKUP)).filter(b => !b.isAutomatic);
-
             if (!history || history.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No manual backup history available.</td></tr>';
                 return;
             }
-
             history.sort((a, b) => new Date(b.date) - new Date(a.date));
             history.forEach((backup, index) => {
                 const row = document.createElement('tr');
                 const backupDate = new Date(backup.date);
-
                 row.innerHTML = `
             <td>${index + 1}</td>
             <td>${backupDate.toLocaleDateString('en-US')}</td>
@@ -7549,7 +7525,6 @@
                     showNotification('Backup data not found in the database.', 'error');
                     return;
                 }
-
                 const url = URL.createObjectURL(backupRecord.blob);
                 const link = document.createElement('a');
                 link.href = url;
@@ -7558,7 +7533,6 @@
                 link.click();
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
-
                 showNotification('Backup download started.', 'success');
             } catch (error) {
                 console.error('Error downloading automatic backup:', error);
@@ -8169,9 +8143,7 @@
                     if (dueAmount > 0) {
                         hasDefaulters = true;
                         const row = document.createElement('tr');
-                        // --- THIS IS THE FIX ---
                         row.dataset.studentId = student.id;
-                        // --- END OF FIX ---
                         const studentClassName = classMap.get(student.classId) || 'N/A';
                         row.innerHTML = `
                     <td>${student.rollNumber}</td>
@@ -9667,7 +9639,6 @@
                 const frequency = document.getElementById('auto-backup-frequency').value;
                 const retention = document.getElementById('auto-backup-retention').value;
                 const backupTime = document.getElementById('auto-backup-time').value;
-
                 const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
                 const updatedSettings = {
                     ...settings,
@@ -9675,10 +9646,14 @@
                     autoBackupEnabled: isEnabled,
                     autoBackupFrequency: frequency,
                     autoBackupRetention: parseInt(retention),
-                    autoBackupTime: backupTime, // Save the new time value
+                    autoBackupTime: backupTime,
                     updatedAt: new Date().toISOString()
                 };
-                await addToStore(STORES.SETTINGS, updatedSettings, true); // Use upsert
+                await addToStore(STORES.SETTINGS, updatedSettings, true);
+                if (isEnabled && !localStorage.getItem('lastAutoBackupTimestamp')) {
+                    localStorage.setItem('lastAutoBackupTimestamp', new Date().toISOString());
+                    console.log('Priming automatic backup. First backup will run on the next scheduled interval.');
+                }
                 showNotification('Automatic backup settings saved successfully.', 'success');
             } catch (error) {
                 console.error('Error saving auto backup settings:', error);
@@ -12466,8 +12441,6 @@
     } else {
         applyMobileFix();
     }
-
-
     async function runAutomaticBackupCheck() {
         try {
             const settings = await getFromStore(STORES.SETTINGS, 'general');
@@ -12475,35 +12448,35 @@
                 console.log('Automatic backup is disabled.');
                 return;
             }
-
             const lastBackupTimestamp = localStorage.getItem('lastAutoBackupTimestamp');
             if (!lastBackupTimestamp) {
-                console.log('No previous auto-backup. Will run on next scheduled time.');
+                console.log('Automatic backup is enabled. Waiting for the first scheduled interval.');
                 return;
             }
-
             const now = new Date();
             const lastBackupDate = new Date(lastBackupTimestamp);
-            const frequency = settings.autoBackupFrequency || 'monthly';
             let isDue = false;
-
-            if (frequency === 'daily') {
+            if (settings.autoBackupFrequency === 'daily') {
                 const backupTime = settings.autoBackupTime || '02:00';
                 const [hours, minutes] = backupTime.split(':').map(Number);
                 const todaySchedule = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-                // It's due if the last backup was before today's scheduled time, AND it's currently after today's scheduled time.
-                if (lastBackupDate < todaySchedule && now >= todaySchedule) {
-                    isDue = true;
+                if (now < todaySchedule) {
+                    isDue = false;
+                } else {
+                    if (lastBackupDate < todaySchedule) {
+                        isDue = true;
+                    }
                 }
             } else {
                 let daysToWait = 30;
-                if (frequency === 'weekly') daysToWait = 7;
-                const cutoffDate = new Date(lastBackupDate.getTime() + daysToWait * 24 * 60 * 60 * 1000);
-                if (now >= cutoffDate) {
+                if (settings.autoBackupFrequency === 'weekly') {
+                    daysToWait = 7;
+                }
+                const nextDueDate = new Date(lastBackupDate.getTime() + daysToWait * 24 * 60 * 60 * 1000);
+                if (now >= nextDueDate) {
                     isDue = true;
                 }
             }
-
             if (isDue) {
                 console.log(`Automatic backup is due. Triggering download.`);
                 showNotification('Automatic backup is due. Download will start...', 'info');
@@ -12511,26 +12484,22 @@
             } else {
                 console.log('Automatic backup is not due yet.');
             }
-
         } catch (error) {
             console.error('Error during automatic backup check:', error);
         }
     }
-
     async function triggerAutomaticBackupDownload() {
         showLoading();
         try {
             let backupData = {};
             for (const storeName in STORES) {
-                if (STORES[storeName] !== 'backup') { // Ensure we don't backup the backup log
+                if (STORES[storeName] !== 'backup') {
                     backupData[STORES[storeName]] = await getAllFromStore(STORES[storeName]);
                 }
             }
-
             const fileContent = JSON.stringify(backupData, null, 2);
             const backupBlob = new Blob([fileContent], { type: 'application/json' });
             const filename = `auto_backup_${new Date().toISOString().replace(/:/g, '-')}.json`;
-
             const url = URL.createObjectURL(backupBlob);
             const link = document.createElement('a');
             link.href = url;
@@ -12539,11 +12508,8 @@
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
-
-            // **CRUCIAL**: Update the timestamp after download starts
             localStorage.setItem('lastAutoBackupTimestamp', new Date().toISOString());
             showNotification('Automatic backup downloaded successfully!', 'success');
-
         } catch (error) {
             console.error('Failed to create automatic backup file:', error);
             showNotification('Automatic backup failed.', 'error');
@@ -12551,19 +12517,16 @@
             hideLoading();
         }
     }
-
     async function performAutomaticBackup(settings) {
         console.log('Performing automatic backup...');
         let data = {};
         for (const storeName in STORES) {
-            if (storeName !== 'BACKUP') { // Do not include the backup store in its own backup
+            if (storeName !== 'BACKUP') {
                 data[STORES[storeName]] = await getAllFromStore(STORES[storeName]);
             }
         }
-
         const filename = `auto_backup_${new Date().toISOString().replace(/:/g, '-')}.json`;
         const backupBlob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-
         const backupRecord = {
             type: 'full-automatic',
             format: 'json',
@@ -12571,9 +12534,8 @@
             size: backupBlob.size,
             isAutomatic: true,
             filename: filename,
-            blob: backupBlob // Store the actual downloadable blob
+            blob: backupBlob
         };
-
         await addToStore(STORES.BACKUP, backupRecord);
         showNotification('Automatic backup created successfully.', 'info');
         await cleanupOldBackups(settings);
@@ -12582,9 +12544,7 @@
         const retentionMonths = settings.autoBackupRetention || 3;
         const cutoffDate = new Date();
         cutoffDate.setMonth(cutoffDate.getMonth() - retentionMonths);
-
         const allAutoBackups = (await getAllFromStore(STORES.BACKUP)).filter(b => b.isAutomatic);
-
         let deletedCount = 0;
         for (const backup of allAutoBackups) {
             if (new Date(backup.date) < cutoffDate) {
