@@ -314,9 +314,11 @@
             padding: 12px;
             border: 1px solid #888;
             width: 80%;
-            max-width: 600px;
+            max-width: 530px !important;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            height: 97%;
+            overflow-y: scroll;
         }
 
         .close {
@@ -914,26 +916,27 @@
         select#language-switcher {
             display: none;
         }
+
         .table-controls .btn-danger {
-    transition: opacity 0.3s, background-color 0.3s;
-}
+            transition: opacity 0.3s, background-color 0.3s;
+        }
 
-body.pdf-loading .table-controls .btn-danger[id*='pdf-export'] {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background-color: #6c757d;
-}
+        body.pdf-loading .table-controls .btn-danger[id*='pdf-export'] {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #6c757d;
+        }
 
-body.pdf-error .table-controls .btn-danger[id*='pdf-export'] {
-    background-color: #dc3545;
-    border-color: #dc3545;
-    cursor: not-allowed;
-}
+        body.pdf-error .table-controls .btn-danger[id*='pdf-export'] {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            cursor: not-allowed;
+        }
 
-body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
-    content: ' (Error)';
-    font-size: 0.8em;
-}
+        body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
+            content: ' (Error)';
+            font-size: 0.8em;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -943,6 +946,18 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
 </head>
 
 <body>
+    <div id="combined-message-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" id="combined-message-modal-close">×</span>
+            <div class="form-title">Combined Message for WhatsApp</div>
+            <p>This message is ready to be pasted into your WhatsApp group.</p>
+            <textarea id="combined-message-textarea" class="form-control" rows="15" readonly></textarea>
+            <div class="form-row" style="margin-top: 15px; justify-content: flex-end;">
+                <button id="copy-combined-message-btn" class="btn btn-success">Copy Message</button>
+            </div>
+        </div>
+    </div>
+    <div id="print-area" style="position: absolute; left: -9999px; top: -9999px;"></div>
     <div id="salary-slip-modal" class="modal">
         <div class="modal-content" style="max-width: 450px;">
             <span class="close" id="salary-slip-modal-close">×</span>
@@ -964,7 +979,7 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         </div>
     </div>
     <div id="student-details-modal" class="modal">
-        <div class="modal-content" style="max-width: 900px; overflow-y: auto;">
+        <div class="modal-content" style="max-width: 900px !important; overflow-y: auto;">
             <span class="close" id="modal-close-btn">×</span>
             <div id="modal-content-area">
             </div>
@@ -979,7 +994,7 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             </div>
             <div class="form-group">
                 <label class="form-label">Message Template</label>
-                <textarea class="form-control" id="notice-message-template" rows="5"></textarea>
+                <textarea class="form-control" id="notice-message-template" rows="5" style="height: 448px;"></textarea>
             </div>
             <div class="form-row" style="margin-top: 20px; justify-content: flex-end;">
                 <button id="send-whatsapp-btn" class="btn btn-success" style="margin-right: 10px;">Send via
@@ -2919,6 +2934,7 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     </div>
                 </div>
                 <div id="auto-backup-options" style="display: none;">
+                    <!-- Inside the #auto-backup-options div -->
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Backup Frequency</label>
@@ -2928,13 +2944,16 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                                 <option value="monthly" selected>Monthly</option>
                             </select>
                         </div>
+                        <!-- ADD THIS NEW BLOCK -->
+                        <div class="form-group" id="auto-backup-time-container" style="display: none;">
+                            <label class="form-label">Backup Time (approx.)</label>
+                            <input type="time" class="form-control" id="auto-backup-time">
+                        </div>
+                        <!-- END OF NEW BLOCK -->
                         <div class="form-group">
                             <label class="form-label">Backup Retention Period</label>
                             <select class="form-control" id="auto-backup-retention" required>
-                                <option value="1">1 Month</option>
-                                <option value="3" selected>3 Months</option>
-                                <option value="6">6 Months</option>
-                                <option value="12">1 Year</option>
+                                <!-- Options will be populated by script -->
                             </select>
                         </div>
                     </div>
@@ -3343,12 +3362,6 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     <div class="form-title">System Settings</div>
                     <form id="system-settings-form">
                         <div class="form-row">
-                            <div class="form-group"><label class="form-label">Database Backup Frequency</label><select
-                                    class="form-control" id="auto-backup-freq">
-                                    <option value="daily">Daily</option>
-                                    <option value="weekly">Weekly</option>
-                                    <option value="monthly">Monthly</option>
-                                </select></div>
                             <div class="form-group"><label class="form-label">Language</label><select
                                     class="form-control" id="system-language">
                                     <option value="en">English</option>
@@ -3594,15 +3607,19 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                         classSubjectStore.createIndex('teacherId', 'teacherId', { unique: false });
                         classSubjectStore.createIndex('classSubject', ['classId', 'subjectId'], { unique: true });
                     }
+                    // --- THIS IS THE CORRECT, MERGED SCHEMA ---
                     if (!db.objectStoreNames.contains(STORES.ATTENDANCE)) {
                         const attendanceStore = db.createObjectStore(STORES.ATTENDANCE, { keyPath: 'id', autoIncrement: true });
+                        // Indexes for the main app
                         attendanceStore.createIndex('date', 'date', { unique: false });
                         attendanceStore.createIndex('classId', 'classId', { unique: false });
                         attendanceStore.createIndex('sectionId', 'sectionId', { unique: false });
                         attendanceStore.createIndex('studentId', 'studentId', { unique: false });
                         attendanceStore.createIndex('dateClassSection', ['date', 'classId', 'sectionId'], { unique: false });
+                        // Index for both kiosk and main app (for preventing duplicates)
                         attendanceStore.createIndex('dateStudent', ['date', 'studentId'], { unique: true });
                     }
+                    // --- END OF FIX ---
                     if (!db.objectStoreNames.contains(STORES.EXAMS)) {
                         const examStore = db.createObjectStore(STORES.EXAMS, { keyPath: 'id', autoIncrement: true });
                         examStore.createIndex('name', 'name', { unique: false });
@@ -4009,17 +4026,17 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                         opt.selected = settings.weeklyHoliday.includes(opt.value);
                     });
                 }
-                document.getElementById('setting-fee-due-day').value = settings.feeDueDay || 10;
-                document.getElementById('setting-fee-late-fine').value = settings.feeLateFine || 50;
-                document.getElementById('setting-library-return-days').value = settings.libraryReturnDays || 14;
-                document.getElementById('setting-library-late-fine').value = settings.libraryLateFine || 5;
+                document.getElementById('setting-fee-due-day').value = settings.feeDueDay !== undefined ? settings.feeDueDay : 10;
+                document.getElementById('setting-fee-late-fine').value = settings.feeLateFine !== undefined ? settings.feeLateFine : 50;
+                document.getElementById('setting-library-return-days').value = settings.libraryReturnDays !== undefined ? settings.libraryReturnDays : 14;
+                document.getElementById('setting-library-late-fine').value = settings.libraryLateFine !== undefined ? settings.libraryLateFine : 5;
                 document.getElementById('setting-primary-color').value = settings.primaryColor || '#3498db';
                 document.getElementById('setting-secondary-color').value = settings.secondaryColor || '#2c3e50';
                 document.getElementById('setting-font-size').value = settings.fontSize || 'medium';
                 document.getElementById('setting-font-family').value = settings.fontFamily || 'Arial, sans-serif';
                 document.getElementById('setting-sidebar-position').value = settings.sidebarPosition || 'left';
                 document.getElementById('setting-sidebar-theme').value = settings.sidebarTheme || 'dark';
-                document.getElementById('auto-backup-freq').value = settings.autoBackupFrequency || 'monthly';
+                //document.getElementById('auto-backup-freq').value = settings.autoBackupFrequency || 'monthly';
                 document.getElementById('system-language').value = settings.language || 'en';
                 document.getElementById('auto-backup-enable').checked = settings.autoBackupEnabled || false;
                 if (settings.autoBackupRetention) {
@@ -4292,39 +4309,6 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             html += `</tbody></table></div>`;
             return html;
         }
-        async function generatePendingFeeDetailsHTML() {
-            const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
-            const feeMap = new Map((await getAllFromStore(STORES.FEES)).map(f => [`${f.studentId}-${f.month}-${f.year}`, true]));
-            const currentDate = new Date();
-            let defaulters = [];
-            let totalDueAmount = 0;
-            for (const student of students) {
-                let studentDue = 0;
-                let dueMonthsList = [];
-                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-                if (studentMonthlyFee === 0 || !student.admissionDate) continue;
-                const startDate = new Date(student.admissionDate);
-                for (let d = new Date(startDate.getFullYear(), startDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
-                    if (!feeMap.has(`${student.id}-${d.getMonth() + 1}-${d.getFullYear()}`)) {
-                        studentDue += studentMonthlyFee;
-                        dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`);
-                    }
-                }
-                if (studentDue > 0) {
-                    totalDueAmount += studentDue;
-                    const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
-                    defaulters.push({ name: student.name, rollNumber: student.rollNumber, className, amount: studentDue, months: dueMonthsList.join(', ') });
-                }
-            }
-            let html = `<div class="dashboard-cards" style="margin-bottom: 15px;"><div class="card"><div class="card-title">Total Outstanding</div><div class="card-value">${formatCurrency(totalDueAmount)}</div></div><div class="card"><div class="card-title">Defaulters</div><div class="card-value">${defaulters.length}</div></div></div>`;
-            html += `<div class="table-container" style="max-height: 60vh; overflow-y: auto;"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Class</th><th>Total Due</th><th>Due Months</th></tr></thead><tbody>`;
-            defaulters.forEach(defaulter => {
-                html += `<tr><td>${defaulter.rollNumber}</td><td>${defaulter.name}</td><td>${defaulter.className}</td><td>${formatCurrency(defaulter.amount)}</td><td style="font-size: 0.8em;">${defaulter.months}</td></tr>`;
-            });
-            html += `</tbody></table></div>`;
-            return html;
-        }
         async function getTodayAttendancePercentage(date) {
             try {
                 const attendanceRecordsForToday = await getAllFromIndex(STORES.ATTENDANCE, 'date', date);
@@ -4364,25 +4348,34 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         }
         async function getTotalPendingFee() {
             try {
-                const students = await getAllFromStore(STORES.STUDENTS);
+                const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
                 const allFeeRecords = await getAllFromStore(STORES.FEES);
+                const feeStructures = await getAllFromStore(STORES.FEE_STRUCTURE);
+                const structureMap = new Map();
+                feeStructures.forEach(fs => {
+                    structureMap.set(`${fs.classId}-${fs.category}`, fs.monthlyFee);
+                });
+                const paymentsMap = new Map();
+                allFeeRecords.forEach(rec => {
+                    const key = `${rec.studentId}-${rec.month}-${rec.year}`;
+                    const totalPaid = (paymentsMap.get(key) || 0) + (rec.amount - (rec.discount || 0));
+                    paymentsMap.set(key, totalPaid);
+                });
                 let totalPendingFee = 0;
                 const currentDate = new Date();
                 for (const student of students) {
-                    if (!student.admissionDate || (student.status && student.status !== 'active')) continue;
-                    const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                    const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                    if (!student.admissionDate) continue;
+                    const studentDefaultFee = student.monthlyFee || 0;
+                    const feeStructureRate = structureMap.get(`${student.classId}-${student.feeCategory}`) ?? structureMap.get(`${student.classId}-General`);
+                    const studentMonthlyFee = feeStructureRate ?? studentDefaultFee;
                     if (studentMonthlyFee === 0) continue;
-                    const studentPayments = allFeeRecords.filter(rec => rec.studentId === student.id);
                     const admissionDate = new Date(student.admissionDate);
                     for (let d = new Date(admissionDate.getFullYear(), admissionDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
                         const month = d.getMonth() + 1;
                         const year = d.getFullYear();
-                        const totalPaidForMonth = studentPayments
-                            .filter(p => p.month === month && p.year === year)
-                            .reduce((sum, p) => sum + p.total, 0);
-                        if (totalPaidForMonth < studentMonthlyFee) {
-                            totalPendingFee += (studentMonthlyFee - totalPaidForMonth);
+                        const paidAmount = paymentsMap.get(`${student.id}-${month}-${year}`) || 0;
+                        if (paidAmount < studentMonthlyFee) {
+                            totalPendingFee += (studentMonthlyFee - paidAmount);
                         }
                     }
                 }
@@ -4939,34 +4932,41 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         }
         async function loadStudentsTable(studentsToLoad = null) {
             try {
-                const allStudents = studentsToLoad === null ? await getAllFromStore(STORES.STUDENTS) : studentsToLoad;
-                const activeStudents = allStudents.filter(s => !s.status || s.status === 'active');
+                const students = studentsToLoad === null ? await getAllFromStore(STORES.STUDENTS) : studentsToLoad;
+                const activeStudents = students.filter(s => !s.status || s.status === 'active');
                 const tbody = document.querySelector('#students-table tbody');
                 tbody.innerHTML = '';
                 if (activeStudents.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No active students found.</td></tr>';
                     return;
                 }
-                for (const student of activeStudents) {
-                    const row = document.createElement('tr');
-                    const displayClassName = student.className || 'N/A';
-                    const displaySectionName = student.sectionName || 'N/A';
-                    row.innerHTML = `
-            <td>${student.rollNumber}</td>
-            <td>${student.name}</td>
-            <td>${student.fatherName}</td>
-            <td>${displayClassName}</td>
-            <td>${displaySectionName}</td>
-            <td>${student.contact}</td>
-            <td>${formatDate(student.admissionDate)}</td>
-            <td class="no-print">
-                <button class="btn btn-info btn-sm" onclick="viewStudentDetails(${student.id})">View</button>
-                <button class="btn btn-primary btn-sm" onclick="editStudent(${student.id})">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.STUDENTS}', ${student.id})">Delete</button>
-            </td>
-        `;
-                    tbody.appendChild(row);
-                }
+                const [allClasses, allSections] = await Promise.all([
+                    getAllFromStore(STORES.CLASSES),
+                    getAllFromStore(STORES.SECTIONS)
+                ]);
+                const classMap = new Map(allClasses.map(c => [c.id, c.name]));
+                const sectionMap = new Map(allSections.map(s => [s.id, s.name]));
+                const rowsHtml = activeStudents.map(student => {
+                    const className = classMap.get(student.classId) || 'N/A';
+                    const sectionName = sectionMap.get(student.sectionId) || 'N/A';
+                    return `
+                <tr>
+                    <td>${student.rollNumber}</td>
+                    <td>${student.name}</td>
+                    <td>${student.fatherName}</td>
+                    <td>${className}</td>
+                    <td>${sectionName}</td>
+                    <td>${student.contact}</td>
+                    <td>${formatDate(student.admissionDate)}</td>
+                    <td class="no-print">
+                        <button class="btn btn-info btn-sm" onclick="viewStudentDetails(${student.id})">View</button>
+                        <button class="btn btn-primary btn-sm" onclick="editStudent(${student.id})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.STUDENTS}', ${student.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
+                }).join('');
+                tbody.innerHTML = rowsHtml;
             } catch (error) {
                 console.error('Error loading students table:', error);
             }
@@ -5261,29 +5261,155 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                 showNotification('Error checking and loading sample data.', 'error');
             }
         }
-        function showSendNoticePopup(name, phone, amount, month, year) {
-            const modal = document.getElementById('send-notice-modal');
-            const studentInfoDiv = document.getElementById('notice-student-info');
-            const messageTextarea = document.getElementById('notice-message-template');
-            studentInfoDiv.innerHTML = `<strong>To:</strong> ${name} <br> <strong>Phone:</strong> ${phone}`;
-            const schoolName = appSettings.schoolName || 'The School';
-            const message = `Dear Parent,\nThis is a reminder that the fee of ${formatCurrency(amount)} for your child ${name} for the month of ${month}, ${year} is due.\n\nKindly pay at your earliest convenience.\n\nThank you,\n${schoolName}`;
-            messageTextarea.value = message;
-            const smsBtn = document.getElementById('send-sms-btn');
-            const whatsappBtn = document.getElementById('send-whatsapp-btn');
-            smsBtn.onclick = function () {
-                const encodedMessage = encodeURIComponent(messageTextarea.value);
-                window.open(`sms:${phone}?body=${encodedMessage}`);
-            };
-            whatsappBtn.onclick = function () {
-                let whatsappPhone = phone.replace(/-/g, '');
-                if (whatsappPhone.startsWith('0')) {
-                    whatsappPhone = '92' + whatsappPhone.substring(1);
+        async function showSendNoticePopup(studentId) {
+            showLoading();
+            try {
+                const student = await getFromStore(STORES.STUDENTS, studentId);
+                if (!student) {
+                    showNotification('Student not found.', 'error');
+                    console.groupEnd();
+                    return;
                 }
-                const encodedMessage = encodeURIComponent(messageTextarea.value);
-                window.open(`https://wa.me/${whatsappPhone}?text=${encodedMessage}`, '_blank');
-            };
-            modal.style.display = 'block';
+                if (!student.admissionDate) {
+                    const errorMessage = `Student ${student.name} (ID: ${studentId}) is missing an admission date. Cannot calculate dues.`;
+                    showNotification(errorMessage, 'error');
+                    const modal = document.getElementById('send-notice-modal');
+                    document.getElementById('notice-student-info').innerHTML = `<strong>To:</strong> ${student.name}`;
+                    document.getElementById('notice-message-template').value = `ERROR: Cannot generate notice.\n\nReason: The student is missing an admission date in their profile. Please edit the student's record and add a correct admission date to calculate their fee history.`;
+                    modal.style.display = 'block';
+                    console.groupEnd();
+                    hideLoading();
+                    return;
+                }
+                const [allPaidRecords, feeStructures] = await Promise.all([
+                    getAllFromIndex(STORES.FEES, 'studentId', student.id),
+                    getAllFromStore(STORES.FEE_STRUCTURE)
+                ]);
+                const structureMap = new Map();
+                feeStructures.forEach(fs => {
+                    structureMap.set(`${fs.classId}-${fs.category}`, fs.monthlyFee);
+                });
+                const paymentsMap = new Map();
+                allPaidRecords.forEach(rec => {
+                    const key = `${rec.month}-${rec.year}`;
+                    const paymentInfo = paymentsMap.get(key) || { paid: 0, historicalFee: null };
+                    paymentInfo.paid += rec.amount - (rec.discount || 0);
+                    if (rec.monthlyFeeAtTimeOfPayment) {
+                        paymentInfo.historicalFee = rec.monthlyFeeAtTimeOfPayment;
+                    }
+                    paymentsMap.set(key, paymentInfo);
+                });
+                let totalOutstanding = 0;
+                let dueHistoryDetails = [];
+                const currentDate = new Date();
+                const admissionDate = new Date(student.admissionDate);
+                for (let d = new Date(admissionDate.getFullYear(), admissionDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+                    const month = d.getMonth() + 1;
+                    const year = d.getFullYear();
+                    const monthName = d.toLocaleString('en-US', { month: 'long' });
+                    const paymentInfo = paymentsMap.get(`${month}-${year}`);
+                    let expectedFee = paymentInfo?.historicalFee;
+                    if (expectedFee === undefined || expectedFee === null) {
+                        const feeStructureRate = structureMap.get(`${student.classId}-${student.feeCategory}`) ?? structureMap.get(`${student.classId}-General`);
+                        expectedFee = feeStructureRate ?? student.monthlyFee ?? 0;
+                    }
+                    if (expectedFee === 0) {
+                        continue;
+                    }
+                    const paidForMonth = paymentInfo?.paid || 0;
+                    const dueForMonth = expectedFee - paidForMonth;
+                    if (dueForMonth > 0.01) {
+                        totalOutstanding += dueForMonth;
+                        dueHistoryDetails.push(`- ${monthName} ${year}: ${formatCurrency(dueForMonth)}`);
+                    }
+                }
+                const greetingName = student.guardian || student.fatherName || 'Parent';
+                const schoolName = appSettings.schoolName || 'The School';
+                let message = `Dear ${greetingName},\n\nThis is a friendly reminder regarding the fee dues for your child, ${student.name}.\n\n`;
+                if (dueHistoryDetails.length > 0) {
+                    message += `--- Dues Summary ---\n`;
+                    message += dueHistoryDetails.join('\n');
+                    message += `\n--------------------\nTotal Outstanding Amount: ${formatCurrency(totalOutstanding)}\n\n`;
+                    message += `Kindly clear the dues at your earliest convenience.\n\n`;
+                } else {
+                    message += `Our records show no outstanding dues. If this is an error, please contact the office.\n\n`
+                }
+                message += `Thank you,\n${schoolName}`;
+                const modal = document.getElementById('send-notice-modal');
+                const studentInfoDiv = document.getElementById('notice-student-info');
+                const messageTextarea = document.getElementById('notice-message-template');
+                studentInfoDiv.innerHTML = `<strong>To:</strong> ${student.name} (${greetingName}) <br> <strong>Phone:</strong> ${student.contact}`;
+                messageTextarea.value = message;
+                document.getElementById('send-sms-btn').onclick = () => window.open(`sms:${student.contact}?body=${encodeURIComponent(message)}`);
+                document.getElementById('send-whatsapp-btn').onclick = () => {
+                    const whatsappWindow = window.open('', '_blank');
+                    if (!whatsappWindow) { showNotification('Popup was blocked!', 'error'); return; }
+                    whatsappWindow.document.write('Opening WhatsApp...');
+                    navigator.clipboard.writeText(message).then(() => {
+                        showNotification('Message copied!', 'info');
+                        let whatsappPhone = student.contact.replace(/[^0-9]/g, '');
+                        if (whatsappPhone.startsWith('0')) whatsappPhone = '92' + whatsappPhone.substring(1);
+                        whatsappWindow.location.href = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`;
+                    });
+                };
+                modal.style.display = 'block';
+            } catch (error) {
+                console.error("Error preparing notice:", error);
+                showNotification('Could not prepare the reminder notice.', 'error');
+            } finally {
+                console.groupEnd();
+                hideLoading();
+            }
+        }
+        function updateBackupOptions() {
+            const freqSelect = document.getElementById('auto-backup-frequency');
+            const retentionSelect = document.getElementById('auto-backup-retention');
+            const timeContainer = document.getElementById('auto-backup-time-container');
+            const frequency = freqSelect.value;
+
+            const currentRetentionValue = retentionSelect.value;
+            retentionSelect.innerHTML = '';
+
+            let options = {};
+            if (frequency === 'daily') {
+                options = { '7': '7 Days', '15': '15 Days', '30': '30 Days' };
+                timeContainer.style.display = 'block';
+            } else if (frequency === 'weekly') {
+                options = { '4': '4 Weeks', '8': '8 Weeks', '12': '12 Weeks' };
+                timeContainer.style.display = 'none';
+            } else { // monthly
+                options = { '3': '3 Months', '6': '6 Months', '12': '12 Months' };
+                timeContainer.style.display = 'none';
+            }
+
+            for (const [value, text] of Object.entries(options)) {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = text;
+                retentionSelect.appendChild(option);
+            }
+
+            if (retentionSelect.querySelector(`option[value="${currentRetentionValue}"]`)) {
+                retentionSelect.value = currentRetentionValue;
+            }
+        }
+
+        async function loadBackupViewSettings() {
+            try {
+                const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
+                document.getElementById('auto-backup-enable').checked = settings.autoBackupEnabled || false;
+                document.getElementById('auto-backup-frequency').value = settings.autoBackupFrequency || 'monthly';
+                document.getElementById('auto-backup-time').value = settings.autoBackupTime || '02:00';
+                document.getElementById('auto-backup-options').style.display = settings.autoBackupEnabled ? 'block' : 'none';
+
+                updateBackupOptions(); // Generate correct initial options
+
+                // This must come after updateBackupOptions to select the correct value
+                document.getElementById('auto-backup-retention').value = String(settings.autoBackupRetention || 3);
+
+            } catch (e) {
+                console.error("Failed to load backup settings into view:", e);
+            }
         }
         async function loadSampleData() {
             try {
@@ -6379,6 +6505,7 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             }
             setupStudentFeeDisplay();
             showView('dashboard');
+            await runAutomaticBackupCheck();
             console.log('Application initialized successfully');
         }
         function renderBarChart(canvasId, chartTitle, labels, dataValues) {
@@ -6602,7 +6729,10 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     case 'settings':
                         loadSchoolSettings();
                         break;
+
+                    // Inside the switch statement in your showView function
                     case 'backup':
+                        loadBackupViewSettings();
                         loadBackupHistoryTable();
                         break;
                     default:
@@ -6779,31 +6909,23 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         }
         async function calculateLateFee() {
             const fineInput = document.getElementById('fee-fine');
-            const studentId = parseInt(document.getElementById('fee-roll-number').dataset.studentId);
-            if (!studentId) {
-                fineInput.value = 0;
-                calculateFeeTotal();
-                return;
-            }
+            const paymentDateStr = document.getElementById('fee-payment-date').value;
             const month = parseInt(document.getElementById('fee-month').value);
             const year = parseInt(document.getElementById('fee-year').value);
-            const paymentDateStr = document.getElementById('fee-payment-date').value;
-            const student = await getFromStore(STORES.STUDENTS, studentId);
-            const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-            const fullMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-            const allPaidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
-            const totalPaidForMonth = allPaidRecords
-                .filter(rec => rec.month === month && rec.year === year)
-                .reduce((sum, rec) => sum + (rec.amount - rec.discount), 0);
-            if (fullMonthlyFee - totalPaidForMonth <= 0) {
+            if (!fineInput || !paymentDateStr || isNaN(month) || isNaN(year)) {
+                return;
+            }
+            const remainingBalanceForMonth = parseFloat(document.getElementById('fee-balance').value);
+            if (!isNaN(remainingBalanceForMonth) && remainingBalanceForMonth <= 0) {
                 fineInput.value = 0;
                 calculateFeeTotal();
                 return;
             }
-            const dueDate = new Date(year, month - 1, appSettings.feeDueDay || 10);
+            const dueDay = appSettings.feeDueDay || 10;
+            const dueDate = new Date(year, month - 1, dueDay);
             const paymentDate = new Date(paymentDateStr);
             if (paymentDate > dueDate) {
-                fineInput.value = appSettings.feeLateFine || 50;
+                fineInput.value = appSettings.feeLateFine ?? 50;
             } else {
                 fineInput.value = 0;
             }
@@ -6812,29 +6934,52 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         async function calculateAndDisplayDueFee(student) {
             const dueFeeInput = document.getElementById('fee-due');
             dueFeeInput.value = "Calculating...";
-            let totalDue = 0;
-            const allPaidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
-            const admissionDate = new Date(student.admissionDate);
-            admissionDate.setDate(1);
-            const currentDate = new Date();
-            for (let d = new Date(admissionDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
-                const month = d.getMonth() + 1;
-                const year = d.getFullYear();
-                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                const expectedFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-                if (expectedFee === 0) continue;
-                const totalPaidForMonth = allPaidRecords
-                    .filter(rec => rec.month === month && rec.year === year)
-                    .reduce((sum, rec) => sum + (rec.amount - (rec.discount || 0)), 0);
-                const balanceForMonth = expectedFee - totalPaidForMonth;
-                if (balanceForMonth > 0) {
-                    totalDue += balanceForMonth;
+            try {
+                let totalDue = 0;
+                const allPaidRecords = await getAllFromIndex(STORES.FEES, 'studentId', student.id);
+                const feeStructures = await getAllFromStore(STORES.FEE_STRUCTURE);
+                const structureMap = new Map();
+                feeStructures.forEach(fs => {
+                    structureMap.set(`${fs.classId}-${fs.category}`, fs.monthlyFee);
+                });
+                const paymentsMap = new Map();
+                allPaidRecords.forEach(rec => {
+                    const key = `${rec.studentId}-${rec.month}-${rec.year}`;
+                    const existing = paymentsMap.get(key) || { paid: 0, historicalFee: null };
+                    existing.paid += rec.amount - (rec.discount || 0);
+                    if (rec.monthlyFeeAtTimeOfPayment) {
+                        existing.historicalFee = rec.monthlyFeeAtTimeOfPayment;
+                    }
+                    paymentsMap.set(key, existing);
+                });
+                if (!student.admissionDate) {
+                    dueFeeInput.value = "N/A (No admission date)";
+                    return;
                 }
-            }
-            if (totalDue > 0) {
-                dueFeeInput.value = formatCurrency(totalDue);
-            } else {
-                dueFeeInput.value = "No Dues";
+                const admissionDate = new Date(student.admissionDate);
+                const currentDate = new Date();
+                for (let d = new Date(admissionDate.getFullYear(), admissionDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+                    const month = d.getMonth() + 1;
+                    const year = d.getFullYear();
+                    const paymentKey = `${student.id}-${month}-${year}`;
+                    const paymentInfo = paymentsMap.get(paymentKey);
+                    let expectedFee = 0;
+                    if (paymentInfo && paymentInfo.historicalFee) {
+                        expectedFee = paymentInfo.historicalFee;
+                    } else {
+                        const feeStructureRate = structureMap.get(`${student.classId}-${student.feeCategory}`) ?? structureMap.get(`${student.classId}-General`);
+                        expectedFee = feeStructureRate ?? student.monthlyFee ?? 0;
+                    }
+                    if (expectedFee === 0) continue;
+                    const totalPaidForMonth = paymentInfo ? paymentInfo.paid : 0;
+                    if (totalPaidForMonth < expectedFee) {
+                        totalDue += (expectedFee - totalPaidForMonth);
+                    }
+                }
+                dueFeeInput.value = totalDue > 0 ? formatCurrency(totalDue) : "No Dues";
+            } catch (error) {
+                console.error("Error calculating due fee:", error);
+                dueFeeInput.value = "Error";
             }
         }
         function setupEventListeners() {
@@ -6844,16 +6989,95 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             document.getElementById('salary-month').addEventListener('change', searchEmployeeForSalary);
             document.getElementById('salary-year').addEventListener('input', searchEmployeeForSalary);
             document.getElementById('salary-employee-search').addEventListener('input', searchEmployeeForSalary);
-            document.getElementById('send-reminders').addEventListener('click', () => {
-                const tableRows = document.querySelectorAll('#defaulters-table tbody tr');
-                if (tableRows.length > 0) {
-                    tableRows.forEach(row => {
-                        const noticeButton = row.querySelector('button');
-                        if (noticeButton) noticeButton.click();
-                    });
-                    showNotification(`${tableRows.length} reminder notices opened.`, 'info');
-                } else {
-                    showNotification('No defaulters in the list to send reminders to.', 'info');
+            document.getElementById('send-reminders').addEventListener('click', async () => {
+                const defaulterRows = Array.from(document.querySelectorAll('#defaulters-table tbody tr'));
+                if (defaulterRows.length === 0) {
+                    showNotification('No defaulters to generate reminders for.', 'info');
+                    return;
+                }
+                const MAX_REMINDERS = 60;
+                if (defaulterRows.length > MAX_REMINDERS) {
+                    showNotification(`Too many reminders (${defaulterRows.length}). Please filter by class to export.`, 'error');
+                    return;
+                }
+                showLoading();
+                const printArea = document.getElementById('print-area');
+                const schoolName = appSettings.schoolName || 'Deeni Madrasa';
+                let combinedWhatsappMessage = `*Fee Reminder from ${schoolName}*\n\nDear Parents,\nThis is a friendly reminder that the fee for the current month is due for the following students:\n\n`;
+                const generateNoticeImage = async (row) => {
+                    const studentId = parseInt(row.dataset.studentId);
+                    if (isNaN(studentId)) return null;
+                    const student = await getFromStore(STORES.STUDENTS, studentId);
+                    if (!student) return null;
+                    combinedWhatsappMessage += `- ${student.name} (Roll No: ${student.rollNumber})\n`;
+                    const dueAmountText = row.cells[5].textContent;
+                    const dueMonthText = row.cells[4].textContent;
+                    const greetingName = student.guardian || student.fatherName || 'Parent';
+                    const noticeHTML = `
+            <div class="receipt-paper" style="width: 400px; padding: 20px; border: 1px solid #000; background-color: white;">
+                <h3 style="text-align: center; margin-bottom: 15px;">${schoolName}</h3>
+                <p style="text-align: center; font-size: 1.2em; font-weight: bold; margin-bottom: 20px;">Fee Reminder</p>
+                <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                <p><strong>To:</strong> ${greetingName}</p>
+                <p><strong>Student:</strong> ${student.name} (Roll No: ${student.rollNumber})</p>
+                <hr>
+                <p>This is a reminder regarding the outstanding fee for <strong>${dueMonthText}</strong>.</p>
+                <p style="font-size: 1.3em; text-align: center; margin: 20px 0;">Amount Due: <strong>${dueAmountText}</strong></p>
+                <hr>
+                <p>Kindly clear the dues at your earliest convenience. Thank you.</p>
+            </div>
+        `;
+                    printArea.innerHTML = noticeHTML;
+                    const elementToCapture = printArea.querySelector('.receipt-paper');
+                    try {
+                        const canvas = await html2canvas(elementToCapture, {
+                            scale: 2,
+                            useCORS: true,
+                            backgroundColor: '#ffffff' // Force a background
+                        });
+                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                        const filename = `Reminder_${student.rollNumber}_${student.name}.png`;
+                        return { filename, blob };
+                    } finally {
+                        printArea.innerHTML = ''; // Clean up after capture
+                    }
+                };
+                try {
+                    const zip = new JSZip();
+                    for (const row of defaulterRows) {
+                        const result = await generateNoticeImage(row);
+                        if (result) {
+                            zip.file(result.filename, result.blob);
+                        }
+                    }
+                    const zipBlob = await zip.generateAsync({ type: "blob" });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(zipBlob);
+                    link.download = `Fee_Reminders_${new Date().toISOString().slice(0, 10)}.zip`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                    // --- Show the new modal with the combined message ---
+                    combinedWhatsappMessage += `\nThank you for your cooperation.`;
+                    const modal = document.getElementById('combined-message-modal');
+                    const textarea = document.getElementById('combined-message-textarea');
+                    const copyBtn = document.getElementById('copy-combined-message-btn');
+                    const closeBtn = document.getElementById('combined-message-modal-close');
+                    textarea.value = combinedWhatsappMessage;
+                    modal.style.display = 'block';
+                    copyBtn.onclick = () => {
+                        navigator.clipboard.writeText(textarea.value).then(() => {
+                            showNotification('Message copied to clipboard!', 'success');
+                        });
+                    };
+                    closeBtn.onclick = () => {
+                        modal.style.display = 'none';
+                    };
+                    showNotification(`${defaulterRows.length} reminders exported to ZIP.`, 'success');
+                } catch (error) {
+                    console.error("Error generating reminders:", error);
+                    showNotification('Failed to export reminders. See console for details.', 'error');
+                } finally {
+                    hideLoading();
                 }
             });
             document.getElementById('marks-table-container').addEventListener('input', function (e) {
@@ -6929,6 +7153,7 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             document.getElementById('fee-report-type').addEventListener('change', toggleFeeReportFields);
             document.getElementById('salary-report-type').addEventListener('change', toggleSalaryReportFields);
             document.getElementById('structure-employee-type').addEventListener('change', loadEmployeesForSalaryStructure);
+            document.getElementById('auto-backup-frequency').addEventListener('change', updateBackupOptions);
         }
         async function loadStaffTable() {
             try {
@@ -7175,6 +7400,13 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             }
         }
         async function deleteItem(storeName, id) {
+            if (storeName === STORES.CLASSES) {
+                const studentsInClass = await getAllFromIndex(STORES.STUDENTS, 'classId', id);
+                if (studentsInClass.length > 0) {
+                    showNotification(`Cannot delete class. It has ${studentsInClass.length} student(s) assigned.`, 'error');
+                    return;
+                }
+            }
             const refreshFunctions = {
                 [STORES.STUDENTS]: loadStudentsTable,
                 [STORES.TEACHERS]: loadTeachersTable,
@@ -7284,15 +7516,18 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         async function loadBackupHistoryTable() {
             const tbody = document.querySelector('#backup-history-table tbody');
             tbody.innerHTML = '';
-            const history = await getAllFromStore(STORES.BACKUP);
+            const history = (await getAllFromStore(STORES.BACKUP)).filter(b => !b.isAutomatic);
+
             if (!history || history.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No backup history available.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No manual backup history available.</td></tr>';
                 return;
             }
+
             history.sort((a, b) => new Date(b.date) - new Date(a.date));
             history.forEach((backup, index) => {
                 const row = document.createElement('tr');
                 const backupDate = new Date(backup.date);
+
                 row.innerHTML = `
             <td>${index + 1}</td>
             <td>${backupDate.toLocaleDateString('en-US')}</td>
@@ -7305,6 +7540,32 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         `;
                 tbody.appendChild(row);
             });
+        }
+        async function downloadAutomaticBackup(backupId) {
+            showLoading();
+            try {
+                const backupRecord = await getFromStore(STORES.BACKUP, backupId);
+                if (!backupRecord || !backupRecord.blob) {
+                    showNotification('Backup data not found in the database.', 'error');
+                    return;
+                }
+
+                const url = URL.createObjectURL(backupRecord.blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = backupRecord.filename || `automatic-backup.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                showNotification('Backup download started.', 'success');
+            } catch (error) {
+                console.error('Error downloading automatic backup:', error);
+                showNotification('Failed to download backup.', 'error');
+            } finally {
+                hideLoading();
+            }
         }
         async function searchStudents() {
             showLoading();
@@ -7869,7 +8130,7 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             const tbody = document.querySelector('#defaulters-table tbody');
             const container = document.getElementById('defaulters-table-container');
             if (isNaN(month) || isNaN(year)) {
-                showNotification('Please select month and year.', 'error');
+                showNotification('Please select a valid month and year.', 'error');
                 return;
             }
             showLoading();
@@ -7877,35 +8138,53 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             container.style.display = 'none';
             try {
                 let students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
+                const feeRecordsForMonth = (await getAllFromStore(STORES.FEES)).filter(fr => fr.month === month && fr.year === year);
+                const feeStructures = await getAllFromStore(STORES.FEE_STRUCTURE);
+                const classes = await getAllFromStore(STORES.CLASSES);
+                const classMap = new Map(classes.map(c => [c.id, c.name]));
+                const structureMap = new Map();
+                feeStructures.forEach(fs => {
+                    structureMap.set(`${fs.classId}-${fs.category}`, fs.monthlyFee);
+                });
+                const paymentsMap = new Map();
+                feeRecordsForMonth.forEach(rec => {
+                    const currentPaid = paymentsMap.get(rec.studentId) || 0;
+                    paymentsMap.set(rec.studentId, currentPaid + (rec.amount - (rec.discount || 0)));
+                });
                 if (classId !== 'all') {
                     students = students.filter(s => s.classId === parseInt(classId));
                 }
-                const allFeeRecords = await getAllFromStore(STORES.FEES);
                 let hasDefaulters = false;
                 const monthName = new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'long' });
+                const reportMonthStart = new Date(year, month - 1, 1);
                 for (const student of students) {
-                    const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                    const expectedFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
+                    if (!student.admissionDate || new Date(student.admissionDate) > reportMonthStart) {
+                        continue;
+                    }
+                    const feeStructureRate = structureMap.get(`${student.classId}-${student.feeCategory}`) ?? structureMap.get(`${student.classId}-General`);
+                    const expectedFee = feeStructureRate ?? student.monthlyFee ?? 0;
                     if (expectedFee === 0) continue;
-                    const totalPaidForMonth = allFeeRecords
-                        .filter(rec => rec.studentId === student.id && rec.month === month && rec.year === year)
-                        .reduce((sum, rec) => sum + rec.total, 0);
+                    const totalPaidForMonth = paymentsMap.get(student.id) || 0;
                     const dueAmount = expectedFee - totalPaidForMonth;
                     if (dueAmount > 0) {
                         hasDefaulters = true;
                         const row = document.createElement('tr');
+                        // --- THIS IS THE FIX ---
+                        row.dataset.studentId = student.id;
+                        // --- END OF FIX ---
+                        const studentClassName = classMap.get(student.classId) || 'N/A';
                         row.innerHTML = `
-                            <td>${student.rollNumber}</td>
-                            <td>${student.name}</td>
-                            <td>${student.className}</td>
-                            <td>${formatCurrency(expectedFee)}</td>
-                            <td>${monthName}, ${year}</td>
-                            <td>${formatCurrency(dueAmount)}</td>
-                            <td>${student.contact}</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" onclick="showSendNoticePopup('${student.name.replace(/'/g, "\\'")}', '${student.contact}', ${dueAmount}, '${monthName}', ${year})">Send Notice</button>
-                            </td>
-                        `;
+                    <td>${student.rollNumber}</td>
+                    <td>${student.name}</td>
+                    <td>${studentClassName}</td>
+                    <td>${formatCurrency(expectedFee)}</td>
+                    <td>${monthName}, ${year}</td>
+                    <td>${formatCurrency(dueAmount)}</td>
+                    <td>${student.contact}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showSendNoticePopup(${student.id})">Single Notice</button>
+                    </td>
+                `;
                         tbody.appendChild(row);
                     }
                 }
@@ -8010,19 +8289,13 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             const tbody = document.querySelector('#salary-report-table tbody');
             const container = document.getElementById('salary-report-table-container');
             const summaryContainer = document.getElementById('salary-report-summary');
-
             showLoading();
             tbody.innerHTML = '';
             container.style.display = 'none';
             summaryContainer.style.display = 'none';
-
             try {
                 let allSalaries = await getAllFromStore(STORES.SALARY);
                 let filteredSalaries = allSalaries;
-
-                // --- New, Simplified, and Correct Filtering Logic ---
-
-                // 1. Filter by Time Period (Month/Year/Employee)
                 if (reportType === 'monthly') {
                     const month = document.getElementById('salary-report-month').value;
                     const year = parseInt(document.getElementById('salary-report-year').value);
@@ -8050,14 +8323,9 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     const [type, id] = employeeIdVal.split('_');
                     filteredSalaries = filteredSalaries.filter(s => s.employeeId === parseInt(id) && s.employeeType === type);
                 }
-
-                // 2. Further Filter by Employee Type (if not 'all')
                 if (employeeTypeFilter !== 'all' && reportType !== 'employee') {
                     filteredSalaries = filteredSalaries.filter(s => s.employeeType === employeeTypeFilter);
                 }
-
-                // --- End of Corrected Logic ---
-
                 const thead = document.querySelector('#salary-report-table thead tr');
                 if (thead) {
                     thead.innerHTML = `
@@ -8072,16 +8340,13 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                         <th>Total Paid</th>
                     `;
                 }
-
                 let totalPaid = 0;
                 let paidEmployees = new Set();
-
                 for (const salary of filteredSalaries) {
                     const employeeStore = salary.employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
                     const employee = await getFromStore(employeeStore, salary.employeeId);
                     totalPaid += (salary.total || 0);
                     paidEmployees.add(salary.employeeId);
-
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${salary.voucherNumber || '-'}</td>
@@ -8096,25 +8361,19 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     `;
                     tbody.appendChild(row);
                 }
-
                 if (filteredSalaries.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No salary record found for this criteria.</td></tr>';
                 }
-
                 const allTeachersCount = await getCount(STORES.TEACHERS);
                 const allStaffCount = await getCount(STORES.STAFF);
                 let totalEmployeesInScope = allTeachersCount + allStaffCount;
                 if (employeeTypeFilter === 'teacher') totalEmployeesInScope = allTeachersCount;
                 if (employeeTypeFilter === 'staff') totalEmployeesInScope = allStaffCount;
-
-
                 document.getElementById('salary-report-total-paid').value = formatCurrency(totalPaid);
                 document.getElementById('salary-report-total-employees').value = totalEmployeesInScope;
                 document.getElementById('salary-report-paid-employees').value = paidEmployees.size;
-
                 summaryContainer.style.display = 'block';
                 container.style.display = 'block';
-
             } catch (error) {
                 console.error("Error generating salary report:", error);
                 showNotification('Failed to generate salary report.', 'error');
@@ -8122,7 +8381,6 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                 hideLoading();
             }
         }
-
         function toggleFeeReportFields() {
             const reportType = document.getElementById('fee-report-type').value;
             document.getElementById('fee-report-date-row').style.display = 'none';
@@ -8148,11 +8406,9 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         function toggleSalaryReportFields() {
             const reportType = document.getElementById('salary-report-type').value;
             const employeeTypeSelect = document.getElementById('salary-report-employee-type');
-
             document.getElementById('salary-report-month-row').style.display = 'none';
             document.getElementById('salary-report-employee-row').style.display = 'none';
-            employeeTypeSelect.style.display = 'block'; // Ensure this is visible by default
-
+            employeeTypeSelect.style.display = 'block';
             switch (reportType) {
                 case 'monthly':
                 case 'yearly':
@@ -8167,13 +8423,11 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     break;
             }
         }
-
         async function loadEmployeesForSalaryReport() {
             try {
                 const employeeType = document.getElementById('salary-report-employee-type').value;
                 const dropdown = document.getElementById('salary-report-employee');
-                dropdown.innerHTML = '<option value="">-- Select Employee --</option>'; // Clear and add a default
-
+                dropdown.innerHTML = '<option value="">-- Select Employee --</option>';
                 let employees = [];
                 if (employeeType === 'all') {
                     const teachers = await getAllFromStore(STORES.TEACHERS);
@@ -8181,20 +8435,16 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     employees = [...teachers.map(t => ({ ...t, type: 'teacher' })), ...staff.map(s => ({ ...s, type: 'staff' }))];
                 } else if (employeeType === 'teacher') {
                     employees = (await getAllFromStore(STORES.TEACHERS)).map(t => ({ ...t, type: 'teacher' }));
-                } else { // staff
+                } else {
                     employees = (await getAllFromStore(STORES.STAFF)).map(s => ({ ...s, type: 'staff' }));
                 }
-
                 employees.sort((a, b) => a.name.localeCompare(b.name));
-
                 employees.forEach(employee => {
                     const option = document.createElement('option');
-                    // We store both type and id in the value for easy retrieval
                     option.value = `${employee.type}_${employee.id}`;
                     option.textContent = `${employee.name} (${employee.employeeType || employee.type})`;
                     dropdown.appendChild(option);
                 });
-
                 console.log('Employees loaded for salary report');
             } catch (error) {
                 console.error('Error loading employees for salary report:', error);
@@ -8671,6 +8921,8 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                 showLoading();
                 const studentId = parseInt(document.getElementById('fee-roll-number').getAttribute('data-student-id'));
                 const student = await getFromStore(STORES.STUDENTS, studentId);
+                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
+                const monthlyFeeNow = feeStructure?.monthlyFee || student.monthlyFee || 0;
                 const monthNumber = parseInt(document.getElementById('fee-month').value);
                 const year = parseInt(document.getElementById('fee-year').value);
                 const payingNow = parseFloat(document.getElementById('fee-paying-now').value);
@@ -8686,11 +8938,12 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     fine: fine,
                     discount: discount,
                     total: payingNow + fine - discount,
+                    monthlyFeeAtTimeOfPayment: monthlyFeeNow,
                     date: document.getElementById('fee-payment-date').value,
                     paymentMethod: document.getElementById('fee-payment-method').value,
                     notes: document.getElementById('fee-notes').value,
                 };
-                if (feeData.total <= 0) {
+                if (feeData.total <= 0 && feeData.discount <= 0) {
                     showNotification('Total collected amount must be greater than zero.', 'error');
                     hideLoading();
                     return;
@@ -9413,6 +9666,8 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                 const isEnabled = document.getElementById('auto-backup-enable').checked;
                 const frequency = document.getElementById('auto-backup-frequency').value;
                 const retention = document.getElementById('auto-backup-retention').value;
+                const backupTime = document.getElementById('auto-backup-time').value;
+
                 const settings = await getFromStore(STORES.SETTINGS, 'general') || {};
                 const updatedSettings = {
                     ...settings,
@@ -9420,9 +9675,10 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
                     autoBackupEnabled: isEnabled,
                     autoBackupFrequency: frequency,
                     autoBackupRetention: parseInt(retention),
+                    autoBackupTime: backupTime, // Save the new time value
                     updatedAt: new Date().toISOString()
                 };
-                await updateInStore(STORES.SETTINGS, 'general', updatedSettings);
+                await addToStore(STORES.SETTINGS, updatedSettings, true); // Use upsert
                 showNotification('Automatic backup settings saved successfully.', 'success');
             } catch (error) {
                 console.error('Error saving auto backup settings:', error);
@@ -10114,23 +10370,47 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
         async function generatePendingFeeDetailsHTML() {
             let html = `<div class="table-container"><table class="table"><thead><tr><th>Roll No.</th><th>Name</th><th>Class</th><th>Total Due</th><th>Due Months</th></tr></thead><tbody>`;
             const students = (await getAllFromStore(STORES.STUDENTS)).filter(s => s.status === 'active' || !s.status);
-            const feeMap = new Map((await getAllFromStore(STORES.FEES)).map(f => [`${f.studentId}-${f.month}-${f.year}`, true]));
+            const allFeeRecords = await getAllFromStore(STORES.FEES);
+            const feeStructures = await getAllFromStore(STORES.FEE_STRUCTURE);
+            const structureMap = new Map();
+            feeStructures.forEach(fs => {
+                structureMap.set(`${fs.classId}-${fs.category}`, fs.monthlyFee);
+            });
+            const paymentsMap = new Map();
+            allFeeRecords.forEach(rec => {
+                const key = `${rec.studentId}-${rec.month}-${rec.year}`;
+                const existing = paymentsMap.get(key) || { paid: 0, historicalFee: null };
+                existing.paid += rec.amount - (rec.discount || 0);
+                if (rec.monthlyFeeAtTimeOfPayment) {
+                    existing.historicalFee = rec.monthlyFeeAtTimeOfPayment;
+                }
+                paymentsMap.set(key, existing);
+            });
+            const classMap = new Map((await getAllFromStore(STORES.CLASSES)).map(c => [c.id, c.name]));
             const currentDate = new Date();
             for (const student of students) {
                 let studentDue = 0;
                 let dueMonthsList = [];
-                const feeStructure = await getFeeStructureForStudent(student.id, student.classId, student.feeCategory);
-                const studentMonthlyFee = feeStructure?.monthlyFee || student.monthlyFee || 0;
-                if (studentMonthlyFee === 0 || !student.admissionDate) continue;
-                const startDate = new Date(student.admissionDate);
-                for (let d = new Date(startDate.getFullYear(), startDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
-                    if (!feeMap.has(`${student.id}-${d.getMonth() + 1}-${d.getFullYear()}`)) {
-                        studentDue += studentMonthlyFee;
-                        dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`);
+                if (!student.admissionDate) continue;
+                const feeStructureRate = structureMap.get(`${student.classId}-${student.feeCategory}`) ?? structureMap.get(`${student.classId}-General`);
+                const currentMonthlyFee = feeStructureRate ?? student.monthlyFee ?? 0;
+                if (currentMonthlyFee === 0 && !paymentsMap.has(`${student.id}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`)) continue;
+                const admissionDate = new Date(student.admissionDate);
+                for (let d = new Date(admissionDate.getFullYear(), admissionDate.getMonth(), 1); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+                    const month = d.getMonth() + 1;
+                    const year = d.getFullYear();
+                    const paymentKey = `${student.id}-${month}-${year}`;
+                    const paymentInfo = paymentsMap.get(paymentKey);
+                    let expectedFee = paymentInfo?.historicalFee ?? feeStructureRate ?? student.monthlyFee ?? 0;
+                    if (expectedFee === 0) continue;
+                    const paidForMonth = paymentInfo?.paid || 0;
+                    if (paidForMonth < expectedFee) {
+                        studentDue += (expectedFee - paidForMonth);
+                        dueMonthsList.push(`${d.toLocaleString('en-US', { month: 'short' })} '${String(year).slice(2)}`);
                     }
                 }
                 if (studentDue > 0) {
-                    const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : 'N/A';
+                    const className = classMap.get(student.classId) || 'N/A';
                     html += `<tr>
                 <td>${student.rollNumber}</td>
                 <td>${student.name}</td>
@@ -10998,7 +11278,10 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
             </div>
         </div>`;
                 outputDiv.innerHTML += cardHTML;
+                /* for printing website QR code
                 backSideQRs.push({ id: `qr-back-${memberId}`, text: schoolWebsite });
+                 */
+                backSideQRs.push({ id: `qr-back-${memberId}`, text: qrText });
                 if (!dbPhoto) {
                     showQrCode(`qr-container-${memberId}`, qrText, `photo-${memberType}-${memberId}`);
                 }
@@ -11460,200 +11743,197 @@ body.pdf-error .table-controls .btn-danger[id*='pdf-export']::after {
 
 </html>
 <script>
-    (function () {
-        let isLockdownActive = true;
-        let debuggerIntervalId = null;
-        let devToolsCheckIntervalId = null;
-        const cssStyles = `
-            #custom-context-menu {
-                display: none; position: absolute; z-index: 1000; width: 200px;
-                background-color: #ffffff; border-radius: 8px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2); padding: 8px 0;
-                font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            }
-            .context-menu-item {
-                padding: 10px 20px; cursor: pointer; display: flex; align-items: center;
-                transition: background-color 0.2s, color 0.2s;
-            }
-            .context-menu-item:hover { background-color: #007bff; color: white; }
-            .context-menu-item.disabled { color: #aaa; cursor: not-allowed; }
-            .context-menu-item.disabled:hover { background-color: #f5f5f5; color: #aaa; }
-            .context-menu-separator { height: 1px; background-color: #eeeeee; margin: 4px 0; }
-            #custom-message-box {
-                display: none; position: fixed; top: 20px; left: 50%;
-                transform: translateX(-50%); background-color: #333; color: white;
-                padding: 12px 24px; border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 2000;
-                opacity: 0; transition: opacity 0.3s ease-in-out;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            }
-        `;
-        const styleSheet = document.createElement("style");
-        styleSheet.innerText = cssStyles;
-        document.head.appendChild(styleSheet);
-        document.body.classList.add('lockdown-active');
-        const menuHtml = `
-            <div id="custom-context-menu">
-                <div class="context-menu-item" id="menu-copy">Copy</div>
-                <div class="context-menu-item" id="menu-paste">Paste</div>
-                <div class="context-menu-separator"></div>
-                <div class="context-menu-item disabled" id="menu-minimize">Minimize (Disabled)</div>
-                <div class="context-menu-item disabled" id="menu-close">Close App (Disabled)</div>
-            </div>
-            <div id="custom-message-box"></div>
-        `;
-        const menuContainer = document.createElement("div");
-        menuContainer.innerHTML = menuHtml;
-        document.body.appendChild(menuContainer);
-        const contextMenu = document.getElementById('custom-context-menu');
-        const messageBox = document.getElementById('custom-message-box');
-        let messageTimer;
-        function showMessage(message, duration = 3000) {
-            clearTimeout(messageTimer);
-            messageBox.textContent = message;
-            messageBox.style.display = 'block';
-            setTimeout(() => { messageBox.style.opacity = '1'; }, 10);
-            messageTimer = setTimeout(() => {
-                messageBox.style.opacity = '0';
-                setTimeout(() => { messageBox.style.display = 'none'; }, 300);
-            }, duration);
-        }
-        function startAggressiveDeterrents() {
-            stopAggressiveDeterrents();
-            debuggerIntervalId = setInterval(function () {
-                try {
-                    (function (counter) {
-                        if (('' + counter / counter).length !== 1 || counter % 20 === 0) {
-                            (function () { }).constructor('debugger')();
-                        } else {
-                            (function () { }).constructor('debugger')();
-                        }
-                        arguments.callee(++counter);
-                    })(0);
-                } catch (e) { }
-            }, 2000);
-            devToolsCheckIntervalId = setInterval(function () {
-                const threshold = 160;
-                if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
-                    document.body.innerHTML = `<div style="text-align:center; padding: 50px; font-family: sans-serif;"><h1>Developer Tools Detected.</h1><p>Please close them to continue.</p></div>`;
+    /*
+        (function () {
+            let isLockdownActive = true;
+            let debuggerIntervalId = null;
+            let devToolsCheckIntervalId = null;
+            const cssStyles = `
+                #custom-context-menu {
+                    display: none; position: absolute; z-index: 1000; width: 200px;
+                    background-color: #ffffff; border-radius: 8px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2); padding: 8px 0;
+                    font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
                 }
-            }, 1000);
-        }
-        function stopAggressiveDeterrents() {
-            clearInterval(debuggerIntervalId);
-            clearInterval(devToolsCheckIntervalId);
-        }
-        function toggleLockdown() {
-            isLockdownActive = !isLockdownActive;
-            document.body.classList.toggle('lockdown-active', isLockdownActive);
-            if (isLockdownActive) {
-                startAggressiveDeterrents();
-                showMessage('Lockdown Mode RE-ACTIVATED.', 2000);
-            } else {
+                .context-menu-item {
+                    padding: 10px 20px; cursor: pointer; display: flex; align-items: center;
+                    transition: background-color 0.2s, color 0.2s;
+                }
+                .context-menu-item:hover { background-color: #007bff; color: white; }
+                .context-menu-item.disabled { color: #aaa; cursor: not-allowed; }
+                .context-menu-item.disabled:hover { background-color: #f5f5f5; color: #aaa; }
+                .context-menu-separator { height: 1px; background-color: #eeeeee; margin: 4px 0; }
+                #custom-message-box {
+                    display: none; position: fixed; top: 20px; left: 50%;
+                    transform: translateX(-50%); background-color: #333; color: white;
+                    padding: 12px 24px; border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 2000;
+                    opacity: 0; transition: opacity 0.3s ease-in-out;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                }
+            `;
+            const styleSheet = document.createElement("style");
+            styleSheet.innerText = cssStyles;
+            document.head.appendChild(styleSheet);
+            document.body.classList.add('lockdown-active');
+            const menuHtml = `
+                <div id="custom-context-menu">
+                    <div class="context-menu-item" id="menu-copy">Copy</div>
+                    <div class="context-menu-item" id="menu-paste">Paste</div>
+                    <div class="context-menu-separator"></div>
+                    <div class="context-menu-item disabled" id="menu-minimize">Minimize (Disabled)</div>
+                    <div class="context-menu-item disabled" id="menu-close">Close App (Disabled)</div>
+                </div>
+                <div id="custom-message-box"></div>
+            `;
+            const menuContainer = document.createElement("div");
+            menuContainer.innerHTML = menuHtml;
+            document.body.appendChild(menuContainer);
+            const contextMenu = document.getElementById('custom-context-menu');
+            const messageBox = document.getElementById('custom-message-box');
+            let messageTimer;
+            function showMessage(message, duration = 3000) {
+                clearTimeout(messageTimer);
+                messageBox.textContent = message;
+                messageBox.style.display = 'block';
+                setTimeout(() => { messageBox.style.opacity = '1'; }, 10);
+                messageTimer = setTimeout(() => {
+                    messageBox.style.opacity = '0';
+                    setTimeout(() => { messageBox.style.display = 'none'; }, 300);
+                }, duration);
+            }
+            function startAggressiveDeterrents() {
                 stopAggressiveDeterrents();
-                showMessage('ADMIN OVERRIDE: Lockdown DISABLED.', 3000);
+                debuggerIntervalId = setInterval(function () {
+                    try {
+                        (function (counter) {
+                            if (('' + counter / counter).length !== 1 || counter % 20 === 0) {
+                                (function () { }).constructor('debugger')();
+                            } else {
+                                (function () { }).constructor('debugger')();
+                            }
+                            arguments.callee(++counter);
+                        })(0);
+                    } catch (e) { }
+                }, 2000);
+                devToolsCheckIntervalId = setInterval(function () {
+                    const threshold = 160;
+                    if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
+                        document.body.innerHTML = `<div style="text-align:center; padding: 50px; font-family: sans-serif;"><h1>Developer Tools Detected.</h1><p>Please close them to continue.</p></div>`;
+                    }
+                }, 1000);
             }
-        }
-        document.addEventListener('contextmenu', function (event) {
-            if (!isLockdownActive) return;
-            event.preventDefault();
-            const x = event.clientX, y = event.clientY;
-            const menuWidth = contextMenu.offsetWidth, menuHeight = contextMenu.offsetHeight;
-            contextMenu.style.top = `${y + menuHeight > window.innerHeight ? y - menuHeight : y}px`;
-            contextMenu.style.left = `${x + menuWidth > window.innerWidth ? x - menuWidth : x}px`;
-            contextMenu.style.display = 'block';
-        });
-        document.addEventListener('click', () => { contextMenu.style.display = 'none'; });
-        document.addEventListener('keydown', function (event) {
-            if (event.ctrlKey && event.shiftKey && event.altKey && (event.key === 'y' || event.key === 'Y')) {
+            function stopAggressiveDeterrents() {
+                clearInterval(debuggerIntervalId);
+                clearInterval(devToolsCheckIntervalId);
+            }
+            function toggleLockdown() {
+                isLockdownActive = !isLockdownActive;
+                document.body.classList.toggle('lockdown-active', isLockdownActive);
+                if (isLockdownActive) {
+                    startAggressiveDeterrents();
+                    showMessage('Lockdown Mode RE-ACTIVATED.', 2000);
+                } else {
+                    stopAggressiveDeterrents();
+                    showMessage('ADMIN OVERRIDE: Lockdown DISABLED.', 3000);
+                }
+            }
+            document.addEventListener('contextmenu', function (event) {
+                if (!isLockdownActive) return;
                 event.preventDefault();
-                toggleLockdown();
-                return;
-            }
-            if (!isLockdownActive) return;
-            if (event.key === 'F12' || (event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase())) || (event.ctrlKey && ['s', 'p', 'u'].includes(event.key))) {
-                event.preventDefault();
-                showMessage(`Function disabled: ${event.key}`);
-            }
-        });
-        document.getElementById('menu-copy').addEventListener('click', () => {
-            document.execCommand('copy');
-            showMessage('Copy command issued.');
-        });
-        document.getElementById('menu-paste').addEventListener('click', () => {
-            try {
-                navigator.clipboard.readText().then(text => {
-                    const el = document.activeElement;
-                    if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
-                        const start = el.selectionStart, end = el.selectionEnd;
-                        el.value = el.value.substring(0, start) + text + el.value.substring(end);
-                        el.selectionStart = el.selectionEnd = start + text.length;
-                        showMessage('Pasted from clipboard!');
-                    } else { showMessage('Please click in a text field to paste.'); }
-                });
-            } catch (e) { showMessage('Paste failed. Browser may require permissions.'); }
-        });
-        document.getElementById('menu-minimize').addEventListener('click', () => showMessage('Minimize is not possible from a web page.'));
-        document.getElementById('menu-close').addEventListener('click', () => showMessage('Closing the app is not possible from a web page.'));
-        startAggressiveDeterrents();
-    })();
+                const x = event.clientX, y = event.clientY;
+                const menuWidth = contextMenu.offsetWidth, menuHeight = contextMenu.offsetHeight;
+                contextMenu.style.top = `${y + menuHeight > window.innerHeight ? y - menuHeight : y}px`;
+                contextMenu.style.left = `${x + menuWidth > window.innerWidth ? x - menuWidth : x}px`;
+                contextMenu.style.display = 'block';
+            });
+            document.addEventListener('click', () => { contextMenu.style.display = 'none'; });
+            document.addEventListener('keydown', function (event) {
+                if (event.ctrlKey && event.shiftKey && event.altKey && (event.key === 'y' || event.key === 'Y')) {
+                    event.preventDefault();
+                    toggleLockdown();
+                    return;
+                }
+                if (!isLockdownActive) return;
+                if (event.key === 'F12' || (event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase())) || (event.ctrlKey && ['s', 'p', 'u'].includes(event.key))) {
+                    event.preventDefault();
+                    showMessage(`Function disabled: ${event.key}`);
+                }
+            });
+            document.getElementById('menu-copy').addEventListener('click', () => {
+                document.execCommand('copy');
+                showMessage('Copy command issued.');
+            });
+            document.getElementById('menu-paste').addEventListener('click', () => {
+                try {
+                    navigator.clipboard.readText().then(text => {
+                        const el = document.activeElement;
+                        if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
+                            const start = el.selectionStart, end = el.selectionEnd;
+                            el.value = el.value.substring(0, start) + text + el.value.substring(end);
+                            el.selectionStart = el.selectionEnd = start + text.length;
+                            showMessage('Pasted from clipboard!');
+                        } else { showMessage('Please click in a text field to paste.'); }
+                    });
+                } catch (e) { showMessage('Paste failed. Browser may require permissions.'); }
+            });
+            document.getElementById('menu-minimize').addEventListener('click', () => showMessage('Minimize is not possible from a web page.'));
+            document.getElementById('menu-close').addEventListener('click', () => showMessage('Closing the app is not possible from a web page.'));
+            startAggressiveDeterrents();
+        })();
+     */
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         loadScriptsAndInitialize();
     });
-function loadScriptsAndInitialize() {
-    document.body.classList.add('pdf-loading');
-
-    const jspdfSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    const autotableSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
-    const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf';
-
-    const loadScript = (src) => new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-    });
-
-    const loadFont = () => new Promise((resolve, reject) => {
-        fetch(fontUrl)
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.blob();
-            })
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = function () {
-                    window.amiriFontBase64 = reader.result.split(',')[1];
-                    console.log('Amiri font loaded.');
+    function loadScriptsAndInitialize() {
+        document.body.classList.add('pdf-loading');
+        const jspdfSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        const autotableSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+        const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf';
+        const loadScript = (src) => new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+        const loadFont = () => new Promise((resolve, reject) => {
+            fetch(fontUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.blob();
+                })
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = function () {
+                        window.amiriFontBase64 = reader.result.split(',')[1];
+                        console.log('Amiri font loaded.');
+                        resolve();
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(error => {
+                    console.error("Failed to load Amiri font:", error);
                     resolve();
-                };
-                reader.readAsDataURL(blob);
+                });
+        });
+        Promise.all([loadScript(jspdfSrc), loadScript(autotableSrc), loadFont()])
+            .then(() => {
+                console.log('All PDF dependencies loaded.');
+                document.body.classList.remove('pdf-loading');
+                document.body.classList.add('pdf-ready');
+                initializeTableEnhancements();
+                observeForNewTables();
             })
             .catch(error => {
-                console.error("Failed to load Amiri font:", error);
-                resolve();
+                console.error("A script or font failed to load:", error);
+                document.body.classList.remove('pdf-loading');
+                document.body.classList.add('pdf-error');
+                showNotification('PDF export functionality failed to load.', 'error');
             });
-    });
-
-    Promise.all([loadScript(jspdfSrc), loadScript(autotableSrc), loadFont()])
-        .then(() => {
-            console.log('All PDF dependencies loaded.');
-            document.body.classList.remove('pdf-loading');
-            document.body.classList.add('pdf-ready');
-            initializeTableEnhancements();
-            observeForNewTables();
-        })
-        .catch(error => {
-            console.error("A script or font failed to load:", error);
-            document.body.classList.remove('pdf-loading');
-            document.body.classList.add('pdf-error');
-            showNotification('PDF export functionality failed to load.', 'error');
-        });
-}
-    
+    }
     function initializeTableEnhancements() {
         const tableContainers = document.querySelectorAll('.table-container');
         tableContainers.forEach(container => {
@@ -11863,10 +12143,10 @@ function loadScriptsAndInitialize() {
     }
     async function exportTableToPDF(table) {
         if (!document.body.classList.contains('pdf-ready')) {
-    const status = document.body.classList.contains('pdf-loading') ? 'loading' : 'in an error state';
-    showNotification(`PDF library is currently ${status}. Please wait.`, 'info');
-    return;
-}
+            const status = document.body.classList.contains('pdf-loading') ? 'loading' : 'in an error state';
+            showNotification(`PDF library is currently ${status}. Please wait.`, 'info');
+            return;
+        }
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape' });
         if (window.amiriFontBase64) {
@@ -11976,33 +12256,31 @@ function loadScriptsAndInitialize() {
             subtree: true
         });
     }
-
     async function viewTeacherDetails(teacherId) {
-    showLoading();
-    const modal = document.getElementById('student-details-modal');
-    const contentArea = document.getElementById('modal-content-area');
-    contentArea.innerHTML = '';
-    try {
-        const teacher = await getFromStore(STORES.TEACHERS, teacherId);
-        if (!teacher) {
-            showNotification('Teacher not found.', 'error');
-            return;
+        showLoading();
+        const modal = document.getElementById('student-details-modal');
+        const contentArea = document.getElementById('modal-content-area');
+        contentArea.innerHTML = '';
+        try {
+            const teacher = await getFromStore(STORES.TEACHERS, teacherId);
+            if (!teacher) {
+                showNotification('Teacher not found.', 'error');
+                return;
+            }
+            const profileHTML = await generateTeacherProfileSectionHTML(teacher);
+            const scheduleHTML = await generateTeacherScheduleSectionHTML(teacher.id);
+            const salaryHTML = await generateTeacherSalarySectionHTML(teacher.id);
+            contentArea.innerHTML = profileHTML + scheduleHTML + salaryHTML;
+            modal.style.display = 'block';
+        } catch (error) {
+            console.error('Error viewing teacher details:', error);
+            showNotification('Could not load teacher details.', 'error');
+        } finally {
+            hideLoading();
         }
-        const profileHTML = await generateTeacherProfileSectionHTML(teacher);
-        const scheduleHTML = await generateTeacherScheduleSectionHTML(teacher.id);
-        const salaryHTML = await generateTeacherSalarySectionHTML(teacher.id);
-        contentArea.innerHTML = profileHTML + scheduleHTML + salaryHTML;
-        modal.style.display = 'block';
-    } catch (error) {
-        console.error('Error viewing teacher details:', error);
-        showNotification('Could not load teacher details.', 'error');
-    } finally {
-        hideLoading();
     }
-}
-
-async function generateTeacherProfileSectionHTML(teacher) {
-    return `
+    async function generateTeacherProfileSectionHTML(teacher) {
+        return `
     <div class="profile-card">
         <div class="profile-image">
             <img src="${teacher.photo || 'logo2.png'}" alt="Teacher Photo">
@@ -12017,65 +12295,63 @@ async function generateTeacherProfileSectionHTML(teacher) {
         </div>
     </div>
     `;
-}
-
-async function generateTeacherScheduleSectionHTML(teacherId) {
-    let html = `<div class="form-container" style="margin-top:20px;">
+    }
+    async function generateTeacherScheduleSectionHTML(teacherId) {
+        let html = `<div class="form-container" style="margin-top:20px;">
                     <div class="form-title">Assigned Classes & Subjects</div>`;
-    const assignedSubjects = await getAllFromIndex(STORES.CLASS_SUBJECTS, 'teacherId', teacherId);
-    if (assignedSubjects.length > 0) {
-        html += `<div class="table-container" style="max-height: 250px; overflow-y: auto;">
+        const assignedSubjects = await getAllFromIndex(STORES.CLASS_SUBJECTS, 'teacherId', teacherId);
+        if (assignedSubjects.length > 0) {
+            html += `<div class="table-container" style="max-height: 250px; overflow-y: auto;">
                    <table class="table" id="teacher-schedule-table">
                      <thead><tr><th>Class</th><th>Subject</th></tr></thead><tbody>`;
-        for (const assignment of assignedSubjects) {
-            const classData = await getFromStore(STORES.CLASSES, assignment.classId);
-            const subjectData = await getFromStore(STORES.SUBJECTS, assignment.subjectId);
-            html += `<tr>
+            for (const assignment of assignedSubjects) {
+                const classData = await getFromStore(STORES.CLASSES, assignment.classId);
+                const subjectData = await getFromStore(STORES.SUBJECTS, assignment.subjectId);
+                html += `<tr>
                         <td>${classData ? classData.name : 'N/A'}</td>
                         <td>${subjectData ? subjectData.name : 'N/A'}</td>
                      </tr>`;
+            }
+            html += `</tbody></table></div>`;
+        } else {
+            html += `<p>No classes or subjects assigned.</p>`;
         }
-        html += `</tbody></table></div>`;
-    } else {
-        html += `<p>No classes or subjects assigned.</p>`;
+        html += `</div>`;
+        return html;
     }
-    html += `</div>`;
-    return html;
-}
-
-async function generateTeacherSalarySectionHTML(teacherId) {
-    let html = `<div class="form-container" style="margin-top:20px;">
+    async function generateTeacherSalarySectionHTML(teacherId) {
+        let html = `<div class="form-container" style="margin-top:20px;">
                     <div class="form-title">Salary Information</div>`;
-    const salaryStructure = (await getAllFromIndex(STORES.SALARY_STRUCTURE, 'employeeId', teacherId)).find(s => s.employeeType === 'teacher');
-    let totalPaid = 0;
-    if (salaryStructure) {
-        html += `<h4>Salary Structure</h4>
+        const salaryStructure = (await getAllFromIndex(STORES.SALARY_STRUCTURE, 'employeeId', teacherId)).find(s => s.employeeType === 'teacher');
+        let totalPaid = 0;
+        if (salaryStructure) {
+            html += `<h4>Salary Structure</h4>
                  <div class="form-row">
                     <div class="form-group"><label>Basic:</label> <input class="form-control" value="${formatCurrency(salaryStructure.basicSalary)}" readonly></div>
                     <div class="form-group"><label>Allowances:</label> <input class="form-control" value="${formatCurrency((salaryStructure.houseRent || 0) + (salaryStructure.transport || 0) + (salaryStructure.medical || 0) + (salaryStructure.otherAllowances || 0))}" readonly></div>
                     <div class="form-group"><label>Net Salary:</label> <input class="form-control" value="${formatCurrency(salaryStructure.totalSalary)}" readonly></div>
                  </div>`;
-    } else {
-        const teacher = await getFromStore(STORES.TEACHERS, teacherId);
-        html += `<h4>Salary Structure (From Profile)</h4>
+        } else {
+            const teacher = await getFromStore(STORES.TEACHERS, teacherId);
+            html += `<h4>Salary Structure (From Profile)</h4>
                  <div class="form-row">
                     <div class="form-group"><label>Basic:</label> <input class="form-control" value="${formatCurrency(teacher.basicSalary)}" readonly></div>
                     <div class="form-group"><label>Allowances:</label> <input class="form-control" value="${formatCurrency(teacher.allowances)}" readonly></div>
                     <div class="form-group"><label>Net Salary:</label> <input class="form-control" value="${formatCurrency((teacher.basicSalary || 0) + (teacher.allowances || 0))}" readonly></div>
                  </div>`;
-    }
-    const paidRecords = (await getAllFromIndex(STORES.SALARY, 'employeeId', teacherId)).filter(s => s.employeeType === 'teacher');
-    html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+        }
+        const paidRecords = (await getAllFromIndex(STORES.SALARY, 'employeeId', teacherId)).filter(s => s.employeeType === 'teacher');
+        html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                 <h4>Paid Salary History</h4>
                 <button class="btn btn-success btn-sm no-print" onclick="exportTableToCSV('teacher-paid-salary-table', 'SalaryHistory_${teacherId}.csv')">Export Paid</button>
              </div>
              <div class="table-container" style=" overflow-y: auto;">
                <table class="table" id="teacher-paid-salary-table">
                  <thead><tr><th>Voucher</th><th>Month/Year</th><th>Date</th><th>Amount Paid</th><th>Bonus</th><th>Deductions</th><th>Total</th></tr></thead><tbody>`;
-    if (paidRecords.length > 0) {
-        paidRecords.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(rec => {
-            totalPaid += rec.total;
-            html += `<tr>
+        if (paidRecords.length > 0) {
+            paidRecords.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(rec => {
+                totalPaid += rec.total;
+                html += `<tr>
                 <td>${rec.voucherNumber}</td>
                 <td>${rec.month} ${rec.year}</td>
                 <td>${formatDate(rec.date)}</td>
@@ -12084,11 +12360,240 @@ async function generateTeacherSalarySectionHTML(teacherId) {
                 <td>${formatCurrency(rec.deductions)}</td>
                 <td>${formatCurrency(rec.total)}</td>
             </tr>`;
-        });
-    } else {
-        html += `<tr><td colspan="7" style="text-align:center;">No paid salary records found.</td></tr>`;
+            });
+        } else {
+            html += `<tr><td colspan="7" style="text-align:center;">No paid salary records found.</td></tr>`;
+        }
+        html += `</tbody><tfoot><tr><td colspan="6" style="text-align:right; font-weight:bold;">Total Paid (All Time):</td><td>${formatCurrency(totalPaid)}</td></tr></tfoot></table></div></div>`;
+        return html;
     }
-    html += `</tbody><tfoot><tr><td colspan="6" style="text-align:right; font-weight:bold;">Total Paid (All Time):</td><td>${formatCurrency(totalPaid)}</td></tr></tfoot></table></div></div>`;
-    return html;
-}
+</script>
+<script>
+    function applyMobileFix() {
+        const MOBILE_BREAKPOINT = 768;
+        function injectMobileCSS() {
+            if (document.getElementById('mobile-fix-styles')) return;
+            const css = `
+                body.mobile-mode .main-container {
+                    margin-left: 0 !important;
+                    margin-right: 0 !important;
+                    width: 100% !important;
+                }
+                body.mobile-mode .sidebar {
+                    transform: translateX(-100%); 
+                    transition: transform 0.3s ease-in-out;
+                    z-index: 1100;
+                }
+                body.mobile-mode .sidebar.active {
+                    transform: translateX(0);
+                }
+                body.rtl-mode.mobile-mode .sidebar {
+                    transform: translateX(100%);
+                }
+                body.rtl-mode.mobile-mode .sidebar.active {
+                    transform: translateX(0);
+                }
+                body.mobile-mode .dashboard-cards,
+                body.mobile-mode .form-row {
+                    flex-direction: column;
+                }
+                body.mobile-mode .card,
+                body.mobile-mode .form-group {
+                    min-width: 100%;
+                }
+                #mobile-backdrop {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.5); z-index: 1099;
+                    display: none;
+                }
+            `;
+            const style = document.createElement('style');
+            style.id = 'mobile-fix-styles';
+            style.textContent = css;
+            document.head.appendChild(style);
+            let backdrop = document.createElement('div');
+            backdrop.id = 'mobile-backdrop';
+            document.body.appendChild(backdrop);
+        }
+        function unifiedSidebarToggle() {
+            const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+            const sidebar = document.getElementById('sidebar');
+            const mainContainer = document.getElementById('mainContainer');
+            const backdrop = document.getElementById('mobile-backdrop');
+            const isRtl = document.body.classList.contains('rtl-mode');
+            sidebar.classList.toggle('active');
+            const isActive = sidebar.classList.contains('active');
+            if (isMobile) {
+                backdrop.style.display = isActive ? 'block' : 'none';
+            } else {
+                const marginValue = isActive ? '250px' : '0';
+                if (isRtl) {
+                    mainContainer.style.marginRight = marginValue;
+                    mainContainer.style.marginLeft = '0';
+                } else {
+                    mainContainer.style.marginLeft = marginValue;
+                    mainContainer.style.marginRight = '0';
+                }
+            }
+        }
+        function attachSidebarListeners() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu li');
+            const backdrop = document.getElementById('mobile-backdrop');
+            if (window.toggleSidebar) {
+                menuToggle.removeEventListener('click', window.toggleSidebar);
+            }
+            menuToggle.addEventListener('click', unifiedSidebarToggle);
+            backdrop.addEventListener('click', unifiedSidebarToggle);
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= MOBILE_BREAKPOINT && document.getElementById('sidebar').classList.contains('active')) {
+                        unifiedSidebarToggle();
+                    }
+                });
+            });
+        }
+        function manageLayout() {
+            document.body.classList.toggle('mobile-mode', window.innerWidth <= MOBILE_BREAKPOINT);
+        }
+        injectMobileCSS();
+        manageLayout();
+        attachSidebarListeners();
+        window.addEventListener('resize', manageLayout);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyMobileFix);
+    } else {
+        applyMobileFix();
+    }
+
+
+    async function runAutomaticBackupCheck() {
+        try {
+            const settings = await getFromStore(STORES.SETTINGS, 'general');
+            if (!settings || !settings.autoBackupEnabled) {
+                console.log('Automatic backup is disabled.');
+                return;
+            }
+
+            const lastBackupTimestamp = localStorage.getItem('lastAutoBackupTimestamp');
+            if (!lastBackupTimestamp) {
+                console.log('No previous auto-backup. Will run on next scheduled time.');
+                return;
+            }
+
+            const now = new Date();
+            const lastBackupDate = new Date(lastBackupTimestamp);
+            const frequency = settings.autoBackupFrequency || 'monthly';
+            let isDue = false;
+
+            if (frequency === 'daily') {
+                const backupTime = settings.autoBackupTime || '02:00';
+                const [hours, minutes] = backupTime.split(':').map(Number);
+                const todaySchedule = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+                // It's due if the last backup was before today's scheduled time, AND it's currently after today's scheduled time.
+                if (lastBackupDate < todaySchedule && now >= todaySchedule) {
+                    isDue = true;
+                }
+            } else {
+                let daysToWait = 30;
+                if (frequency === 'weekly') daysToWait = 7;
+                const cutoffDate = new Date(lastBackupDate.getTime() + daysToWait * 24 * 60 * 60 * 1000);
+                if (now >= cutoffDate) {
+                    isDue = true;
+                }
+            }
+
+            if (isDue) {
+                console.log(`Automatic backup is due. Triggering download.`);
+                showNotification('Automatic backup is due. Download will start...', 'info');
+                await triggerAutomaticBackupDownload();
+            } else {
+                console.log('Automatic backup is not due yet.');
+            }
+
+        } catch (error) {
+            console.error('Error during automatic backup check:', error);
+        }
+    }
+
+    async function triggerAutomaticBackupDownload() {
+        showLoading();
+        try {
+            let backupData = {};
+            for (const storeName in STORES) {
+                if (STORES[storeName] !== 'backup') { // Ensure we don't backup the backup log
+                    backupData[STORES[storeName]] = await getAllFromStore(STORES[storeName]);
+                }
+            }
+
+            const fileContent = JSON.stringify(backupData, null, 2);
+            const backupBlob = new Blob([fileContent], { type: 'application/json' });
+            const filename = `auto_backup_${new Date().toISOString().replace(/:/g, '-')}.json`;
+
+            const url = URL.createObjectURL(backupBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            // **CRUCIAL**: Update the timestamp after download starts
+            localStorage.setItem('lastAutoBackupTimestamp', new Date().toISOString());
+            showNotification('Automatic backup downloaded successfully!', 'success');
+
+        } catch (error) {
+            console.error('Failed to create automatic backup file:', error);
+            showNotification('Automatic backup failed.', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function performAutomaticBackup(settings) {
+        console.log('Performing automatic backup...');
+        let data = {};
+        for (const storeName in STORES) {
+            if (storeName !== 'BACKUP') { // Do not include the backup store in its own backup
+                data[STORES[storeName]] = await getAllFromStore(STORES[storeName]);
+            }
+        }
+
+        const filename = `auto_backup_${new Date().toISOString().replace(/:/g, '-')}.json`;
+        const backupBlob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+
+        const backupRecord = {
+            type: 'full-automatic',
+            format: 'json',
+            date: new Date().toISOString(),
+            size: backupBlob.size,
+            isAutomatic: true,
+            filename: filename,
+            blob: backupBlob // Store the actual downloadable blob
+        };
+
+        await addToStore(STORES.BACKUP, backupRecord);
+        showNotification('Automatic backup created successfully.', 'info');
+        await cleanupOldBackups(settings);
+    }
+    async function cleanupOldBackups(settings) {
+        const retentionMonths = settings.autoBackupRetention || 3;
+        const cutoffDate = new Date();
+        cutoffDate.setMonth(cutoffDate.getMonth() - retentionMonths);
+
+        const allAutoBackups = (await getAllFromStore(STORES.BACKUP)).filter(b => b.isAutomatic);
+
+        let deletedCount = 0;
+        for (const backup of allAutoBackups) {
+            if (new Date(backup.date) < cutoffDate) {
+                await deleteFromStore(STORES.BACKUP, backup.id);
+                deletedCount++;
+            }
+        }
+        if (deletedCount > 0) {
+            console.log(`Cleaned up ${deletedCount} old automatic backup(s).`);
+        }
+    }
 </script>

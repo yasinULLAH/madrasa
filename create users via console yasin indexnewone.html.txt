@@ -1,0 +1,94 @@
+(async () => {
+    // --- Configuration: Define the default users and roles ---
+    const usersToCreate = [
+        {
+            username: 'superadmin',
+            password: 'superadmin123', // Change this password immediately after first login
+            name: 'Super Admin',
+            email: 'superadmin@school.com',
+            role: 'super_admin',
+            status: 'active'
+        },
+        {
+            username: 'admin',
+            password: 'admin123', // Change this password
+            name: 'System Admin',
+            email: 'admin@school.com',
+            role: 'admin',
+            status: 'active'
+        },
+        {
+            username: 'accountant',
+            password: 'accountant123', // Change this password
+            name: 'Accounts Department',
+            email: 'accounts@school.com',
+            role: 'accountant',
+            status: 'active'
+        }
+    ];
+
+    const rolesToCreate = [
+        {
+            name: 'super_admin',
+            description: 'Full System Administrator Access',
+            permissions: { dashboard: true, students: true, teachers: true, staff: true, classes: true, subjects: true, attendance: true, exams: true, fees: true, salaries: true, library: true, users: true, reports: true, settings: true, backup: true, 'id-cards': true }
+        },
+        {
+            name: 'admin',
+            description: 'Standard Administrator Access',
+            permissions: { dashboard: true, students: true, teachers: true, staff: true, classes: true, subjects: true, attendance: true, exams: true, fees: true, salaries: true, library: true, users: false, reports: true, settings: false, backup: true, 'id-cards': true }
+        },
+        {
+            name: 'accountant',
+            description: 'Accountant',
+            permissions: { dashboard: true, students: true, teachers: true, staff: true, classes: false, subjects: false, attendance: false, exams: false, fees: true, salaries: true, library: false, users: false, reports: true, settings: false, backup: false, 'id-cards': false }
+        },
+        {
+            name: 'teacher',
+            description: 'Teacher',
+            permissions: { dashboard: true, students: true, teachers: false, staff: false, classes: true, subjects: true, attendance: true, exams: true, fees: false, salaries: false, library: true, users: false, reports: true, settings: false, backup: false, 'id-cards': false }
+        }
+    ];
+
+    // --- Script Logic ---
+    if (typeof addToStore !== 'function' || typeof getAllFromStore !== 'function' || typeof STORES !== 'object') {
+        console.error("App functions not available. Please make sure the app is fully loaded before running this script.");
+        return;
+    }
+
+    try {
+        console.log('--- Starting User and Role Creation Script ---');
+
+        // Create Roles First
+        console.log('\nProcessing Roles...');
+        const existingRoles = await getAllFromStore(STORES.ROLES);
+        for (const role of rolesToCreate) {
+            const roleExists = existingRoles.some(existing => existing.name === role.name);
+            if (!roleExists) {
+                await addToStore(STORES.ROLES, role);
+                console.log(`✅ Role '${role.name}' created.`);
+            } else {
+                console.log(`- Role '${role.name}' already exists. Skipping.`);
+            }
+        }
+
+        // Create Users
+        console.log('\nProcessing Users...');
+        const existingUsers = await getAllFromStore(STORES.USERS);
+        for (const user of usersToCreate) {
+            const userExists = existingUsers.some(existing => existing.username === user.username);
+            if (!userExists) {
+                await addToStore(STORES.USERS, user);
+                console.log(`✅ User '${user.username}' created. Password: '${user.password}'`);
+            } else {
+                console.log(`- User '${user.username}' already exists. Skipping.`);
+            }
+        }
+
+        console.log('\n--- Script Finished ---');
+        console.log('You can now log in with the credentials printed above.');
+
+    } catch (error) {
+        console.error('An error occurred during user creation:', error);
+    }
+})();
