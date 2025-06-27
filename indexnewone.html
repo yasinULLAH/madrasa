@@ -78,7 +78,6 @@
             transition: all 0.3s;
             height: 100vh;
             overflow-y: auto;
-            width: calc(100% - 250px);
             padding: 12px;
         }
 
@@ -12355,10 +12354,10 @@
                     width: 100% !important;
                 }
                 body.mobile-mode .sidebar {
-                    transform: translateX(-100%); 
-                    transition: transform 0.3s ease-in-out;
-                    z-index: 1100;
-                }
+    transition: transform 0.3s ease-in-out;
+    z-index: 1100;
+    /* The transform is now controlled by JavaScript */
+}
                 body.mobile-mode .sidebar.active {
                     transform: translateX(0);
                 }
@@ -12377,10 +12376,10 @@
                     min-width: 100%;
                 }
                 #mobile-backdrop {
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.5); z-index: 1099;
-                    display: none;
-                }
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 1099;
+    display: none;
+}
             `;
             const style = document.createElement('style');
             style.id = 'mobile-fix-styles';
@@ -12411,19 +12410,61 @@
                 }
             }
         }
+        // This is the new, master function that replaces toggleSidebar and unifiedSidebarToggle
+        function masterToggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContainer = document.getElementById('mainContainer');
+            const backdrop = document.getElementById('mobile-backdrop');
+            const isMobile = window.innerWidth <= 768;
+            const isRtl = document.body.classList.contains('rtl-mode');
+
+            // Toggle the active state
+            const isActive = sidebar.classList.toggle('active');
+
+            // Define the correct transform based on RTL or LTR
+            const hideTransform = isRtl ? 'translateX(100%)' : 'translateX(-100%)';
+            const showTransform = 'translateX(0)';
+
+            // Apply the transform to the sidebar
+            sidebar.style.transform = isActive ? showTransform : hideTransform;
+
+            if (isMobile) {
+                // On mobile, just show/hide the backdrop overlay
+                backdrop.style.display = isActive ? 'block' : 'none';
+                mainContainer.style.marginLeft = '0';
+                mainContainer.style.marginRight = '0';
+            } else {
+                // On desktop, push the main content aside
+                backdrop.style.display = 'none';
+                const marginValue = isActive ? '250px' : '0';
+                if (isRtl) {
+                    mainContainer.style.marginRight = marginValue;
+                    mainContainer.style.marginLeft = '0';
+                } else {
+                    mainContainer.style.marginLeft = marginValue;
+                    mainContainer.style.marginRight = '0';
+                }
+            }
+        }
+
+        // This is the updated listener function
         function attachSidebarListeners() {
             const menuToggle = document.getElementById('menuToggle');
             const sidebarLinks = document.querySelectorAll('.sidebar-menu li');
             const backdrop = document.getElementById('mobile-backdrop');
-            if (window.toggleSidebar) {
-                menuToggle.removeEventListener('click', window.toggleSidebar);
-            }
-            menuToggle.addEventListener('click', unifiedSidebarToggle);
-            backdrop.addEventListener('click', unifiedSidebarToggle);
+
+            // Remove old listeners to prevent duplicates
+            const newMenuToggle = menuToggle.cloneNode(true);
+            menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
+
+            // Attach the new master function
+            newMenuToggle.addEventListener('click', masterToggleSidebar);
+            backdrop.addEventListener('click', masterToggleSidebar);
+
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', () => {
-                    if (window.innerWidth <= MOBILE_BREAKPOINT && document.getElementById('sidebar').classList.contains('active')) {
-                        unifiedSidebarToggle();
+                    if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('active')) {
+                        masterToggleSidebar(); // Close the sidebar after clicking a link on mobile
                     }
                 });
             });
