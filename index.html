@@ -5735,6 +5735,58 @@
         <button class="print" onclick="printCertificate()" style="display: none;" id="printCertificateBtn">ایکسپورٹ کریں (PNG)</button>
         <div id="certificatePreviewContainer" class="printable" style="display: none; padding: 20px; background: #eee; margin-top: 20px;">
         </div>
+       <hr class="one" style="margin: 40px 0;">
+<h2>کسٹم سرٹیفکیٹ جنریٹر</h2>
+<div class="form-grid">
+    <div>
+        <label for="customDataSource">ڈیٹا کا ماخذ (Data Source)</label>
+        <select id="customDataSource" onchange="handleDataSourceChange()">
+            <option value="students">موجودہ طلباء</option>
+            <option value="csv">CSV / ٹیکسٹ ان پٹ</option>
+        </select>
+    </div>
+</div>
+<div class="form-grid">
+    <div class="full-width">
+        <label for="customCertificateTitle">سرٹیفکیٹ کا عنوان</label>
+        <input type="text" id="customCertificateTitle" value="سند برائے حسنِ کارکردگی">
+    </div>
+    <div class="full-width">
+        <label for="customCertificateBody">سرٹیفکیٹ کا متن</label>
+        <textarea id="customCertificateBody" rows="5">تصدیق کی جاتی ہے کہ [name] ولد [father_name]، جماعت [class] کے طالب علم، نے [Event Name] میں نمایاں کارکردگی کا مظاہرہ کیا ہے۔</textarea>
+        <div class="placeholders" style="font-size: 0.9em; color: #666; margin-top: 5px; direction: ltr; text-align: right;">
+            <b>:پلیس ہولڈرز</b><br>
+            طلباء کے لیے: <code>[name]</code>, <code>[father_name]</code>, <code>[class]</code>, <code>[admission_no]</code>, <code>[date]</code>, <code>[year]</code><br>
+            CSV کے لیے: ہیڈر کے نام استعمال کریں, مثلاً <code>[FullName]</code>, <code>[Award]</code><br>
+            کوئی بھی کسٹم ٹیکسٹ: <code>[کوئی بھی متن یہاں لکھیں]</code>
+        </div>
+    </div>
+    <div>
+        <label for="customCertificateIssueDate">تاریخِ اجراء</label>
+        <input type="date" id="customCertificateIssueDate">
+    </div>
+</div>
+<div id="internalDataSelector" class="form-grid">
+     <div style="grid-column: span 2;">
+        <label for="customBulkCertificateStudents">طالب علم منتخب کریں (ایک یا زیادہ)</label>
+        <select id="customBulkCertificateStudents" multiple size="6" style="height: 150px;"></select>
+    </div>
+</div>
+<div id="csvDataSelector" style="display:none;">
+    <div class="form-grid">
+        <div class="full-width">
+            <label for="csvDataInput">یہاں CSV ڈیٹا پیسٹ کریں (ہیڈر کے ساتھ)</label>
+            <textarea id="csvDataInput" rows="8" placeholder="FullName,Award,Position
+احمد خان,بہترین کارکردگی,اول"></textarea>
+        </div>
+    </div>
+    <label for="csvFileInput">یا CSV فائل اپ لوڈ کریں:</label>
+    <input type="file" id="csvFileInput" accept=".csv" onchange="handleCSVFile(event)">
+</div>
+<button onclick="generateCustomCertificates()">سرٹیفکیٹس جنریٹ کریں</button>
+<button class="print" onclick="exportCustomCertificates()" style="display: none;" id="exportCustomCertificatesBtn">ایکسپورٹ کریں (ZIP)</button>
+<div id="customCertificatePreviewContainer" class="printable" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+</div>
     `;
             container.appendChild(idCardModule);
             const nav = document.querySelector('nav');
@@ -6181,6 +6233,8 @@
                     if (typeof loadClassesForBulk === 'function') loadClassesForBulk();
                     if (typeof loadIDCardSelect === 'function') loadIDCardSelect();
                     if (typeof loadBulkIDCardSelect === 'function') loadBulkIDCardSelect();
+                    loadStudentsForBulkCertificate();
+                    handleDataSourceChange();
                 }
             };
             if (!window.JSZip) {
@@ -7630,8 +7684,226 @@
             existingShowModule(moduleId);
             if (moduleId === 'idCardGenerator') {
                 loadStudentsForCertificate();
+                loadStudentsForBulkCertificate();
+                handleDataSourceChange();
             }
         };
+        async function loadStudentsForBulkCertificate() {
+            const select = document.getElementById('customBulkCertificateStudents');
+            if (!select || select.options.length > 0) return;
+            select.innerHTML = '';
+            try {
+                const students = await getAll(STORE_STUDENTS);
+                students.sort((a, b) => a.name.localeCompare(b.name, 'ur')).forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = `${student.name} (${student.admissionNo})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error loading students for bulk certificate:", error);
+            }
+        }
+        async function exportCustomCertificates() {
+            const certificateElements = document.querySelectorAll('#customCertificatePreviewContainer .certificate-paper');
+            const exportBtn = document.getElementById('exportCustomCertificatesBtn');
+            if (certificateElements.length === 0) {
+                alert('ایکسپورٹ کرنے کے لیے کوئی سرٹیفکیٹ نہیں ہے۔');
+                return;
+            }
+            if (!window.JSZip || !window.html2canvas) {
+                alert("ضروری لائبریریاں (JSZip, html2canvas) لوڈ نہیں ہیں۔ براہ کرم صفحہ کو ریفریش کریں۔");
+                return;
+            }
+            exportBtn.textContent = 'ایکسپورٹ ہو رہا ہے...';
+            exportBtn.disabled = true;
+            try {
+                const zip = new JSZip();
+                for (const certElement of certificateElements) {
+                    const studentName = certElement.dataset.studentName || `Certificate_${Date.now()}`;
+                    const canvas = await html2canvas(certElement, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                    const imgData = canvas.toDataURL('image/png').split(',')[1];
+                    zip.file(`${studentName}.png`, imgData, { base64: true });
+                }
+                const content = await zip.generateAsync({ type: 'blob' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = `Custom_Certificates_${Date.now()}.zip`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error('Error exporting bulk custom certificates:', error);
+                alert('سرٹیفکیٹس ایکسپورٹ کرنے میں خرابی۔');
+            } finally {
+                exportBtn.textContent = 'ایکسپورٹ کریں (ZIP)';
+                exportBtn.disabled = false;
+            }
+        }
+        function handleDataSourceChange() {
+            const source = document.getElementById('customDataSource').value;
+            document.getElementById('internalDataSelector').style.display = (source === 'students') ? 'block' : 'none';
+            document.getElementById('csvDataSelector').style.display = (source === 'csv') ? 'block' : 'none';
+        }
+        function handleCSVFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('csvDataInput').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        }
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split(/\r?\n/);
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim());
+            const records = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                if (values.length === headers.length) {
+                    const record = {};
+                    headers.forEach((header, index) => {
+                        record[header] = values[index];
+                    });
+                    records.push(record);
+                }
+            }
+            return records;
+        }
+        async function generateCustomCertificates() {
+            const dataSource = document.getElementById('customDataSource').value;
+            const certTitle = document.getElementById('customCertificateTitle').value;
+            const certBodyTemplate = document.getElementById('customCertificateBody').value;
+            const issueDateEl = document.getElementById('customCertificateIssueDate');
+            const previewContainer = document.getElementById('customCertificatePreviewContainer');
+            const exportBtn = document.getElementById('exportCustomCertificatesBtn');
+            if (!issueDateEl.value) {
+                issueDateEl.value = new Date().toISOString().split('T')[0];
+            }
+            const issueDate = issueDateEl.value;
+            const issueYear = new Date(issueDate).getFullYear();
+            let records = [];
+            if (dataSource === 'students') {
+                const selectedOptions = Array.from(document.getElementById('customBulkCertificateStudents').selectedOptions);
+                const studentIds = selectedOptions.map(opt => parseInt(opt.value));
+                if (studentIds.length === 0) {
+                    alert('براہ کرم کم از کم ایک طالب علم منتخب کریں۔');
+                    return;
+                }
+                for (const id of studentIds) {
+                    const student = await getById(STORE_STUDENTS, id);
+                    if (student) {
+                        records.push({
+                            name: student.name,
+                            father_name: student.fatherName,
+                            class: await getClassName(student.classId),
+                            admission_no: student.admissionNo,
+                            filename: student.name.replace(/\s/g, '_')
+                        });
+                    }
+                }
+            } else if (dataSource === 'csv') {
+                const csvText = document.getElementById('csvDataInput').value;
+                if (!csvText.trim()) {
+                    alert('CSV ڈیٹا ان پٹ خالی ہے۔');
+                    return;
+                }
+                records = parseCSV(csvText);
+                if (records.length > 0) {
+                    const firstHeader = Object.keys(records[0])[0];
+                    records.forEach(r => {
+                        r.filename = r[firstHeader] ? r[firstHeader].replace(/\s/g, '_') : `record_${Date.now()}`;
+                    });
+                }
+            }
+            if (records.length === 0) {
+                alert('سرٹیفکیٹ بنانے کے لیے کوئی ڈیٹا نہیں ملا۔');
+                return;
+            }
+            previewContainer.innerHTML = '<p>سرٹیفکیٹس تیار کیے جا رہے ہیں...</p>';
+            previewContainer.style.display = 'flex';
+            exportBtn.style.display = 'none';
+            try {
+                const schoolSetting = await getById(STORE_SETTINGS, 'schoolName');
+                const schoolName = schoolSetting ? schoolSetting.value : 'مدرسہ کا نام';
+                let allCertificatesHTML = '';
+                for (const record of records) {
+                    const replacements = {
+                        ...record,
+                        date: new Date(issueDate).toLocaleDateString('ur-PK'),
+                        year: issueYear
+                    };
+                    const finalBody = certBodyTemplate.replace(/\[([^\]]+)\]/g, (fullMatch, key) => {
+                        const value = replacements[key] || key;
+                        return `<span class="field">${value}</span>`;
+                    });
+                    allCertificatesHTML += `
+                <div class="certificate-paper" data-student-name="${record.filename}">
+                    <div class="certificate-border">
+                        <div class="certificate-inner-border">
+                            <div class="cert-header">
+                                <p class="bismillah">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</p>
+                                <h2 class="school-name">${schoolName}</h2>
+                                <h3 class="cert-title">${certTitle}</h3>
+                            </div>
+                            <div class="cert-body"><p>${finalBody}</p></div>
+                            <div class="cert-footer">
+                                <div class="signature-section"><p class="signature-line">دستخط مدیر</p></div>
+                                <div class="date-section"><p>تاریخِ اجراء: ${new Date(issueDate).toLocaleDateString('ur-PK')}</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                }
+                previewContainer.innerHTML = allCertificatesHTML;
+                if (allCertificatesHTML) {
+                    exportBtn.style.display = 'inline-block';
+                }
+            } catch (error) {
+                console.error("Error generating custom certificates:", error);
+                previewContainer.innerHTML = '<p>سرٹیفکیٹس بنانے میں خرابی: ' + error.message + '</p>';
+            }
+        }
+        async function exportCustomCertificates() {
+            const certificateElements = document.querySelectorAll('#customCertificatePreviewContainer .certificate-paper');
+            const exportBtn = document.getElementById('exportCustomCertificatesBtn');
+            if (certificateElements.length === 0) {
+                alert('ایکسپورٹ کرنے کے لیے کوئی سرٹیفکیٹ نہیں ہے۔');
+                return;
+            }
+            if (!window.JSZip || !window.html2canvas) {
+                alert("ضروری لائبریریاں (JSZip, html2canvas) لوڈ نہیں ہیں۔ براہ کرم صفحہ کو ریفریش کریں۔");
+                return;
+            }
+            exportBtn.textContent = 'ایکسپورٹ ہو رہا ہے...';
+            exportBtn.disabled = true;
+            try {
+                const zip = new JSZip();
+                for (const certElement of certificateElements) {
+                    const studentName = certElement.dataset.studentName || `Certificate_${Date.now()}`;
+                    const canvas = await html2canvas(certElement, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                    const imgData = canvas.toDataURL('image/png').split(',')[1];
+                    zip.file(`${studentName}.png`, imgData, { base64: true });
+                }
+                const content = await zip.generateAsync({ type: 'blob' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = `Custom_Certificates_${Date.now()}.zip`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error('Error exporting bulk custom certificates:', error);
+                alert('سرٹیفکیٹس ایکسپورٹ کرنے میں خرابی۔');
+            } finally {
+                exportBtn.textContent = 'ایکسپورٹ کریں (ZIP)';
+                exportBtn.disabled = false;
+            }
+        }
     </script>
 </body>
 
