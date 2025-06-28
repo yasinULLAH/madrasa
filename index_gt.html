@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
 
+<html dir="ltr" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدرسہ مینجمنٹ سسٹم Yasin's</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مدرسہ مینجمنٹ سسٹم Yasin's</title>
+<style>
         body {
-            font-family: 'Noto Nastaliq Urdu', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif !important;
-            direction: rtl;
+            font-family: 'Segoe UI', Arial, sans-serif !important;
+            direction: ltr;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
@@ -83,7 +83,7 @@
         td {
             border: 1px solid #ddd;
             padding: 10px;
-            text-align: right;
+            text-align: left;
         }
 
         th {
@@ -230,7 +230,7 @@
         }
 
         * {
-            font-family: Calibri, Calibri, 'Jameel Noori Nastaleeq', Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         #dm_modal_trigger span:first-child {
@@ -243,15 +243,10 @@
         }
 
         * {
-            font-family: calibri;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
-        .form-grid div span {
-            margin-right: 23px;
-            background: #0000ff82;
-            color: white;
-            padding: 0px 18px;
-        }
+        
 
         .id-card .photo.qr-code-image {
             width: 104px;
@@ -309,8 +304,8 @@
             background: #fff;
             position: relative;
             box-sizing: border-box;
-            font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
-            direction: rtl;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            direction: ltr;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -367,7 +362,7 @@
             margin-top: 30px;
             font-size: 19px;
             line-height: 2.2;
-            text-align: right;
+            text-align: left;
         }
 
         .cert-body p {
@@ -447,7 +442,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
+            left: 0;
             bottom: 0;
             background-image: url(logo2.png);
             background-size: 63%;
@@ -456,852 +451,770 @@
             opacity: 0.1;
             pointer-events: none;
         }
-
-        /* START: CSS for Monthly Attendance Register */
-        #attendanceRegisterView .table-container {
-            overflow-x: auto;
-            max-height: 70vh;
-            border: 1px solid #dee2e6;
-        }
-
-        #attendanceRegisterTable {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        #attendanceRegisterTable th,
-        #attendanceRegisterTable td {
-            border: 1px solid #dee2e6;
-            padding: 4px;
-            text-align: center;
-            position: relative;
-        }
-
-        #attendanceRegisterTable th {
-            background: #34495e;
-            color: white;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        #attendanceRegisterTable tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        #attendanceRegisterTable .student-name {
-            min-width: 150px;
-            text-align: right;
-            font-weight: bold;
-            background: #ecf0f1 !important;
-            position: sticky;
-            right: 0;
-            z-index: 5;
-        }
-
-        #attendanceRegisterTable .total-cell {
-            background: #dff0d8 !important;
-            font-weight: bold;
-            color: #3c763d !important;
-        }
-
-        #attendanceRegisterTable .summary-row {
-            background: #ecf0f1 !important;
-            font-weight: bold;
-            position: sticky;
-            bottom: 0;
-        }
-
-        #attendanceRegisterTable .attendance-cell {
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
-            user-select: none;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        #attendanceRegisterTable .Present {
-            background-color: #2ecc71;
-            color: white;
-        }
-
-        #attendanceRegisterTable .Absent {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        #attendanceRegisterTable .Leave {
-            background-color: #f39c12;
-            color: white;
-        }
-
-        /* END: CSS for Monthly Attendance Register */
+        iframe {
+    display: none;
+}
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</head>
 
-<body>
-    <div class="container">
-        <h1>مدرسہ مینجمنٹ سسٹم</h1>
-        <nav style="overflow-x: auto;">
-            <button onclick="showModule('dashboard')">ڈیش بورڈ</button>
-            <button onclick="showModule('students')">طلباء</button>
-            <button onclick="showModule('teachers')">اساتذہ</button>
-            <button onclick="showModule('classes')">کلاسیں</button>
-            <button onclick="showModule('fees')">فیس</button>
-            <button onclick="showModule('feeStructures')">فیس اسٹرکچر</button>
-            <button onclick="showModule('attendance')">حاضری</button>
-            <button onclick="showModule('results')">نتائج</button>
-            <button onclick="showModule('timetable')">ٹائم ٹیبل / ڈیوٹی روسٹر</button>
-            <button onclick="showModule('expenses')">اخراجات</button>
-            <button onclick="showModule('reports')">رپورٹس</button>
-            <button onclick="showModule('inventory')">انوینٹری</button>
-            <button onclick="showModule('settings')">سیٹنگز</button>
-            <button onclick="showModule('exportData')">ڈیٹا ایکسپورٹ</button>
-        </nav>
-        <div id="inventory" class="module">
-            <h2>انوینٹری کا انتظام</h2>
-            <h3>نیا آئٹم شامل کریں / ترمیم کریں</h3>
-            <form id="inventoryForm">
-                <input type="hidden" id="inventoryId">
-                <div class="form-grid">
-                    <div>
-                        <label for="itemName">آئٹم کا نام</label>
-                        <input type="text" id="itemName" required>
-                    </div>
-                    <div>
-                        <label for="itemCategory">زمرہ</label>
-                        <input type="text" id="itemCategory" placeholder="مثال: اسٹیشنری، فرنیچر" required>
-                    </div>
-                    <div>
-                        <label for="itemQuantity">مقدار</label>
-                        <input type="number" id="itemQuantity" required min="0">
-                    </div>
-                    <div>
-                        <label for="unitPrice">فی یونٹ قیمت</label>
-                        <input type="number" id="unitPrice" required min="0" step="0.01">
-                    </div>
-                    <div>
-                        <label for="purchaseDate">خریداری کی تاریخ</label>
-                        <input type="date" id="purchaseDate">
-                    </div>
-                    <div class="full-width">
-                        <label for="itemDescription">تفصیل</label>
-                        <textarea id="itemDescription" rows="2"></textarea>
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetInventoryForm()">منسوخ کریں</button>
-            </form>
-            <h3>انوینٹری کی فہرست</h3>
-            <input type="text" id="inventorySearch" placeholder="نام یا زمرہ سے تلاش کریں..." onkeyup="loadInventory()">
-            <table id="inventoryTable">
-                <thead>
-                    <tr>
-                        <th>آئٹم کا نام</th>
-                        <th>زمرہ</th>
-                        <th>مقدار</th>
-                        <th>فی یونٹ قیمت</th>
-                        <th>کل قیمت</th>
-                        <th>خریداری کی تاریخ</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="dashboard" class="module active">
-            <h2>ڈیش بورڈ</h2>
-            <p>سسٹم میں خوش آمدید۔ یہاں آپ اہم اعدادوشمار دیکھ سکیں گے۔</p>
-            <h3>فوری اعدادوشمار (آج)</h3>
-            <div class="form-grid">
-                <div>کل طلباء: <span id="totalStudents">0</span></div>
-                <div>کل اساتذہ: <span id="totalTeachers">0</span></div>
-                <div>کل کلاسیں: <span id="totalClasses">0</span></div>
-                <div>آج کی آمدنی (مع فیس): <span id="todayFees">0</span></div>
-                <div>آج کے اخراجات: <span id="todayExpenses">0</span></div>
-            </div>
-            <hr style="margin: 20px 0;" class="one">
-            <hr style="margin: 20px 0;" class="two">
-            <h3>تفصیلی رپورٹس</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="dashboardReportType">رپورٹ کی قسم:</label>
-                    <select id="dashboardReportType" onchange="toggleDashboardReportInputs()">
-                        <option value="monthly">ماہانہ خلاصہ</option>
-                        <option value="yearly">سالانہ خلاصہ</option>
-                        <option value="custom_range">مخصوص مدت</option>
-                    </select>
-                </div>
-                <div id="dashboardMonthSelectorDiv">
-                    <label for="dashboardReportMonth">مہینہ:</label>
-                    <select id="dashboardReportMonth" style="width:auto; padding:5px; margin-right:5px;"></select>
-                </div>
-                <div id="dashboardYearSelectorDiv">
-                    <label for="dashboardReportYear">سال:</label>
-                    <input type="number" id="dashboardReportYear" placeholder="YYYY" style="width:100px; padding:5px;">
-                </div>
-                <div id="dashboardDateRangeSelectorDiv" style="display:none; grid-column: span 2;">
-                    <div>
-                        <label for="dashboardReportStartDate">شروع تاریخ:</label>
-                        <input type="date" id="dashboardReportStartDate">
-                    </div>
-                    <div>
-                        <label for="dashboardReportEndDate">اختتامی تاریخ:</label>
-                        <input type="date" id="dashboardReportEndDate">
-                    </div>
-                </div>
-                <div style="grid-column: 1 / -1; text-align:left;">
-                    <button onclick="generateDashboardDetailedReport()">رپورٹ دیکھیں</button>
-                </div>
-            </div>
-            <div id="dashboardDetailedReportOutput"
-                style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
-                <h4 id="dashboardReportTitle">منتخب مدت کے لیے خلاصہ:</h4>
-                <div class="form-grid">
-                    <div>کل آمدنی (مع فیس): <span id="periodTotalFees">0</span></div>
-                    <div>کل اخراجات: <span id="periodTotalExpenses">0</span></div>
-                    <div title="Loss is shown with a red background | نقصان کو سرخ پس منظر کے ساتھ ظاہر کیا جاتا ہے">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+            function googleTranslateElementInit() {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'ur', // Original language of your page
+                    includedLanguages: 'en', // Languages you want to offer for translation
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                    autoDisplay: false // Important: set to false to prevent immediate display.
+                                        // However, this often doesn't work as expected for hiding the initial bar.
+                                        // Hiding completely is very difficult and can break.
+                }, 'google_translate_element');
+            }
+
+            // Function to trigger translation (you'd call this if you want to auto-translate)
+            // Note: This is an unofficial/hacky way and might not work reliably.
+            function triggerGoogleTranslate() {
+                var selectElement = document.querySelector('.goog-te-combo');
+                if (selectElement) {
+                    selectElement.value = 'en'; // Set target language to English
+                    selectElement.dispatchEvent(new Event('change')); // Trigger change event
+                }
+            }
+
+            // To run translation on page load (try after a short delay)
+            window.onload = function() {
+                setTimeout(function() {
+                    triggerGoogleTranslate();
+                    // Optionally try to hide the bar, but it's very unreliable.
+                    // var gt_bar = document.querySelector('.goog-te-banner-frame');
+                    // if (gt_bar) {
+                    //     gt_bar.style.display = 'none';
+                    //     gt_bar.style.height = '0px';
+                    //     gt_bar.style.overflow = 'hidden';
+                    // }
+                }, 1500); // Give widget time to load and populate. Increased delay slightly.
+            };
+        </script><script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script></head>
+<body><div id="google_translate_element" style="position: fixed; top: 10px; right: 10px; z-index: 9999;"></div>
+<div class="container">
+<h1>مدرسہ مینجمنٹ سسٹم</h1>
+<nav style="overflow-x: auto;">
+<button onclick="showModule('dashboard')">ڈیش بورڈ</button>
+<button onclick="showModule('students')">طلباء</button>
+<button onclick="showModule('teachers')">اساتذہ</button>
+<button onclick="showModule('classes')">کلاسیں</button>
+<button onclick="showModule('fees')">فیس</button>
+<button onclick="showModule('feeStructures')">فیس اسٹرکچر</button>
+<button onclick="showModule('attendance')">حاضری</button>
+<button onclick="showModule('results')">نتائج</button>
+<button onclick="showModule('timetable')">ٹائم ٹیبل / ڈیوٹی روسٹر</button>
+<button onclick="showModule('expenses')">اخراجات</button>
+<button onclick="showModule('reports')">رپورٹس</button>
+<button onclick="showModule('inventory')">انوینٹری</button>
+<button onclick="showModule('settings')">سیٹنگز</button>
+<button onclick="showModule('exportData')">ڈیٹا ایکسپورٹ</button>
+</nav>
+<div class="module" id="inventory">
+<h2>انوینٹری کا انتظام</h2>
+<h3>نیا آئٹم شامل کریں / ترمیم کریں</h3>
+<form id="inventoryForm">
+<input id="inventoryId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="itemName">آئٹم کا نام</label>
+<input id="itemName" required="" type="text"/>
+</div>
+<div>
+<label for="itemCategory">زمرہ</label>
+<input id="itemCategory" placeholder="مثال: اسٹیشنری، فرنیچر" required="" type="text"/>
+</div>
+<div>
+<label for="itemQuantity">مقدار</label>
+<input id="itemQuantity" min="0" required="" type="number"/>
+</div>
+<div>
+<label for="unitPrice">فی یونٹ قیمت</label>
+<input id="unitPrice" min="0" required="" step="0.01" type="number"/>
+</div>
+<div>
+<label for="purchaseDate">خریداری کی تاریخ</label>
+<input id="purchaseDate" type="date"/>
+</div>
+<div class="full-width">
+<label for="itemDescription">تفصیل</label>
+<textarea id="itemDescription" rows="2"></textarea>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetInventoryForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>انوینٹری کی فہرست</h3>
+<input id="inventorySearch" onkeyup="loadInventory()" placeholder="نام یا زمرہ سے تلاش کریں..." type="text"/>
+<table id="inventoryTable">
+<thead>
+<tr>
+<th>آئٹم کا نام</th>
+<th>زمرہ</th>
+<th>مقدار</th>
+<th>فی یونٹ قیمت</th>
+<th>کل قیمت</th>
+<th>خریداری کی تاریخ</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module active" id="dashboard">
+<h2>ڈیش بورڈ</h2>
+<p>سسٹم میں خوش آمدید۔ یہاں آپ اہم اعدادوشمار دیکھ سکیں گے۔</p>
+<h3>فوری اعدادوشمار (آج)</h3>
+<div class="form-grid">
+<div>کل طلباء: <span id="totalStudents">0</span></div>
+<div>کل اساتذہ: <span id="totalTeachers">0</span></div>
+<div>کل کلاسیں: <span id="totalClasses">0</span></div>
+<div>آج کی آمدنی (مع فیس): <span id="todayFees">0</span></div>
+<div>آج کے اخراجات: <span id="todayExpenses">0</span></div>
+</div>
+<hr class="one" style="margin: 20px 0;"/>
+<hr class="two" style="margin: 20px 0;"/>
+<h3>تفصیلی رپورٹس</h3>
+<div class="form-grid">
+<div>
+<label for="dashboardReportType">رپورٹ کی قسم:</label>
+<select id="dashboardReportType" onchange="toggleDashboardReportInputs()">
+<option value="monthly">ماہانہ خلاصہ</option>
+<option value="yearly">سالانہ خلاصہ</option>
+<option value="custom_range">مخصوص مدت</option>
+</select>
+</div>
+<div id="dashboardMonthSelectorDiv">
+<label for="dashboardReportMonth">مہینہ:</label>
+<select id="dashboardReportMonth" style="width:auto; padding:5px; margin-right:5px;"></select>
+</div>
+<div id="dashboardYearSelectorDiv">
+<label for="dashboardReportYear">سال:</label>
+<input id="dashboardReportYear" placeholder="YYYY" style="width:100px; padding:5px;" type="number"/>
+</div>
+<div id="dashboardDateRangeSelectorDiv" style="display:none; grid-column: span 2;">
+<div>
+<label for="dashboardReportStartDate">شروع تاریخ:</label>
+<input id="dashboardReportStartDate" type="date"/>
+</div>
+<div>
+<label for="dashboardReportEndDate">اختتامی تاریخ:</label>
+<input id="dashboardReportEndDate" type="date"/>
+</div>
+</div>
+<div style="grid-column: 1 / -1; text-align:left;">
+<button onclick="generateDashboardDetailedReport()">رپورٹ دیکھیں</button>
+</div>
+</div>
+<div id="dashboardDetailedReportOutput" style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
+<h4 id="dashboardReportTitle">منتخب مدت کے لیے خلاصہ:</h4>
+<div class="form-grid">
+<div>کل آمدنی (مع فیس): <span id="periodTotalFees">0</span></div>
+<div>کل اخراجات: <span id="periodTotalExpenses">0</span></div>
+<div title="Loss is shown with a red background | نقصان کو سرخ پس منظر کے ساتھ ظاہر کیا جاتا ہے">
                         نفع/نقصان: <span id="periodNetProfit">0</span></div>
-                    <div>نئے داخلے اس مدت میں: <span id="periodNewAdmissions">0</span></div>
-                </div>
-            </div>
-            <hr style="margin: 20px 0;" class="one">
-            <hr style="margin: 20px 0;" class="two">
-            <div class="form-grid" id="advancedReportControls">
-                <div>
-                    <label for="advReportType">رپورٹ کی قسم:</label>
-                    <select id="advReportType" onchange="updateAdvancedFilterVisibility()">
-                        <option value="">-- منتخب کریں --</option>
-                        <option value="financial">مالیاتی (فیس)</option>
-                        <option value="attendance"> حاضری کا خلاصہ</option>
-                        <option value="marks">امتحانی نتائج کا خلاصہ</option>
-                    </select>
-                </div>
-                <div id="advDateControls" style="display: none; grid-column: 1 / -1;">
-                    <div class="form-grid">
-                        <div id="advDateRangeDiv">
-                            <label for="advStartDate">شروع تاریخ:</label>
-                            <input type="date" id="advStartDate">
-                            <label for="advEndDate" style="margin-top: 5px;">اختتامی تاریخ:</label>
-                            <input type="date" id="advEndDate">
-                        </div>
-                        <div id="advMonthYearDiv">
-                            <label for="advReportMonths">مہینے (ایک یا زیادہ منتخب کریں):</label>
-                            <select id="advReportMonths" multiple size="4" style="height: 100px;"></select>
-                        </div>
-                        <div id="advYearDiv">
-                            <label for="advReportYears">سال (ایک یا زیادہ منتخب کریں):</label>
-                            <select id="advReportYears" multiple size="4" style="height: 100px;"></select>
-                        </div>
-                    </div>
-                </div>
-                <div id="advFinancialTypeDiv" style="display:none;">
-                    <label for="advFinancialType">مالیاتی رپورٹ:</label>
-                    <select id="advFinancialType">
-                        <option value="fee_due">واجب الادا فیس</option>
-                        <option value="fee_paid">وصول شدہ فیس</option>
-                    </select>
-                </div>
-                <div id="advClassFilterDiv" style="display:none;">
-                    <label for="advClassFilter">کلاس:</label>
-                    <select id="advClassFilter" onchange="updateStudentFilterByClass()">
-                        <option value="">تمام کلاسیں</option>
-                    </select>
-                </div>
-                <div id="advStudentFilterDiv" style="display:none;">
-                    <label for="advStudentFilter">طالب علم (ایک یا زیادہ منتخب کریں):</label>
-                    <select id="advStudentFilter" multiple size="3" style="height: 80px;"></select>
-                </div>
-                <div style="grid-column: 1 / -1; text-align:left;">
-                    <button id="generateAdvancedReportBtn">رپورٹ دیکھیں</button>
-                    <button id="commFromReportBtn" style="display:none; background-color: #007bff;"
-                        onclick="triggerCommFromAdvancedReport()">پیغام بھیجیں</button>
-                </div>
-                <div id="advancedReportOutput" class="full-width"
-                    style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
-                </div>
-            </div>
-        </div>
-        <div id="students" class="module">
-            <h2>طلباء کا انتظام</h2>
-            <h3>نیا طالب علم شامل کریں / ترمیم کریں</h3>
-            <form id="studentForm">
-                <input type="hidden" id="studentId">
-                <div class="form-grid">
-                    <div>
-                        <label for="admissionNo">داخلہ نمبر</label>
-                        <input type="text" id="admissionNo" required>
-                    </div>
-                    <div>
-                        <label for="studentName">نام</label>
-                        <input type="text" id="studentName" required>
-                    </div>
-                    <div>
-                        <label for="fatherName">والد کا نام</label>
-                        <input type="text" id="fatherName" required>
-                    </div>
-                    <div>
-                        <label for="studentClass">کلاس</label>
-                        <select id="studentClass" required></select>
-                    </div>
-                    <div>
-                        <label for="admissionDate">داخلہ تاریخ</label>
-                        <input type="date" id="admissionDate" required>
-                    </div>
-                    <div>
-                        <label for="studentContact">رابطہ نمبر</label>
-                        <input type="text" id="studentContact">
-                    </div>
-                    <div>
-                        <label for="studentAddress">پتہ</label>
-                        <input type="text" id="studentAddress">
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetStudentForm()">منسوخ کریں</button>
-            </form>
-            <h3>طلباء کی فہرست</h3>
-            <input type="text" id="studentSearch" placeholder="نام یا داخلہ نمبر سے تلاش کریں..."
-                onkeyup="loadStudents()">
-            <table id="studentsTable">
-                <thead>
-                    <tr>
-                        <th>داخلہ نمبر</th>
-                        <th>نام</th>
-                        <th>والد کا نام</th>
-                        <th>کلاس</th>
-                        <th>داخلہ تاریخ</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="teachers" class="module">
-            <h2>اساتذہ کا انتظام</h2>
-            <h3>نیا استاد شامل کریں / ترمیم کریں</h3>
-            <form id="teacherForm">
-                <input type="hidden" id="teacherId">
-                <div class="form-grid">
-                    <div>
-                        <label for="teacherName">نام</label>
-                        <input type="text" id="teacherName" required>
-                    </div>
-                    <div>
-                        <label for="teacherSubjects">مضامین</label>
-                        <input type="text" id="teacherSubjects" required>
-                    </div>
-                    <div>
-                        <label for="teacherContact">موبائل نمبر</label>
-                        <input type="text" id="teacherContact" required>
-                    </div>
-                    <div>
-                        <label for="teacherSalary">طے شدہ تنخواہ</label>
-                        <input type="number" id="teacherSalary" required>
-                    </div>
-                    <div>
-                        <label for="appointmentDate">تقرری تاریخ</label>
-                        <input type="date" id="appointmentDate" required>
-                    </div>
-                    <div>
-                        <label for="teacherQualification">قابلیت</label>
-                        <input type="text" id="teacherQualification">
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetTeacherForm()">منسوخ کریں</button>
-            </form>
-            <h3>اساتذہ کی فہرست</h3>
-            <table id="teachersTable">
-                <thead>
-                    <tr>
-                        <th>نام</th>
-                        <th>مضامین</th>
-                        <th>موبائل نمبر</th>
-                        <th>تنخواہ</th>
-                        <th>تقرری تاریخ</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="classes" class="module">
-            <h2>کلاسوں کا انتظام</h2>
-            <h3>نئی کلاس شامل کریں / ترمیم کریں</h3>
-            <form id="classForm">
-                <input type="hidden" id="classId">
-                <div class="form-grid">
-                    <div>
-                        <label for="className">کلاس کا نام</label>
-                        <input type="text" id="className" required>
-                    </div>
-                    <div>
-                        <label for="classTeacher">استاد</label>
-                        <select id="classTeacher" required></select>
-                    </div>
-                    <div>
-                        <label for="classSubjects">مضامین (کوما سے الگ کریں)</label>
-                        <input type="text" id="classSubjects" required>
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetClassForm()">منسوخ کریں</button>
-            </form>
-            <h3>کلاسوں کی فہرست</h3>
-            <table id="classesTable">
-                <thead>
-                    <tr>
-                        <th>کلاس کا نام</th>
-                        <th>استاد</th>
-                        <th>مضامین</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="feeStructures" class="module">
-            <h2>فیس اسٹرکچر</h2>
-            <h3>نیا فیس اسٹرکچر شامل کریں / ترمیم کریں</h3>
-            <form id="feeStructureForm">
-                <input type="hidden" id="feeStructureId">
-                <div class="form-grid">
-                    <div>
-                        <label for="feeStructureClass">کلاس</label>
-                        <select id="feeStructureClass" required></select>
-                    </div>
-                    <div>
-                        <label for="feeType">فیس کی قسم</label>
-                        <input type="text" id="feeType" required placeholder="مثال: ٹیوشن فیس, داخلہ فیس">
-                    </div>
-                    <div>
-                        <label for="feeAmount">رقم</label>
-                        <input type="number" id="feeAmount" required>
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetFeeStructureForm()">منسوخ کریں</button>
-            </form>
-            <h3>موجودہ فیس اسٹرکچر</h3>
-            <label for="filterFeeStructureClass">کلاس کے لحاظ سے فلٹر کریں:</label>
-            <select id="filterFeeStructureClass" onchange="loadFeeStructures()">
-                <option value="">تمام کلاسیں</option>
-            </select>
-            <table id="feeStructuresTable">
-                <thead>
-                    <tr>
-                        <th>کلاس</th>
-                        <th>فیس کی قسم</th>
-                        <th>رقم</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="fees" class="module">
-            <h2>فیس کا انتظام</h2>
-            <h3>فیس وصولی</h3>
-            <form id="feeCollectionForm">
-                <div class="form-grid">
-                    <div>
-                        <label for="feeStudentSelect">طالب علم منتخب کریں</label>
-                        <select id="feeStudentSelect" required onchange="loadStudentFeeDetails()">
-                            <option value="">-- طالب علم منتخب کریں --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="feeCollectionDate">تاریخ</label>
-                        <input type="date" id="feeCollectionDate" required>
-                    </div>
-                    <div>
-                        <label for="feeCollectionType">فیس کی قسم (واجب الادا سے)</label>
-                        <select id="feeCollectionType" required>
-                            <option value="">-- پہلے طالب علم منتخب کریں --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="feePaidAmount">ادا شدہ رقم</label>
-                        <input type="number" id="feePaidAmount" required>
-                    </div>
-                    <div>
-                        <label for="feeDiscount">رعایت</label>
-                        <input type="number" id="feeDiscount" value="0">
-                    </div>
-                    <div>
-                        <label for="feePaymentMethod">طریقہ</label>
-                        <select id="feePaymentMethod" required>
-                            <option value="Cash">نقد</option>
-                            <option value="Bank">بینک</option>
-                            <option value="Cheque">چیک</option>
-                        </select>
-                    </div>
-                    <div class="full-width">
-                        <label for="feeNotes">تفصیل/نوٹس</label>
-                        <textarea id="feeNotes" rows="2"></textarea>
-                    </div>
-                </div>
-                <button type="submit">فیس وصول کریں</button>
-                <button type="button" onclick="generateReceipt()">رسید بنائیں</button>
-            </form>
-            <h3>منتخب طالب علم کی فیس کی تفصیلات</h3>
-            <p id="noStudentSelectedMsg">براہ کرم اوپر سے طالب علم منتخب کریں۔</p>
-            <div id="studentFeeDetailsContainer" style="display: none;">
-                <h4>واجب الادا فیس</h4>
-                <ul id="dueFeesList"></ul>
-                <h4>جمع شدہ فیس کی تاریخ</h4>
-                <table id="feeHistoryTable">
-                    <thead>
-                        <tr>
-                            <th>تاریخ</th>
-                            <th>فیس کی قسم</th>
-                            <th>تفصیل/نوٹس</th>
-                            <th>ادا شدہ رقم</th>
-                            <th>رعایت</th>
-                            <th>طریقہ</th>
-                            <th>عمل</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div id="feeReceiptContainer" class="printable">
-                <h3>فیس رسید</h3>
-                <p><strong>رسید نمبر:</strong> <span id="receiptId"></span></p>
-                <p><strong>تاریخ:</strong> <span id="receiptDate"></span></p>
-                <p><strong>طالب علم کا نام:</strong> <span id="receiptStudentName"></span></p>
-                <p><strong>کلاس:</strong> <span id="receiptStudentClass"></span></p>
-                <p><strong>فیس کی قسم:</strong> <span id="receiptFeeType"></span></p>
-                <p><strong>ادا شدہ رقم:</strong> <span id="receiptPaidAmount"></span></p>
-                <p><strong>رعایت:</strong> <span id="receiptDiscount"></span></p>
-                <p><strong>طریقہ:</strong> <span id="receiptMethod"></span></p>
-                <p><strong>نوٹس:</strong> <span id="receiptNotes"></span></p>
-                <br><br>
-                <p>دستخط وصول کنندہ: _______________</p>
-                <p style="font-size: 0.8em; text-align: center;">یہ کمپیوٹر سے تیار کردہ رسید ہے۔</p>
-            </div>
-        </div>
-        <div id="attendance" class="module">
-            <h2>حاضری کا انتظام</h2>
-            <div class="form-grid">
-                <div>
-                    <label for="attendanceViewType">منظر کی قسم</label>
-                    <select id="attendanceViewType" onchange="toggleAttendanceView()">
-                        <option value="daily">روزانہ حاضری</option>
-                        <option value="monthly">ماہانہ رجسٹر</option>
-                    </select>
-                </div>
-                <div id="attendanceDailyControls">
-                    <label for="attendanceDate">تاریخ</label>
-                    <input type="date" id="attendanceDate" required onchange="loadStudentsForAttendance()">
-                </div>
-                <div id="attendanceMonthlyControls" style="display: none;">
-                    <label for="attendanceMonth">مہینہ منتخب کریں</label>
-                    <input type="month" id="attendanceMonth" onchange="loadMonthlyRegister()">
-                </div>
-                <div>
-                    <label for="attendanceClass">کلاس</label>
-                    <select id="attendanceClass" required onchange="updateAttendanceDisplay()">
-                        <option value="">-- کلاس منتخب کریں --</option>
-                    </select>
-                </div>
-                <div id="attendanceMarkingTypeContainer" style="display: none;">
-                    <label for="markingType">نشان کی قسم</label>
-                    <select id="markingType" onchange="loadMonthlyRegister()">
-                        <option value="letters">حروف (ح/غ/ر)</option>
-                        <option value="symbols">نشان (✓/✗/—)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="attendanceDailyView">
-                <table id="attendanceTable">
-                    <thead>
-                        <tr>
-                            <th>داخلہ نمبر</th>
-                            <th>نام</th>
-                            <th>حاضری (Present/Absent)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="3">براہ کرم تاریخ اور کلاس منتخب کریں۔</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button onclick="saveAttendance()">حاضری محفوظ کریں</button>
-            </div>
-
-            <div id="attendanceRegisterView" style="display: none;">
-                <div class="table-container">
-                    <table id="attendanceRegisterTable">
-                        <thead>
-                            <tr id="dateRow">
-                                <th class="student-name">طالب علم کا نام</th>
-                            </tr>
-                        </thead>
-                        <tbody id="attendanceRegisterBody"></tbody>
-                        <tfoot id="attendanceRegisterFoot">
-                            <tr class="summary-row">
-                                <td class="student-name">کل حاضری</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-
-            <button class="print" onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
-            <div id="attendancePrintContainer" class="printable">
-                <h3>حاضری رجسٹر</h3>
-                <p><strong>تاریخ/مہینہ:</strong> <span id="printAttendanceDate"></span></p>
-                <p><strong>کلاس:</strong> <span id="printAttendanceClass"></span></p>
-                <table id="attendancePrintTable" class="printable-content">
-                    <thead></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-        <div id="results" class="module">
-            <h2>نتائج کا انتظام</h2>
-            <h3>نتائج درج کریں / ترمیم کریں</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="resultExamName">امتحان کا نام</label>
-                    <input type="text" id="resultExamName" placeholder="مثال: Mid Term, Final Term">
-                </div>
-                <div>
-                    <label for="resultClass">کلاس</label>
-                    <select id="resultClass" required onchange="loadStudentsAndSubjectsForResult()">
-                        <option value="">-- کلاس منتخب کریں --</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="resultSubject">مضمون</label>
-                    <select id="resultSubject" required>
-                        <option value="">-- کلاس منتخب کریں --</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="resultDate">تاریخ</label>
-                    <input type="date" id="resultDate">
-                </div>
-            </div>
-            <table id="resultsEntryTable">
-                <thead>
-                    <tr>
-                        <th>طالب علم کا نام</th>
-                        <th>کل نمبر</th>
-                        <th>حاصل کردہ نمبر</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="3">براہ کرم امتحان، کلاس اور مضمون منتخب کریں۔</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button onclick="saveResults()">نتائج محفوظ کریں</button>
-            <h3>رزلٹ کارڈ دیکھیں/پرنٹ کریں</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="resultCardStudent">طالب علم</label>
-                    <select id="resultCardStudent">
-                        <option value="">-- طالب علم منتخب کریں --</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="resultCardExam">امتحان</label>
-                    <select id="resultCardExam">
-                        <option value="">-- امتحان منتخب کریں --</option>
-                    </select>
-                </div>
-            </div>
-            <button class="print" onclick="printResultCard()">رزلٹ کارڈ پرنٹ کریں (منتخب طالب علم)</button>
-            <div id="resultCardPrintContainer" class="printable">
-                <h3>رزلٹ کارڈ</h3>
-                <p><strong>امتحان:</strong> <span id="printResultExamName"></span></p>
-                <p><strong>طالب علم:</strong> <span id="printResultStudentName"></span></p>
-                <p><strong>کلاس:</strong> <span id="printResultClassName"></span></p>
-                <table id="resultCardPrintTable" class="printable-content">
-                    <thead>
-                        <tr>
-                            <th>مضمون</th>
-                            <th>کل نمبر</th>
-                            <th>حاصل کردہ نمبر</th>
-                            <th>گریڈ/فیصد</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <p><strong>کل حاصل کردہ نمبر:</strong> <span id="printResultTotalObtained"></span></p>
-                <p><strong>کل نمبر:</strong> <span id="printResultTotalMarks"></span></p>
-                <p><strong>مجموعی فیصد:</strong> <span id="printResultOverallPercentage"></span>%</p>
-                <p><strong>نتیجہ:</strong> <span id="printResultStatus"></span></p>
-            </div>
-        </div>
-        <div id="timetable" class="module">
-            <h2>ٹائم ٹیبل / ڈیوٹی روسٹر</h2>
-            <h3>کلاس ٹائم ٹیبل بنائیں / ترمیم کریں</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="timetableClass">کلاس</label>
-                    <select id="timetableClass" onchange="loadTimetable()">
-                        <option value="">-- کلاس منتخب کریں --</option>
-                    </select>
-                </div>
-            </div>
-            <table id="classTimetableTable">
-                <thead>
-                    <tr>
-                        <th>دن / وقت</th>
-                        <th>পিরিয়ড ১ (شروع - ختم)</th>
-                        <th>পিরিয়ড ২ (شروع - ختم)</th>
-                        <th>পিরিয়ড ৩ (شروع - ختم)</th>
-                        <th>পিরিয়ড ৪ (شروع - ختم)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <button onclick="saveTimetable()">ٹائم ٹیبل محفوظ کریں</button>
-            <h3>اساتذہ کا ڈیوٹی روسٹر دیکھیں</h3>
-            <div>
-                <label for="dutyRoasterTeacher">استاد منتخب کریں</label>
-                <select id="dutyRoasterTeacher" onchange="loadTeacherRoaster()">
-                    <option value="">-- استاد منتخب کریں --</option>
-                </select>
-            </div>
-            <table id="teacherRoasterTable">
-                <thead>
-                    <tr>
-                        <th>دن / وقت</th>
-                        <th>পিরিয়ড ১</th>
-                        <th>পিরিয়ড ২</th>
-                        <th>পিরিয়ড ৩</th>
-                        <th>পিরিয়ড ৪</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="5">براہ کرم استاد منتخب کریں۔</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="expenses" class="module">
-            <h2>اخراجات کا انتظام</h2>
-            <h3>نیا خرچہ شامل کریں / ترمیم کریں</h3>
-            <form id="expenseForm">
-                <input type="hidden" id="expenseId">
-                <div class="form-grid">
-                    <div>
-                        <label for="expenseDate">تاریخ</label>
-                        <input type="date" id="expenseDate" required>
-                    </div>
-                    <div>
-                        <label for="expenseType">قسم</label>
-                        <input type="text" id="expenseType" placeholder="مثال: تنخواہ, بجلی کا بل, اسٹیشنری" required>
-                    </div>
-                    <div>
-                        <label for="expenseAmount">رقم</label>
-                        <input type="number" id="expenseAmount" required>
-                    </div>
-                    <div>
-                        <label for="expensePaidTo">ادا کیا گیا (استاد/وغیرہ)</label>
-                        <input type="text" id="expensePaidTo">
-                    </div>
-                    <div class="full-width">
-                        <label for="expenseDescription">تفصیل</label>
-                        <textarea id="expenseDescription" rows="2"></textarea>
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetExpenseForm()">منسوخ کریں</button>
-            </form>
-            <h3>اخراجات کی فہرست</h3>
-            <label for="expenseFilterDate">تاریخ کے لحاظ سے فلٹر کریں:</label>
-            <input type="date" id="expenseFilterDate" onchange="loadExpenses()">
-            <table id="expensesTable">
-                <thead>
-                    <tr>
-                        <th>تاریخ</th>
-                        <th>قسم</th>
-                        <th>تفصیل</th>
-                        <th>ادا کیا گیا</th>
-                        <th>رقم</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="reports" class="module">
-            <h2>رپورٹس</h2>
-            <p>براہ کرم رپورٹ کی قسم منتخب کریں اور فلٹرز کا اطلاق کریں۔</p>
-            <div class="form-grid">
-                <div>
-                    <label for="reportType">رپورٹ کی قسم:</label>
-                    <select id="reportType">
-                        <option value="">-- منتخب کریں --</option>
-                        <option value="fee_collection">فیس وصولی رپورٹ</option>
-                        <option value="outstanding_fees">واجب الادا فیس رپورٹ</option>
-                        <option value="attendance_summary">حاضری خلاصہ</option>
-                        <option value="expense_report">اخراجات رپورٹ</option>
-                        <option value="student_list">طلباء کی فہرست (کلاس وار)</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="reportStartDate">شروع تاریخ:</label>
-                    <input type="date" id="reportStartDate">
-                </div>
-                <div>
-                    <label for="reportEndDate">اختتامی تاریخ:</label>
-                    <input type="date" id="reportEndDate">
-                </div>
-                <div>
-                    <label for="reportClassFilter">کلاس (اگر قابل اطلاق ہو):</label>
-                    <select id="reportClassFilter">
-                        <option value="">-- تمام --</option>
-                    </select>
-                </div>
-            </div>
-            <button onclick="generateReport()">رپورٹ بنائیں</button>
-            <button onclick="printReport()" class="print">رپورٹ پرنٹ کریں</button>
-            <div id="reportOutput" class="printable">
-                <h3>رپورٹ</h3>
-                <div id="reportContent" class="printable-content">
-                    <p>رپورٹ کا مواد یہاں ظاہر ہوگا۔</p>
-                </div>
-            </div>
-        </div>
-        <div id="settings" class="module">
-            <h2>سیٹنگز</h2>
-            <h3>ڈیٹا مینجمنٹ</h3>
-            <button onclick="backupData()">ڈیٹا بیک اپ کریں (Export JSON)</button>
-            <input type="file" id="importFile" accept=".json" style="display: none;">
-            <button onclick="document.getElementById('importFile').click()">ڈیٹا امپورٹ کریں (Import JSON)</button>
-            <p style="color: red;">نوٹ: امپورٹ کرنے سے موجودہ ڈیٹا مٹ سکتا ہے۔ پہلے بیک اپ ضرور بنا لیں۔</p>
-            <h3>پرنٹ سیٹنگز</h3>
-            <label for="schoolNamePrint">مدرسہ کا نام (رسیدوں/رپورٹس پر)</label>
-            <input type="text" id="schoolNamePrint" placeholder="مدرسہ کا نام درج کریں">
-            <button onclick="savePrintSettings()">سیٹنگز محفوظ کریں</button>
-        </div>
-    </div>
-    <script>
+<div>نئے داخلے اس مدت میں: <span id="periodNewAdmissions">0</span></div>
+</div>
+</div>
+<hr class="one" style="margin: 20px 0;"/>
+<hr class="two" style="margin: 20px 0;"/>
+<div class="form-grid" id="advancedReportControls">
+<div>
+<label for="advReportType">رپورٹ کی قسم:</label>
+<select id="advReportType" onchange="updateAdvancedFilterVisibility()">
+<option value="">-- منتخب کریں --</option>
+<option value="financial">مالیاتی (فیس)</option>
+<option value="attendance"> حاضری کا خلاصہ</option>
+<option value="marks">امتحانی نتائج کا خلاصہ</option>
+</select>
+</div>
+<div id="advDateControls" style="display: none; grid-column: 1 / -1;">
+<div class="form-grid">
+<div id="advDateRangeDiv">
+<label for="advStartDate">شروع تاریخ:</label>
+<input id="advStartDate" type="date"/>
+<label for="advEndDate" style="margin-top: 5px;">اختتامی تاریخ:</label>
+<input id="advEndDate" type="date"/>
+</div>
+<div id="advMonthYearDiv">
+<label for="advReportMonths">مہینے (ایک یا زیادہ منتخب کریں):</label>
+<select id="advReportMonths" multiple="" size="4" style="height: 100px;"></select>
+</div>
+<div id="advYearDiv">
+<label for="advReportYears">سال (ایک یا زیادہ منتخب کریں):</label>
+<select id="advReportYears" multiple="" size="4" style="height: 100px;"></select>
+</div>
+</div>
+</div>
+<div id="advFinancialTypeDiv" style="display:none;">
+<label for="advFinancialType">مالیاتی رپورٹ:</label>
+<select id="advFinancialType">
+<option value="fee_due">واجب الادا فیس</option>
+<option value="fee_paid">وصول شدہ فیس</option>
+</select>
+</div>
+<div id="advClassFilterDiv" style="display:none;">
+<label for="advClassFilter">کلاس:</label>
+<select id="advClassFilter" onchange="updateStudentFilterByClass()">
+<option value="">تمام کلاسیں</option>
+</select>
+</div>
+<div id="advStudentFilterDiv" style="display:none;">
+<label for="advStudentFilter">طالب علم (ایک یا زیادہ منتخب کریں):</label>
+<select id="advStudentFilter" multiple="" size="3" style="height: 80px;"></select>
+</div>
+<div style="grid-column: 1 / -1; text-align:left;">
+<button id="generateAdvancedReportBtn">رپورٹ دیکھیں</button>
+<button id="commFromReportBtn" onclick="triggerCommFromAdvancedReport()" style="display:none; background-color: #007bff;">پیغام بھیجیں</button>
+</div>
+<div class="full-width" id="advancedReportOutput" style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
+</div>
+</div>
+</div>
+<div class="module" id="students">
+<h2>طلباء کا انتظام</h2>
+<h3>نیا طالب علم شامل کریں / ترمیم کریں</h3>
+<form id="studentForm">
+<input id="studentId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="admissionNo">داخلہ نمبر</label>
+<input id="admissionNo" required="" type="text"/>
+</div>
+<div>
+<label for="studentName">نام</label>
+<input id="studentName" required="" type="text"/>
+</div>
+<div>
+<label for="fatherName">والد کا نام</label>
+<input id="fatherName" required="" type="text"/>
+</div>
+<div>
+<label for="studentClass">کلاس</label>
+<select id="studentClass" required=""></select>
+</div>
+<div>
+<label for="admissionDate">داخلہ تاریخ</label>
+<input id="admissionDate" required="" type="date"/>
+</div>
+<div>
+<label for="studentContact">رابطہ نمبر</label>
+<input id="studentContact" type="text"/>
+</div>
+<div>
+<label for="studentAddress">پتہ</label>
+<input id="studentAddress" type="text"/>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetStudentForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>طلباء کی فہرست</h3>
+<input id="studentSearch" onkeyup="loadStudents()" placeholder="نام یا داخلہ نمبر سے تلاش کریں..." type="text"/>
+<table id="studentsTable">
+<thead>
+<tr>
+<th>داخلہ نمبر</th>
+<th>نام</th>
+<th>والد کا نام</th>
+<th>کلاس</th>
+<th>داخلہ تاریخ</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="teachers">
+<h2>اساتذہ کا انتظام</h2>
+<h3>نیا استاد شامل کریں / ترمیم کریں</h3>
+<form id="teacherForm">
+<input id="teacherId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="teacherName">نام</label>
+<input id="teacherName" required="" type="text"/>
+</div>
+<div>
+<label for="teacherSubjects">مضامین</label>
+<input id="teacherSubjects" required="" type="text"/>
+</div>
+<div>
+<label for="teacherContact">موبائل نمبر</label>
+<input id="teacherContact" required="" type="text"/>
+</div>
+<div>
+<label for="teacherSalary">طے شدہ تنخواہ</label>
+<input id="teacherSalary" required="" type="number"/>
+</div>
+<div>
+<label for="appointmentDate">تقرری تاریخ</label>
+<input id="appointmentDate" required="" type="date"/>
+</div>
+<div>
+<label for="teacherQualification">قابلیت</label>
+<input id="teacherQualification" type="text"/>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetTeacherForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>اساتذہ کی فہرست</h3>
+<table id="teachersTable">
+<thead>
+<tr>
+<th>نام</th>
+<th>مضامین</th>
+<th>موبائل نمبر</th>
+<th>تنخواہ</th>
+<th>تقرری تاریخ</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="classes">
+<h2>کلاسوں کا انتظام</h2>
+<h3>نئی کلاس شامل کریں / ترمیم کریں</h3>
+<form id="classForm">
+<input id="classId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="className">کلاس کا نام</label>
+<input id="className" required="" type="text"/>
+</div>
+<div>
+<label for="classTeacher">استاد</label>
+<select id="classTeacher" required=""></select>
+</div>
+<div>
+<label for="classSubjects">مضامین (کوما سے الگ کریں)</label>
+<input id="classSubjects" required="" type="text"/>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetClassForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>کلاسوں کی فہرست</h3>
+<table id="classesTable">
+<thead>
+<tr>
+<th>کلاس کا نام</th>
+<th>استاد</th>
+<th>مضامین</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="feeStructures">
+<h2>فیس اسٹرکچر</h2>
+<h3>نیا فیس اسٹرکچر شامل کریں / ترمیم کریں</h3>
+<form id="feeStructureForm">
+<input id="feeStructureId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="feeStructureClass">کلاس</label>
+<select id="feeStructureClass" required=""></select>
+</div>
+<div>
+<label for="feeType">فیس کی قسم</label>
+<input id="feeType" placeholder="مثال: ٹیوشن فیس, داخلہ فیس" required="" type="text"/>
+</div>
+<div>
+<label for="feeAmount">رقم</label>
+<input id="feeAmount" required="" type="number"/>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetFeeStructureForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>موجودہ فیس اسٹرکچر</h3>
+<label for="filterFeeStructureClass">کلاس کے لحاظ سے فلٹر کریں:</label>
+<select id="filterFeeStructureClass" onchange="loadFeeStructures()">
+<option value="">تمام کلاسیں</option>
+</select>
+<table id="feeStructuresTable">
+<thead>
+<tr>
+<th>کلاس</th>
+<th>فیس کی قسم</th>
+<th>رقم</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="fees">
+<h2>فیس کا انتظام</h2>
+<h3>فیس وصولی</h3>
+<form id="feeCollectionForm">
+<div class="form-grid">
+<div>
+<label for="feeStudentSelect">طالب علم منتخب کریں</label>
+<select id="feeStudentSelect" onchange="loadStudentFeeDetails()" required="">
+<option value="">-- طالب علم منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="feeCollectionDate">تاریخ</label>
+<input id="feeCollectionDate" required="" type="date"/>
+</div>
+<div>
+<label for="feeCollectionType">فیس کی قسم (واجب الادا سے)</label>
+<select id="feeCollectionType" required="">
+<option value="">-- پہلے طالب علم منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="feePaidAmount">ادا شدہ رقم</label>
+<input id="feePaidAmount" required="" type="number"/>
+</div>
+<div>
+<label for="feeDiscount">رعایت</label>
+<input id="feeDiscount" type="number" value="0"/>
+</div>
+<div>
+<label for="feePaymentMethod">طریقہ</label>
+<select id="feePaymentMethod" required="">
+<option value="Cash">نقد</option>
+<option value="Bank">بینک</option>
+<option value="Cheque">چیک</option>
+</select>
+</div>
+<div class="full-width">
+<label for="feeNotes">تفصیل/نوٹس</label>
+<textarea id="feeNotes" rows="2"></textarea>
+</div>
+</div>
+<button type="submit">فیس وصول کریں</button>
+<button onclick="generateReceipt()" type="button">رسید بنائیں</button>
+</form>
+<h3>منتخب طالب علم کی فیس کی تفصیلات</h3>
+<p id="noStudentSelectedMsg">براہ کرم اوپر سے طالب علم منتخب کریں۔</p>
+<div id="studentFeeDetailsContainer" style="display: none;">
+<h4>واجب الادا فیس</h4>
+<ul id="dueFeesList"></ul>
+<h4>جمع شدہ فیس کی تاریخ</h4>
+<table id="feeHistoryTable">
+<thead>
+<tr>
+<th>تاریخ</th>
+<th>فیس کی قسم</th>
+<th>تفصیل/نوٹس</th>
+<th>ادا شدہ رقم</th>
+<th>رعایت</th>
+<th>طریقہ</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="printable" id="feeReceiptContainer">
+<h3>فیس رسید</h3>
+<p><strong>رسید نمبر:</strong> <span id="receiptId"></span></p>
+<p><strong>تاریخ:</strong> <span id="receiptDate"></span></p>
+<p><strong>طالب علم کا نام:</strong> <span id="receiptStudentName"></span></p>
+<p><strong>کلاس:</strong> <span id="receiptStudentClass"></span></p>
+<p><strong>فیس کی قسم:</strong> <span id="receiptFeeType"></span></p>
+<p><strong>ادا شدہ رقم:</strong> <span id="receiptPaidAmount"></span></p>
+<p><strong>رعایت:</strong> <span id="receiptDiscount"></span></p>
+<p><strong>طریقہ:</strong> <span id="receiptMethod"></span></p>
+<p><strong>نوٹس:</strong> <span id="receiptNotes"></span></p>
+<br/><br/>
+<p>دستخط وصول کنندہ: _______________</p>
+<p style="font-size: 0.8em; text-align: center;">یہ کمپیوٹر سے تیار کردہ رسید ہے۔</p>
+</div>
+</div>
+<div class="module" id="attendance">
+<h2>حاضری کا انتظام</h2>
+<h3>حاضری لگائیں</h3>
+<div class="form-grid">
+<div>
+<label for="attendanceDate">تاریخ</label>
+<input id="attendanceDate" required="" type="date"/>
+</div>
+<div>
+<label for="attendanceClass">کلاس</label>
+<select id="attendanceClass" onchange="loadStudentsForAttendance()" required="">
+<option value="">-- کلاس منتخب کریں --</option>
+</select>
+</div>
+</div>
+<table id="attendanceTable">
+<thead>
+<tr>
+<th>داخلہ نمبر</th>
+<th>نام</th>
+<th>حاضری (Present/Absent)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="3">براہ کرم تاریخ اور کلاس منتخب کریں۔</td>
+</tr>
+</tbody>
+</table>
+<button onclick="saveAttendance()">حاضری محفوظ کریں</button>
+<button class="print" onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
+<div class="printable" id="attendancePrintContainer">
+<h3>حاضری رجسٹر</h3>
+<p><strong>تاریخ:</strong> <span id="printAttendanceDate"></span></p>
+<p><strong>کلاس:</strong> <span id="printAttendanceClass"></span></p>
+<table class="printable-content" id="attendancePrintTable">
+<thead>
+<tr>
+<th>داخلہ نمبر</th>
+<th>نام</th>
+<th>حالت</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+</div>
+<div class="module" id="results">
+<h2>نتائج کا انتظام</h2>
+<h3>نتائج درج کریں / ترمیم کریں</h3>
+<div class="form-grid">
+<div>
+<label for="resultExamName">امتحان کا نام</label>
+<input id="resultExamName" placeholder="مثال: Mid Term, Final Term" type="text"/>
+</div>
+<div>
+<label for="resultClass">کلاس</label>
+<select id="resultClass" onchange="loadStudentsAndSubjectsForResult()" required="">
+<option value="">-- کلاس منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="resultSubject">مضمون</label>
+<select id="resultSubject" required="">
+<option value="">-- کلاس منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="resultDate">تاریخ</label>
+<input id="resultDate" type="date"/>
+</div>
+</div>
+<table id="resultsEntryTable">
+<thead>
+<tr>
+<th>طالب علم کا نام</th>
+<th>کل نمبر</th>
+<th>حاصل کردہ نمبر</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="3">براہ کرم امتحان، کلاس اور مضمون منتخب کریں۔</td>
+</tr>
+</tbody>
+</table>
+<button onclick="saveResults()">نتائج محفوظ کریں</button>
+<h3>رزلٹ کارڈ دیکھیں/پرنٹ کریں</h3>
+<div class="form-grid">
+<div>
+<label for="resultCardStudent">طالب علم</label>
+<select id="resultCardStudent">
+<option value="">-- طالب علم منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="resultCardExam">امتحان</label>
+<select id="resultCardExam">
+<option value="">-- امتحان منتخب کریں --</option>
+</select>
+</div>
+</div>
+<button class="print" onclick="printResultCard()">رزلٹ کارڈ پرنٹ کریں (منتخب طالب علم)</button>
+<div class="printable" id="resultCardPrintContainer">
+<h3>رزلٹ کارڈ</h3>
+<p><strong>امتحان:</strong> <span id="printResultExamName"></span></p>
+<p><strong>طالب علم:</strong> <span id="printResultStudentName"></span></p>
+<p><strong>کلاس:</strong> <span id="printResultClassName"></span></p>
+<table class="printable-content" id="resultCardPrintTable">
+<thead>
+<tr>
+<th>مضمون</th>
+<th>کل نمبر</th>
+<th>حاصل کردہ نمبر</th>
+<th>گریڈ/فیصد</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<p><strong>کل حاصل کردہ نمبر:</strong> <span id="printResultTotalObtained"></span></p>
+<p><strong>کل نمبر:</strong> <span id="printResultTotalMarks"></span></p>
+<p><strong>مجموعی فیصد:</strong> <span id="printResultOverallPercentage"></span>%</p>
+<p><strong>نتیجہ:</strong> <span id="printResultStatus"></span></p>
+</div>
+</div>
+<div class="module" id="timetable">
+<h2>ٹائم ٹیبل / ڈیوٹی روسٹر</h2>
+<h3>کلاس ٹائم ٹیبل بنائیں / ترمیم کریں</h3>
+<div class="form-grid">
+<div>
+<label for="timetableClass">کلاس</label>
+<select id="timetableClass" onchange="loadTimetable()">
+<option value="">-- کلاس منتخب کریں --</option>
+</select>
+</div>
+</div>
+<table id="classTimetableTable">
+<thead>
+<tr>
+<th>دن / وقت</th>
+<th>পিরিয়ড ১ (شروع - ختم)</th>
+<th>পিরিয়ড ২ (شروع - ختم)</th>
+<th>পিরিয়ড ৩ (شروع - ختم)</th>
+<th>পিরিয়ড ৪ (شروع - ختم)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<button onclick="saveTimetable()">ٹائم ٹیبل محفوظ کریں</button>
+<h3>اساتذہ کا ڈیوٹی روسٹر دیکھیں</h3>
+<div>
+<label for="dutyRoasterTeacher">استاد منتخب کریں</label>
+<select id="dutyRoasterTeacher" onchange="loadTeacherRoaster()">
+<option value="">-- استاد منتخب کریں --</option>
+</select>
+</div>
+<table id="teacherRoasterTable">
+<thead>
+<tr>
+<th>دن / وقت</th>
+<th>পিরিয়ড ১</th>
+<th>পিরিয়ড ২</th>
+<th>পিরিয়ড ৩</th>
+<th>পিরিয়ড ৪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="5">براہ کرم استاد منتخب کریں۔</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="module" id="expenses">
+<h2>اخراجات کا انتظام</h2>
+<h3>نیا خرچہ شامل کریں / ترمیم کریں</h3>
+<form id="expenseForm">
+<input id="expenseId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="expenseDate">تاریخ</label>
+<input id="expenseDate" required="" type="date"/>
+</div>
+<div>
+<label for="expenseType">قسم</label>
+<input id="expenseType" placeholder="مثال: تنخواہ, بجلی کا بل, اسٹیشنری" required="" type="text"/>
+</div>
+<div>
+<label for="expenseAmount">رقم</label>
+<input id="expenseAmount" required="" type="number"/>
+</div>
+<div>
+<label for="expensePaidTo">ادا کیا گیا (استاد/وغیرہ)</label>
+<input id="expensePaidTo" type="text"/>
+</div>
+<div class="full-width">
+<label for="expenseDescription">تفصیل</label>
+<textarea id="expenseDescription" rows="2"></textarea>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetExpenseForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>اخراجات کی فہرست</h3>
+<label for="expenseFilterDate">تاریخ کے لحاظ سے فلٹر کریں:</label>
+<input id="expenseFilterDate" onchange="loadExpenses()" type="date"/>
+<table id="expensesTable">
+<thead>
+<tr>
+<th>تاریخ</th>
+<th>قسم</th>
+<th>تفصیل</th>
+<th>ادا کیا گیا</th>
+<th>رقم</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="reports">
+<h2>رپورٹس</h2>
+<p>براہ کرم رپورٹ کی قسم منتخب کریں اور فلٹرز کا اطلاق کریں۔</p>
+<div class="form-grid">
+<div>
+<label for="reportType">رپورٹ کی قسم:</label>
+<select id="reportType">
+<option value="">-- منتخب کریں --</option>
+<option value="fee_collection">فیس وصولی رپورٹ</option>
+<option value="outstanding_fees">واجب الادا فیس رپورٹ</option>
+<option value="attendance_summary">حاضری خلاصہ</option>
+<option value="expense_report">اخراجات رپورٹ</option>
+<option value="student_list">طلباء کی فہرست (کلاس وار)</option>
+</select>
+</div>
+<div>
+<label for="reportStartDate">شروع تاریخ:</label>
+<input id="reportStartDate" type="date"/>
+</div>
+<div>
+<label for="reportEndDate">اختتامی تاریخ:</label>
+<input id="reportEndDate" type="date"/>
+</div>
+<div>
+<label for="reportClassFilter">کلاس (اگر قابل اطلاق ہو):</label>
+<select id="reportClassFilter">
+<option value="">-- تمام --</option>
+</select>
+</div>
+</div>
+<button onclick="generateReport()">رپورٹ بنائیں</button>
+<button class="print" onclick="printReport()">رپورٹ پرنٹ کریں</button>
+<div class="printable" id="reportOutput">
+<h3>رپورٹ</h3>
+<div class="printable-content" id="reportContent">
+<p>رپورٹ کا مواد یہاں ظاہر ہوگا۔</p>
+</div>
+</div>
+</div>
+<div class="module" id="settings">
+<h2>سیٹنگز</h2>
+<h3>ڈیٹا مینجمنٹ</h3>
+<button onclick="backupData()">ڈیٹا بیک اپ کریں (Export JSON)</button>
+<input accept=".json" id="importFile" style="display: none;" type="file"/>
+<button onclick="document.getElementById('importFile').click()">ڈیٹا امپورٹ کریں (Import JSON)</button>
+<p style="color: red;">نوٹ: امپورٹ کرنے سے موجودہ ڈیٹا مٹ سکتا ہے۔ پہلے بیک اپ ضرور بنا لیں۔</p>
+<h3>پرنٹ سیٹنگز</h3>
+<label for="schoolNamePrint">مدرسہ کا نام (رسیدوں/رپورٹس پر)</label>
+<input id="schoolNamePrint" placeholder="مدرسہ کا نام درج کریں" type="text"/>
+<button onclick="savePrintSettings()">سیٹنگز محفوظ کریں</button>
+</div>
+</div>
+<script>
         const DB_NAME = 'SchoolManagementDB';
         const DB_VERSION = 15;
         let db;
@@ -3972,270 +3885,6 @@
                 console.error("Error loading print settings:", error);
             }
         }
-        let advancedReportRecipients = [];
-        async function loadAdvancedFilterData() {
-            const classSelect = document.getElementById('advClassFilter');
-            if (classSelect.options.length <= 1) {
-                const classes = await getAll(STORE_CLASSES);
-                classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(c => classSelect.add(new Option(c.name, c.id)));
-            }
-            updateStudentFilterByClass();
-            const monthSelect = document.getElementById('advReportMonths');
-            if (monthSelect.options.length === 0) {
-                const urduMonths = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
-                urduMonths.forEach((month, index) => monthSelect.add(new Option(month, index + 1)));
-            }
-            const yearSelect = document.getElementById('advReportYears');
-            if (yearSelect.options.length === 0) {
-                const currentYear = new Date().getFullYear();
-                for (let i = currentYear - 5; i <= currentYear + 1; i++) {
-                    yearSelect.add(new Option(i, i));
-                }
-                yearSelect.value = currentYear;
-            }
-        }
-        async function updateStudentFilterByClass() {
-            const classId = document.getElementById('advClassFilter').value;
-            const studentSelect = document.getElementById('advStudentFilter');
-            studentSelect.innerHTML = '';
-            let students = await getAll(STORE_STUDENTS);
-            if (classId) {
-                students = students.filter(s => s.classId === parseInt(classId));
-            }
-            students.sort((a, b) => a.name.localeCompare(b.name)).forEach(s => studentSelect.add(new Option(`${s.name} (${s.admissionNo})`, s.id)));
-        }
-        function updateAdvancedFilterVisibility() {
-            const reportType = document.getElementById('advReportType').value;
-            const show = (id, type = 'block') => document.getElementById(id).style.display = type;
-            const hide = (id) => document.getElementById(id).style.display = 'none';
-            if (!reportType) {
-                hide('advDateControls'); hide('advFinancialTypeDiv'); hide('advClassFilterDiv'); hide('advStudentFilterDiv');
-                return;
-            }
-            show('advDateControls', 'grid');
-            show('advClassFilterDiv');
-            show('advStudentFilterDiv');
-            reportType === 'financial' ? show('advFinancialTypeDiv') : hide('advFinancialTypeDiv');
-        }
-        function getDateChecker() {
-            const selectedMonths = Array.from(document.getElementById('advReportMonths').selectedOptions).map(opt => parseInt(opt.value));
-            const selectedYears = Array.from(document.getElementById('advReportYears').selectedOptions).map(opt => parseInt(opt.value));
-            const startDate = document.getElementById('advStartDate').value;
-            const endDate = document.getElementById('advEndDate').value;
-            if (startDate && endDate) {
-                return (dateStr) => dateStr >= startDate && dateStr <= endDate;
-            }
-            if (selectedMonths.length > 0 && selectedYears.length > 0) {
-                return (dateStr) => {
-                    if (!dateStr) return false;
-                    const d = new Date(dateStr);
-                    return selectedYears.includes(d.getFullYear()) && selectedMonths.includes(d.getMonth() + 1);
-                };
-            }
-            if (selectedYears.length > 0) {
-                return (dateStr) => {
-                    if (!dateStr) return false;
-                    const d = new Date(dateStr);
-                    return selectedYears.includes(d.getFullYear());
-                };
-            }
-            return (dateStr) => true;
-        }
-        function triggerSingleComm(id, type) {
-            const recipient = [{ id: parseInt(id), type: type }];
-            const reportType = document.getElementById('advReportType').value;
-            const financialType = document.getElementById('advFinancialType').value;
-            let messageType = 'custom';
-            if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
-            if (reportType === 'attendance') messageType = 'attendance_absent';
-            if (reportType === 'marks') messageType = 'exam_result';
-            launchAndPopulateCommModal(recipient, messageType);
-        }
-        async function generateAdvancedReport() {
-            const reportType = document.getElementById('advReportType').value;
-            const outputDiv = document.getElementById('advancedReportOutput');
-            const commBtn = document.getElementById('commFromReportBtn');
-            outputDiv.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
-            commBtn.style.display = 'none';
-            advancedReportRecipients = [];
-            if (!reportType) {
-                outputDiv.innerHTML = '<p>براہ کرم رپورٹ کی قسم منتخب کریں۔</p>';
-                return;
-            }
-            try {
-                let reportData = { html: '', recipients: [] };
-                switch (reportType) {
-                    case 'financial':
-                        reportData = await generateAdvancedFinancialReport();
-                        break;
-                    case 'attendance':
-                        reportData = await generateAdvancedAttendanceReport();
-                        break;
-                    case 'marks':
-                        reportData = await generateAdvancedMarksReport();
-                        break;
-                }
-                outputDiv.innerHTML = reportData.html || '<p>اس معیار پر کوئی ڈیٹا نہیں ملا۔</p>';
-                advancedReportRecipients = reportData.recipients || [];
-                if (advancedReportRecipients.length > 0) {
-                    commBtn.style.display = 'inline-block';
-                }
-            } catch (error) {
-                console.error("Error generating advanced report:", error);
-                outputDiv.innerHTML = `<p>رپورٹ بنانے میں خرابی: ${error.message}</p>`;
-            }
-        }
-        async function generateAdvancedFinancialReport() {
-            const financialType = document.getElementById('advFinancialType').value;
-            const classId = document.getElementById('advClassFilter').value;
-            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
-            const dateChecker = getDateChecker();
-            let allStudents = await getAll(STORE_STUDENTS);
-            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
-            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-            let html = `<h4>${financialType === 'fee_due' ? 'واجب الادا فیس' : 'وصول شدہ فیس'} رپورٹ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>تفصیل</th><th>رقم</th><th>عمل</th></tr></thead><tbody>`;
-            let recipients = [];
-            let totalAmount = 0;
-            if (financialType === 'fee_due') {
-                const feeStructures = await getAll(STORE_FEE_STRUCTURES);
-                const feePayments = await getAll(STORE_FEES);
-                for (const student of allStudents) {
-                    const studentFeeStructures = feeStructures.filter(fs => fs.classId === student.classId);
-                    let totalDueForStudent = 0;
-                    let dueDetails = [];
-                    for (const structure of studentFeeStructures) {
-                        const paidForType = feePayments.filter(p => p.studentId === student.id && p.feeType === structure.feeType).reduce((sum, p) => sum + p.paidAmount + p.discount, 0);
-                        if (structure.amount - paidForType > 0) {
-                            totalDueForStudent += structure.amount - paidForType;
-                            dueDetails.push(`${structure.feeType}: ${(structure.amount - paidForType).toLocaleString()}`);
-                        }
-                    }
-                    if (totalDueForStudent > 0) {
-                        const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
-                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${dueDetails.join(', ')}</td><td>${totalDueForStudent.toLocaleString()}</td><td>${actionBtn}</td></tr>`;
-                        totalAmount += totalDueForStudent;
-                        if (student.contact) recipients.push({ id: student.id, type: 'students' });
-                    }
-                }
-            } else {
-                const feePayments = await getAll(STORE_FEES);
-                for (const student of allStudents) {
-                    const paymentsInDate = feePayments.filter(p => p.studentId === student.id && dateChecker(p.date));
-                    if (paymentsInDate.length > 0) {
-                        let totalPaidByStudent = 0;
-                        let paidDetails = paymentsInDate.map(p => { totalPaidByStudent += p.paidAmount; return `${p.date} (${p.feeType}): ${p.paidAmount.toLocaleString()}`; }).join('<br>');
-                        const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
-                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${paidDetails}</td><td>${totalPaidByStudent.toLocaleString()}</td><td>${actionBtn}</td></tr>`;
-                        totalAmount += totalPaidByStudent;
-                        if (student.contact) recipients.push({ id: student.id, type: 'students' });
-                    }
-                }
-            }
-            html += `</tbody><tfoot><tr><td colspan="4"><b>کل</b></td><td><b>${totalAmount.toLocaleString()}</b></td></tr></tfoot></table>`;
-            return { html, recipients };
-        }
-        async function generateAdvancedAttendanceReport() {
-            const classId = document.getElementById('advClassFilter').value;
-            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
-            const dateChecker = getDateChecker();
-            let allStudents = await getAll(STORE_STUDENTS);
-            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
-            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-            const attendanceRecords = await getAll(STORE_ATTENDANCE);
-            let html = `<h4>حاضری کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>کل دن</th><th>حاضر</th><th>غیر حاضر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
-            let recipients = [];
-            for (const student of allStudents) {
-                const studentRecords = attendanceRecords.filter(r => r.studentId === student.id && dateChecker(r.date));
-                if (studentRecords.length === 0) continue;
-                const totalDays = studentRecords.length;
-                const presentDays = studentRecords.filter(r => r.status === 'Present').length;
-                const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
-                html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${totalDays}</td><td>${presentDays}</td><td>${totalDays - presentDays}</td><td>${((presentDays / totalDays) * 100).toFixed(1)}%</td><td>${actionBtn}</td></tr>`;
-                if (student.contact) recipients.push({ id: student.id, type: 'students' });
-            }
-            html += '</tbody></table>';
-            return { html, recipients };
-        }
-        async function generateAdvancedMarksReport() {
-            const classId = document.getElementById('advClassFilter').value;
-            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
-            let allStudents = await getAll(STORE_STUDENTS);
-            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
-            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-            const results = await getAll(STORE_RESULTS);
-            let html = `<h4>نتائج کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>امتحان</th><th>کل حاصل کردہ</th><th>کل نمبر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
-            let recipients = [];
-            for (const student of allStudents) {
-                const studentResults = results.filter(r => r.studentId === student.id);
-                const resultsByExam = studentResults.reduce((acc, r) => {
-                    acc[r.examName] = acc[r.examName] || { obtained: 0, total: 0 };
-                    acc[r.examName].obtained += r.obtainedMarks;
-                    acc[r.examName].total += r.totalMarks;
-                    return acc;
-                }, {});
-                if (Object.keys(resultsByExam).length > 0) {
-                    const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
-                    for (const examName in resultsByExam) {
-                        const data = resultsByExam[examName];
-                        const percentage = data.total > 0 ? ((data.obtained / data.total) * 100).toFixed(1) : 0;
-                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${examName}</td><td>${data.obtained}</td><td>${data.total}</td><td>${percentage}%</td><td>${actionBtn}</td></tr>`;
-                    }
-                    if (student.contact) recipients.push({ id: student.id, type: 'students' });
-                }
-            }
-            html += '</tbody></table>';
-            return { html, recipients };
-        }
-        function launchAndPopulateCommModal(recipients, messageType) {
-            const commModal = document.getElementById('communicationModal');
-            if (!commModal) {
-                alert('کمیونیکیشن ماڈیول نہیں ملا۔');
-                return;
-            }
-            launchCommunicationModal();
-            setTimeout(async () => {
-                try {
-                    const recipientType = recipients[0]?.type || 'students';
-                    const commRecipientTypeSelect = document.getElementById('commRecipientType');
-                    if (commRecipientTypeSelect) {
-                        commRecipientTypeSelect.value = recipientType;
-                        await handleRecipientTypeChange();
-                    }
-                    const recipientIds = recipients.map(r => r.id);
-                    document.querySelectorAll('.comm-recipient-checkbox').forEach(cb => {
-                        cb.checked = recipientIds.includes(parseInt(cb.value));
-                    });
-                    const commMessageTypeSelect = document.getElementById('commMessageType');
-                    if (commMessageTypeSelect) {
-                        commMessageTypeSelect.value = messageType;
-                        handleMessageTypeChange();
-                    }
-                } catch (error) {
-                    console.error("Error populating communication modal:", error);
-                    alert("کمیونیکیشن ماڈیول کو آباد کرنے میں خرابی۔");
-                }
-            }, 300);
-        }
-        function triggerCommFromAdvancedReport() {
-            if (!advancedReportRecipients || advancedReportRecipients.length === 0) {
-                alert('پیغام بھیجنے کے لیے کوئی وصول کنندہ نہیں ہے۔');
-                return;
-            }
-            const reportType = document.getElementById('advReportType').value;
-            const financialType = document.getElementById('advFinancialType').value;
-            let messageType = 'custom';
-            if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
-            if (reportType === 'attendance') messageType = 'attendance_absent';
-            if (reportType === 'marks') messageType = 'exam_result';
-            launchAndPopulateCommModal(advancedReportRecipients, messageType);
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            const genReportBtn = document.getElementById('generateAdvancedReportBtn');
-            if (genReportBtn) {
-                genReportBtn.addEventListener('click', generateAdvancedReport);
-            }
-        });
-
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDatabase();
@@ -4704,7 +4353,7 @@
                 { id: 'resultsEntryTable', searchable: true, sortable: true, paginated: true },
                 { id: 'classTimetableTable', searchable: true, sortable: true, paginated: true },
                 { id: 'teacherRoasterTable', searchable: true, sortable: true, paginated: true },
-                { id: 'transactionsTable', searchable: true, sortable: true, paginated: true }
+                { id: 'expensesTable', searchable: true, sortable: true, paginated: true }
             ];
             function debounce(func, wait) {
                 let timeout;
@@ -6810,7 +6459,7 @@
             setTimeout(initializeMobileNav, 200);
         });
     </script>
-    <script>
+<script>
         (function () {
             const dm_uniquePrefix = 'dm_modal_';
             const dm_easypaisaNumber = '03139842219';
@@ -7666,6 +7315,269 @@
                 initializeCommunicationModule();
             }
         })();
+        let advancedReportRecipients = [];
+        async function loadAdvancedFilterData() {
+            const classSelect = document.getElementById('advClassFilter');
+            if (classSelect.options.length <= 1) {
+                const classes = await getAll(STORE_CLASSES);
+                classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(c => classSelect.add(new Option(c.name, c.id)));
+            }
+            updateStudentFilterByClass();
+            const monthSelect = document.getElementById('advReportMonths');
+            if (monthSelect.options.length === 0) {
+                const urduMonths = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
+                urduMonths.forEach((month, index) => monthSelect.add(new Option(month, index + 1)));
+            }
+            const yearSelect = document.getElementById('advReportYears');
+            if (yearSelect.options.length === 0) {
+                const currentYear = new Date().getFullYear();
+                for (let i = currentYear - 5; i <= currentYear + 1; i++) {
+                    yearSelect.add(new Option(i, i));
+                }
+                yearSelect.value = currentYear;
+            }
+        }
+        async function updateStudentFilterByClass() {
+            const classId = document.getElementById('advClassFilter').value;
+            const studentSelect = document.getElementById('advStudentFilter');
+            studentSelect.innerHTML = '';
+            let students = await getAll(STORE_STUDENTS);
+            if (classId) {
+                students = students.filter(s => s.classId === parseInt(classId));
+            }
+            students.sort((a, b) => a.name.localeCompare(b.name)).forEach(s => studentSelect.add(new Option(`${s.name} (${s.admissionNo})`, s.id)));
+        }
+        function updateAdvancedFilterVisibility() {
+            const reportType = document.getElementById('advReportType').value;
+            const show = (id, type = 'block') => document.getElementById(id).style.display = type;
+            const hide = (id) => document.getElementById(id).style.display = 'none';
+            if (!reportType) {
+                hide('advDateControls'); hide('advFinancialTypeDiv'); hide('advClassFilterDiv'); hide('advStudentFilterDiv');
+                return;
+            }
+            show('advDateControls', 'grid');
+            show('advClassFilterDiv');
+            show('advStudentFilterDiv');
+            reportType === 'financial' ? show('advFinancialTypeDiv') : hide('advFinancialTypeDiv');
+        }
+        function getDateChecker() {
+            const selectedMonths = Array.from(document.getElementById('advReportMonths').selectedOptions).map(opt => parseInt(opt.value));
+            const selectedYears = Array.from(document.getElementById('advReportYears').selectedOptions).map(opt => parseInt(opt.value));
+            const startDate = document.getElementById('advStartDate').value;
+            const endDate = document.getElementById('advEndDate').value;
+            if (startDate && endDate) {
+                return (dateStr) => dateStr >= startDate && dateStr <= endDate;
+            }
+            if (selectedMonths.length > 0 && selectedYears.length > 0) {
+                return (dateStr) => {
+                    if (!dateStr) return false;
+                    const d = new Date(dateStr);
+                    return selectedYears.includes(d.getFullYear()) && selectedMonths.includes(d.getMonth() + 1);
+                };
+            }
+            if (selectedYears.length > 0) {
+                return (dateStr) => {
+                    if (!dateStr) return false;
+                    const d = new Date(dateStr);
+                    return selectedYears.includes(d.getFullYear());
+                };
+            }
+            return (dateStr) => true;
+        }
+        function triggerSingleComm(id, type) {
+            const recipient = [{ id: parseInt(id), type: type }];
+            const reportType = document.getElementById('advReportType').value;
+            const financialType = document.getElementById('advFinancialType').value;
+            let messageType = 'custom';
+            if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
+            if (reportType === 'attendance') messageType = 'attendance_absent';
+            if (reportType === 'marks') messageType = 'exam_result';
+            launchAndPopulateCommModal(recipient, messageType);
+        }
+        async function generateAdvancedReport() {
+            const reportType = document.getElementById('advReportType').value;
+            const outputDiv = document.getElementById('advancedReportOutput');
+            const commBtn = document.getElementById('commFromReportBtn');
+            outputDiv.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
+            commBtn.style.display = 'none';
+            advancedReportRecipients = [];
+            if (!reportType) {
+                outputDiv.innerHTML = '<p>براہ کرم رپورٹ کی قسم منتخب کریں۔</p>';
+                return;
+            }
+            try {
+                let reportData = { html: '', recipients: [] };
+                switch (reportType) {
+                    case 'financial':
+                        reportData = await generateAdvancedFinancialReport();
+                        break;
+                    case 'attendance':
+                        reportData = await generateAdvancedAttendanceReport();
+                        break;
+                    case 'marks':
+                        reportData = await generateAdvancedMarksReport();
+                        break;
+                }
+                outputDiv.innerHTML = reportData.html || '<p>اس معیار پر کوئی ڈیٹا نہیں ملا۔</p>';
+                advancedReportRecipients = reportData.recipients || [];
+                if (advancedReportRecipients.length > 0) {
+                    commBtn.style.display = 'inline-block';
+                }
+            } catch (error) {
+                console.error("Error generating advanced report:", error);
+                outputDiv.innerHTML = `<p>رپورٹ بنانے میں خرابی: ${error.message}</p>`;
+            }
+        }
+        async function generateAdvancedFinancialReport() {
+            const financialType = document.getElementById('advFinancialType').value;
+            const classId = document.getElementById('advClassFilter').value;
+            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
+            const dateChecker = getDateChecker();
+            let allStudents = await getAll(STORE_STUDENTS);
+            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
+            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
+            let html = `<h4>${financialType === 'fee_due' ? 'واجب الادا فیس' : 'وصول شدہ فیس'} رپورٹ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>تفصیل</th><th>رقم</th><th>عمل</th></tr></thead><tbody>`;
+            let recipients = [];
+            let totalAmount = 0;
+            if (financialType === 'fee_due') {
+                const feeStructures = await getAll(STORE_FEE_STRUCTURES);
+                const feePayments = await getAll(STORE_FEES);
+                for (const student of allStudents) {
+                    const studentFeeStructures = feeStructures.filter(fs => fs.classId === student.classId);
+                    let totalDueForStudent = 0;
+                    let dueDetails = [];
+                    for (const structure of studentFeeStructures) {
+                        const paidForType = feePayments.filter(p => p.studentId === student.id && p.feeType === structure.feeType).reduce((sum, p) => sum + p.paidAmount + p.discount, 0);
+                        if (structure.amount - paidForType > 0) {
+                            totalDueForStudent += structure.amount - paidForType;
+                            dueDetails.push(`${structure.feeType}: ${(structure.amount - paidForType).toLocaleString()}`);
+                        }
+                    }
+                    if (totalDueForStudent > 0) {
+                        const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
+                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${dueDetails.join(', ')}</td><td>${totalDueForStudent.toLocaleString()}</td><td>${actionBtn}</td></tr>`;
+                        totalAmount += totalDueForStudent;
+                        if (student.contact) recipients.push({ id: student.id, type: 'students' });
+                    }
+                }
+            } else {
+                const feePayments = await getAll(STORE_FEES);
+                for (const student of allStudents) {
+                    const paymentsInDate = feePayments.filter(p => p.studentId === student.id && dateChecker(p.date));
+                    if (paymentsInDate.length > 0) {
+                        let totalPaidByStudent = 0;
+                        let paidDetails = paymentsInDate.map(p => { totalPaidByStudent += p.paidAmount; return `${p.date} (${p.feeType}): ${p.paidAmount.toLocaleString()}`; }).join('<br>');
+                        const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
+                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${paidDetails}</td><td>${totalPaidByStudent.toLocaleString()}</td><td>${actionBtn}</td></tr>`;
+                        totalAmount += totalPaidByStudent;
+                        if (student.contact) recipients.push({ id: student.id, type: 'students' });
+                    }
+                }
+            }
+            html += `</tbody><tfoot><tr><td colspan="4"><b>کل</b></td><td><b>${totalAmount.toLocaleString()}</b></td></tr></tfoot></table>`;
+            return { html, recipients };
+        }
+        async function generateAdvancedAttendanceReport() {
+            const classId = document.getElementById('advClassFilter').value;
+            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
+            const dateChecker = getDateChecker();
+            let allStudents = await getAll(STORE_STUDENTS);
+            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
+            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
+            const attendanceRecords = await getAll(STORE_ATTENDANCE);
+            let html = `<h4>حاضری کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>کل دن</th><th>حاضر</th><th>غیر حاضر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
+            let recipients = [];
+            for (const student of allStudents) {
+                const studentRecords = attendanceRecords.filter(r => r.studentId === student.id && dateChecker(r.date));
+                if (studentRecords.length === 0) continue;
+                const totalDays = studentRecords.length;
+                const presentDays = studentRecords.filter(r => r.status === 'Present').length;
+                const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
+                html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${totalDays}</td><td>${presentDays}</td><td>${totalDays - presentDays}</td><td>${((presentDays / totalDays) * 100).toFixed(1)}%</td><td>${actionBtn}</td></tr>`;
+                if (student.contact) recipients.push({ id: student.id, type: 'students' });
+            }
+            html += '</tbody></table>';
+            return { html, recipients };
+        }
+        async function generateAdvancedMarksReport() {
+            const classId = document.getElementById('advClassFilter').value;
+            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
+            let allStudents = await getAll(STORE_STUDENTS);
+            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
+            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
+            const results = await getAll(STORE_RESULTS);
+            let html = `<h4>نتائج کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>امتحان</th><th>کل حاصل کردہ</th><th>کل نمبر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
+            let recipients = [];
+            for (const student of allStudents) {
+                const studentResults = results.filter(r => r.studentId === student.id);
+                const resultsByExam = studentResults.reduce((acc, r) => {
+                    acc[r.examName] = acc[r.examName] || { obtained: 0, total: 0 };
+                    acc[r.examName].obtained += r.obtainedMarks;
+                    acc[r.examName].total += r.totalMarks;
+                    return acc;
+                }, {});
+                if (Object.keys(resultsByExam).length > 0) {
+                    const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
+                    for (const examName in resultsByExam) {
+                        const data = resultsByExam[examName];
+                        const percentage = data.total > 0 ? ((data.obtained / data.total) * 100).toFixed(1) : 0;
+                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${examName}</td><td>${data.obtained}</td><td>${data.total}</td><td>${percentage}%</td><td>${actionBtn}</td></tr>`;
+                    }
+                    if (student.contact) recipients.push({ id: student.id, type: 'students' });
+                }
+            }
+            html += '</tbody></table>';
+            return { html, recipients };
+        }
+        function launchAndPopulateCommModal(recipients, messageType) {
+            const commModal = document.getElementById('communicationModal');
+            if (!commModal) {
+                alert('کمیونیکیشن ماڈیول نہیں ملا۔');
+                return;
+            }
+            launchCommunicationModal();
+            setTimeout(async () => {
+                try {
+                    const recipientType = recipients[0]?.type || 'students';
+                    const commRecipientTypeSelect = document.getElementById('commRecipientType');
+                    if (commRecipientTypeSelect) {
+                        commRecipientTypeSelect.value = recipientType;
+                        await handleRecipientTypeChange();
+                    }
+                    const recipientIds = recipients.map(r => r.id);
+                    document.querySelectorAll('.comm-recipient-checkbox').forEach(cb => {
+                        cb.checked = recipientIds.includes(parseInt(cb.value));
+                    });
+                    const commMessageTypeSelect = document.getElementById('commMessageType');
+                    if (commMessageTypeSelect) {
+                        commMessageTypeSelect.value = messageType;
+                        handleMessageTypeChange();
+                    }
+                } catch (error) {
+                    console.error("Error populating communication modal:", error);
+                    alert("کمیونیکیشن ماڈیول کو آباد کرنے میں خرابی۔");
+                }
+            }, 300);
+        }
+        function triggerCommFromAdvancedReport() {
+            if (!advancedReportRecipients || advancedReportRecipients.length === 0) {
+                alert('پیغام بھیجنے کے لیے کوئی وصول کنندہ نہیں ہے۔');
+                return;
+            }
+            const reportType = document.getElementById('advReportType').value;
+            const financialType = document.getElementById('advFinancialType').value;
+            let messageType = 'custom';
+            if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
+            if (reportType === 'attendance') messageType = 'attendance_absent';
+            if (reportType === 'marks') messageType = 'exam_result';
+            launchAndPopulateCommModal(advancedReportRecipients, messageType);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const genReportBtn = document.getElementById('generateAdvancedReportBtn');
+            if (genReportBtn) {
+                genReportBtn.addEventListener('click', generateAdvancedReport);
+            }
+        });
         async function loadStudentsForCertificate() {
             const select = document.getElementById('certificateStudentSelect');
             if (!select) return;
@@ -8020,340 +7932,6 @@
                 exportBtn.disabled = false;
             }
         }
-
-
-        // START: UPDATED ATTENDANCE SCRIPT BLOCK
-        const markingTypes = {
-            letters: { Present: 'ح', Absent: 'غ', Leave: 'ر' },
-            symbols: { Present: '✓', Absent: '✗', Leave: '—' }
-        };
-
-        function toggleAttendanceView() {
-            const viewType = document.getElementById('attendanceViewType').value;
-            const dailyView = document.getElementById('attendanceDailyView');
-            const registerView = document.getElementById('attendanceRegisterView');
-            const dailyControls = document.getElementById('attendanceDailyControls');
-            const monthlyControls = document.getElementById('attendanceMonthlyControls');
-            const markingTypeContainer = document.getElementById('attendanceMarkingTypeContainer');
-
-            if (viewType === 'daily') {
-                dailyView.style.display = 'block';
-                dailyControls.style.display = 'block';
-                registerView.style.display = 'none';
-                monthlyControls.style.display = 'none';
-                markingTypeContainer.style.display = 'none';
-                loadStudentsForAttendance();
-            } else {
-                dailyView.style.display = 'none';
-                dailyControls.style.display = 'none';
-                registerView.style.display = 'block';
-                monthlyControls.style.display = 'block';
-                markingTypeContainer.style.display = 'block';
-                if (!document.getElementById('attendanceMonth').value) {
-                    document.getElementById('attendanceMonth').value = new Date().toISOString().slice(0, 7);
-                }
-                loadMonthlyRegister();
-            }
-        }
-
-        function updateAttendanceDisplay() {
-            const viewType = document.getElementById('attendanceViewType').value;
-            if (viewType === 'daily') {
-                loadStudentsForAttendance();
-            } else {
-                loadMonthlyRegister();
-            }
-        }
-
-        async function loadClassesForAttendance() {
-            await loadClassesIntoSelect('attendanceClass');
-        }
-
-        async function loadStudentsForAttendance() {
-            const classId = parseInt(attendanceClassSelect.value);
-            const date = attendanceDateInput.value;
-            attendanceTableBody.innerHTML = '';
-
-            if (!classId || !date) {
-                attendanceTableBody.innerHTML = '<tr><td colspan="3">براہ کرم تاریخ اور کلاس منتخب کریں۔</td></tr>';
-                return;
-            }
-            attendanceTableBody.innerHTML = '<tr><td colspan="3">لوڈ ہو رہا ہے...</td></tr>';
-            try {
-                const students = await getAll(STORE_STUDENTS, 'classId', classId);
-                if (students.length === 0) {
-                    attendanceTableBody.innerHTML = '<tr><td colspan="3">اس کلاس میں کوئی طالب علم نہیں۔</td></tr>';
-                    return;
-                }
-
-                const keyRange = IDBKeyRange.only([date, classId]);
-                const existingAttendance = await getAll(STORE_ATTENDANCE, 'date_classId', keyRange);
-
-                const attendanceMap = existingAttendance.reduce((map, record) => {
-                    map[record.studentId] = record.status;
-                    return map;
-                }, {});
-
-                attendanceTableBody.innerHTML = '';
-                students.sort((a, b) => a.name.localeCompare(b.name)).forEach(student => {
-                    const row = attendanceTableBody.insertRow();
-                    const existingStatus = attendanceMap[student.id] || 'Present';
-                    row.innerHTML = `
-                <td>${student.admissionNo}</td>
-                <td>${student.name}</td>
-                <td>
-                    <label><input type="radio" name="attendance_${student.id}" value="Present" data-student-id="${student.id}" ${existingStatus === 'Present' ? 'checked' : ''}> حاضر</label>
-                    <label><input type="radio" name="attendance_${student.id}" value="Absent" data-student-id="${student.id}" ${existingStatus === 'Absent' ? 'checked' : ''}> غیر حاضر</label>
-                    <label><input type="radio" name="attendance_${student.id}" value="Leave" data-student-id="${student.id}" ${existingStatus === 'Leave' ? 'checked' : ''}> رخصت</label>
-                </td>
-            `;
-                });
-            } catch (error) {
-                console.error("Error loading students for daily attendance:", error);
-                attendanceTableBody.innerHTML = '<tr><td colspan="3">حاضری کے لیے طلباء کو لوڈ کرنے میں خرابی۔</td></tr>';
-            }
-        }
-
-        async function saveAttendance() {
-            const date = attendanceDateInput.value;
-            const classId = parseInt(attendanceClassSelect.value);
-            const attendanceRows = attendanceTableBody.querySelectorAll('input[type="radio"]:checked');
-
-            if (!date || !classId || attendanceRows.length === 0) {
-                alert('براہ کرم تاریخ، کلاس منتخب کریں اور حاضری لگائیں۔');
-                return;
-            }
-
-            const recordsToSave = Array.from(attendanceRows).map(input => ({
-                date: date,
-                classId: classId,
-                studentId: parseInt(input.dataset.studentId),
-                status: input.value
-            }));
-
-            await saveAttendanceRecords(recordsToSave);
-            alert('حاضری کامیابی سے محفوظ ہو گئی۔');
-        }
-
-        async function loadMonthlyRegister() {
-            const classId = parseInt(attendanceClassSelect.value);
-            const monthYear = document.getElementById('attendanceMonth').value;
-            const dateRow = document.getElementById('dateRow');
-            const tableBody = document.getElementById('attendanceRegisterBody');
-
-            dateRow.innerHTML = '<th class="student-name">طالب علم کا نام</th>';
-            tableBody.innerHTML = '';
-
-            if (!classId || !monthYear) {
-                tableBody.innerHTML = '<tr><td>براہ کرم مہینہ اور کلاس منتخب کریں۔</td></tr>';
-                return;
-            }
-
-            tableBody.innerHTML = '<tr><td>لوڈ ہو رہا ہے...</td></tr>';
-
-            const [year, month] = monthYear.split('-');
-            const daysInMonth = new Date(year, month, 0).getDate();
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const th = document.createElement('th');
-                th.textContent = day;
-                dateRow.appendChild(th);
-            }
-            dateRow.innerHTML += '<th class="total-cell">حاضر</th><th class="total-cell">فیصد</th>';
-
-            try {
-                const students = await getAll(STORE_STUDENTS, 'classId', classId);
-                if (students.length === 0) {
-                    tableBody.innerHTML = '<tr><td>اس کلاس میں کوئی طالب علم نہیں۔</td></tr>';
-                    return;
-                }
-
-                const startDate = `${monthYear}-01`;
-                const endDate = `${monthYear}-${daysInMonth}`;
-                const range = IDBKeyRange.bound([startDate, classId], [endDate, classId]);
-                const monthlyRecords = await getAll(STORE_ATTENDANCE, 'date_classId', range);
-
-                const attendanceMap = new Map();
-                monthlyRecords.forEach(r => {
-                    const key = `${r.studentId}-${r.date}`;
-                    attendanceMap.set(key, r.status);
-                });
-
-                tableBody.innerHTML = '';
-                const markingType = document.getElementById('markingType').value;
-
-                students.sort((a, b) => a.name.localeCompare(b.name)).forEach(student => {
-                    const row = tableBody.insertRow();
-                    row.innerHTML = `<td class="student-name">${student.name}</td>`;
-                    let presentCount = 0;
-
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const dateString = `${year}-${month}-${String(day).padStart(2, '0')}`;
-                        const key = `${student.id}-${dateString}`;
-                        const status = attendanceMap.get(key) || 'Absent';
-
-                        if (status === 'Present') presentCount++;
-
-                        const cell = row.insertCell();
-                        cell.className = `attendance-cell ${status}`;
-                        cell.textContent = markingTypes[markingType][status] || markingTypes[markingType]['Absent'];
-                        cell.onclick = () => updateCellAttendance(cell, student.id, classId, dateString, status);
-                    }
-                    row.insertCell().textContent = presentCount;
-                    row.insertCell().textContent = `${Math.round((presentCount / daysInMonth) * 100)}%`;
-                });
-
-                calculateAndDisplayFooterTotals();
-
-            } catch (error) {
-                console.error("Error loading monthly register:", error);
-                tableBody.innerHTML = '<tr><td>رجسٹر لوڈ کرنے میں خرابی۔</td></tr>';
-            }
-        }
-
-        async function updateCellAttendance(cell, studentId, classId, date, currentStatus) {
-            const statuses = ['Absent', 'Present', 'Leave'];
-            const currentIndex = statuses.indexOf(currentStatus);
-            const newStatus = statuses[(currentIndex + 1) % statuses.length];
-
-            const record = {
-                date: date,
-                classId: classId,
-                studentId: studentId,
-                status: newStatus
-            };
-
-            await saveAttendanceRecords([record]);
-
-            const markingType = document.getElementById('markingType').value;
-            cell.className = `attendance-cell ${newStatus}`;
-            cell.textContent = markingTypes[markingType][newStatus];
-            cell.onclick = () => updateCellAttendance(cell, studentId, classId, date, newStatus);
-
-            const row = cell.parentElement;
-            const dayCount = row.cells.length - 3;
-
-            let presentCount = 0;
-            for (let i = 1; i <= dayCount; i++) {
-                if (row.cells[i] && row.cells[i].classList.contains('Present')) {
-                    presentCount++;
-                }
-            }
-
-            row.cells[row.cells.length - 2].textContent = presentCount;
-            row.cells[row.cells.length - 1].textContent = `${Math.round((presentCount / dayCount) * 100)}%`;
-
-            calculateAndDisplayFooterTotals();
-        }
-        function calculateAndDisplayFooterTotals() {
-            const tableBody = document.getElementById('attendanceRegisterBody');
-            const tfoot = document.getElementById('attendanceRegisterFoot');
-            const dateRow = document.getElementById('dateRow');
-
-            if (!tableBody || !tfoot || !dateRow || tableBody.rows.length === 0 || tableBody.rows[0].cells.length <= 1) {
-                return;
-            }
-
-            const summaryRow = tfoot.querySelector('.summary-row');
-            summaryRow.innerHTML = '<td class="student-name">کل حاضری</td>';
-
-            const dayColumnsCount = dateRow.cells.length - 3;
-
-            for (let i = 1; i <= dayColumnsCount; i++) {
-                let dailyPresentCount = 0;
-                for (const row of tableBody.rows) {
-                    const cell = row.cells[i];
-                    if (cell && cell.classList.contains('Present')) {
-                        dailyPresentCount++;
-                    }
-                }
-                const totalCell = document.createElement('td');
-                totalCell.className = 'total-cell';
-                totalCell.textContent = dailyPresentCount;
-                summaryRow.appendChild(totalCell);
-            }
-
-            summaryRow.appendChild(document.createElement('td'));
-            summaryRow.appendChild(document.createElement('td'));
-        }
-        async function saveAttendanceRecords(records) {
-            if (!db) await openDatabase();
-            const transaction = db.transaction(STORE_ATTENDANCE, 'readwrite');
-            const store = transaction.objectStore(STORE_ATTENDANCE);
-            const index = store.index('date_classId_studentId');
-
-            const promises = records.map(record => {
-                return new Promise((resolve, reject) => {
-                    const request = index.get([record.date, record.classId, record.studentId]);
-                    request.onsuccess = () => {
-                        const existingRecord = request.result;
-                        let finalRecord = { ...record };
-                        if (existingRecord) {
-                            finalRecord.id = existingRecord.id;
-                        }
-                        const putRequest = store.put(finalRecord);
-                        putRequest.onsuccess = resolve;
-                        putRequest.onerror = reject;
-                    };
-                    request.onerror = reject;
-                });
-            });
-
-            await Promise.all(promises);
-        }
-
-        async function printAttendanceRegister() {
-            const viewType = document.getElementById('attendanceViewType').value;
-            const classId = parseInt(attendanceClassSelect.value);
-            const className = attendanceClassSelect.options[attendanceClassSelect.selectedIndex]?.text || 'N/A';
-
-            const printContainer = document.getElementById('attendancePrintContainer');
-            const printTableThead = document.getElementById('attendancePrintTable').querySelector('thead');
-            const printTableTbody = document.getElementById('attendancePrintTable').querySelector('tbody');
-            printTableThead.innerHTML = '';
-            printTableTbody.innerHTML = '';
-
-            if (!classId) {
-                alert('پرنٹ کرنے کے لیے براہ کرم کلاس منتخب کریں۔');
-                return;
-            }
-
-            if (viewType === 'daily') {
-                const date = attendanceDateInput.value;
-                if (!date) { alert('پرنٹ کرنے کے لئے تاریخ منتخب کریں'); return; }
-                document.getElementById('printAttendanceDate').textContent = date;
-                document.getElementById('printAttendanceClass').textContent = className;
-                printTableThead.innerHTML = `<tr><th>داخلہ نمبر</th><th>نام</th><th>حالت</th></tr>`;
-                const dailyTbody = document.getElementById('attendanceTable').querySelector('tbody');
-                printTableTbody.innerHTML = dailyTbody ? dailyTbody.innerHTML : '';
-
-            } else {
-                const monthYear = document.getElementById('attendanceMonth').value;
-                if (!monthYear) { alert('پرنٹ کرنے کے لئے مہینہ منتخب کریں'); return; }
-                document.getElementById('printAttendanceDate').textContent = monthYear;
-                document.getElementById('printAttendanceClass').textContent = className;
-                const registerThead = document.getElementById('dateRow');
-                const registerTbody = document.getElementById('attendanceRegisterBody');
-                printTableThead.innerHTML = registerThead ? registerThead.innerHTML : '';
-                printTableTbody.innerHTML = registerTbody ? registerTbody.innerHTML : '';
-            }
-
-            const schoolNameSetting = await getById(STORE_SETTINGS, 'schoolName');
-            const schoolName = schoolNameSetting ? schoolNameSetting.value : 'مدرسہ کا نام';
-            const printHeader = document.createElement('h3');
-            printHeader.textContent = `${schoolName} - حاضری رجسٹر`;
-            const existingHeader = printContainer.querySelector('h3');
-            if (existingHeader) existingHeader.remove();
-            printContainer.prepend(printHeader);
-
-            printContainer.style.display = 'block';
-            printContainer.classList.add('printable');
-            window.print();
-            printContainer.classList.remove('printable');
-            printContainer.style.display = 'none';
-        }
-        // END: UPDATED ATTENDANCE SCRIPT BLOCK
     </script>
 </body>
-
 </html>

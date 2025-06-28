@@ -456,89 +456,6 @@
             opacity: 0.1;
             pointer-events: none;
         }
-
-        /* START: CSS for Monthly Attendance Register */
-        #attendanceRegisterView .table-container {
-            overflow-x: auto;
-            max-height: 70vh;
-            border: 1px solid #dee2e6;
-        }
-
-        #attendanceRegisterTable {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        #attendanceRegisterTable th,
-        #attendanceRegisterTable td {
-            border: 1px solid #dee2e6;
-            padding: 4px;
-            text-align: center;
-            position: relative;
-        }
-
-        #attendanceRegisterTable th {
-            background: #34495e;
-            color: white;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        #attendanceRegisterTable tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        #attendanceRegisterTable .student-name {
-            min-width: 150px;
-            text-align: right;
-            font-weight: bold;
-            background: #ecf0f1 !important;
-            position: sticky;
-            right: 0;
-            z-index: 5;
-        }
-
-        #attendanceRegisterTable .total-cell {
-            background: #dff0d8 !important;
-            font-weight: bold;
-            color: #3c763d !important;
-        }
-
-        #attendanceRegisterTable .summary-row {
-            background: #ecf0f1 !important;
-            font-weight: bold;
-            position: sticky;
-            bottom: 0;
-        }
-
-        #attendanceRegisterTable .attendance-cell {
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
-            user-select: none;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        #attendanceRegisterTable .Present {
-            background-color: #2ecc71;
-            color: white;
-        }
-
-        #attendanceRegisterTable .Absent {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        #attendanceRegisterTable .Leave {
-            background-color: #f39c12;
-            color: white;
-        }
-
-        /* END: CSS for Monthly Attendance Register */
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -995,81 +912,49 @@
         </div>
         <div id="attendance" class="module">
             <h2>حاضری کا انتظام</h2>
+            <h3>حاضری لگائیں</h3>
             <div class="form-grid">
                 <div>
-                    <label for="attendanceViewType">منظر کی قسم</label>
-                    <select id="attendanceViewType" onchange="toggleAttendanceView()">
-                        <option value="daily">روزانہ حاضری</option>
-                        <option value="monthly">ماہانہ رجسٹر</option>
-                    </select>
-                </div>
-                <div id="attendanceDailyControls">
                     <label for="attendanceDate">تاریخ</label>
-                    <input type="date" id="attendanceDate" required onchange="loadStudentsForAttendance()">
-                </div>
-                <div id="attendanceMonthlyControls" style="display: none;">
-                    <label for="attendanceMonth">مہینہ منتخب کریں</label>
-                    <input type="month" id="attendanceMonth" onchange="loadMonthlyRegister()">
+                    <input type="date" id="attendanceDate" required>
                 </div>
                 <div>
                     <label for="attendanceClass">کلاس</label>
-                    <select id="attendanceClass" required onchange="updateAttendanceDisplay()">
+                    <select id="attendanceClass" required onchange="loadStudentsForAttendance()">
                         <option value="">-- کلاس منتخب کریں --</option>
                     </select>
                 </div>
-                <div id="attendanceMarkingTypeContainer" style="display: none;">
-                    <label for="markingType">نشان کی قسم</label>
-                    <select id="markingType" onchange="loadMonthlyRegister()">
-                        <option value="letters">حروف (ح/غ/ر)</option>
-                        <option value="symbols">نشان (✓/✗/—)</option>
-                    </select>
-                </div>
             </div>
-
-            <div id="attendanceDailyView">
-                <table id="attendanceTable">
+            <table id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>داخلہ نمبر</th>
+                        <th>نام</th>
+                        <th>حاضری (Present/Absent)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3">براہ کرم تاریخ اور کلاس منتخب کریں۔</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="saveAttendance()">حاضری محفوظ کریں</button>
+            <button class="print" onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
+            <div id="attendancePrintContainer" class="printable">
+                <h3>حاضری رجسٹر</h3>
+                <p><strong>تاریخ:</strong> <span id="printAttendanceDate"></span></p>
+                <p><strong>کلاس:</strong> <span id="printAttendanceClass"></span></p>
+                <table id="attendancePrintTable" class="printable-content">
                     <thead>
                         <tr>
                             <th>داخلہ نمبر</th>
                             <th>نام</th>
-                            <th>حاضری (Present/Absent)</th>
+                            <th>حالت</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="3">براہ کرم تاریخ اور کلاس منتخب کریں۔</td>
-                        </tr>
                     </tbody>
-                </table>
-                <button onclick="saveAttendance()">حاضری محفوظ کریں</button>
-            </div>
-
-            <div id="attendanceRegisterView" style="display: none;">
-                <div class="table-container">
-                    <table id="attendanceRegisterTable">
-                        <thead>
-                            <tr id="dateRow">
-                                <th class="student-name">طالب علم کا نام</th>
-                            </tr>
-                        </thead>
-                        <tbody id="attendanceRegisterBody"></tbody>
-                        <tfoot id="attendanceRegisterFoot">
-                            <tr class="summary-row">
-                                <td class="student-name">کل حاضری</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-
-            <button class="print" onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
-            <div id="attendancePrintContainer" class="printable">
-                <h3>حاضری رجسٹر</h3>
-                <p><strong>تاریخ/مہینہ:</strong> <span id="printAttendanceDate"></span></p>
-                <p><strong>کلاس:</strong> <span id="printAttendanceClass"></span></p>
-                <table id="attendancePrintTable" class="printable-content">
-                    <thead></thead>
-                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -3972,270 +3857,6 @@
                 console.error("Error loading print settings:", error);
             }
         }
-        let advancedReportRecipients = [];
-        async function loadAdvancedFilterData() {
-            const classSelect = document.getElementById('advClassFilter');
-            if (classSelect.options.length <= 1) {
-                const classes = await getAll(STORE_CLASSES);
-                classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(c => classSelect.add(new Option(c.name, c.id)));
-            }
-            updateStudentFilterByClass();
-            const monthSelect = document.getElementById('advReportMonths');
-            if (monthSelect.options.length === 0) {
-                const urduMonths = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
-                urduMonths.forEach((month, index) => monthSelect.add(new Option(month, index + 1)));
-            }
-            const yearSelect = document.getElementById('advReportYears');
-            if (yearSelect.options.length === 0) {
-                const currentYear = new Date().getFullYear();
-                for (let i = currentYear - 5; i <= currentYear + 1; i++) {
-                    yearSelect.add(new Option(i, i));
-                }
-                yearSelect.value = currentYear;
-            }
-        }
-        async function updateStudentFilterByClass() {
-            const classId = document.getElementById('advClassFilter').value;
-            const studentSelect = document.getElementById('advStudentFilter');
-            studentSelect.innerHTML = '';
-            let students = await getAll(STORE_STUDENTS);
-            if (classId) {
-                students = students.filter(s => s.classId === parseInt(classId));
-            }
-            students.sort((a, b) => a.name.localeCompare(b.name)).forEach(s => studentSelect.add(new Option(`${s.name} (${s.admissionNo})`, s.id)));
-        }
-        function updateAdvancedFilterVisibility() {
-            const reportType = document.getElementById('advReportType').value;
-            const show = (id, type = 'block') => document.getElementById(id).style.display = type;
-            const hide = (id) => document.getElementById(id).style.display = 'none';
-            if (!reportType) {
-                hide('advDateControls'); hide('advFinancialTypeDiv'); hide('advClassFilterDiv'); hide('advStudentFilterDiv');
-                return;
-            }
-            show('advDateControls', 'grid');
-            show('advClassFilterDiv');
-            show('advStudentFilterDiv');
-            reportType === 'financial' ? show('advFinancialTypeDiv') : hide('advFinancialTypeDiv');
-        }
-        function getDateChecker() {
-            const selectedMonths = Array.from(document.getElementById('advReportMonths').selectedOptions).map(opt => parseInt(opt.value));
-            const selectedYears = Array.from(document.getElementById('advReportYears').selectedOptions).map(opt => parseInt(opt.value));
-            const startDate = document.getElementById('advStartDate').value;
-            const endDate = document.getElementById('advEndDate').value;
-            if (startDate && endDate) {
-                return (dateStr) => dateStr >= startDate && dateStr <= endDate;
-            }
-            if (selectedMonths.length > 0 && selectedYears.length > 0) {
-                return (dateStr) => {
-                    if (!dateStr) return false;
-                    const d = new Date(dateStr);
-                    return selectedYears.includes(d.getFullYear()) && selectedMonths.includes(d.getMonth() + 1);
-                };
-            }
-            if (selectedYears.length > 0) {
-                return (dateStr) => {
-                    if (!dateStr) return false;
-                    const d = new Date(dateStr);
-                    return selectedYears.includes(d.getFullYear());
-                };
-            }
-            return (dateStr) => true;
-        }
-        function triggerSingleComm(id, type) {
-            const recipient = [{ id: parseInt(id), type: type }];
-            const reportType = document.getElementById('advReportType').value;
-            const financialType = document.getElementById('advFinancialType').value;
-            let messageType = 'custom';
-            if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
-            if (reportType === 'attendance') messageType = 'attendance_absent';
-            if (reportType === 'marks') messageType = 'exam_result';
-            launchAndPopulateCommModal(recipient, messageType);
-        }
-        async function generateAdvancedReport() {
-            const reportType = document.getElementById('advReportType').value;
-            const outputDiv = document.getElementById('advancedReportOutput');
-            const commBtn = document.getElementById('commFromReportBtn');
-            outputDiv.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
-            commBtn.style.display = 'none';
-            advancedReportRecipients = [];
-            if (!reportType) {
-                outputDiv.innerHTML = '<p>براہ کرم رپورٹ کی قسم منتخب کریں۔</p>';
-                return;
-            }
-            try {
-                let reportData = { html: '', recipients: [] };
-                switch (reportType) {
-                    case 'financial':
-                        reportData = await generateAdvancedFinancialReport();
-                        break;
-                    case 'attendance':
-                        reportData = await generateAdvancedAttendanceReport();
-                        break;
-                    case 'marks':
-                        reportData = await generateAdvancedMarksReport();
-                        break;
-                }
-                outputDiv.innerHTML = reportData.html || '<p>اس معیار پر کوئی ڈیٹا نہیں ملا۔</p>';
-                advancedReportRecipients = reportData.recipients || [];
-                if (advancedReportRecipients.length > 0) {
-                    commBtn.style.display = 'inline-block';
-                }
-            } catch (error) {
-                console.error("Error generating advanced report:", error);
-                outputDiv.innerHTML = `<p>رپورٹ بنانے میں خرابی: ${error.message}</p>`;
-            }
-        }
-        async function generateAdvancedFinancialReport() {
-            const financialType = document.getElementById('advFinancialType').value;
-            const classId = document.getElementById('advClassFilter').value;
-            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
-            const dateChecker = getDateChecker();
-            let allStudents = await getAll(STORE_STUDENTS);
-            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
-            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-            let html = `<h4>${financialType === 'fee_due' ? 'واجب الادا فیس' : 'وصول شدہ فیس'} رپورٹ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>تفصیل</th><th>رقم</th><th>عمل</th></tr></thead><tbody>`;
-            let recipients = [];
-            let totalAmount = 0;
-            if (financialType === 'fee_due') {
-                const feeStructures = await getAll(STORE_FEE_STRUCTURES);
-                const feePayments = await getAll(STORE_FEES);
-                for (const student of allStudents) {
-                    const studentFeeStructures = feeStructures.filter(fs => fs.classId === student.classId);
-                    let totalDueForStudent = 0;
-                    let dueDetails = [];
-                    for (const structure of studentFeeStructures) {
-                        const paidForType = feePayments.filter(p => p.studentId === student.id && p.feeType === structure.feeType).reduce((sum, p) => sum + p.paidAmount + p.discount, 0);
-                        if (structure.amount - paidForType > 0) {
-                            totalDueForStudent += structure.amount - paidForType;
-                            dueDetails.push(`${structure.feeType}: ${(structure.amount - paidForType).toLocaleString()}`);
-                        }
-                    }
-                    if (totalDueForStudent > 0) {
-                        const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
-                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${dueDetails.join(', ')}</td><td>${totalDueForStudent.toLocaleString()}</td><td>${actionBtn}</td></tr>`;
-                        totalAmount += totalDueForStudent;
-                        if (student.contact) recipients.push({ id: student.id, type: 'students' });
-                    }
-                }
-            } else {
-                const feePayments = await getAll(STORE_FEES);
-                for (const student of allStudents) {
-                    const paymentsInDate = feePayments.filter(p => p.studentId === student.id && dateChecker(p.date));
-                    if (paymentsInDate.length > 0) {
-                        let totalPaidByStudent = 0;
-                        let paidDetails = paymentsInDate.map(p => { totalPaidByStudent += p.paidAmount; return `${p.date} (${p.feeType}): ${p.paidAmount.toLocaleString()}`; }).join('<br>');
-                        const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
-                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${paidDetails}</td><td>${totalPaidByStudent.toLocaleString()}</td><td>${actionBtn}</td></tr>`;
-                        totalAmount += totalPaidByStudent;
-                        if (student.contact) recipients.push({ id: student.id, type: 'students' });
-                    }
-                }
-            }
-            html += `</tbody><tfoot><tr><td colspan="4"><b>کل</b></td><td><b>${totalAmount.toLocaleString()}</b></td></tr></tfoot></table>`;
-            return { html, recipients };
-        }
-        async function generateAdvancedAttendanceReport() {
-            const classId = document.getElementById('advClassFilter').value;
-            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
-            const dateChecker = getDateChecker();
-            let allStudents = await getAll(STORE_STUDENTS);
-            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
-            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-            const attendanceRecords = await getAll(STORE_ATTENDANCE);
-            let html = `<h4>حاضری کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>کل دن</th><th>حاضر</th><th>غیر حاضر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
-            let recipients = [];
-            for (const student of allStudents) {
-                const studentRecords = attendanceRecords.filter(r => r.studentId === student.id && dateChecker(r.date));
-                if (studentRecords.length === 0) continue;
-                const totalDays = studentRecords.length;
-                const presentDays = studentRecords.filter(r => r.status === 'Present').length;
-                const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
-                html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${totalDays}</td><td>${presentDays}</td><td>${totalDays - presentDays}</td><td>${((presentDays / totalDays) * 100).toFixed(1)}%</td><td>${actionBtn}</td></tr>`;
-                if (student.contact) recipients.push({ id: student.id, type: 'students' });
-            }
-            html += '</tbody></table>';
-            return { html, recipients };
-        }
-        async function generateAdvancedMarksReport() {
-            const classId = document.getElementById('advClassFilter').value;
-            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
-            let allStudents = await getAll(STORE_STUDENTS);
-            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
-            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
-            const results = await getAll(STORE_RESULTS);
-            let html = `<h4>نتائج کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>امتحان</th><th>کل حاصل کردہ</th><th>کل نمبر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
-            let recipients = [];
-            for (const student of allStudents) {
-                const studentResults = results.filter(r => r.studentId === student.id);
-                const resultsByExam = studentResults.reduce((acc, r) => {
-                    acc[r.examName] = acc[r.examName] || { obtained: 0, total: 0 };
-                    acc[r.examName].obtained += r.obtainedMarks;
-                    acc[r.examName].total += r.totalMarks;
-                    return acc;
-                }, {});
-                if (Object.keys(resultsByExam).length > 0) {
-                    const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
-                    for (const examName in resultsByExam) {
-                        const data = resultsByExam[examName];
-                        const percentage = data.total > 0 ? ((data.obtained / data.total) * 100).toFixed(1) : 0;
-                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${examName}</td><td>${data.obtained}</td><td>${data.total}</td><td>${percentage}%</td><td>${actionBtn}</td></tr>`;
-                    }
-                    if (student.contact) recipients.push({ id: student.id, type: 'students' });
-                }
-            }
-            html += '</tbody></table>';
-            return { html, recipients };
-        }
-        function launchAndPopulateCommModal(recipients, messageType) {
-            const commModal = document.getElementById('communicationModal');
-            if (!commModal) {
-                alert('کمیونیکیشن ماڈیول نہیں ملا۔');
-                return;
-            }
-            launchCommunicationModal();
-            setTimeout(async () => {
-                try {
-                    const recipientType = recipients[0]?.type || 'students';
-                    const commRecipientTypeSelect = document.getElementById('commRecipientType');
-                    if (commRecipientTypeSelect) {
-                        commRecipientTypeSelect.value = recipientType;
-                        await handleRecipientTypeChange();
-                    }
-                    const recipientIds = recipients.map(r => r.id);
-                    document.querySelectorAll('.comm-recipient-checkbox').forEach(cb => {
-                        cb.checked = recipientIds.includes(parseInt(cb.value));
-                    });
-                    const commMessageTypeSelect = document.getElementById('commMessageType');
-                    if (commMessageTypeSelect) {
-                        commMessageTypeSelect.value = messageType;
-                        handleMessageTypeChange();
-                    }
-                } catch (error) {
-                    console.error("Error populating communication modal:", error);
-                    alert("کمیونیکیشن ماڈیول کو آباد کرنے میں خرابی۔");
-                }
-            }, 300);
-        }
-        function triggerCommFromAdvancedReport() {
-            if (!advancedReportRecipients || advancedReportRecipients.length === 0) {
-                alert('پیغام بھیجنے کے لیے کوئی وصول کنندہ نہیں ہے۔');
-                return;
-            }
-            const reportType = document.getElementById('advReportType').value;
-            const financialType = document.getElementById('advFinancialType').value;
-            let messageType = 'custom';
-            if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
-            if (reportType === 'attendance') messageType = 'attendance_absent';
-            if (reportType === 'marks') messageType = 'exam_result';
-            launchAndPopulateCommModal(advancedReportRecipients, messageType);
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            const genReportBtn = document.getElementById('generateAdvancedReportBtn');
-            if (genReportBtn) {
-                genReportBtn.addEventListener('click', generateAdvancedReport);
-            }
-        });
-
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDatabase();
@@ -4704,7 +4325,7 @@
                 { id: 'resultsEntryTable', searchable: true, sortable: true, paginated: true },
                 { id: 'classTimetableTable', searchable: true, sortable: true, paginated: true },
                 { id: 'teacherRoasterTable', searchable: true, sortable: true, paginated: true },
-                { id: 'transactionsTable', searchable: true, sortable: true, paginated: true }
+                { id: 'expensesTable', searchable: true, sortable: true, paginated: true }
             ];
             function debounce(func, wait) {
                 let timeout;
@@ -7666,6 +7287,269 @@
                 initializeCommunicationModule();
             }
         })();
+        let advancedReportRecipients = [];
+        async function loadAdvancedFilterData() {
+            const classSelect = document.getElementById('advClassFilter');
+            if (classSelect.options.length <= 1) {
+                const classes = await getAll(STORE_CLASSES);
+                classes.sort((a, b) => a.name.localeCompare(b.name)).forEach(c => classSelect.add(new Option(c.name, c.id)));
+            }
+            updateStudentFilterByClass();
+            const monthSelect = document.getElementById('advReportMonths');
+            if (monthSelect.options.length === 0) {
+                const urduMonths = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
+                urduMonths.forEach((month, index) => monthSelect.add(new Option(month, index + 1)));
+            }
+            const yearSelect = document.getElementById('advReportYears');
+            if (yearSelect.options.length === 0) {
+                const currentYear = new Date().getFullYear();
+                for (let i = currentYear - 5; i <= currentYear + 1; i++) {
+                    yearSelect.add(new Option(i, i));
+                }
+                yearSelect.value = currentYear;
+            }
+        }
+        async function updateStudentFilterByClass() {
+            const classId = document.getElementById('advClassFilter').value;
+            const studentSelect = document.getElementById('advStudentFilter');
+            studentSelect.innerHTML = '';
+            let students = await getAll(STORE_STUDENTS);
+            if (classId) {
+                students = students.filter(s => s.classId === parseInt(classId));
+            }
+            students.sort((a, b) => a.name.localeCompare(b.name)).forEach(s => studentSelect.add(new Option(`${s.name} (${s.admissionNo})`, s.id)));
+        }
+        function updateAdvancedFilterVisibility() {
+            const reportType = document.getElementById('advReportType').value;
+            const show = (id, type = 'block') => document.getElementById(id).style.display = type;
+            const hide = (id) => document.getElementById(id).style.display = 'none';
+            if (!reportType) {
+                hide('advDateControls'); hide('advFinancialTypeDiv'); hide('advClassFilterDiv'); hide('advStudentFilterDiv');
+                return;
+            }
+            show('advDateControls', 'grid');
+            show('advClassFilterDiv');
+            show('advStudentFilterDiv');
+            reportType === 'financial' ? show('advFinancialTypeDiv') : hide('advFinancialTypeDiv');
+        }
+        function getDateChecker() {
+            const selectedMonths = Array.from(document.getElementById('advReportMonths').selectedOptions).map(opt => parseInt(opt.value));
+            const selectedYears = Array.from(document.getElementById('advReportYears').selectedOptions).map(opt => parseInt(opt.value));
+            const startDate = document.getElementById('advStartDate').value;
+            const endDate = document.getElementById('advEndDate').value;
+            if (startDate && endDate) {
+                return (dateStr) => dateStr >= startDate && dateStr <= endDate;
+            }
+            if (selectedMonths.length > 0 && selectedYears.length > 0) {
+                return (dateStr) => {
+                    if (!dateStr) return false;
+                    const d = new Date(dateStr);
+                    return selectedYears.includes(d.getFullYear()) && selectedMonths.includes(d.getMonth() + 1);
+                };
+            }
+            if (selectedYears.length > 0) {
+                return (dateStr) => {
+                    if (!dateStr) return false;
+                    const d = new Date(dateStr);
+                    return selectedYears.includes(d.getFullYear());
+                };
+            }
+            return (dateStr) => true;
+        }
+        function triggerSingleComm(id, type) {
+            const recipient = [{ id: parseInt(id), type: type }];
+            const reportType = document.getElementById('advReportType').value;
+            const financialType = document.getElementById('advFinancialType').value;
+            let messageType = 'custom';
+            if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
+            if (reportType === 'attendance') messageType = 'attendance_absent';
+            if (reportType === 'marks') messageType = 'exam_result';
+            launchAndPopulateCommModal(recipient, messageType);
+        }
+        async function generateAdvancedReport() {
+            const reportType = document.getElementById('advReportType').value;
+            const outputDiv = document.getElementById('advancedReportOutput');
+            const commBtn = document.getElementById('commFromReportBtn');
+            outputDiv.innerHTML = '<p>رپورٹ تیار کی جا رہی ہے...</p>';
+            commBtn.style.display = 'none';
+            advancedReportRecipients = [];
+            if (!reportType) {
+                outputDiv.innerHTML = '<p>براہ کرم رپورٹ کی قسم منتخب کریں۔</p>';
+                return;
+            }
+            try {
+                let reportData = { html: '', recipients: [] };
+                switch (reportType) {
+                    case 'financial':
+                        reportData = await generateAdvancedFinancialReport();
+                        break;
+                    case 'attendance':
+                        reportData = await generateAdvancedAttendanceReport();
+                        break;
+                    case 'marks':
+                        reportData = await generateAdvancedMarksReport();
+                        break;
+                }
+                outputDiv.innerHTML = reportData.html || '<p>اس معیار پر کوئی ڈیٹا نہیں ملا۔</p>';
+                advancedReportRecipients = reportData.recipients || [];
+                if (advancedReportRecipients.length > 0) {
+                    commBtn.style.display = 'inline-block';
+                }
+            } catch (error) {
+                console.error("Error generating advanced report:", error);
+                outputDiv.innerHTML = `<p>رپورٹ بنانے میں خرابی: ${error.message}</p>`;
+            }
+        }
+        async function generateAdvancedFinancialReport() {
+            const financialType = document.getElementById('advFinancialType').value;
+            const classId = document.getElementById('advClassFilter').value;
+            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
+            const dateChecker = getDateChecker();
+            let allStudents = await getAll(STORE_STUDENTS);
+            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
+            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
+            let html = `<h4>${financialType === 'fee_due' ? 'واجب الادا فیس' : 'وصول شدہ فیس'} رپورٹ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>تفصیل</th><th>رقم</th><th>عمل</th></tr></thead><tbody>`;
+            let recipients = [];
+            let totalAmount = 0;
+            if (financialType === 'fee_due') {
+                const feeStructures = await getAll(STORE_FEE_STRUCTURES);
+                const feePayments = await getAll(STORE_FEES);
+                for (const student of allStudents) {
+                    const studentFeeStructures = feeStructures.filter(fs => fs.classId === student.classId);
+                    let totalDueForStudent = 0;
+                    let dueDetails = [];
+                    for (const structure of studentFeeStructures) {
+                        const paidForType = feePayments.filter(p => p.studentId === student.id && p.feeType === structure.feeType).reduce((sum, p) => sum + p.paidAmount + p.discount, 0);
+                        if (structure.amount - paidForType > 0) {
+                            totalDueForStudent += structure.amount - paidForType;
+                            dueDetails.push(`${structure.feeType}: ${(structure.amount - paidForType).toLocaleString()}`);
+                        }
+                    }
+                    if (totalDueForStudent > 0) {
+                        const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
+                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${dueDetails.join(', ')}</td><td>${totalDueForStudent.toLocaleString()}</td><td>${actionBtn}</td></tr>`;
+                        totalAmount += totalDueForStudent;
+                        if (student.contact) recipients.push({ id: student.id, type: 'students' });
+                    }
+                }
+            } else {
+                const feePayments = await getAll(STORE_FEES);
+                for (const student of allStudents) {
+                    const paymentsInDate = feePayments.filter(p => p.studentId === student.id && dateChecker(p.date));
+                    if (paymentsInDate.length > 0) {
+                        let totalPaidByStudent = 0;
+                        let paidDetails = paymentsInDate.map(p => { totalPaidByStudent += p.paidAmount; return `${p.date} (${p.feeType}): ${p.paidAmount.toLocaleString()}`; }).join('<br>');
+                        const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
+                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${paidDetails}</td><td>${totalPaidByStudent.toLocaleString()}</td><td>${actionBtn}</td></tr>`;
+                        totalAmount += totalPaidByStudent;
+                        if (student.contact) recipients.push({ id: student.id, type: 'students' });
+                    }
+                }
+            }
+            html += `</tbody><tfoot><tr><td colspan="4"><b>کل</b></td><td><b>${totalAmount.toLocaleString()}</b></td></tr></tfoot></table>`;
+            return { html, recipients };
+        }
+        async function generateAdvancedAttendanceReport() {
+            const classId = document.getElementById('advClassFilter').value;
+            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
+            const dateChecker = getDateChecker();
+            let allStudents = await getAll(STORE_STUDENTS);
+            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
+            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
+            const attendanceRecords = await getAll(STORE_ATTENDANCE);
+            let html = `<h4>حاضری کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>کل دن</th><th>حاضر</th><th>غیر حاضر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
+            let recipients = [];
+            for (const student of allStudents) {
+                const studentRecords = attendanceRecords.filter(r => r.studentId === student.id && dateChecker(r.date));
+                if (studentRecords.length === 0) continue;
+                const totalDays = studentRecords.length;
+                const presentDays = studentRecords.filter(r => r.status === 'Present').length;
+                const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
+                html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${totalDays}</td><td>${presentDays}</td><td>${totalDays - presentDays}</td><td>${((presentDays / totalDays) * 100).toFixed(1)}%</td><td>${actionBtn}</td></tr>`;
+                if (student.contact) recipients.push({ id: student.id, type: 'students' });
+            }
+            html += '</tbody></table>';
+            return { html, recipients };
+        }
+        async function generateAdvancedMarksReport() {
+            const classId = document.getElementById('advClassFilter').value;
+            const studentIds = Array.from(document.getElementById('advStudentFilter').selectedOptions).map(opt => parseInt(opt.value));
+            let allStudents = await getAll(STORE_STUDENTS);
+            if (classId) allStudents = allStudents.filter(s => s.classId === parseInt(classId));
+            if (studentIds.length > 0) allStudents = allStudents.filter(s => studentIds.includes(s.id));
+            const results = await getAll(STORE_RESULTS);
+            let html = `<h4>نتائج کا خلاصہ</h4><table width="100%" border="1" style="border-collapse: collapse;"><thead><tr><th>نام</th><th>کلاس</th><th>امتحان</th><th>کل حاصل کردہ</th><th>کل نمبر</th><th>فیصد</th><th>عمل</th></tr></thead><tbody>`;
+            let recipients = [];
+            for (const student of allStudents) {
+                const studentResults = results.filter(r => r.studentId === student.id);
+                const resultsByExam = studentResults.reduce((acc, r) => {
+                    acc[r.examName] = acc[r.examName] || { obtained: 0, total: 0 };
+                    acc[r.examName].obtained += r.obtainedMarks;
+                    acc[r.examName].total += r.totalMarks;
+                    return acc;
+                }, {});
+                if (Object.keys(resultsByExam).length > 0) {
+                    const actionBtn = student.contact ? `<button onclick="triggerSingleComm(${student.id}, 'students')">پیغام</button>` : 'N/A';
+                    for (const examName in resultsByExam) {
+                        const data = resultsByExam[examName];
+                        const percentage = data.total > 0 ? ((data.obtained / data.total) * 100).toFixed(1) : 0;
+                        html += `<tr><td>${student.name}</td><td>${await getClassName(student.classId)}</td><td>${examName}</td><td>${data.obtained}</td><td>${data.total}</td><td>${percentage}%</td><td>${actionBtn}</td></tr>`;
+                    }
+                    if (student.contact) recipients.push({ id: student.id, type: 'students' });
+                }
+            }
+            html += '</tbody></table>';
+            return { html, recipients };
+        }
+        function launchAndPopulateCommModal(recipients, messageType) {
+            const commModal = document.getElementById('communicationModal');
+            if (!commModal) {
+                alert('کمیونیکیشن ماڈیول نہیں ملا۔');
+                return;
+            }
+            launchCommunicationModal();
+            setTimeout(async () => {
+                try {
+                    const recipientType = recipients[0]?.type || 'students';
+                    const commRecipientTypeSelect = document.getElementById('commRecipientType');
+                    if (commRecipientTypeSelect) {
+                        commRecipientTypeSelect.value = recipientType;
+                        await handleRecipientTypeChange();
+                    }
+                    const recipientIds = recipients.map(r => r.id);
+                    document.querySelectorAll('.comm-recipient-checkbox').forEach(cb => {
+                        cb.checked = recipientIds.includes(parseInt(cb.value));
+                    });
+                    const commMessageTypeSelect = document.getElementById('commMessageType');
+                    if (commMessageTypeSelect) {
+                        commMessageTypeSelect.value = messageType;
+                        handleMessageTypeChange();
+                    }
+                } catch (error) {
+                    console.error("Error populating communication modal:", error);
+                    alert("کمیونیکیشن ماڈیول کو آباد کرنے میں خرابی۔");
+                }
+            }, 300);
+        }
+        function triggerCommFromAdvancedReport() {
+            if (!advancedReportRecipients || advancedReportRecipients.length === 0) {
+                alert('پیغام بھیجنے کے لیے کوئی وصول کنندہ نہیں ہے۔');
+                return;
+            }
+            const reportType = document.getElementById('advReportType').value;
+            const financialType = document.getElementById('advFinancialType').value;
+            let messageType = 'custom';
+            if (reportType === 'financial' && financialType === 'fee_due') messageType = 'fee_reminder';
+            if (reportType === 'attendance') messageType = 'attendance_absent';
+            if (reportType === 'marks') messageType = 'exam_result';
+            launchAndPopulateCommModal(advancedReportRecipients, messageType);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const genReportBtn = document.getElementById('generateAdvancedReportBtn');
+            if (genReportBtn) {
+                genReportBtn.addEventListener('click', generateAdvancedReport);
+            }
+        });
         async function loadStudentsForCertificate() {
             const select = document.getElementById('certificateStudentSelect');
             if (!select) return;
@@ -8020,339 +7904,6 @@
                 exportBtn.disabled = false;
             }
         }
-
-
-        // START: UPDATED ATTENDANCE SCRIPT BLOCK
-        const markingTypes = {
-            letters: { Present: 'ح', Absent: 'غ', Leave: 'ر' },
-            symbols: { Present: '✓', Absent: '✗', Leave: '—' }
-        };
-
-        function toggleAttendanceView() {
-            const viewType = document.getElementById('attendanceViewType').value;
-            const dailyView = document.getElementById('attendanceDailyView');
-            const registerView = document.getElementById('attendanceRegisterView');
-            const dailyControls = document.getElementById('attendanceDailyControls');
-            const monthlyControls = document.getElementById('attendanceMonthlyControls');
-            const markingTypeContainer = document.getElementById('attendanceMarkingTypeContainer');
-
-            if (viewType === 'daily') {
-                dailyView.style.display = 'block';
-                dailyControls.style.display = 'block';
-                registerView.style.display = 'none';
-                monthlyControls.style.display = 'none';
-                markingTypeContainer.style.display = 'none';
-                loadStudentsForAttendance();
-            } else {
-                dailyView.style.display = 'none';
-                dailyControls.style.display = 'none';
-                registerView.style.display = 'block';
-                monthlyControls.style.display = 'block';
-                markingTypeContainer.style.display = 'block';
-                if (!document.getElementById('attendanceMonth').value) {
-                    document.getElementById('attendanceMonth').value = new Date().toISOString().slice(0, 7);
-                }
-                loadMonthlyRegister();
-            }
-        }
-
-        function updateAttendanceDisplay() {
-            const viewType = document.getElementById('attendanceViewType').value;
-            if (viewType === 'daily') {
-                loadStudentsForAttendance();
-            } else {
-                loadMonthlyRegister();
-            }
-        }
-
-        async function loadClassesForAttendance() {
-            await loadClassesIntoSelect('attendanceClass');
-        }
-
-        async function loadStudentsForAttendance() {
-            const classId = parseInt(attendanceClassSelect.value);
-            const date = attendanceDateInput.value;
-            attendanceTableBody.innerHTML = '';
-
-            if (!classId || !date) {
-                attendanceTableBody.innerHTML = '<tr><td colspan="3">براہ کرم تاریخ اور کلاس منتخب کریں۔</td></tr>';
-                return;
-            }
-            attendanceTableBody.innerHTML = '<tr><td colspan="3">لوڈ ہو رہا ہے...</td></tr>';
-            try {
-                const students = await getAll(STORE_STUDENTS, 'classId', classId);
-                if (students.length === 0) {
-                    attendanceTableBody.innerHTML = '<tr><td colspan="3">اس کلاس میں کوئی طالب علم نہیں۔</td></tr>';
-                    return;
-                }
-
-                const keyRange = IDBKeyRange.only([date, classId]);
-                const existingAttendance = await getAll(STORE_ATTENDANCE, 'date_classId', keyRange);
-
-                const attendanceMap = existingAttendance.reduce((map, record) => {
-                    map[record.studentId] = record.status;
-                    return map;
-                }, {});
-
-                attendanceTableBody.innerHTML = '';
-                students.sort((a, b) => a.name.localeCompare(b.name)).forEach(student => {
-                    const row = attendanceTableBody.insertRow();
-                    const existingStatus = attendanceMap[student.id] || 'Present';
-                    row.innerHTML = `
-                <td>${student.admissionNo}</td>
-                <td>${student.name}</td>
-                <td>
-                    <label><input type="radio" name="attendance_${student.id}" value="Present" data-student-id="${student.id}" ${existingStatus === 'Present' ? 'checked' : ''}> حاضر</label>
-                    <label><input type="radio" name="attendance_${student.id}" value="Absent" data-student-id="${student.id}" ${existingStatus === 'Absent' ? 'checked' : ''}> غیر حاضر</label>
-                    <label><input type="radio" name="attendance_${student.id}" value="Leave" data-student-id="${student.id}" ${existingStatus === 'Leave' ? 'checked' : ''}> رخصت</label>
-                </td>
-            `;
-                });
-            } catch (error) {
-                console.error("Error loading students for daily attendance:", error);
-                attendanceTableBody.innerHTML = '<tr><td colspan="3">حاضری کے لیے طلباء کو لوڈ کرنے میں خرابی۔</td></tr>';
-            }
-        }
-
-        async function saveAttendance() {
-            const date = attendanceDateInput.value;
-            const classId = parseInt(attendanceClassSelect.value);
-            const attendanceRows = attendanceTableBody.querySelectorAll('input[type="radio"]:checked');
-
-            if (!date || !classId || attendanceRows.length === 0) {
-                alert('براہ کرم تاریخ، کلاس منتخب کریں اور حاضری لگائیں۔');
-                return;
-            }
-
-            const recordsToSave = Array.from(attendanceRows).map(input => ({
-                date: date,
-                classId: classId,
-                studentId: parseInt(input.dataset.studentId),
-                status: input.value
-            }));
-
-            await saveAttendanceRecords(recordsToSave);
-            alert('حاضری کامیابی سے محفوظ ہو گئی۔');
-        }
-
-        async function loadMonthlyRegister() {
-            const classId = parseInt(attendanceClassSelect.value);
-            const monthYear = document.getElementById('attendanceMonth').value;
-            const dateRow = document.getElementById('dateRow');
-            const tableBody = document.getElementById('attendanceRegisterBody');
-
-            dateRow.innerHTML = '<th class="student-name">طالب علم کا نام</th>';
-            tableBody.innerHTML = '';
-
-            if (!classId || !monthYear) {
-                tableBody.innerHTML = '<tr><td>براہ کرم مہینہ اور کلاس منتخب کریں۔</td></tr>';
-                return;
-            }
-
-            tableBody.innerHTML = '<tr><td>لوڈ ہو رہا ہے...</td></tr>';
-
-            const [year, month] = monthYear.split('-');
-            const daysInMonth = new Date(year, month, 0).getDate();
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const th = document.createElement('th');
-                th.textContent = day;
-                dateRow.appendChild(th);
-            }
-            dateRow.innerHTML += '<th class="total-cell">حاضر</th><th class="total-cell">فیصد</th>';
-
-            try {
-                const students = await getAll(STORE_STUDENTS, 'classId', classId);
-                if (students.length === 0) {
-                    tableBody.innerHTML = '<tr><td>اس کلاس میں کوئی طالب علم نہیں۔</td></tr>';
-                    return;
-                }
-
-                const startDate = `${monthYear}-01`;
-                const endDate = `${monthYear}-${daysInMonth}`;
-                const range = IDBKeyRange.bound([startDate, classId], [endDate, classId]);
-                const monthlyRecords = await getAll(STORE_ATTENDANCE, 'date_classId', range);
-
-                const attendanceMap = new Map();
-                monthlyRecords.forEach(r => {
-                    const key = `${r.studentId}-${r.date}`;
-                    attendanceMap.set(key, r.status);
-                });
-
-                tableBody.innerHTML = '';
-                const markingType = document.getElementById('markingType').value;
-
-                students.sort((a, b) => a.name.localeCompare(b.name)).forEach(student => {
-                    const row = tableBody.insertRow();
-                    row.innerHTML = `<td class="student-name">${student.name}</td>`;
-                    let presentCount = 0;
-
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const dateString = `${year}-${month}-${String(day).padStart(2, '0')}`;
-                        const key = `${student.id}-${dateString}`;
-                        const status = attendanceMap.get(key) || 'Absent';
-
-                        if (status === 'Present') presentCount++;
-
-                        const cell = row.insertCell();
-                        cell.className = `attendance-cell ${status}`;
-                        cell.textContent = markingTypes[markingType][status] || markingTypes[markingType]['Absent'];
-                        cell.onclick = () => updateCellAttendance(cell, student.id, classId, dateString, status);
-                    }
-                    row.insertCell().textContent = presentCount;
-                    row.insertCell().textContent = `${Math.round((presentCount / daysInMonth) * 100)}%`;
-                });
-
-                calculateAndDisplayFooterTotals();
-
-            } catch (error) {
-                console.error("Error loading monthly register:", error);
-                tableBody.innerHTML = '<tr><td>رجسٹر لوڈ کرنے میں خرابی۔</td></tr>';
-            }
-        }
-
-        async function updateCellAttendance(cell, studentId, classId, date, currentStatus) {
-            const statuses = ['Absent', 'Present', 'Leave'];
-            const currentIndex = statuses.indexOf(currentStatus);
-            const newStatus = statuses[(currentIndex + 1) % statuses.length];
-
-            const record = {
-                date: date,
-                classId: classId,
-                studentId: studentId,
-                status: newStatus
-            };
-
-            await saveAttendanceRecords([record]);
-
-            const markingType = document.getElementById('markingType').value;
-            cell.className = `attendance-cell ${newStatus}`;
-            cell.textContent = markingTypes[markingType][newStatus];
-            cell.onclick = () => updateCellAttendance(cell, studentId, classId, date, newStatus);
-
-            const row = cell.parentElement;
-            const dayCount = row.cells.length - 3;
-
-            let presentCount = 0;
-            for (let i = 1; i <= dayCount; i++) {
-                if (row.cells[i] && row.cells[i].classList.contains('Present')) {
-                    presentCount++;
-                }
-            }
-
-            row.cells[row.cells.length - 2].textContent = presentCount;
-            row.cells[row.cells.length - 1].textContent = `${Math.round((presentCount / dayCount) * 100)}%`;
-
-            calculateAndDisplayFooterTotals();
-        }
-        function calculateAndDisplayFooterTotals() {
-            const tableBody = document.getElementById('attendanceRegisterBody');
-            const tfoot = document.getElementById('attendanceRegisterFoot');
-            const dateRow = document.getElementById('dateRow');
-
-            if (!tableBody || !tfoot || !dateRow || tableBody.rows.length === 0 || tableBody.rows[0].cells.length <= 1) {
-                return;
-            }
-
-            const summaryRow = tfoot.querySelector('.summary-row');
-            summaryRow.innerHTML = '<td class="student-name">کل حاضری</td>';
-
-            const dayColumnsCount = dateRow.cells.length - 3;
-
-            for (let i = 1; i <= dayColumnsCount; i++) {
-                let dailyPresentCount = 0;
-                for (const row of tableBody.rows) {
-                    const cell = row.cells[i];
-                    if (cell && cell.classList.contains('Present')) {
-                        dailyPresentCount++;
-                    }
-                }
-                const totalCell = document.createElement('td');
-                totalCell.className = 'total-cell';
-                totalCell.textContent = dailyPresentCount;
-                summaryRow.appendChild(totalCell);
-            }
-
-            summaryRow.appendChild(document.createElement('td'));
-            summaryRow.appendChild(document.createElement('td'));
-        }
-        async function saveAttendanceRecords(records) {
-            if (!db) await openDatabase();
-            const transaction = db.transaction(STORE_ATTENDANCE, 'readwrite');
-            const store = transaction.objectStore(STORE_ATTENDANCE);
-            const index = store.index('date_classId_studentId');
-
-            const promises = records.map(record => {
-                return new Promise((resolve, reject) => {
-                    const request = index.get([record.date, record.classId, record.studentId]);
-                    request.onsuccess = () => {
-                        const existingRecord = request.result;
-                        let finalRecord = { ...record };
-                        if (existingRecord) {
-                            finalRecord.id = existingRecord.id;
-                        }
-                        const putRequest = store.put(finalRecord);
-                        putRequest.onsuccess = resolve;
-                        putRequest.onerror = reject;
-                    };
-                    request.onerror = reject;
-                });
-            });
-
-            await Promise.all(promises);
-        }
-
-        async function printAttendanceRegister() {
-            const viewType = document.getElementById('attendanceViewType').value;
-            const classId = parseInt(attendanceClassSelect.value);
-            const className = attendanceClassSelect.options[attendanceClassSelect.selectedIndex]?.text || 'N/A';
-
-            const printContainer = document.getElementById('attendancePrintContainer');
-            const printTableThead = document.getElementById('attendancePrintTable').querySelector('thead');
-            const printTableTbody = document.getElementById('attendancePrintTable').querySelector('tbody');
-            printTableThead.innerHTML = '';
-            printTableTbody.innerHTML = '';
-
-            if (!classId) {
-                alert('پرنٹ کرنے کے لیے براہ کرم کلاس منتخب کریں۔');
-                return;
-            }
-
-            if (viewType === 'daily') {
-                const date = attendanceDateInput.value;
-                if (!date) { alert('پرنٹ کرنے کے لئے تاریخ منتخب کریں'); return; }
-                document.getElementById('printAttendanceDate').textContent = date;
-                document.getElementById('printAttendanceClass').textContent = className;
-                printTableThead.innerHTML = `<tr><th>داخلہ نمبر</th><th>نام</th><th>حالت</th></tr>`;
-                const dailyTbody = document.getElementById('attendanceTable').querySelector('tbody');
-                printTableTbody.innerHTML = dailyTbody ? dailyTbody.innerHTML : '';
-
-            } else {
-                const monthYear = document.getElementById('attendanceMonth').value;
-                if (!monthYear) { alert('پرنٹ کرنے کے لئے مہینہ منتخب کریں'); return; }
-                document.getElementById('printAttendanceDate').textContent = monthYear;
-                document.getElementById('printAttendanceClass').textContent = className;
-                const registerThead = document.getElementById('dateRow');
-                const registerTbody = document.getElementById('attendanceRegisterBody');
-                printTableThead.innerHTML = registerThead ? registerThead.innerHTML : '';
-                printTableTbody.innerHTML = registerTbody ? registerTbody.innerHTML : '';
-            }
-
-            const schoolNameSetting = await getById(STORE_SETTINGS, 'schoolName');
-            const schoolName = schoolNameSetting ? schoolNameSetting.value : 'مدرسہ کا نام';
-            const printHeader = document.createElement('h3');
-            printHeader.textContent = `${schoolName} - حاضری رجسٹر`;
-            const existingHeader = printContainer.querySelector('h3');
-            if (existingHeader) existingHeader.remove();
-            printContainer.prepend(printHeader);
-
-            printContainer.style.display = 'block';
-            printContainer.classList.add('printable');
-            window.print();
-            printContainer.classList.remove('printable');
-            printContainer.style.display = 'none';
-        }
-        // END: UPDATED ATTENDANCE SCRIPT BLOCK
     </script>
 </body>
 
