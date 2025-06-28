@@ -882,11 +882,18 @@
                     </div>
                     <div>
                         <label for="feeType">فیس کی قسم</label>
-                        <input type="text" id="feeType" required placeholder="مثال: ٹیوشن فیس, داخلہ فیس">
+                        <select id="feeType" onchange="toggleCustomFeeType()">
+                            <option value="Monthly Fee">ماہانہ فیس (Monthly Fee)</option>
+                            <option value="Yearly Fee">سالانہ فیس (Yearly Fee)</option>
+                            <option value="One-Time Admission Fee">داخلہ فیس (One-Time)</option>
+                            <option value="custom">دیگر/کسٹم (Custom...)</option>
+                        </select>
+                        <input type="text" id="customFeeType" placeholder="کسٹم فیس کا نام درج کریں"
+                            style="display:none; margin-top: 5px;">
                     </div>
                     <div>
                         <label for="feeAmount">رقم</label>
-                        <input type="number" id="feeAmount" required>
+                        <input type="number" id="feeAmount" required min="0" step="0.01">
                     </div>
                 </div>
                 <button type="submit">محفوظ کریں</button>
@@ -2313,27 +2320,43 @@
         const filterFeeStructureClassSelect = document.getElementById('filterFeeStructureClass');
         feeStructureForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // START OF CHANGES: Logic to get the final fee type from the new dropdown
+            let feeTypeValue = document.getElementById('feeType').value;
+            if (feeTypeValue === 'custom') {
+                feeTypeValue = document.getElementById('customFeeType').value.trim();
+                if (!feeTypeValue) {
+                    alert('براہ کرم کسٹم فیس کا نام درج کریں۔');
+                    return;
+                }
+            }
+            // END OF CHANGES
+
             const structureId = document.getElementById('feeStructureId').value;
             const structure = {
                 classId: parseInt(document.getElementById('feeStructureClass').value),
-                feeType: document.getElementById('feeType').value.trim(),
+                feeType: feeTypeValue, // Use the new variable
                 amount: parseFloat(document.getElementById('feeAmount').value),
             };
+
             if (!structure.classId || !structure.feeType || isNaN(structure.amount) || structure.amount <= 0) {
                 alert('براہ کرم تمام فیلڈز درست طریقے سے بھریں۔');
                 return;
             }
+
             try {
                 const indexKey = [structure.classId, structure.feeType];
                 const store = await getObjectStore(STORE_FEE_STRUCTURES, 'readwrite');
                 const index = store.index('classId_feeType');
                 const request = index.get(IDBKeyRange.only(indexKey));
+
                 request.onsuccess = async () => {
                     const existing = request.result;
                     if (existing && (!structureId || parseInt(structureId) !== existing.id)) {
                         alert('اس کلاس کے لیے یہ فیس کی قسم پہلے سے موجود ہے۔');
                         return;
                     }
+
                     if (structureId) {
                         structure.id = parseInt(structureId);
                         await updateData(STORE_FEE_STRUCTURES, structure);
@@ -2345,6 +2368,7 @@
                     resetFeeStructureForm();
                     loadFeeStructures();
                 };
+
                 request.onerror = (event) => {
                     console.error("Error checking fee structure uniqueness:", event.target.error);
                     alert('ڈیٹا بیس میں خرابی۔');
@@ -2354,6 +2378,79 @@
                 alert('فیس اسٹرکچر کو محفوظ کرنے میں خرابی: ' + error.message);
             }
         });
+
+        // Add this entire new function to your script
+        async function generateMonthlyDues() {
+            console.log("Checking if recurring dues need to be generated...");
+            const today = new Date();
+            const currentMonth = today.getMonth() + 1; // 1 for January, 12 for December
+            const currentMonthYear = `${today.getFullYear()}-${String(currentMonth).padStart(2, '0')}`;
+
+            const lastCheck = localStorage.getItem('duesGeneratedForMonth');
+            if (lastCheck === currentMonthYear) {
+                console.log(`Dues for ${currentMonthYear} have already been checked/generated.`);
+                return;
+            }
+
+            console.log(`Generating recurring dues for ${currentMonthYear}...`);
+
+            try {
+                const allFeeStructures = await getAll(STORE_FEE_STRUCTURES);
+                // Find all fee structures marked as 'Monthly Fee' or 'Yearly Fee'
+                const monthlyFees = allFeeStructures.filter(fs => fs.feeType === 'Monthly Fee');
+                const yearlyFees = allFeeStructures.filter(fs => fs.feeType === 'Yearly Fee');
+
+                if (monthlyFees.length === 0 && yearlyFees.length === 0) {
+                    console.log("No recurring fee structures found.");
+                    localStorage.setItem('duesGeneratedForMonth', currentMonthYear);
+                    return;
+                }
+
+                const allStudents = await getAll(STORE_STUDENTS);
+                const dueStore = await getObjectStore('monthlyDues', 'readwrite');
+                let duesCreatedCount = 0;
+
+                // Combine monthly fees and yearly fees (if it's January)
+                let feesToProcess = [...monthlyFees];
+                if (currentMonth === 1) { // Process yearly fees only in January
+                    feesToProcess.push(...yearlyFees);
+                }
+
+                for (const fee of feesToProcess) {
+                    const studentsInClass = allStudents.filter(s => s.classId === fee.classId);
+                    for (const student of studentsInClass) {
+                        const newDue = {
+                            studentId: student.id,
+                            classId: student.classId,
+                            feeType: fee.feeType,
+                            feeAmount: fee.amount,
+                            monthYear: currentMonthYear,
+                            status: 'due',
+                            amountPaid: 0,
+                            discount: 0
+                        };
+
+                        const index = dueStore.index('studentId_feeType_monthYear');
+                        const checkReq = index.get([student.id, fee.feeType, currentMonthYear]);
+
+                        const existingDue = await new Promise(resolve => { checkReq.onsuccess = () => resolve(checkReq.result); });
+                        if (!existingDue) {
+                            await new Promise(resolve => { dueStore.add(newDue).onsuccess = resolve; });
+                            duesCreatedCount++;
+                        }
+                    }
+                }
+
+                if (duesCreatedCount > 0) {
+                    console.log(`${duesCreatedCount} new recurring dues for ${currentMonthYear} have been generated.`);
+                }
+                localStorage.setItem('duesGeneratedForMonth', currentMonthYear); // Mark as checked
+                console.log("Finished generating recurring dues.");
+
+            } catch (error) {
+                console.error("Failed to generate recurring dues:", error);
+            }
+        }
         function resetFeeStructureForm() {
             feeStructureForm.reset();
             document.getElementById('feeStructureId').value = '';
@@ -2397,14 +2494,31 @@
                 feeStructuresTableBody.innerHTML = '<tr><td colspan="4">فیس اسٹرکچر کو لوڈ کرنے میں خرابی۔</td></tr>';
             }
         }
+        // Find and modify this function
         async function editFeeStructure(id) {
             try {
                 const structure = await getById(STORE_FEE_STRUCTURES, id);
                 if (structure) {
                     document.getElementById('feeStructureId').value = structure.id;
                     document.getElementById('feeStructureClass').value = structure.classId;
-                    document.getElementById('feeType').value = structure.feeType;
                     document.getElementById('feeAmount').value = structure.amount;
+
+                    // START: New logic to handle standard vs custom fee types
+                    const feeTypeSelect = document.getElementById('feeType');
+                    const customFeeTypeInput = document.getElementById('customFeeType');
+                    const standardOptions = Array.from(feeTypeSelect.options).map(opt => opt.value);
+
+                    if (standardOptions.includes(structure.feeType)) {
+                        feeTypeSelect.value = structure.feeType;
+                        customFeeTypeInput.style.display = 'none';
+                        customFeeTypeInput.value = '';
+                    } else {
+                        feeTypeSelect.value = 'custom';
+                        customFeeTypeInput.value = structure.feeType;
+                        customFeeTypeInput.style.display = 'block';
+                    }
+                    // END: New logic
+
                     showModule('feeStructures');
                     window.scrollTo(0, 0);
                 }
@@ -2462,7 +2576,8 @@
                 document.getElementById('feeDiscount').value = '0';
                 document.getElementById('feeNotes').value = '';
                 if (typeof window.addFeeIncomeToTransactions === 'function') {
-                    await window.addFeeIncomeToTransactions(fullFeeRecord);
+                    // Corrected line: pass feeRecord instead of fullFeeRecord
+                    await window.addFeeIncomeToTransactions(feeRecord);
                 }
                 loadStudentFeeDetails(studentId);
                 loadDashboardStats();
@@ -4186,6 +4301,19 @@
             html += '</tbody></table>';
             return { html, recipients };
         }
+        // START: Add this new function
+        function toggleCustomFeeType() {
+            const feeTypeSelect = document.getElementById('feeType');
+            const customFeeTypeInput = document.getElementById('customFeeType');
+            if (feeTypeSelect.value === 'custom') {
+                customFeeTypeInput.style.display = 'block';
+                customFeeTypeInput.focus();
+            } else {
+                customFeeTypeInput.style.display = 'none';
+                customFeeTypeInput.value = '';
+            }
+        }
+        // END: New function
         function launchAndPopulateCommModal(recipients, messageType) {
             const commModal = document.getElementById('communicationModal');
             if (!commModal) {
