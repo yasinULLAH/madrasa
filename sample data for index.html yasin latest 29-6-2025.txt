@@ -1,0 +1,461 @@
+(async function() {
+    console.log("--- Starting Comprehensive Sample Data Generation (v3) ---");
+
+    // Ensure DB is open and accessible
+    if (!window.db) {
+        console.log("Database not open, attempting to open...");
+        try {
+            await openDatabase();
+            console.log("Database opened.");
+        } catch (e) {
+            console.error("Failed to open database. Please ensure 'openDatabase()' is available and working.", e);
+            return;
+        }
+    }
+
+    // --- Helper functions (robustly copied from your app's global scope) ---
+    const getObjectStore = async (storeName, mode) => {
+        if (!window.db) await openDatabase();
+        const transaction = window.db.transaction(storeName, mode);
+        transaction.onerror = event => console.error(`Transaction error on ${storeName}:`, event.target.error);
+        return transaction.objectStore(storeName);
+    };
+
+    const addData = async (storeName, data) => {
+        const store = await getObjectStore(storeName, 'readwrite');
+        return new Promise((resolve, reject) => {
+            const request = store.add(data);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (event) => {
+                console.error(`Error adding data to ${storeName}:`, event.target.error);
+                reject(event.target.error);
+            };
+        });
+    };
+
+    const updateData = async (storeName, data) => {
+        const store = await getObjectStore(storeName, 'readwrite');
+        return new Promise((resolve, reject) => {
+            const request = store.put(data);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (event) => {
+                console.error(`Error updating data in ${storeName}:`, event.target.error);
+                reject(event.target.error);
+            };
+        });
+    };
+
+    const getAll = async (storeName, indexName = null, query = null) => {
+        const store = await getObjectStore(storeName, 'readonly');
+        const request = indexName ? store.index(indexName).getAll(query) : store.getAll();
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (event) => {
+                console.error(`Error getting all from ${storeName}:`, event.target.error);
+                reject(event.target.error);
+            };
+        });
+    };
+
+    const clearStore = async (storeName) => {
+        const store = await getObjectStore(storeName, 'readwrite');
+        return new Promise((resolve, reject) => {
+            const request = store.clear();
+            request.onsuccess = () => resolve();
+            request.onerror = (event) => reject(event.target.error);
+        });
+    };
+
+    // --- Sample Data Configuration ---
+    const NUM_RECORDS = 7; // Number of records for each main entity
+
+    const sampleNames = ["احمد", "فاطمہ", "محمد", "عائشہ", "علی", "زینب", "بلال", "مریم", "خالد", "سارہ", "عمر", "نور"];
+    const sampleFatherNames = ["عبداللہ", "رحمان", "کریم", "حسین", "صدیق", "عزیز"];
+    const sampleTeacherNames = ["استاد اسلم", "استاذہ آمنہ", "مفتی نوید", "قاری بلال", "معلمہ فاطمہ", "مولانا عمر", "استاد حمزہ", "استاذہ سعدیہ"];
+    const allSubjects = ["قرآن", "حدیث", "فقہ", "عربی", "اردو", "ریاضی", "سائنس", "حفظ", "سیرت", "اخلاق", "گرامر"];
+    const sampleClassNames = ["نورانی قاعدہ", "پہلی جماعت", "دوسری جماعت", "تیسری جماعت", "چوتھی جماعت", "پانچویں جماعت", "حفظ", "عالم"];
+    const sampleFeeTypes = ["Monthly Fee", "Yearly Fee", "One-Time Admission Fee", "Library Fee"];
+    const sampleExpenseCategories = ["تنخواہ", "بجلی کا بل", "کتابیں", "عمارتی مرمت", "کھانا", "اسٹیشنری", "مدرسہ کا کرایہ", "پانی کا بل"];
+    const sampleIncomeCategories = ["چندہ", "زکوٰۃ", "وقف", "متفرق آمدنی", "خاص عطیہ"];
+    const sampleInventoryItems = ["قرآن پاک", "اردو قاعدہ", "سفید بورڈ", "ڈیسک", "پنسل", "کتاب", "رجسٹر", "جائزہ کاپی", "جُز"];
+    const sampleInventoryCategories = ["کتابیں", "اسٹیشنری", "فرنیچر", "لوازمات", "تعلیمی مواد"];
+    const memorizationStatuses = ["hafiz", "non-hafiz", "in-progress"];
+    const sampleExamNames = ["Mid Term", "Final Term", "Quarterly Exam", "Monthly Test", "Annual Exam"];
+    const daysOfWeek = ["پیر", "منگل", "بدھ", "جمعرات", "جمعہ", "ہفتہ"];
+    const periodsPerDay = 4;
+
+    // --- Helper functions for random data ---
+    const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const getRandomElement = (arr) => arr[getRandomInt(0, arr.length - 1)];
+    const getRandomDate = (start, end) => {
+        const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+        return date.toISOString().split('T')[0];
+    };
+    const getPastDate = (daysAgo) => {
+        const date = new Date();
+        date.setDate(date.getDate() - daysAgo);
+        return date.toISOString().split('T')[0];
+    };
+    const getMonthYear = (dateString) => {
+        const date = new Date(dateString);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    };
+
+    // --- Data Storage for IDs ---
+    let teacherIds = [];
+    let classIds = [];
+    let studentIds = [];
+    let studentDetailsMap = new Map(); // Store student details for quick lookup
+    let classDetailsMap = new Map(); // Store class details for quick lookup
+    let teacherDetailsMap = new Map(); // Store teacher details for quick lookup
+
+    // --- Clear all relevant stores first ---
+    const clearAllStores = async () => {
+        const stores = [
+            'students', 'teachers', 'classes', 'fees',
+            'attendance', 'results', 'expenses', 'feeStructures',
+            'timetable', 'inventory', 'monthlyDues', 'settings'
+        ];
+        for (const store of stores) {
+            try {
+                await clearStore(store);
+                console.log(`Cleared ${store}`);
+            } catch (e) {
+                console.warn(`Could not clear ${store} (might not exist or error):`, e.message);
+            }
+        }
+        localStorage.removeItem('duesGeneratedForMonth'); // Reset this flag for fresh generation
+        console.log("All relevant stores cleared and localStorage flag reset.");
+    };
+
+    await clearAllStores();
+
+    // --- 1. Settings (1 entry) ---
+    console.log("Adding sample settings (1 entry)...");
+    await addData('settings', { key: 'schoolName', value: 'جامعہ دارالعلوم الاسلامیہ' });
+    console.log("Settings added.");
+
+    // --- 2. Teachers (NUM_RECORDS entries) ---
+    console.log(`Adding ${NUM_RECORDS} sample teachers...`);
+    for (let i = 0; i < NUM_RECORDS; i++) {
+        const teacher = {
+            name: sampleTeacherNames[i % sampleTeacherNames.length] + ` ${i + 1}`,
+            subjects: Array.from(new Set([getRandomElement(allSubjects), getRandomElement(allSubjects)])).join(', '),
+            contact: `03${getRandomInt(100, 999)}-${getRandomInt(1000000, 9999999)}`,
+            salary: getRandomInt(20000, 70000),
+            appointmentDate: getRandomDate(new Date(2020, 0, 1), new Date(2023, 11, 31)),
+            qualification: getRandomElement(["فاضل", "عالم", "بی ایس اسلامیات", "ماسٹرز"])
+        };
+        const id = await addData('teachers', teacher);
+        teacherIds.push(id);
+        teacherDetailsMap.set(id, teacher);
+    }
+    console.log("Teachers added:", teacherIds);
+
+    // --- 3. Classes (NUM_RECORDS entries) ---
+    console.log(`Adding ${NUM_RECORDS} sample classes...`);
+    for (let i = 0; i < NUM_RECORDS; i++) {
+        const cls = {
+            name: sampleClassNames[i % sampleClassNames.length] + ` (سیکشن ${String.fromCharCode(65 + i)})`,
+            teacherId: teacherIds[i % teacherIds.length], // Assign teachers to classes
+            subjects: Array.from(new Set([getRandomElement(allSubjects), getRandomElement(allSubjects), getRandomElement(allSubjects)]))
+        };
+        const id = await addData('classes', cls);
+        classIds.push(id);
+        classDetailsMap.set(id, cls);
+    }
+    console.log("Classes added:", classIds);
+
+    // --- 4. Students (NUM_RECORDS entries) ---
+    console.log(`Adding ${NUM_RECORDS} sample students...`);
+    for (let i = 0; i < NUM_RECORDS; i++) {
+        const student = {
+            admissionNo: `ADM-${1000 + i}`,
+            name: sampleNames[i % sampleNames.length] + ` ${i + 1}`,
+            fatherName: sampleFatherNames[i % sampleFatherNames.length] + ` خان`,
+            classId: classIds[i % classIds.length], // Assign students to classes
+            admissionDate: getRandomDate(new Date(2022, 0, 1), new Date()),
+            contact: `03${getRandomInt(100, 999)}-${getRandomInt(1000000, 9999999)}`,
+            address: `گلی نمبر ${getRandomInt(1, 20)}، سیکٹر ${String.fromCharCode(65 + getRandomInt(0, 5))}`,
+            memorizationStatus: getRandomElement(memorizationStatuses)
+        };
+        const id = await addData('students', student);
+        studentIds.push(id);
+        studentDetailsMap.set(id, student);
+    }
+    console.log("Students added:", studentIds);
+
+    // --- 5. Fee Structures (At least NUM_RECORDS entries) ---
+    console.log(`Adding at least ${NUM_RECORDS} sample fee structures...`);
+    let feeStructureDetails = [];
+    for (let i = 0; i < classIds.length; i++) {
+        const classId = classIds[i];
+        // Ensure a Monthly Fee for each class
+        const monthlyFee = {
+            classId: classId,
+            feeType: 'Monthly Fee',
+            amount: getRandomInt(500, 2000)
+        };
+        const monthlyFeeId = await addData('feeStructures', monthlyFee);
+        feeStructureDetails.push({ id: monthlyFeeId, ...monthlyFee });
+
+        // Add an Admission Fee for some classes
+        if (i % 2 === 0) { // For half of the classes
+            const admissionFee = {
+                classId: classId,
+                feeType: 'One-Time Admission Fee',
+                amount: getRandomInt(2000, 5000)
+            };
+            const admissionFeeId = await addData('feeStructures', admissionFee);
+            feeStructureDetails.push({ id: admissionFeeId, ...admissionFee });
+        }
+    }
+    console.log("Fee Structures added.");
+
+    // --- 6. Monthly Dues (Explicitly generate for current month) ---
+    console.log("Generating monthly dues for current month explicitly...");
+    const today = new Date();
+    const currentMonthYear = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    const allStudents = await getAll('students');
+    let monthlyDuesAddedCount = 0; // Changed from const to let
+
+    for (const student of allStudents) {
+        const classFeeStructures = feeStructureDetails.filter(fs => fs.classId === student.classId && (fs.feeType === 'Monthly Fee' || (fs.feeType === 'Yearly Fee' && today.getMonth() === 0))); // Only generate yearly in Jan
+        for (const fs of classFeeStructures) {
+            try {
+                // Check if already exists before attempting to add to prevent ConstraintError
+                const existing = await getAll('monthlyDues', 'studentId_feeType_monthYear', [student.id, fs.feeType, (fs.feeType === 'Monthly Fee') ? currentMonthYear : `${today.getFullYear()}-01`]);
+                if (existing.length === 0) {
+                    await addData('monthlyDues', {
+                        studentId: student.id,
+                        classId: student.classId,
+                        feeType: fs.feeType,
+                        amountDue: fs.amount,
+                        monthYear: (fs.feeType === 'Monthly Fee') ? currentMonthYear : `${today.getFullYear()}-01`, // Yearly fees are always Jan of current year
+                        status: 'due',
+                        amountPaid: 0,
+                        discount: 0
+                    });
+                    monthlyDuesAddedCount++;
+                }
+            } catch (e) {
+                console.warn(`Error adding monthly due for student ${student.id}, type ${fs.feeType}, month ${currentMonthYear}:`, e.message);
+            }
+        }
+    }
+    console.log(`Explicitly generated/checked ${monthlyDuesAddedCount} monthly dues.`);
+
+
+    // --- 7. Fees (Payments) (NUM_RECORDS entries) ---
+    console.log(`Adding ${NUM_RECORDS} sample fee payments...`);
+    const allGeneratedDues = await getAll('monthlyDues');
+    if (allGeneratedDues.length === 0) {
+        console.warn("No monthly dues generated, skipping fee payments.");
+    } else {
+        // Ensure studentIds is properly used, and check if allGeneratedDues contains actual data
+        const studentsWithDues = Array.from(new Set(allGeneratedDues.map(d => d.studentId).filter(id => studentDetailsMap.has(id))));
+
+        if (studentsWithDues.length === 0) {
+            console.warn("No students found with generated dues, skipping fee payments.");
+        } else {
+            for (let i = 0; i < NUM_RECORDS; i++) {
+                const studentId = studentsWithDues[i % studentsWithDues.length];
+                const studentDuesToPay = allGeneratedDues.filter(d => d.studentId === studentId && d.status !== 'paid' && d.amountDue > 0);
+
+                if (studentDuesToPay.length > 0) {
+                    const dueToPay = getRandomElement(studentDuesToPay);
+                    const paidAmount = getRandomInt(Math.floor(dueToPay.amountDue * 0.5), dueToPay.amountDue); // Pay partial or full
+                    const feeRecord = {
+                        studentId: dueToPay.studentId,
+                        dueId: dueToPay.id,
+                        date: getPastDate(getRandomInt(0, 30)),
+                        feeType: `${dueToPay.feeType} - ${dueToPay.monthYear}`,
+                        paidAmount: paidAmount,
+                        discount: getRandomInt(0, 50),
+                        method: getRandomElement(["Cash", "Bank", "Cheque"]),
+                        notes: `Sample payment for ${dueToPay.feeType}`
+                    };
+                    await addData('fees', feeRecord);
+
+                    dueToPay.amountPaid = (dueToPay.amountPaid || 0) + paidAmount;
+                    dueToPay.discount = (dueToPay.discount || 0) + feeRecord.discount;
+                    if (dueToPay.amountPaid + dueToPay.discount >= dueToPay.amountDue) {
+                        dueToPay.status = 'paid';
+                    } else {
+                        dueToPay.status = 'partial';
+                    }
+                    await updateData('monthlyDues', dueToPay);
+                } else {
+                    console.warn(`Student ID ${studentId} has no unpaid dues for sample fee payment.`);
+                }
+            }
+        }
+    }
+    console.log("Fee payments added.");
+
+    // --- 8. Attendance (NUM_RECORDS entries, ensuring diversity) ---
+    console.log(`Adding ${NUM_RECORDS} sample attendance records...`);
+    for (let i = 0; i < NUM_RECORDS; i++) {
+        const studentId = studentIds[i % studentIds.length];
+        const student = studentDetailsMap.get(studentId);
+        const targetDate = getPastDate(i);
+
+        if (student) {
+            const attendance = {
+                date: targetDate,
+                classId: student.classId,
+                studentId: student.id,
+                status: getRandomElement(["Present", "Absent", "Leave"])
+            };
+            try {
+                const existing = await getAll('attendance', 'date_classId_studentId', [attendance.date, attendance.classId, attendance.studentId]);
+                if (existing.length === 0) {
+                    await addData('attendance', attendance);
+                } else {
+                    existing[0].status = attendance.status;
+                    await updateData('attendance', existing[0]);
+                }
+            } catch (e) {
+                console.warn(`Error adding/updating attendance for student ${student.id} on ${attendance.date}:`, e.message);
+            }
+        } else {
+            console.warn(`Skipping attendance for undefined student ID: ${studentId}`);
+        }
+    }
+    console.log("Attendance records added.");
+
+    // --- 9. Results (NUM_RECORDS entries, ensuring diversity) ---
+    console.log(`Adding ${NUM_RECORDS} sample results (marks)...`);
+    for (let i = 0; i < NUM_RECORDS; i++) {
+        const studentId = studentIds[i % studentIds.length];
+        const student = studentDetailsMap.get(studentId);
+
+        if (student) {
+            const cls = classDetailsMap.get(student.classId);
+            const availableSubjects = (cls && cls.subjects && cls.subjects.length > 0) ? cls.subjects : allSubjects;
+            const subject = availableSubjects[i % availableSubjects.length];
+
+            const result = {
+                examName: sampleExamNames[i % sampleExamNames.length],
+                classId: student.classId,
+                subject: subject,
+                studentId: student.id,
+                totalMarks: 100,
+                obtainedMarks: getRandomInt(30, 95),
+                date: getPastDate(getRandomInt(30, 180))
+            };
+            try {
+                const existing = await getAll('results', 'exam_class_subject_student',
+                    [result.examName, result.classId, result.subject, result.studentId]);
+                if (existing.length === 0) {
+                    await addData('results', result);
+                } else {
+                    existing[0].totalMarks = result.totalMarks;
+                    existing[0].obtainedMarks = result.obtainedMarks;
+                    await updateData('results', existing[0]);
+                }
+            } catch (e) {
+                console.warn(`Error adding/updating result for student ${student.id} in ${result.examName} for ${result.subject}:`, e.message);
+            }
+        } else {
+            console.warn(`Skipping result for undefined student ID: ${studentId}`);
+        }
+    }
+    console.log("Results added.");
+
+    // --- 10. Timetable (NUM_RECORDS entries, ensuring diversity) ---
+    console.log(`Adding ${NUM_RECORDS} sample timetable entries...`);
+    let timetableCounter = 0;
+    for (let i = 0; i < classIds.length && timetableCounter < NUM_RECORDS; i++) {
+        const classId = classIds[i];
+        const cls = classDetailsMap.get(classId);
+        if (!cls) continue;
+
+        for (let j = 0; j < daysOfWeek.length && timetableCounter < NUM_RECORDS; j++) {
+            const day = daysOfWeek[j];
+            const period = (j % periodsPerDay) + 1;
+            const subject = (cls.subjects && cls.subjects.length > 0) ? getRandomElement(cls.subjects) : getRandomElement(allSubjects);
+            const teacherId = teacherIds[j % teacherIds.length];
+
+            const entry = {
+                classId: classId,
+                day: day,
+                period: period,
+                subject: subject,
+                teacherId: teacherId
+            };
+            try {
+                const existing = await getAll('timetable', 'classId_day_period', [entry.classId, entry.day, entry.period]);
+                if (existing.length === 0) {
+                    await addData('timetable', entry);
+                    timetableCounter++;
+                }
+            } catch (e) {
+                console.warn(`Error adding timetable entry for class ${classId}, day ${day}, period ${period}:`, e.message);
+            }
+        }
+    }
+    console.log("Timetable entries added:", timetableCounter);
+
+    // --- 11. Expenses (NUM_RECORDS entries, non-salary mixed income/expense) ---
+    console.log(`Adding ${NUM_RECORDS} sample general expenses/income...`);
+    for (let i = 0; i < NUM_RECORDS; i++) {
+        const isIncome = getRandomInt(0, 1) === 1;
+        const category = isIncome ? getRandomElement(sampleIncomeCategories) : getRandomElement(sampleExpenseCategories);
+        const record = {
+            date: getPastDate(getRandomInt(0, 90)),
+            recordType: isIncome ? 'income' : 'expense',
+            category: category,
+            amount: getRandomInt(1000, 50000),
+            description: isIncome ? `Received for ${category.toLowerCase()}` : `Paid for ${category.toLowerCase()}`,
+            paidTo: isIncome ? null : getRandomElement(["سپلائر", "مالک مکان", "مینٹیننس"]),
+            receivedFrom: isIncome ? getRandomElement(["ڈونر", "کمیونٹی فنڈ", "متفرق ذرائع"]) : null
+        };
+        if (record.category === 'تنخواہ') record.category = 'متفرق خرچہ'; // Exclude 'Salary' category here
+
+        await addData('expenses', record);
+    }
+    console.log("General expenses/income added.");
+
+    // --- 12. Salary Payments (NUM_RECORDS entries, ensuring each teacher has one) ---
+    console.log(`Adding ${NUM_RECORDS} sample salary payments...`);
+    for (let i = 0; i < NUM_RECORDS; i++) {
+        const teacherId = teacherIds[i % teacherIds.length];
+        const teacher = teacherDetailsMap.get(teacherId);
+
+        if (teacher) {
+            const currentMonthYear = getMonthYear(getPastDate(i * 15));
+            const salaryAmount = teacher.salary || getRandomInt(20000, 70000);
+            const expenseRecord = {
+                recordType: 'expense',
+                category: 'Salary',
+                amount: salaryAmount,
+                date: getPastDate(getRandomInt(0, 30)),
+                paidTo: teacher.name,
+                description: `Salary for ${currentMonthYear}`,
+                notes: `Monthly salary for ${currentMonthYear}`
+            };
+            await addData('expenses', expenseRecord);
+        }
+    }
+    console.log("Salary payments added.");
+
+    // --- 13. Inventory (NUM_RECORDS entries) ---
+    console.log(`Adding ${NUM_RECORDS} sample inventory items...`);
+    for (let i = 0; i < NUM_RECORDS; i++) {
+        const item = {
+            itemName: sampleInventoryItems[i % sampleInventoryItems.length] + ` (آئٹم ${i + 1})`,
+            itemCategory: getRandomElement(sampleInventoryCategories),
+            quantity: getRandomInt(1, 20),
+            unitPrice: getRandomInt(50, 2000),
+            purchaseDate: getPastDate(getRandomInt(0, 365)),
+            itemDescription: "Standard inventory item for madrasa use."
+        };
+        await addData('inventory', item);
+    }
+    console.log("Inventory items added.");
+
+    console.log("--- Comprehensive Sample Data Generation Complete! ---");
+    console.log("Please refresh the page (F5 or Ctrl+R) to see the changes reflected in the UI.");
+
+})().catch(console.error);
