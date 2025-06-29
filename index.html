@@ -539,6 +539,70 @@
         }
 
         /* END: CSS for Monthly Attendance Register */
+        .printable-slip {
+            display: none;
+            width: 320px;
+            padding: 15px;
+            border: 1px dashed #333;
+            background-color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            color: #000;
+            position: absolute;
+            left: -9999px;
+            /* Render off-screen to avoid flicker */
+            top: 0;
+        }
+
+        .printable-slip .slip-header,
+        .printable-slip .slip-footer {
+            text-align: center;
+        }
+
+        .printable-slip h3 {
+            margin: 0 0 5px 0;
+            font-family: 'Calibri', sans-serif;
+            font-size: 16px;
+        }
+
+        .printable-slip p {
+            margin: 6px 0;
+        }
+
+        .printable-slip hr {
+            border: none;
+            border-top: 1px dashed #333;
+            margin: 10px 0;
+        }
+
+        .printable-slip .slip-body p {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .printable-slip .slip-body p.total {
+            font-weight: bold;
+            font-size: 16px;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 5px 0;
+        }
+
+        .printable-slip .slip-footer {
+            font-size: 12px;
+        }
+
+        .printable-slip .slip-footer .notes-content {
+            text-align: left;
+            white-space: pre-wrap;
+            min-height: 20px;
+        }
+
+        .printable-slip .slip-footer .generated-on {
+            margin-top: 15px;
+            color: #555;
+            font-size: 10px;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -918,86 +982,165 @@
             </table>
         </div>
         <div id="fees" class="module">
-            <h2>فیس کا انتظام</h2>
-            <h3>فیس وصولی</h3>
-            <form id="feeCollectionForm">
+            <h2>فیس اور تنخواہ کا انتظام</h2>
+
+            <!-- Tabs Navigation -->
+            <nav class="sub-nav"
+                style="background-color: #e9ecef; padding: 5px; margin-bottom: 15px; border-radius: 5px;">
+                <button class="active" onclick="showFeeSubModule('fees')">فیس وصولی</button>
+                <button onclick="showFeeSubModule('salaries')">تنخواہ کی ادائیگی</button>
+            </nav>
+
+            <!-- Fee Collection Tab -->
+            <div id="feeCollectionTab" class="sub-module active">
+                <h3>فیس وصولی</h3>
+                <form id="feeCollectionForm">
+                    <div class="form-grid">
+                        <div>
+                            <label for="feeStudentSelect">طالب علم منتخب کریں</label>
+                            <select id="feeStudentSelect" required onchange="loadStudentFeeDetails()">
+                                <option value="">-- طالب علم منتخب کریں --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="feeCollectionDate">تاریخ</label>
+                            <input type="date" id="feeCollectionDate" required>
+                        </div>
+                        <div>
+                            <label for="feeCollectionType">فیس کی قسم (واجب الادا سے)</label>
+                            <select id="feeCollectionType" required></select>
+                        </div>
+                        <div>
+                            <label for="feePaidAmount">ادا شدہ رقم</label>
+                            <input type="number" id="feePaidAmount" required>
+                        </div>
+                        <div>
+                            <label for="feeDiscount">رعایت</label>
+                            <input type="number" id="feeDiscount" value="0">
+                        </div>
+                        <div>
+                            <label for="feePaymentMethod">طریقہ</label>
+                            <select id="feePaymentMethod" required>
+                                <option value="Cash">نقد</option>
+                                <option value="Bank">بینک</option>
+                                <option value="Cheque">چیک</option>
+                            </select>
+                        </div>
+                        <div class="full-width">
+                            <label for="feeNotes">تفصیل/نوٹس</label>
+                            <textarea id="feeNotes" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit">فیس وصول کریں</button>
+                    <button type="button" onclick="generateReceipt()">رسید بنائیں</button>
+                </form>
+                <h3>منتخب طالب علم کی فیس کی تفصیلات</h3>
+                <p id="noStudentSelectedMsg">براہ کرم اوپر سے طالب علم منتخب کریں۔</p>
+                <div id="studentFeeDetailsContainer" style="display: none;">
+                    <h4>واجب الادا فیس</h4>
+                    <ul id="dueFeesList"></ul>
+                    <h4>جمع شدہ فیس کی تاریخ</h4>
+                    <table id="feeHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>تاریخ</th>
+                                <th>فیس کی قسم</th>
+                                <th>ادا شدہ رقم</th>
+                                <th>رعایت</th>
+                                <th>عمل</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Salary Payment Tab -->
+            <div id="salaryPaymentTab" class="sub-module" style="display: none;">
+                <h3>تنخواہ کی ادائیگی</h3>
                 <div class="form-grid">
                     <div>
-                        <label for="feeStudentSelect">طالب علم منتخب کریں</label>
-                        <select id="feeStudentSelect" required onchange="loadStudentFeeDetails()">
-                            <option value="">-- طالب علم منتخب کریں --</option>
-                        </select>
+                        <label for="salaryTeacherSelect">استاد منتخب کریں</label>
+                        <select id="salaryTeacherSelect" onchange="loadTeacherSalaryDetails()"></select>
                     </div>
                     <div>
-                        <label for="feeCollectionDate">تاریخ</label>
-                        <input type="date" id="feeCollectionDate" required>
-                    </div>
-                    <div>
-                        <label for="feeCollectionType">فیس کی قسم (واجب الادا سے)</label>
-                        <select id="feeCollectionType" required>
-                            <option value="">-- پہلے طالب علم منتخب کریں --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="feePaidAmount">ادا شدہ رقم</label>
-                        <input type="number" id="feePaidAmount" required>
-                    </div>
-                    <div>
-                        <label for="feeDiscount">رعایت</label>
-                        <input type="number" id="feeDiscount" value="0">
-                    </div>
-                    <div>
-                        <label for="feePaymentMethod">طریقہ</label>
-                        <select id="feePaymentMethod" required>
-                            <option value="Cash">نقد</option>
-                            <option value="Bank">بینک</option>
-                            <option value="Cheque">چیک</option>
-                        </select>
-                    </div>
-                    <div class="full-width">
-                        <label for="feeNotes">تفصیل/نوٹس</label>
-                        <textarea id="feeNotes" rows="2"></textarea>
+                        <label for="salaryForMonth">کس مہینے کے لیے</label>
+                        <input type="month" id="salaryForMonth" onchange="loadTeacherSalaryDetails()">
                     </div>
                 </div>
-                <button type="submit">فیس وصول کریں</button>
-                <button type="button" onclick="generateReceipt()">رسید بنائیں</button>
-            </form>
-            <h3>منتخب طالب علم کی فیس کی تفصیلات</h3>
-            <p id="noStudentSelectedMsg">براہ کرم اوپر سے طالب علم منتخب کریں۔</p>
-            <div id="studentFeeDetailsContainer" style="display: none;">
-                <h4>واجب الادا فیس</h4>
-                <ul id="dueFeesList"></ul>
-                <h4>جمع شدہ فیس کی تاریخ</h4>
-                <table id="feeHistoryTable">
+
+                <div id="teacherSalaryDetailsContainer"
+                    style="display:none; margin-top:20px; padding:15px; background:#f8f9fa; border-radius: 5px;">
+                    <h4 id="salaryDetailsHeader" style="margin-top:0;"></h4>
+                    <div class="form-grid">
+                        <div>طے شدہ تنخواہ: <span id="teacherDesignatedSalary">0</span></div>
+                        <div>اس مہینے ادا شدہ: <span id="paidForMonth">0</span></div>
+                        <div>بقایا: <span id="balanceForMonth" style="font-weight:bold; color:red;">0</span></div>
+                    </div>
+                </div>
+
+                <form id="salaryPaymentForm" style="margin-top:20px;">
+                    <h4>نئی ادائیگی</h4>
+                    <div class="form-grid">
+                        <div>
+                            <label for="salaryPaymentDate">ادائیگی کی تاریخ</label>
+                            <input type="date" id="salaryPaymentDate" required>
+                        </div>
+                        <div>
+                            <label for="salaryAmount">ادا کی جانے والی رقم</label>
+                            <input type="number" id="salaryAmount" required min="1">
+                        </div>
+                        <div class="full-width">
+                            <label for="salaryNotes">نوٹس</label>
+                            <textarea id="salaryNotes" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit">ادائیگی محفوظ کریں</button>
+                </form>
+
+                <h3 style="margin-top: 30px;">ادائیگی کی تاریخ (منتخب استاد)</h3>
+                <table id="salaryHistoryTable">
                     <thead>
                         <tr>
-                            <th>تاریخ</th>
-                            <th>فیس کی قسم</th>
-                            <th>تفصیل/نوٹس</th>
+                            <th>ادائیگی کی تاریخ</th>
+                            <th>مہینہ</th>
                             <th>ادا شدہ رقم</th>
-                            <th>رعایت</th>
-                            <th>طریقہ</th>
+                            <th>نوٹس</th>
                             <th>عمل</th>
                         </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
+
+            <!-- Printable Receipts/Slips -->
             <div id="feeReceiptContainer" class="printable">
                 <h3>فیس رسید</h3>
                 <p><strong>رسید نمبر:</strong> <span id="receiptId"></span></p>
                 <p><strong>تاریخ:</strong> <span id="receiptDate"></span></p>
-                <p><strong>طالب علم کا نام:</strong> <span id="receiptStudentName"></span></p>
+                <p><strong>طالب علم:</strong> <span id="receiptStudentName"></span></p>
                 <p><strong>کلاس:</strong> <span id="receiptStudentClass"></span></p>
-                <p><strong>فیس کی قسم:</strong> <span id="receiptFeeType"></span></p>
                 <p><strong>ادا شدہ رقم:</strong> <span id="receiptPaidAmount"></span></p>
-                <p><strong>رعایت:</strong> <span id="receiptDiscount"></span></p>
-                <p><strong>طریقہ:</strong> <span id="receiptMethod"></span></p>
-                <p><strong>نوٹس:</strong> <span id="receiptNotes"></span></p>
-                <br><br>
-                <p>دستخط وصول کنندہ: _______________</p>
-                <p style="font-size: 0.8em; text-align: center;">یہ کمپیوٹر سے تیار کردہ رسید ہے۔</p>
+            </div>
+            <div id="salarySlipContainer" class="printable-slip">
+                <div class="slip-header">
+                    <h3 id="slipSchoolName"></h3>
+                    <p>Salary Slip / تنخواہ کی سلپ</p>
+                </div>
+                <hr>
+                <div class="slip-body">
+                    <p><span>Slip ID:</span> <strong id="slipId"></strong></p>
+                    <p><span>Payment Date:</span> <strong id="slipPaymentDate"></strong></p>
+                    <p><span>Teacher Name:</span> <strong id="slipTeacherName"></strong></p>
+                    <p><span>For Month:</span> <strong id="slipMonth"></strong></p>
+                    <hr>
+                    <p class="total"><span>Amount Paid:</span> <strong id="slipAmountPaid"></strong></p>
+                </div>
+                <div class="slip-footer">
+                    <p><strong>Notes:</strong></p>
+                    <p class="notes-content" id="slipNotes"></p>
+                    <p class="generated-on"></p>
+                </div>
             </div>
         </div>
         <div id="attendance" class="module">
@@ -1269,6 +1412,7 @@
                         <option value="attendance_summary">حاضری خلاصہ</option>
                         <option value="expense_report">اخراجات رپورٹ</option>
                         <option value="student_list">طلباء کی فہرست (کلاس وار)</option>
+                        <option value="salary_payment">تنخواہ ادائیگی رپورٹ</option>
                     </select>
                 </div>
                 <div>
@@ -1310,7 +1454,7 @@
     </div>
     <script>
         const DB_NAME = 'SchoolManagementDB';
-        const DB_VERSION = 15;
+        const DB_VERSION = 16;
         let db;
         const STORE_STUDENTS = 'students';
         const STORE_TEACHERS = 'teachers';
@@ -1371,6 +1515,12 @@
                         if (!studentStore.indexNames.contains('classId')) {
                             studentStore.createIndex('classId', 'classId', { unique: false });
                         }
+                    }
+                    if (!db.objectStoreNames.contains('monthlyDues')) {
+                        const duesStore = db.createObjectStore('monthlyDues', { keyPath: 'id', autoIncrement: true });
+                        duesStore.createIndex('studentId', 'studentId', { unique: false });
+                        duesStore.createIndex('monthYear', 'monthYear', { unique: false });
+                        duesStore.createIndex('student_fee_month', ['studentId', 'feeType', 'monthYear'], { unique: true });
                     }
                     if (!db.objectStoreNames.contains(STORE_TEACHERS)) {
                         const teacherStore = db.createObjectStore(STORE_TEACHERS, { keyPath: 'id', autoIncrement: true });
@@ -1486,6 +1636,86 @@
                 };
             });
         }
+        async function generateRecurringDues() {
+            console.log("Checking for recurring dues generation...");
+            const today = new Date();
+            const currentMonth = today.getMonth(); // 0-11
+            const currentYear = today.getFullYear();
+            const currentMonthYear = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+            const lastCheck = localStorage.getItem('duesGeneratedFor');
+
+            if (lastCheck === currentMonthYear) {
+                console.log(`Dues for ${currentMonthYear} already generated.`);
+                return;
+            }
+
+            try {
+                const allFeeStructures = await getAll('feeStructures');
+                const recurringStructures = allFeeStructures.filter(fs =>
+                    fs.feeType === 'Monthly Fee' || fs.feeType === 'Yearly Fee'
+                );
+
+                if (recurringStructures.length === 0) {
+                    localStorage.setItem('duesGeneratedFor', currentMonthYear);
+                    return;
+                }
+
+                const allStudents = await getAll(STORE_STUDENTS);
+                const dueStore = await getObjectStore('monthlyDues', 'readwrite');
+                let duesCreatedCount = 0;
+
+                for (const student of allStudents) {
+                    const classStructures = recurringStructures.filter(fs => fs.classId === student.classId);
+                    for (const structure of classStructures) {
+                        let dueMonthYear = null;
+                        if (structure.feeType === 'Monthly Fee') {
+                            dueMonthYear = currentMonthYear;
+                        } else if (structure.feeType === 'Yearly Fee' && currentMonth === 0) { // Only generate for January
+                            dueMonthYear = `${currentYear}`;
+                        }
+
+                        if (dueMonthYear) {
+                            const dueRecord = {
+                                studentId: student.id,
+                                feeType: structure.feeType,
+                                feeAmount: structure.amount,
+                                monthYear: dueMonthYear,
+                                status: 'due',
+                                amountPaid: 0,
+                                discount: 0
+                            };
+
+                            const index = dueStore.index('student_fee_month');
+                            const checkReq = index.get([student.id, structure.feeType, dueMonthYear]);
+
+                            const existingDue = await new Promise((resolve, reject) => {
+                                checkReq.onsuccess = () => resolve(checkReq.result);
+                                checkReq.onerror = (e) => reject(e.target.error);
+                            });
+
+                            if (!existingDue) {
+                                await new Promise((resolve, reject) => {
+                                    const addReq = dueStore.add(dueRecord);
+                                    addReq.onsuccess = resolve;
+                                    addReq.onerror = (e) => reject(e.target.error);
+                                });
+                                duesCreatedCount++;
+                            }
+                        }
+                    }
+                }
+
+                if (duesCreatedCount > 0) {
+                    console.log(`${duesCreatedCount} new recurring dues generated for ${currentMonthYear}.`);
+                }
+                localStorage.setItem('duesGeneratedFor', currentMonthYear);
+
+            } catch (error) {
+                console.error("Failed to generate recurring dues:", error);
+            }
+        }
+
+
         function populateDashboardDateSelectors() {
             const monthSelect = document.getElementById('dashboardReportMonth');
             if (monthSelect.options.length <= 1) {
@@ -2553,34 +2783,49 @@
         feeCollectionForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const studentId = parseInt(feeStudentSelect.value);
-            const feeType = feeCollectionTypeSelect.value;
+            const dueId = parseInt(document.getElementById('feeCollectionType').value);
             const paidAmount = parseFloat(document.getElementById('feePaidAmount').value);
-            if (!studentId || !feeType || isNaN(paidAmount) || paidAmount <= 0) {
-                alert('براہ کرم طالب علم، فیس کی قسم، اور ادا شدہ رقم درست درج کریں۔');
+            const discount = parseFloat(document.getElementById('feeDiscount').value) || 0;
+
+            if (!studentId || !dueId || isNaN(paidAmount) || paidAmount < 0) {
+                alert('براہ کرم طالب علم، واجب الادا فیس، اور ادا شدہ رقم درست درج کریں۔');
                 return;
             }
-            const feeRecord = {
-                studentId: studentId,
-                date: document.getElementById('feeCollectionDate').value || new Date().toISOString().split('T')[0],
-                feeType: feeType,
-                paidAmount: paidAmount,
-                discount: parseFloat(document.getElementById('feeDiscount').value) || 0,
-                method: document.getElementById('feePaymentMethod').value,
-                notes: document.getElementById('feeNotes').value.trim()
-            };
+
             try {
+                const dueRecord = await getById('monthlyDues', dueId);
+                if (!dueRecord) throw new Error("Due record not found.");
+
+                const feeRecord = {
+                    studentId: studentId,
+                    dueId: dueId, // Link payment to the due record
+                    date: document.getElementById('feeCollectionDate').value || new Date().toISOString().split('T')[0],
+                    feeType: `${dueRecord.feeType} - ${dueRecord.monthYear}`,
+                    paidAmount: paidAmount,
+                    discount: discount,
+                    method: document.getElementById('feePaymentMethod').value,
+                    notes: document.getElementById('feeNotes').value.trim()
+                };
+
                 await addData(STORE_FEES, feeRecord);
+
+                // Update the due record
+                dueRecord.amountPaid += paidAmount;
+                dueRecord.discount += discount;
+                if (dueRecord.amountPaid + dueRecord.discount >= dueRecord.feeAmount) {
+                    dueRecord.status = 'paid';
+                } else {
+                    dueRecord.status = 'partial';
+                }
+                await updateData('monthlyDues', dueRecord);
+
                 alert('فیس کامیابی سے وصول ہو گئی۔');
-                feeCollectionForm.reset();
-                document.getElementById('feePaidAmount').value = '';
-                document.getElementById('feeDiscount').value = '0';
-                document.getElementById('feeNotes').value = '';
-                if (typeof window.addFeeIncomeToTransactions === 'function') {
-                    // Corrected line: pass feeRecord instead of fullFeeRecord
-                    await window.addFeeIncomeToTransactions(feeRecord);
+                if (typeof addFeeIncomeToTransactions === 'function') {
+                    await addFeeIncomeToTransactions(feeRecord);
                 }
                 loadStudentFeeDetails(studentId);
                 loadDashboardStats();
+
             } catch (error) {
                 console.error("Error saving fee record:", error);
                 alert('فیس ریکارڈ کو محفوظ کرنے میں خرابی۔');
@@ -2591,80 +2836,71 @@
         }
         async function loadStudentFeeDetails(selectedStudentId = null) {
             const studentId = selectedStudentId || parseInt(feeStudentSelect.value);
+            const feeHistoryTableBody = document.getElementById('feeHistoryTable').querySelector('tbody');
+            const studentFeeDetailsContainer = document.getElementById('studentFeeDetailsContainer');
+            const noStudentSelectedMsg = document.getElementById('noStudentSelectedMsg');
+            const dueFeesList = document.getElementById('dueFeesList');
+            const feeCollectionTypeSelect = document.getElementById('feeCollectionType');
+
             feeHistoryTableBody.innerHTML = '';
             dueFeesList.innerHTML = '';
-            feeCollectionTypeSelect.innerHTML = '<option value="">-- پہلے طالب علم منتخب کریں --</option>';
+            feeCollectionTypeSelect.innerHTML = '<option value="">-- منتخب کریں --</option>';
+
             if (!studentId || isNaN(studentId)) {
                 studentFeeDetailsContainer.style.display = 'none';
                 noStudentSelectedMsg.style.display = 'block';
                 return;
             }
+
             studentFeeDetailsContainer.style.display = 'block';
             noStudentSelectedMsg.style.display = 'none';
-            feeHistoryTableBody.innerHTML = '<tr><td colspan="7">لوڈ ہو رہا ہے...</td></tr>';
+            feeHistoryTableBody.innerHTML = '<tr><td colspan="5">لوڈ ہو رہا ہے...</td></tr>';
             dueFeesList.innerHTML = '<li>لوڈ ہو رہا ہے...</li>';
+
             try {
-                const student = await getById(STORE_STUDENTS, studentId);
-                if (!student || !student.classId) {
-                    throw new Error('Student or student class not found.');
-                }
-                const feeStructures = await getAll(STORE_FEE_STRUCTURES, 'classId', student.classId);
-                const feePayments = await getAll(STORE_FEES, 'studentId', studentId);
-                const paidAmounts = feePayments.reduce((acc, payment) => {
-                    acc[payment.feeType] = (acc[payment.feeType] || 0) + payment.paidAmount + payment.discount;
-                    return acc;
-                }, {});
+                const studentDues = await getAll('monthlyDues', 'studentId', studentId);
+                const outstandingDues = studentDues.filter(d => d.status !== 'paid');
+
                 dueFeesList.innerHTML = '';
                 feeCollectionTypeSelect.innerHTML = '<option value="">-- فیس کی قسم منتخب کریں --</option>';
-                let hasDueFees = false;
-                feeStructures.forEach(structure => {
-                    const totalPaid = paidAmounts[structure.feeType] || 0;
-                    const dueAmount = structure.amount - totalPaid;
-                    if (dueAmount > 0) {
-                        hasDueFees = true;
+
+                if (outstandingDues.length > 0) {
+                    outstandingDues.sort((a, b) => a.monthYear.localeCompare(b.monthYear)).forEach(due => {
+                        const dueAmount = due.feeAmount - due.amountPaid - due.discount;
+                        const feeLabel = `${due.feeType} - ${due.monthYear}`;
+
                         const li = document.createElement('li');
-                        li.textContent = `${structure.feeType}: ${structure.amount.toLocaleString()} (واجب الادا: ${dueAmount.toLocaleString()})`;
+                        li.textContent = `${feeLabel}: ${due.feeAmount.toLocaleString()} (بقایا: ${dueAmount.toLocaleString()})`;
                         dueFeesList.appendChild(li);
+
                         const option = document.createElement('option');
-                        option.value = structure.feeType;
-                        option.textContent = `${structure.feeType} (${dueAmount.toLocaleString()} واجب الادا)`;
+                        option.value = due.id; // The value is now the ID of the due record
+                        option.textContent = `${feeLabel} (${dueAmount.toLocaleString()} بقایا)`;
                         feeCollectionTypeSelect.appendChild(option);
-                    }
-                });
-                if (!hasDueFees) {
+                    });
+                } else {
                     dueFeesList.innerHTML = '<li>کوئی فیس واجب الادا نہیں۔</li>';
                 }
-                if (feeCollectionTypeSelect.options.length <= 1) {
-                    feeCollectionTypeSelect.innerHTML = '<option value="">کوئی واجب الادا فیس نہیں۔</option>';
-                    feeCollectionTypeSelect.disabled = true;
-                } else {
-                    feeCollectionTypeSelect.disabled = false;
-                }
+                feeCollectionTypeSelect.disabled = outstandingDues.length === 0;
+
+                const feePayments = await getAll(STORE_FEES, 'studentId', studentId);
                 feeHistoryTableBody.innerHTML = '';
-                feePayments
-                    .sort((a, b) => new Date(b.date) - new Date(a.date))
-                    .forEach(payment => {
+                if (feePayments.length > 0) {
+                    feePayments.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(payment => {
                         const row = feeHistoryTableBody.insertRow();
                         row.innerHTML = `
-                            <td>${payment.date}</td>
-                            <td>${payment.feeType}</td>
-                            <td>${payment.notes || '-'}</td>
-                            <td>${payment.paidAmount.toLocaleString()}</td>
-                            <td>${payment.discount.toLocaleString()}</td>
-                            <td>${payment.method}</td>
-                             <td><button class="delete" onclick="deleteFeeRecord(${payment.id})">حذف کریں</button></td>
-                        `;
+                    <td>${payment.date}</td>
+                    <td>${payment.feeType}</td>
+                    <td>${payment.paidAmount.toLocaleString()}</td>
+                    <td>${payment.discount.toLocaleString()}</td>
+                    <td><button class="delete" onclick="deleteFeeRecord(${payment.id})">حذف کریں</button></td>
+                `;
                     });
-                if (feePayments.length === 0) {
-                    feeHistoryTableBody.innerHTML = '<tr><td colspan="7">کوئی فیس جمع نہیں کرائی گئی۔</td></tr>';
+                } else {
+                    feeHistoryTableBody.innerHTML = '<tr><td colspan="5">کوئی فیس جمع نہیں کرائی گئی۔</td></tr>';
                 }
             } catch (error) {
                 console.error("Error loading student fee details:", error);
-                feeHistoryTableBody.innerHTML = '<tr><td colspan="7">فیس کی تفصیلات لوڈ کرنے میں خرابی۔</td></tr>';
-                dueFeesList.innerHTML = '<li>فیس کی تفصیلات لوڈ کرنے میں خرابی۔</li>';
-                studentFeeDetailsContainer.style.display = 'none';
-                noStudentSelectedMsg.style.display = 'block';
-                noStudentSelectedMsg.textContent = 'فیس کی تفصیلات لوڈ کرنے میں خرابی۔';
             }
         }
         async function deleteFeeRecord(id) {
@@ -3448,6 +3684,36 @@
         async function loadClassesForReportFilter() {
             await loadClassesIntoSelect('reportClassFilter');
         }
+        async function generateSalaryPaymentReport(startDate, endDate) {
+            let expenses = await getAll(STORE_EXPENSES);
+            let salaryPayments = expenses.filter(exp => {
+                const isSalary = exp.recordType === 'expense' && exp.category === 'Salary';
+                const dateMatch = (!startDate || exp.date >= startDate) && (!endDate || exp.date <= endDate);
+                return isSalary && dateMatch;
+            });
+
+            if (salaryPayments.length === 0) return '<p>اس مدت میں کوئی تنخواہ کی ادائیگی نہیں ملی۔</p>';
+
+            let tableHTML = `<table border="1" style="width:100%; border-collapse: collapse;">
+                         <thead><tr><th>ادائیگی کی تاریخ</th><th>استاد کا نام</th><th>مہینہ</th><th>رقم</th><th>نوٹس</th></tr></thead>
+                         <tbody>`;
+            let totalPaid = 0;
+            salaryPayments.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(p => {
+                const paymentMonth = p.description ? p.description.replace('Salary for ', '') : 'N/A';
+                tableHTML += `<tr>
+                         <td>${p.date}</td>
+                         <td>${p.paidTo}</td>
+                         <td>${paymentMonth}</td>
+                         <td>${p.amount.toLocaleString()}</td>
+                         <td>${p.notes || '-'}</td>
+                      </tr>`;
+                totalPaid += p.amount;
+            });
+            tableHTML += `</tbody><tfoot>
+                    <tr><td colspan="3"><b>کل ادا شدہ</b></td><td><b>${totalPaid.toLocaleString()}</b></td><td></td></tr>
+                  </tfoot></table>`;
+            return tableHTML;
+        }
         async function generateReport() {
             const reportType = reportTypeSelect.value;
             const startDate = reportStartDateInput.value;
@@ -3479,6 +3745,9 @@
                         break;
                     case 'expense_report':
                         html += await generateExpenseReport(startDate, endDate);
+                        break;
+                    case 'salary_payment':
+                        html += await generateSalaryPaymentReport(startDate, endDate);
                         break;
                     case 'student_list':
                         html += await generateStudentListReport(classFilterId);
@@ -4367,6 +4636,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDatabase();
+                await generateRecurringDues();
                 setupIncomeExpensesModule();
                 showModule('dashboard');
             } catch (error) {
@@ -8481,6 +8751,726 @@
             printContainer.style.display = 'none';
         }
         // END: UPDATED ATTENDANCE SCRIPT BLOCK
+
+
+        function showFeeSubModule(subModuleId) {
+            const tabIdMap = {
+                fees: 'feeCollectionTab',
+                salaries: 'salaryPaymentTab'
+            };
+            const targetTabId = tabIdMap[subModuleId];
+
+            if (!targetTabId) {
+                console.error(`No tab ID found for submodule: ${subModuleId}`);
+                return;
+            }
+
+            document.querySelectorAll('.sub-module').forEach(sub => {
+                sub.style.display = 'none';
+                sub.classList.remove('active');
+            });
+
+            const targetTab = document.getElementById(targetTabId);
+            if (targetTab) {
+                targetTab.style.display = 'block';
+                targetTab.classList.add('active');
+            } else {
+                console.error(`Target tab element with ID ${targetTabId} not found.`);
+                return;
+            }
+
+            document.querySelectorAll('.sub-nav button').forEach(btn => btn.classList.remove('active'));
+            const activeButton = Array.from(document.querySelectorAll('.sub-nav button')).find(btn => btn.getAttribute('onclick').includes(`'${subModuleId}'`));
+            if (activeButton) activeButton.classList.add('active');
+
+            if (subModuleId === 'salaries') {
+                loadTeachersForSalary();
+                const monthInput = document.getElementById('salaryForMonth');
+                if (!monthInput.value) {
+                    monthInput.value = new Date().toISOString().slice(0, 7);
+                }
+                document.getElementById('salaryPaymentDate').value = new Date().toISOString().split('T')[0];
+                loadTeacherSalaryDetails();
+            }
+        }
+        async function loadTeachersForSalary() {
+            await loadTeachersIntoSelect('salaryTeacherSelect', true);
+        }
+
+        async function loadTeacherSalaryDetails() {
+            const teacherId = parseInt(document.getElementById('salaryTeacherSelect').value);
+            const monthYear = document.getElementById('salaryForMonth').value;
+            const detailsContainer = document.getElementById('teacherSalaryDetailsContainer');
+            const historyTableBody = document.getElementById('salaryHistoryTable').querySelector('tbody');
+
+            detailsContainer.style.display = 'none';
+            historyTableBody.innerHTML = '<tr><td colspan="5">براہ کرم استاد اور مہینہ منتخب کریں۔</td></tr>';
+
+            if (!teacherId || !monthYear) return;
+
+            try {
+                const teacher = await getById(STORE_TEACHERS, teacherId);
+                if (!teacher) throw new Error('Teacher not found');
+
+                document.getElementById('salaryDetailsHeader').textContent = `${teacher.name} - ${monthYear}`;
+                const designatedSalary = teacher.salary || 0;
+                document.getElementById('teacherDesignatedSalary').textContent = designatedSalary.toLocaleString();
+
+                const allExpenses = await getAll(STORE_EXPENSES);
+                const teacherSalaryPayments = allExpenses.filter(exp =>
+                    exp.recordType === 'expense' && exp.category === 'Salary' && exp.paidTo === teacher.name
+                );
+
+                const paymentsForMonth = teacherSalaryPayments.filter(p => p.description && p.description.includes(monthYear));
+                const totalPaidForMonth = paymentsForMonth.reduce((sum, p) => sum + p.amount, 0);
+
+                document.getElementById('paidForMonth').textContent = totalPaidForMonth.toLocaleString();
+                const balance = designatedSalary - totalPaidForMonth;
+                document.getElementById('balanceForMonth').textContent = balance.toLocaleString();
+                document.getElementById('balanceForMonth').style.color = balance > 0 ? 'red' : 'green';
+                detailsContainer.style.display = 'block';
+
+                historyTableBody.innerHTML = '';
+                if (teacherSalaryPayments.length > 0) {
+                    teacherSalaryPayments.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(p => {
+                        const row = historyTableBody.insertRow();
+                        const paymentMonth = p.description ? p.description.replace('Salary for ', '') : 'N/A';
+                        row.innerHTML = `
+                    <td>${p.date}</td>
+                    <td>${paymentMonth}</td>
+                    <td>${p.amount.toLocaleString()}</td>
+                    <td>${p.notes || '-'}</td>
+                    <td>
+                        <button class="print" onclick="printSalarySlip(${p.id})">پرنٹ</button>
+                        <button class="delete" onclick="deleteSalaryPayment(${p.id})">حذف</button>
+                    </td>
+                `;
+                    });
+                } else {
+                    historyTableBody.innerHTML = '<tr><td colspan="5">کوئی ادائیگی ریکارڈ نہیں ملی۔</td></tr>';
+                }
+
+            } catch (error) {
+                console.error("Error loading teacher salary details:", error);
+            }
+        }
+
+        document.getElementById('salaryPaymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const teacherId = parseInt(document.getElementById('salaryTeacherSelect').value);
+            const monthYear = document.getElementById('salaryForMonth').value;
+            const amount = parseFloat(document.getElementById('salaryAmount').value);
+
+            if (!teacherId || !monthYear || !amount || amount <= 0) {
+                alert('براہ کرم استاد، مہینہ اور درست رقم منتخب کریں۔');
+                return;
+            }
+
+            try {
+                const teacher = await getById(STORE_TEACHERS, teacherId);
+                if (!teacher) throw new Error("Teacher not found");
+
+                const expenseRecord = {
+                    recordType: 'expense',
+                    category: 'Salary',
+                    amount: amount,
+                    date: document.getElementById('salaryPaymentDate').value,
+                    paidTo: teacher.name,
+                    description: `Salary for ${monthYear}`,
+                    notes: document.getElementById('salaryNotes').value.trim()
+                };
+
+                const newExpenseId = await addData(STORE_EXPENSES, expenseRecord);
+                alert(`${teacher.name} کو ${amount.toLocaleString()} کی تنخواہ کامیابی سے ادا کر دی گئی۔`);
+                document.getElementById('salaryPaymentForm').reset();
+                document.getElementById('salaryPaymentDate').value = new Date().toISOString().split('T')[0];
+
+                await loadTeacherSalaryDetails();
+                await loadDashboardStats();
+                if (confirm('کیا آپ ادائیگی کی سلپ پرنٹ کرنا چاہتے ہیں؟')) {
+                    printSalarySlip(newExpenseId);
+                }
+
+            } catch (error) {
+                console.error("Error paying salary:", error);
+            }
+        });
+
+        async function deleteSalaryPayment(expenseId) {
+            if (confirm('کیا آپ واقعی اس تنخواہ کی ادائیگی کو حذف کرنا چاہتے ہیں؟')) {
+                try {
+                    await deleteData(STORE_EXPENSES, expenseId);
+                    alert('ادائیگی کامیابی سے حذف کر دی گئی۔');
+                    await loadTeacherSalaryDetails();
+                    await loadDashboardStats();
+                } catch (error) {
+                    console.error('Error deleting salary payment:', error);
+                }
+            }
+        }
+
+
+        async function printSalarySlip(expenseId) {
+            const slipContainer = document.getElementById('salarySlipContainer');
+            if (!slipContainer) {
+                console.error('Salary slip container not found.');
+                return;
+            }
+
+            try {
+                const payment = await getById(STORE_EXPENSES, expenseId);
+                if (!payment) {
+                    alert('Payment record not found.');
+                    return;
+                }
+
+                const schoolSetting = await getById(STORE_SETTINGS, 'schoolName');
+                const schoolName = schoolSetting ? schoolSetting.value : 'Your Madrasa Name';
+
+                // Populate the slip with data
+                document.getElementById('slipSchoolName').textContent = schoolName;
+                document.getElementById('slipId').textContent = `S-${payment.id}`;
+                document.getElementById('slipPaymentDate').textContent = payment.date;
+                document.getElementById('slipTeacherName').textContent = payment.paidTo;
+                document.getElementById('slipMonth').textContent = payment.description.replace('Salary for ', '');
+                document.getElementById('slipAmountPaid').textContent = `Rs. ${payment.amount.toLocaleString()}`;
+                document.getElementById('slipNotes').textContent = payment.notes || '-';
+                slipContainer.querySelector('.generated-on').textContent = `Generated: ${new Date().toLocaleString()}`;
+
+                // Make the container visible (but off-screen) so html2canvas can render it
+                slipContainer.style.display = 'block';
+
+                const canvas = await html2canvas(slipContainer, {
+                    scale: 2, // For better image quality
+                    backgroundColor: '#ffffff'
+                });
+
+                // Create a temporary link to trigger the download
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `SalarySlip_${payment.paidTo.replace(/\s/g, '_')}_${payment.date}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Hide the container again
+                slipContainer.style.display = 'none';
+
+            } catch (error) {
+                console.error("Error exporting salary slip:", error);
+                alert('Failed to export salary slip as PNG.');
+                slipContainer.style.display = 'none'; // Ensure it's hidden on error
+            }
+        }
+    </script>
+
+    <script id="comprehensive-patch-script">
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log("Initializing Comprehensive App Patch...");
+
+            // ========================================================================
+            // === PHASE 1: SETUP & GLOBAL ENHANCEMENTS (TOAST, MODALS, CSS) ========
+            // ========================================================================
+
+            function setupGlobalUI() {
+                console.log("Phase 1: Setting up global UI enhancements...");
+
+                // Create a container for toast notifications
+                const toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                document.body.appendChild(toastContainer);
+
+                // Create a container for a confirmation modal
+                const confirmationModal = document.createElement('div');
+                confirmationModal.id = 'confirmation-modal';
+                confirmationModal.className = 'patch-modal';
+                confirmationModal.innerHTML = `
+            <div class="patch-modal-content">
+                <h3 id="confirmation-title"></h3>
+                <p id="confirmation-text"></p>
+                <div class="patch-modal-buttons">
+                    <button id="confirm-btn-yes">ہاں</button>
+                    <button id="confirm-btn-no">نہیں</button>
+                </div>
+            </div>
+        `;
+                document.body.appendChild(confirmationModal);
+
+                // Add CSS for all new features
+                const patchStyles = document.createElement('style');
+                patchStyles.textContent = `
+            /* Toast Notifications */
+            #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+            .toast { padding: 15px; margin-bottom: 10px; color: white; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); opacity: 0; transform: translateX(100%); transition: all 0.4s ease-in-out; min-width: 250px; }
+            .toast.show { opacity: 1; transform: translateX(0); }
+            .toast.success { background-color: #28a745; }
+            .toast.error { background-color: #dc3545; }
+            .toast.info { background-color: #17a2b8; }
+
+            /* Confirmation Modal */
+            .patch-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9998; align-items: center; justify-content: center; }
+            .patch-modal-content { background: white; padding: 20px; border-radius: 8px; text-align: center; max-width: 400px; }
+            .patch-modal-buttons button { padding: 10px 20px; margin: 0 10px; border: none; border-radius: 5px; cursor: pointer; }
+            #confirm-btn-yes { background-color: #dc3545; color: white; }
+            #confirm-btn-no { background-color: #6c757d; color: white; }
+
+            /* Student Profile */
+            #studentProfileModule { padding: 20px; background-color: #f8f9fa; }
+            #studentProfileModule .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 1px solid #ccc; padding-bottom: 15px; }
+            #studentProfileModule .profile-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: #ddd; }
+            #studentProfileModule .profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+            .profile-card { background: white; padding: 15px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+            .profile-card h4 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+
+            /* General Link Style */
+            .data-link { color: #007bff; text-decoration: underline; cursor: pointer; }
+        `;
+                document.head.appendChild(patchStyles);
+                console.log("Global UI setup complete.");
+            }
+
+            // ========================================================================
+            // === PHASE 2: DATABASE UPGRADE & NEW LOGIC ==============================
+            // ========================================================================
+            console.log("Phase 2: Preparing database upgrade and new logic...");
+
+            const NEW_DB_VERSION = 20; // Increment version to trigger onupgradeneeded
+            const STORE_MONTHLY_DUES = 'monthlyDues';
+            const STORE_EXAMS = 'exams';
+            const STORE_SUBJECTS = 'subjects';
+
+            // Enhanced openDatabase to upgrade schema
+            function openPatchedDatabase() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(DB_NAME, NEW_DB_VERSION);
+                    request.onerror = (event) => reject("Database error: " + event.target.errorCode);
+                    request.onsuccess = (event) => {
+                        window.db = event.target.result;
+                        console.log("Patched database opened successfully.");
+                        resolve(window.db);
+                    };
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        const transaction = event.target.transaction;
+                        console.log("Database upgrade started...");
+
+                        // Fee Dues Store
+                        if (!db.objectStoreNames.contains(STORE_MONTHLY_DUES)) {
+                            const dueStore = db.createObjectStore(STORE_MONTHLY_DUES, { keyPath: 'id', autoIncrement: true });
+                            dueStore.createIndex('studentId_monthYear', ['studentId', 'monthYear'], { unique: true });
+                            console.log(`Created '${STORE_MONTHLY_DUES}' store.`);
+                        }
+
+                        // Exams Store
+                        if (!db.objectStoreNames.contains(STORE_EXAMS)) {
+                            const examStore = db.createObjectStore(STORE_EXAMS, { keyPath: 'id', autoIncrement: true });
+                            examStore.createIndex('name', 'name', { unique: true });
+                            console.log(`Created '${STORE_EXAMS}' store.`);
+                        }
+
+                        // Subjects Store
+                        if (!db.objectStoreNames.contains(STORE_SUBJECTS)) {
+                            const subjectStore = db.createObjectStore(STORE_SUBJECTS, { keyPath: 'id', autoIncrement: true });
+                            subjectStore.createIndex('name_classId', ['name', 'classId'], { unique: true });
+                            subjectStore.createIndex('classId', 'classId', { unique: false });
+                            console.log(`Created '${STORE_SUBJECTS}' store.`);
+                        }
+
+                        // This ensures old code from the original file also gets a chance to run its upgrade logic
+                        // by re-chaining it if necessary. It's a robust way to patch.
+                        const originalOnUpgradeNeeded = window.openDatabase.originalOnUpgradeNeeded || function () { };
+                        if (originalOnUpgradeNeeded) {
+                            originalOnUpgradeNeeded(event);
+                        }
+
+                        console.log("Database upgrade finished.");
+                    };
+                });
+            }
+
+            // Function to auto-generate monthly fee dues
+            async function generateMonthlyDues() {
+                console.log("Checking for monthly due generation...");
+                const today = new Date();
+                const currentMonthYear = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+                const lastCheck = localStorage.getItem('duesGeneratedForMonth');
+
+                if (lastCheck === currentMonthYear) {
+                    console.log("Dues for this month are already generated/checked.");
+                    return;
+                }
+
+                try {
+                    const monthlyFeeStructures = (await getAll(STORE_FEE_STRUCTURES)).filter(fs => fs.feeType === 'Monthly Fee');
+                    if (monthlyFeeStructures.length === 0) {
+                        localStorage.setItem('duesGeneratedForMonth', currentMonthYear);
+                        return;
+                    }
+
+                    const students = await getAll(STORE_STUDENTS);
+                    const dueStore = await getObjectStore(STORE_MONTHLY_DUES, 'readwrite');
+                    const index = dueStore.index('studentId_monthYear');
+                    let createdCount = 0;
+
+                    for (const student of students) {
+                        const structure = monthlyFeeStructures.find(fs => fs.classId === student.classId);
+                        if (structure) {
+                            const key = [student.id, currentMonthYear];
+                            const request = index.get(key);
+                            const existingDue = await new Promise(resolve => { request.onsuccess = () => resolve(request.result); });
+
+                            if (!existingDue) {
+                                const newDue = {
+                                    studentId: student.id,
+                                    monthYear: currentMonthYear,
+                                    feeType: structure.feeType,
+                                    amountDue: structure.amount,
+                                    amountPaid: 0,
+                                    discount: 0,
+                                    status: 'due'
+                                };
+                                await addData(STORE_MONTHLY_DUES, newDue);
+                                createdCount++;
+                            }
+                        }
+                    }
+                    if (createdCount > 0) {
+                        showToast(`${createdCount} new monthly dues generated for ${currentMonthYear}.`, 'success');
+                    }
+                    localStorage.setItem('duesGeneratedForMonth', currentMonthYear);
+                } catch (error) {
+                    console.error("Failed to generate monthly dues:", error);
+                    showToast("Error generating monthly dues.", 'error');
+                }
+            }
+
+            // ========================================================================
+            // === PHASE 3: DYNAMIC UI MODIFICATIONS ==================================
+            // ========================================================================
+
+            function applyDynamicUIChanges() {
+                console.log("Phase 3: Applying dynamic UI modifications...");
+
+                // Fix Timetable Bengali Headers
+                const timetableHeaders = document.querySelectorAll('#classTimetableTable th, #teacherRoasterTable th');
+                timetableHeaders.forEach(th => {
+                    th.textContent = th.textContent.replace(/পিরিয়ড/g, 'پیریڈ').replace(/দিন/g, 'دن');
+                });
+
+                // Add Exams & Subjects manager to Settings
+                const settingsModule = document.getElementById('settings');
+                if (settingsModule) {
+                    const examSubjectManager = document.createElement('div');
+                    examSubjectManager.innerHTML = `
+                <hr><h3 id="exam-subject-manager">امتحانات اور مضامین کا انتظام</h3>
+                <div class="form-grid">
+                    <!-- Exam Management -->
+                    <div>
+                        <h4>امتحانات</h4>
+                        <form id="examForm" style="display:flex; gap:5px;">
+                            <input type="text" id="examNameInput" placeholder="نیا امتحان نام" required>
+                            <button type="submit" style="margin-top:0;">شامل کریں</button>
+                        </form>
+                        <table id="examsTable"><thead><tr><th>نام</th><th>عمل</th></tr></thead><tbody></tbody></table>
+                    </div>
+                    <!-- Subject Management -->
+                    <div>
+                        <h4>مضامین</h4>
+                        <form id="subjectForm" style="display:flex; gap:5px;">
+                             <select id="subjectClassSelect"></select>
+                            <input type="text" id="subjectNameInput" placeholder="نیا مضمون نام" required>
+                            <button type="submit" style="margin-top:0;">شامل کریں</button>
+                        </form>
+                        <table id="subjectsTable"><thead><tr><th>نام</th><th>کلاس</th><th>عمل</th></tr></thead><tbody></tbody></table>
+                    </div>
+                </div>
+            `;
+                    settingsModule.appendChild(examSubjectManager);
+                }
+
+                // Create the hidden student profile module
+                const studentProfileModule = document.createElement('div');
+                studentProfileModule.id = 'studentProfileModule';
+                studentProfileModule.className = 'module';
+                studentProfileModule.style.display = 'none'; // Hidden by default
+                studentProfileModule.innerHTML = `
+            <button onclick="showModule('students')"> واپس طلباء کی فہرست پر جائیں </button>
+            <div class="profile-header">
+                <img id="profilePhoto" class="profile-photo" src="" alt="Student Photo">
+                <div>
+                    <h2 id="profileStudentName" style="margin:0;"></h2>
+                    <p>والد کا نام: <span id="profileFatherName"></span></p>
+                    <p>کلاس: <span id="profileClassName"></span> | داخلہ نمبر: <span id="profileAdmissionNo"></span></p>
+                </div>
+            </div>
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <h4>فیس کا خلاصہ</h4>
+                    <p>کل واجب الادا: <strong id="profileTotalDue"></strong></p>
+                    <div id="profileFeeHistory"></div>
+                </div>
+                <div class="profile-card">
+                    <h4>حاضری کا خلاصہ</h4>
+                    <p>کل حاضری: <strong id="profileAttendancePercentage"></strong></p>
+                </div>
+                <div class="profile-card">
+                    <h4>نتائج کا خلاصہ</h4>
+                    <div id="profileResults"></div>
+                </div>
+            </div>
+        `;
+                document.querySelector('.container').appendChild(studentProfileModule);
+
+                console.log("Dynamic UI changes applied.");
+            }
+
+            // ========================================================================
+            // === PHASE 4: FUNCTION OVERRIDES & NEW LOGIC IMPLEMENTATION =============
+            // ========================================================================
+
+            function implementNewLogic() {
+                console.log("Phase 4: Implementing new logic and function overrides...");
+
+                // ---- New Global Functions ----
+                window.showToast = (message, type = 'info') => {
+                    const toastContainer = document.getElementById('toast-container');
+                    const toast = document.createElement('div');
+                    toast.className = `toast ${type}`;
+                    toast.textContent = message;
+                    toastContainer.appendChild(toast);
+                    setTimeout(() => toast.classList.add('show'), 10);
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                        toast.addEventListener('transitionend', () => toast.remove());
+                    }, 4000);
+                };
+
+                window.showConfirmation = (title, text) => {
+                    return new Promise(resolve => {
+                        const modal = document.getElementById('confirmation-modal');
+                        document.getElementById('confirmation-title').textContent = title;
+                        document.getElementById('confirmation-text').textContent = text;
+                        modal.style.display = 'flex';
+
+                        document.getElementById('confirm-btn-yes').onclick = () => {
+                            modal.style.display = 'none';
+                            resolve(true);
+                        };
+                        document.getElementById('confirm-btn-no').onclick = () => {
+                            modal.style.display = 'none';
+                            resolve(false);
+                        };
+                    });
+                };
+
+                // ---- Overriding old functions ----
+
+                // Override alerts with toasts in generateReceipt
+                const originalGenerateReceipt = window.generateReceipt;
+                window.generateReceipt = async function () {
+                    try {
+                        // Temporarily replace alert to avoid its use inside the original function
+                        const tempAlert = window.alert;
+                        window.alert = (msg) => window.showToast(msg, 'info');
+                        await originalGenerateReceipt.apply(this, arguments);
+                        window.alert = tempAlert; // Restore original alert
+                    } catch (e) {
+                        showToast("Error generating receipt.", 'error');
+                        console.error(e);
+                    }
+                };
+
+                // Override delete functions with dependency checks
+                window.originalDeleteStudent = window.deleteStudent;
+                window.deleteStudent = async (id) => {
+                    const feeRecords = await getAll(STORE_FEES, 'studentId', id);
+                    const attendanceRecords = await getAll(STORE_ATTENDANCE, 'studentId', id);
+                    const hasDependencies = feeRecords.length > 0 || attendanceRecords.length > 0;
+
+                    const confirmed = await showConfirmation(
+                        'طالب علم کو حذف کریں؟',
+                        `اس طالب علم کے ${feeRecords.length} فیس اور ${attendanceRecords.length} حاضری کے ریکارڈز ہیں۔ حذف کرنے سے یہ سب کچھ مٹ جائے گا۔ کیا آپ واقعی حذف کرنا چاہتے ہیں؟`
+                    );
+
+                    if (confirmed) {
+                        // Perform cascading delete
+                        for (const record of feeRecords) await deleteData(STORE_FEES, record.id);
+                        for (const record of attendanceRecords) await deleteData(STORE_ATTENDANCE, record.id);
+                        // Now delete the student itself
+                        await deleteData(STORE_STUDENTS, id);
+                        showToast('طالب علم اور متعلقہ ریکارڈ حذف ہوگئے۔', 'success');
+                        loadStudents();
+                        loadDashboardStats();
+                    } else {
+                        showToast('حذف منسوخ کر دیا گیا۔', 'info');
+                    }
+                };
+
+                window.originalDeleteTeacher = window.deleteTeacher;
+                window.deleteTeacher = async (id) => {
+                    const classesTaught = await getAll(STORE_CLASSES, 'teacherId', id);
+                    if (classesTaught.length > 0) {
+                        showToast(`استاد کو حذف نہیں کیا جاسکتا۔ وہ ${classesTaught.map(c => c.name).join(', ')} کلاس کے انچارج ہیں۔`, 'error');
+                        return;
+                    }
+                    if (await showConfirmation('استاد کو حذف کریں؟', 'کیا آپ واقعی اس استاد کو حذف کرنا چاہتے ہیں؟')) {
+                        await deleteData(STORE_TEACHERS, id);
+                        showToast('استاد حذف ہو گیا۔', 'success');
+                        loadTeachers();
+                    }
+                };
+
+                // --- Logic for new features ---
+
+                // Student Profile Logic
+                window.showStudentProfile = async (id) => {
+                    showModule('studentProfileModule');
+                    const student = await getById(STORE_STUDENTS, id);
+                    if (!student) return;
+
+                    // Populate header
+                    document.getElementById('profileStudentName').textContent = student.name;
+                    document.getElementById('profileFatherName').textContent = student.fatherName;
+                    document.getElementById('profileAdmissionNo').textContent = student.admissionNo;
+                    document.getElementById('profileClassName').textContent = await getClassName(student.classId);
+
+                    // Populate Fee Summary
+                    const feePayments = await getAll(STORE_FEES, 'studentId', id);
+                    let feeHistoryHtml = '<ul>';
+                    feePayments.forEach(p => {
+                        feeHistoryHtml += `<li>${p.date}: ${p.feeType} - ${p.paidAmount.toLocaleString()} ادا کیے</li>`;
+                    });
+                    feeHistoryHtml += '</ul>';
+                    document.getElementById('profileFeeHistory').innerHTML = feeHistoryHtml;
+                    // More logic can be added for total due amount from monthlyDues store
+
+                    // Populate other cards (can be expanded)
+                    document.getElementById('profileAttendancePercentage').textContent = "Coming soon...";
+                    document.getElementById('profileResults').innerHTML = "<p>Coming soon...</p>";
+                };
+
+                // Attach profile links to student table
+                const originalLoadStudents = window.loadStudents;
+                window.loadStudents = async function () {
+                    await originalLoadStudents();
+                    const studentRows = document.querySelectorAll('#studentsTable tbody tr');
+                    studentRows.forEach(row => {
+                        const studentId = row.querySelector('button.edit')?.getAttribute('onclick').match(/\d+/)[0];
+                        if (studentId) {
+                            const nameCell = row.cells[1];
+                            nameCell.innerHTML = `<a href="#" class="data-link" onclick="showStudentProfile(${studentId})">${nameCell.textContent}</a>`;
+                        }
+                    });
+                };
+
+                // Exams and Subjects Manager Logic
+                const examForm = document.getElementById('examForm');
+                examForm?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('examNameInput').value.trim();
+                    if (!name) return;
+                    try {
+                        await addData(STORE_EXAMS, { name });
+                        showToast('امتحان شامل ہوگیا۔', 'success');
+                        examForm.reset();
+                        loadExams();
+                    } catch { showToast('یہ امتحان پہلے سے موجود ہے۔', 'error'); }
+                });
+
+                const subjectForm = document.getElementById('subjectForm');
+                subjectForm?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('subjectNameInput').value.trim();
+                    const classId = parseInt(document.getElementById('subjectClassSelect').value);
+                    if (!name || !classId) return;
+                    try {
+                        await addData(STORE_SUBJECTS, { name, classId });
+                        showToast('مضمون شامل ہوگیا۔', 'success');
+                        subjectForm.reset();
+                        loadSubjects();
+                    } catch { showToast('اس کلاس کے لئے یہ مضمون پہلے سے موجود ہے۔', 'error'); }
+                });
+
+                window.loadExams = async () => {
+                    const tableBody = document.querySelector('#examsTable tbody');
+                    const exams = await getAll(STORE_EXAMS);
+                    tableBody.innerHTML = '';
+                    exams.forEach(exam => {
+                        tableBody.innerHTML += `<tr><td>${exam.name}</td><td><button onclick="deleteExam(${exam.id})">حذف</button></td></tr>`;
+                    });
+                };
+
+                window.deleteExam = async (id) => {
+                    if (await showConfirmation('امتحان حذف کریں؟', 'اس سے متعلقہ تمام نتائج بھی حذف ہو جائیں گے۔')) {
+                        await deleteData(STORE_EXAMS, id);
+                        // Also delete related results (cascading delete)
+                        showToast('امتحان حذف ہوگیا۔', 'success');
+                        loadExams();
+                    }
+                };
+
+                window.loadSubjects = async () => {
+                    const tableBody = document.querySelector('#subjectsTable tbody');
+                    const subjects = await getAll(STORE_SUBJECTS);
+                    tableBody.innerHTML = '';
+                    for (const sub of subjects) {
+                        tableBody.innerHTML += `<tr><td>${sub.name}</td><td>${await getClassName(sub.classId)}</td><td><button onclick="deleteSubject(${sub.id})">حذف</button></td></tr>`;
+                    }
+                };
+
+                window.deleteSubject = async (id) => {
+                    if (await showConfirmation('مضمون حذف کریں؟', 'اس سے متعلقہ تمام نتائج بھی حذف ہو جائیں گے۔')) {
+                        await deleteData(STORE_SUBJECTS, id);
+                        showToast('مضمون حذف ہوگیا۔', 'success');
+                        loadSubjects();
+                    }
+                };
+
+
+                // Finally, replace all native alerts in the global scope
+                window.alert = (message) => {
+                    // Don't show toast for benign messages
+                    if (message.includes('low in stock')) {
+                        console.warn(message);
+                        return;
+                    }
+                    showToast(message, 'info');
+                };
+
+                console.log("New logic implemented.");
+            }
+
+            // ========================================================================
+            // === PHASE 5: EXECUTION =================================================
+            // ========================================================================
+
+            // 1. Setup basic UI elements
+            setupGlobalUI();
+
+            // 2. Open the database with the new version to trigger the upgrade
+            try {
+                await openPatchedDatabase();
+            } catch (e) {
+                console.error("Fatal: Could not open patched database.", e);
+                showToast("Database upgrade failed! Some features may not work.", 'error');
+                return; // Stop if DB fails
+            }
+
+            // 3. Dynamically create and modify UI elements on the page
+            applyDynamicUIChanges();
+
+            // 4. Implement new functions and override old ones
+            implementNewLogic();
+
+            // 5. Run initializers for the new features
+            console.log("Phase 5: Running initializers...");
+            await generateMonthlyDues();
+            await loadClassesIntoSelect('subjectClassSelect');
+            await loadExams();
+            await loadSubjects();
+
+            console.log("Comprehensive App Patch Initialized Successfully.");
+        });
     </script>
 </body>
 

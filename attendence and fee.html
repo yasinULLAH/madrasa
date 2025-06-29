@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فیس اور تنخواہ کا نظام</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Nastaliq Urdu', 'Gill Sans', sans-serif;
+            direction: rtl;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1, h2, h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        nav {
+            background-color: #007bff;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        nav button {
+            background-color: #0069d9;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        nav button:hover {
+            background-color: #0056b3;
+        }
+        nav button.active {
+            background-color: #004085;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .module {
+            display: none;
+        }
+        .module.active {
+            display: block;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .form-panel, .history-panel {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: right;
+            font-size: 0.95em;
+        }
+        th {
+            background-color: #e9ecef;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        button, input[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+        button:hover, input[type="submit"]:hover {
+            background-color: #218838;
+        }
+        button.delete { background-color: #dc3545; }
+        button.delete:hover { background-color: #c82333; }
+        .printable-slip {
+            display: none;
+            border: 2px solid black;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            border-left: 5px solid #007bff;
+        }
+        .stat-card.income { border-color: #28a745; }
+        .stat-card.expense { border-color: #dc3545; }
+        .stat-card.balance { border-color: #ffc107; }
+        .stat-card h4 { margin-top: 0; }
+        .stat-card p { font-size: 1.5em; font-weight: bold; margin-bottom: 0; }
+         @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>فیس اور تنخواہ کا نظام</h1>
+    <nav>
+        <button onclick="showModule('dashboard')" class="active">ڈیش بورڈ</button>
+        <button onclick="showModule('salary')">اسٹاف کی تنخواہ</button>
+        <button onclick="showModule('fee')">طلباء کی فیس</button>
+        <button onclick="showModule('settings')">سیٹنگز اور ٹولز</button>
+    </nav>
+
+    <div id="dashboard" class="module active">
+        <h2>ڈیش بورڈ</h2>
+        <div class="form-grid">
+            <div>
+                <label for="dashStartDate">شروع تاریخ</label>
+                <input type="date" id="dashStartDate">
+            </div>
+            <div>
+                <label for="dashEndDate">اختتامی تاریخ</label>
+                <input type="date" id="dashEndDate">
+            </div>
+            <div>
+                <button onclick="loadDashboard()" style="width: 100%; margin-top: 35px;">رپورٹ دیکھیں</button>
+            </div>
+        </div>
+        <div class="dashboard-grid" style="margin-top: 20px;">
+            <div class="stat-card income">
+                <h4>کل آمدنی (فیس)</h4>
+                <p id="totalIncome">0</p>
+            </div>
+            <div class="stat-card expense">
+                <h4>کل اخراجات (تنخواہ)</h4>
+                <p id="totalExpense">0</p>
+            </div>
+            <div class="stat-card balance">
+                <h4>کل بیلنس</h4>
+                <p id="totalBalance">0</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="salary" class="module">
+        <h2>اسٹاف تنخواہ کا انتظام</h2>
+        <div class="grid-container">
+            <div class="form-panel">
+                <h3>تنخواہ کی ادائیگی</h3>
+                <label for="salaryStaffSelect">اسٹاف منتخب کریں</label>
+                <select id="salaryStaffSelect" onchange="handleStaffChange()"></select>
+
+                <form id="salaryPaymentForm">
+                    <label for="salaryForMonth">مہینہ</label>
+                    <input type="month" id="salaryForMonth" onchange="updateSalaryDetails()" required>
+                    <label for="salaryPaidAmount">ادا شدہ رقم</label>
+                    <input type="number" id="salaryPaidAmount" required>
+                    <label for="salaryBonus">بونس</label>
+                    <input type="number" id="salaryBonus" value="0">
+                    <label for="salaryDeduction">کٹوتی</label>
+                    <input type="number" id="salaryDeduction" value="0">
+                    <label for="salaryDate">تاریخ</label>
+                    <input type="date" id="salaryDate" required>
+                    <label for="salaryRemarks">ریمارکس</label>
+                    <textarea id="salaryRemarks" rows="2"></textarea>
+                    <button type="submit">ادائیگی محفوظ کریں</button>
+                </form>
+            </div>
+            <div class="history-panel">
+                <h3>ادائیگی کی تاریخ</h3>
+                <div id="staffDetails" style="margin-bottom: 15px;"></div>
+                <table id="salaryHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>مہینہ</th>
+                            <th>تاریخ</th>
+                            <th>ادا شدہ رقم</th>
+                            <th>ریمارکس</th>
+                            <th>عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="fee" class="module">
+        <h2>طلباء کی فیس کا انتظام</h2>
+        <div class="grid-container">
+            <div class="form-panel">
+                <h3>فیس وصولی</h3>
+                <div class="form-grid">
+                     <div>
+                        <label for="feeClassFilter">کلاس فلٹر</label>
+                        <select id="feeClassFilter" onchange="loadStudentsForFee()"></select>
+                    </div>
+                    <div>
+                        <label for="feeStudentSelect">طالب علم منتخب کریں</label>
+                        <select id="feeStudentSelect" onchange="handleStudentChange()"></select>
+                    </div>
+                </div>
+                <form id="feeCollectionForm">
+                    <label for="feeForMonth">مہینہ</label>
+                    <input type="month" id="feeForMonth" onchange="updateFeeDetails()" required>
+                    <label for="feePaidAmount">ادا شدہ رقم</label>
+                    <input type="number" id="feePaidAmount" required>
+                    <label for="feeDiscount">رعایت</label>
+                    <input type="number" id="feeDiscount" value="0">
+                    <label for="feeDate">تاریخ</label>
+                    <input type="date" id="feeDate" required>
+                    <label for="feeRemarks">ریمارکس</label>
+                    <textarea id="feeRemarks" rows="2"></textarea>
+                    <button type="submit">فیس وصول کریں</button>
+                </form>
+            </div>
+            <div class="history-panel">
+                <h3>فیس کی تاریخ</h3>
+                <div id="studentDetails" style="margin-bottom: 15px;"></div>
+                <table id="feeHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>مہینہ</th>
+                            <th>تاریخ</th>
+                            <th>واجب الادا</th>
+                            <th>ادا شدہ</th>
+                            <th>بقایا</th>
+                            <th>عمل</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings" class="module">
+        <h2>سیٹنگز اور ٹولز</h2>
+        <h3>ادارہ کی معلومات</h3>
+        <div class="form-grid">
+            <div>
+                <label for="instituteName">ادارہ کا نام</label>
+                <input type="text" id="instituteName">
+            </div>
+            <div>
+                <label for="instituteContact">رابطہ نمبر</label>
+                <input type="text" id="instituteContact">
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <label for="instituteAddress">پتہ</label>
+                <input type="text" id="instituteAddress">
+            </div>
+        </div>
+        <button onclick="saveInstituteSettings()">سیٹنگز محفوظ کریں</button>
+
+        <h3 style="margin-top: 30px;">ڈیٹا مینجمنٹ</h3>
+        <p>یہ ٹولز وہی ہیں جو آپ کی مرکزی ایپ میں ہیں اور اسی ڈیٹا پر کام کرتے ہیں۔</p>
+        <button onclick="backupData()">ڈیٹا بیک اپ کریں (JSON)</button>
+        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+        <button onclick="document.getElementById('importFile').click()">ڈیٹا امپورٹ کریں (JSON)</button>
+    </div>
+</div>
+
+<div id="salarySlip" class="printable-slip"></div>
+<div id="feeReceipt" class="printable-slip"></div>
+
+<script>
+    const DB_NAME = 'SchoolManagementDB';
+    let db;
+
+    const STORE_STUDENTS = 'students';
+    const STORE_TEACHERS = 'teachers';
+    const STORE_CLASSES = 'classes';
+    const STORE_FEES = 'fees';
+    const STORE_EXPENSES = 'expenses';
+    const STORE_FEE_STRUCTURES = 'feeStructures';
+    const STORE_SETTINGS = 'settings';
+
+    function openDatabase() {
+        // This version MUST match the version used in your main index.html file.
+        // You mentioned it was updated to 20.
+        const DB_VERSION = 16;
+
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = e => reject(`Database connection failed. Ensure the main app has run and the DB version (${DB_VERSION}) is correct.`);
+            request.onsuccess = e => {
+                db = e.target.result;
+                resolve(db);
+            };
+            // NO onupgradeneeded event. This file will NOT modify the DB structure.
+        });
+    }
+
+    async function getObjectStore(storeName, mode) {
+        if (!db) await openDatabase();
+        const transaction = db.transaction(storeName, mode);
+        return transaction.objectStore(storeName);
+    }
+    async function getAll(storeName, indexName, query) {
+        const store = await getObjectStore(storeName, 'readonly');
+        const request = indexName ? store.index(indexName).getAll(query) : store.getAll();
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = e => reject(e.target.error);
+        });
+    }
+    async function getById(storeName, id) {
+        const store = await getObjectStore(storeName, 'readonly');
+        const request = store.get(id);
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = e => reject(e.target.error);
+        });
+    }
+    async function addData(storeName, data) {
+        const store = await getObjectStore(storeName, 'readwrite');
+        const request = store.add(data);
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = e => reject(e.target.error);
+        });
+    }
+    async function updateData(storeName, data) {
+        const store = await getObjectStore(storeName, 'readwrite');
+        const request = store.put(data);
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve();
+            request.onerror = e => reject(e.target.error);
+        });
+    }
+    async function deleteData(storeName, id) {
+        const store = await getObjectStore(storeName, 'readwrite');
+        const request = store.delete(id);
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve();
+            request.onerror = e => reject(e.target.error);
+        });
+    }
+
+    function showModule(moduleId) {
+        document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+        document.getElementById(moduleId).classList.add('active');
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.querySelector(`nav button[onclick="showModule('${moduleId}')"]`).classList.add('active');
+    }
+
+    async function loadDashboard() {
+        const startDate = document.getElementById('dashStartDate').value;
+        const endDate = document.getElementById('dashEndDate').value;
+
+        const allTransactions = await getAll(STORE_EXPENSES);
+        const filtered = allTransactions.filter(t => {
+            const dateMatch = (!startDate || t.date >= startDate) && (!endDate || t.date <= endDate);
+            return dateMatch;
+        });
+
+        const totalIncome = filtered.filter(t => t.recordType === 'income').reduce((sum, t) => sum + t.amount, 0);
+        const totalExpense = filtered.filter(t => t.recordType === 'expense' && t.category === 'Salary').reduce((sum, t) => sum + t.amount, 0);
+
+        document.getElementById('totalIncome').textContent = `Rs. ${totalIncome.toLocaleString()}`;
+        document.getElementById('totalExpense').textContent = `Rs. ${totalExpense.toLocaleString()}`;
+        document.getElementById('totalBalance').textContent = `Rs. ${(totalIncome - totalExpense).toLocaleString()}`;
+    }
+    
+    async function loadStaff() {
+        const select = document.getElementById('salaryStaffSelect');
+        select.innerHTML = '<option value="">-- اسٹاف منتخب کریں --</option>';
+        const teachers = await getAll(STORE_TEACHERS);
+        teachers.sort((a, b) => a.name.localeCompare(b.name, 'ur')).forEach(t => {
+            select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+        });
+    }
+    
+    async function handleStaffChange() {
+        const staffId = document.getElementById('salaryStaffSelect').value;
+        if (!staffId) {
+            document.getElementById('staffDetails').innerHTML = '';
+            document.getElementById('salaryHistoryTable').querySelector('tbody').innerHTML = '';
+            return;
+        }
+        const staff = await getById(STORE_TEACHERS, parseInt(staffId));
+        document.getElementById('staffDetails').innerHTML = `
+            <p><strong>نام:</strong> ${staff.name} | <strong>ماہانہ تنخواہ:</strong> ${staff.salary.toLocaleString()}</p>
+        `;
+        updateSalaryDetails();
+    }
+    
+    async function updateSalaryDetails() {
+        const staffId = document.getElementById('salaryStaffSelect').value;
+        const monthYear = document.getElementById('salaryForMonth').value;
+        const historyBody = document.getElementById('salaryHistoryTable').querySelector('tbody');
+        historyBody.innerHTML = '';
+        if (!staffId || !monthYear) return;
+
+        const staff = await getById(STORE_TEACHERS, parseInt(staffId));
+        const allExpenses = await getAll(STORE_EXPENSES);
+        const salaryPayments = allExpenses.filter(e => e.category === 'Salary' && e.paidTo === staff.name && e.description?.includes(monthYear));
+
+        if (salaryPayments.length > 0) {
+            salaryPayments.forEach(p => {
+                historyBody.innerHTML += `
+                    <tr>
+                        <td>${p.description.replace('Salary for ', '')}</td>
+                        <td>${p.date}</td>
+                        <td>${p.amount.toLocaleString()}</td>
+                        <td>${p.notes || '-'}</td>
+                        <td><button class="delete" onclick="deleteSalaryPayment(${p.id})">حذف</button></td>
+                    </tr>
+                `;
+            });
+        } else {
+            historyBody.innerHTML = '<tr><td colspan="5">اس مہینے کوئی ادائیگی نہیں ہوئی۔</td></tr>';
+        }
+    }
+    
+    document.getElementById('salaryPaymentForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const staffId = parseInt(document.getElementById('salaryStaffSelect').value);
+        const monthYear = document.getElementById('salaryForMonth').value;
+        const paidAmount = parseFloat(document.getElementById('salaryPaidAmount').value);
+        const bonus = parseFloat(document.getElementById('salaryBonus').value) || 0;
+        const deduction = parseFloat(document.getElementById('salaryDeduction').value) || 0;
+        const date = document.getElementById('salaryDate').value;
+        const remarks = document.getElementById('salaryRemarks').value;
+        
+        if (!staffId || !monthYear || !paidAmount || !date) { alert("تمام فیلڈز پُر کریں۔"); return; }
+        
+        const staff = await getById(STORE_TEACHERS, staffId);
+        const totalPaid = paidAmount + bonus - deduction;
+        
+        const expenseRecord = {
+            recordType: 'expense',
+            category: 'Salary',
+            amount: totalPaid,
+            date: date,
+            paidTo: staff.name,
+            description: `Salary for ${monthYear}`,
+            notes: `Base: ${paidAmount}, Bonus: ${bonus}, Deduction: ${deduction}. Remarks: ${remarks}`
+        };
+        
+        await addData(STORE_EXPENSES, expenseRecord);
+        alert('تنخواہ کی ادائیگی محفوظ ہو گئی۔');
+        document.getElementById('salaryPaymentForm').reset();
+        document.getElementById('salaryDate').valueAsDate = new Date();
+        handleStaffChange();
+        loadDashboard();
+    });
+
+    async function deleteSalaryPayment(id) {
+        if (confirm('کیا آپ واقعی اس ادائیگی کو حذف کرنا چاہتے ہیں؟')) {
+            await deleteData(STORE_EXPENSES, id);
+            alert('ادائیگی حذف ہو گئی۔');
+            handleStaffChange();
+            loadDashboard();
+        }
+    }
+    
+    async function loadClassesForFee() {
+        const select = document.getElementById('feeClassFilter');
+        select.innerHTML = '<option value="">تمام کلاسیں</option>';
+        const classes = await getAll(STORE_CLASSES);
+        classes.sort((a,b) => a.name.localeCompare(b.name, 'ur')).forEach(c => {
+            select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+        });
+    }
+
+    async function loadStudentsForFee() {
+        const classId = document.getElementById('feeClassFilter').value;
+        const select = document.getElementById('feeStudentSelect');
+        select.innerHTML = '<option value="">-- طالب علم منتخب کریں --</option>';
+        let students = await getAll(STORE_STUDENTS);
+        if (classId) {
+            students = students.filter(s => s.classId === parseInt(classId));
+        }
+        students.sort((a,b) => a.name.localeCompare(b.name, 'ur')).forEach(s => {
+            select.innerHTML += `<option value="${s.id}">${s.name} (${s.admissionNo})</option>`;
+        });
+    }
+
+    async function handleStudentChange() {
+        const studentId = document.getElementById('feeStudentSelect').value;
+        if (!studentId) {
+            document.getElementById('studentDetails').innerHTML = '';
+            document.getElementById('feeHistoryTable').querySelector('tbody').innerHTML = '';
+            return;
+        }
+        const student = await getById(STORE_STUDENTS, parseInt(studentId));
+        const feeStructure = (await getAll(STORE_FEE_STRUCTURES)).find(fs => fs.classId === student.classId && fs.feeType === "Monthly Fee");
+        const monthlyFee = feeStructure ? feeStructure.amount : 0;
+        
+        document.getElementById('studentDetails').innerHTML = `
+            <p><strong>نام:</strong> ${student.name} | <strong>ماہانہ فیس:</strong> ${monthlyFee.toLocaleString()}</p>
+        `;
+        updateFeeDetails();
+    }
+
+    async function updateFeeDetails() {
+        const studentId = document.getElementById('feeStudentSelect').value;
+        const monthYear = document.getElementById('feeForMonth').value;
+        const historyBody = document.getElementById('feeHistoryTable').querySelector('tbody');
+        historyBody.innerHTML = '';
+        if (!studentId || !monthYear) return;
+
+        const student = await getById(STORE_STUDENTS, parseInt(studentId));
+        const feeStructure = (await getAll(STORE_FEE_STRUCTURES)).find(fs => fs.classId === student.classId && fs.feeType === "Monthly Fee");
+        const amountDue = feeStructure ? feeStructure.amount : 0;
+
+        const store = await getObjectStore(STORE_FEES, 'readonly');
+        const index = store.index('studentId_monthYear');
+        const payments = await new Promise(res => index.getAll([parseInt(studentId), monthYear]).onsuccess = e => res(e.target.result));
+        
+        const totalPaid = payments.reduce((sum, p) => sum + p.paidAmount, 0);
+        const totalDiscount = payments.reduce((sum, p) => sum + p.discount, 0);
+        const balance = amountDue - totalPaid - totalDiscount;
+
+        historyBody.innerHTML = `
+            <tr>
+                <td>${monthYear}</td>
+                <td>N/A</td>
+                <td>${amountDue.toLocaleString()}</td>
+                <td>${totalPaid.toLocaleString()}</td>
+                <td style="color: ${balance > 0 ? 'red' : 'green'}">${balance.toLocaleString()}</td>
+                <td>${payments.map(p => `<button class="delete" onclick="deleteFeePayment(${p.id})">حذف (${p.date})</button>`).join('')}</td>
+            </tr>
+        `;
+    }
+
+    document.getElementById('feeCollectionForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const studentId = parseInt(document.getElementById('feeStudentSelect').value);
+        const monthYear = document.getElementById('feeForMonth').value;
+        const paidAmount = parseFloat(document.getElementById('feePaidAmount').value);
+        const discount = parseFloat(document.getElementById('feeDiscount').value) || 0;
+        const date = document.getElementById('feeDate').value;
+        const remarks = document.getElementById('feeRemarks').value;
+
+        if (!studentId || !monthYear || !paidAmount || !date) { alert("تمام فیلڈز پُر کریں۔"); return; }
+        
+        const student = await getById(STORE_STUDENTS, studentId);
+
+        // This record matches the simplified structure used by the main app for history.
+        const feeRecord = {
+            studentId, monthYear, paidAmount, discount, date, remarks, feeType: 'Monthly Fee', method: 'Cash'
+        };
+        await addData(STORE_FEES, feeRecord);
+
+        // This record is CRUCIAL for compatibility with the main app's financial reports.
+        const incomeRecord = {
+            recordType: 'income',
+            category: 'طالب علم فیس - خودکار',
+            amount: paidAmount,
+            date: date,
+            receivedFrom: student.name,
+            description: `Fee for ${monthYear}`,
+            notes: `Discount: ${discount}. Remarks: ${remarks}`
+        };
+        await addData(STORE_EXPENSES, incomeRecord);
+        
+        alert('فیس وصولی محفوظ ہو گئی۔');
+        document.getElementById('feeCollectionForm').reset();
+        document.getElementById('feeDate').valueAsDate = new Date();
+        handleStudentChange();
+        loadDashboard();
+    });
+
+    async function deleteFeePayment(id) {
+        if (confirm('کیا آپ واقعی اس فیس کی ادائیگی کو حذف کرنا چاہتے ہیں؟ متعلقہ آمدنی کا ریکارڈ بھی حذف ہو جائے گا۔')) {
+            const feeRecord = await getById(STORE_FEES, id);
+            if (!feeRecord) {
+                alert('فیس ریکارڈ نہیں ملا۔');
+                return;
+            }
+            await deleteData(STORE_FEES, id);
+            
+            const allExpenses = await getAll(STORE_EXPENSES);
+            const student = await getById(STORE_STUDENTS, feeRecord.studentId);
+            const incomeRecordToDelete = allExpenses.find(e => 
+                e.recordType === 'income' &&
+                e.receivedFrom === student.name &&
+                e.date === feeRecord.date &&
+                e.amount === feeRecord.paidAmount &&
+                e.description.includes(feeRecord.monthYear)
+            );
+            if (incomeRecordToDelete) {
+                await deleteData(STORE_EXPENSES, incomeRecordToDelete.id);
+            }
+
+            alert('فیس کی ادائیگی حذف ہو گئی۔');
+            handleStudentChange();
+            loadDashboard();
+        }
+    }
+    
+    async function saveInstituteSettings() {
+        const settings = [
+            { key: 'instituteName', value: document.getElementById('instituteName').value },
+            { key: 'instituteContact', value: document.getElementById('instituteContact').value },
+            { key: 'instituteAddress', value: document.getElementById('instituteAddress').value }
+        ];
+        for (const setting of settings) {
+            const store = await getObjectStore(STORE_SETTINGS, 'readwrite');
+            store.put(setting);
+        }
+        alert('سیٹنگز محفوظ ہو گئیں۔');
+    }
+
+    async function loadInstituteSettings() {
+        const name = await getById(STORE_SETTINGS, 'instituteName');
+        const contact = await getById(STORE_SETTINGS, 'instituteContact');
+        const address = await getById(STORE_SETTINGS, 'instituteAddress');
+        if (name) document.getElementById('instituteName').value = name.value;
+        if (contact) document.getElementById('instituteContact').value = contact.value;
+        if (address) document.getElementById('instituteAddress').value = address.value;
+    }
+
+    async function backupData() {
+        if (!confirm('تمام ڈیٹا کو JSON فائل کے طور پر ایکسپورٹ کیا جائے گا۔ جاری رکھیں؟')) return;
+        const backup = {};
+        const storeNames = db.objectStoreNames;
+        for (let i = 0; i < storeNames.length; i++) {
+            backup[storeNames[i]] = await getAll(storeNames[i]);
+        }
+        const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `finance_backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+    
+    async function importData(event) {
+        const file = event.target.files[0];
+        if (!file || !confirm('خبردار! امپورٹ کرنے سے موجودہ تمام ڈیٹا مٹ جائے گا۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟')) return;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const importedData = JSON.parse(e.target.result);
+            for (const storeName in importedData) {
+                if (db.objectStoreNames.contains(storeName)) {
+                    const store = await getObjectStore(storeName, 'readwrite');
+                    await store.clear();
+                    for (const item of importedData[storeName]) {
+                        store.put(item);
+                    }
+                }
+            }
+            alert('ڈیٹا کامیابی سے امپورٹ ہو گیا۔ صفحہ ریفریش کریں۔');
+            location.reload();
+        };
+        reader.readAsText(file);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            await openDatabase();
+            
+            const now = new Date();
+            document.getElementById('salaryDate').valueAsDate = now;
+            document.getElementById('feeDate').valueAsDate = now;
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            document.getElementById('salaryForMonth').value = currentMonth;
+            document.getElementById('feeForMonth').value = currentMonth;
+            
+            const today = now.toISOString().split('T')[0];
+            const firstDayOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+            document.getElementById('dashStartDate').value = firstDayOfMonth;
+            document.getElementById('dashEndDate').value = today;
+
+            await loadDashboard();
+            await loadStaff();
+            await loadClassesForFee();
+            await loadStudentsForFee();
+            await loadInstituteSettings();
+        } catch (error) {
+            console.error("Initialization Failed:", error);
+            alert("ایپلیکیشن شروع کرنے میں ناکامی۔ ڈیٹا بیس لوڈ نہیں ہو سکا۔\n\n" + error);
+        }
+    });
+</script>
+</body>
+</html>
