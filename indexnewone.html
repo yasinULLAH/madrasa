@@ -11145,7 +11145,15 @@
         async function exportElementAsPNG(elementId, filename) {
             const element = document.getElementById(elementId);
             if (!element) return;
+
             showLoading();
+
+            const buttonsToHide = document.querySelectorAll('.card-export-btn, .card-export-btn-back');
+            const noPrintElements = document.querySelectorAll('.no-print');
+
+            buttonsToHide.forEach(btn => btn.style.display = 'none');
+            noPrintElements.forEach(el => el.style.display = 'none');
+
             try {
                 const canvas = await html2canvas(element, { scale: 3, useCORS: true, backgroundColor: null });
                 const link = document.createElement('a');
@@ -11156,9 +11164,13 @@
                 console.error("PNG Export failed:", err);
                 showNotification("PNG export failed.", "error");
             } finally {
+                buttonsToHide.forEach(btn => btn.style.display = '');
+                noPrintElements.forEach(el => el.style.display = '');
                 hideLoading();
             }
         }
+
+
         function generateQrCode(elementId, text) {
             const el = document.getElementById(elementId);
             if (el) {
@@ -11916,58 +11928,58 @@
 </script>
 <script>
 
-function loadScriptsAndInitialize() {
-    document.body.classList.add('pdf-loading');
-    const jspdfSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    const autotableSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
-    const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf';
+    function loadScriptsAndInitialize() {
+        document.body.classList.add('pdf-loading');
+        const jspdfSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        const autotableSrc = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+        const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf';
 
-    const loadScript = (src) => new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-    });
+        const loadScript = (src) => new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
 
-    const loadFont = () => new Promise((resolve, reject) => {
-        fetch(fontUrl)
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.blob();
-            })
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = function () {
-                    window.amiriFontBase64 = reader.result.split(',')[1];
-                    console.log('Amiri font loaded.');
+        const loadFont = () => new Promise((resolve, reject) => {
+            fetch(fontUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.blob();
+                })
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = function () {
+                        window.amiriFontBase64 = reader.result.split(',')[1];
+                        console.log('Amiri font loaded.');
+                        resolve();
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(error => {
+                    console.error("Failed to load Amiri font:", error);
                     resolve();
-                };
-                reader.readAsDataURL(blob);
+                });
+        });
+
+        loadScript(jspdfSrc)
+            .then(() => loadScript(autotableSrc))
+            .then(() => loadFont())
+            .then(() => {
+                console.log('All PDF dependencies loaded.');
+                document.body.classList.remove('pdf-loading');
+                document.body.classList.add('pdf-ready');
+                initializeTableEnhancements();
+                observeForNewTables();
             })
             .catch(error => {
-                console.error("Failed to load Amiri font:", error);
-                resolve();
+                console.error("A script or font failed to load:", error);
+                document.body.classList.remove('pdf-loading');
+                document.body.classList.add('pdf-error');
+                showNotification('PDF export functionality failed to load.', 'error');
             });
-    });
-
-    loadScript(jspdfSrc)
-        .then(() => loadScript(autotableSrc))
-        .then(() => loadFont())
-        .then(() => {
-            console.log('All PDF dependencies loaded.');
-            document.body.classList.remove('pdf-loading');
-            document.body.classList.add('pdf-ready');
-            initializeTableEnhancements();
-            observeForNewTables();
-        })
-        .catch(error => {
-            console.error("A script or font failed to load:", error);
-            document.body.classList.remove('pdf-loading');
-            document.body.classList.add('pdf-error');
-            showNotification('PDF export functionality failed to load.', 'error');
-        });
-}
+    }
     function initializeTableEnhancements() {
         const tableContainers = document.querySelectorAll('.table-container');
         tableContainers.forEach(container => {
@@ -11982,7 +11994,7 @@ function loadScriptsAndInitialize() {
             }
         });
     }
-        document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
         loadScriptsAndInitialize();
     });
     function createControls(container, uniqueId) {
