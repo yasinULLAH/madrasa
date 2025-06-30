@@ -2136,8 +2136,8 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <button type="button" class="btn btn-primary" id="generate-result-cards">Generate Result
-                            Cards</button>
+<button type="button" class="btn btn-primary" id="generate-result-cards">Generate Result Cards</button>
+<button type="button" class="btn btn-success" id="export-all-result-cards" style="margin-left: 10px;">Export All as ZIP (PNG)</button>
                     </div>
                 </div>
                 <div id="result-cards-container" style="display: none;">
@@ -8706,6 +8706,61 @@
                 hideLoading();
             }
         }
+        async function exportAllCardsAsZIP() {
+    if (!window.html2canvas || !window.JSZip) {
+        showNotification('Export libraries not loaded.', 'error');
+        return;
+    }
+
+    showLoading();
+    try {
+        const resultCardsContainer = document.getElementById('result-cards-container');
+        const cardWrappers = resultCardsContainer.querySelectorAll('.result-card-wrapper');
+
+        if (cardWrappers.length === 0) {
+            showNotification('No result cards to export.', 'info');
+            hideLoading();
+            return;
+        }
+
+        const zip = new JSZip();
+        const promises = [];
+
+        for (const wrapper of cardWrappers) {
+            const cardElement = wrapper.querySelector('.card');
+            const studentId = parseInt(cardElement.id.replace('result-card-', ''));
+            const student = await getFromStore(STORES.STUDENTS, studentId);
+            const fileName = `ResultCard_${student ? student.rollNumber + '_' + student.name.replace(/\s/g, '_') : studentId}.png`;
+
+            promises.push(
+                html2canvas(cardElement, { scale: 3, useCORS: true, backgroundColor: '#ffffff' })
+                    .then(canvas => new Promise(resolve => canvas.toBlob(resolve, 'image/png')))
+                    .then(blob => zip.file(fileName, blob))
+            );
+        }
+
+        await Promise.all(promises);
+
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(zipBlob);
+        link.download = `All_Result_Cards_${new Date().toISOString().slice(0, 10)}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+
+        showNotification('All result cards exported to ZIP successfully.', 'success');
+
+    } catch (error) {
+        console.error("Error exporting all result cards to ZIP:", error);
+        showNotification('Failed to export all result cards to ZIP.', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+document.getElementById('export-all-result-cards').addEventListener('click', exportAllCardsAsZIP);
         async function saveAttendance() {
             try {
                 showLoading();
