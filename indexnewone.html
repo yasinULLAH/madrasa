@@ -12549,4 +12549,148 @@
             console.log(`Cleaned up ${deletedCount} old automatic backup(s).`);
         }
     }
+
+
+
+    function initializeShortcuts() {
+    const shortcutConfig = {
+        'alt+d': { func: () => showView('dashboard'), selector: '[data-view="dashboard"]', title: 'Dashboard' },
+        'alt+s': { func: () => showView('students'), selector: '[data-view="students"]', title: 'Students' },
+        'alt+t': { func: () => showView('teachers'), selector: '[data-view="teachers"]', title: 'Teachers' },
+        'alt+f': { func: () => showView('fees'), selector: '[data-view="fees"]', title: 'Fees' },
+        'alt+e': { func: () => showView('exams'), selector: '[data-view="exams"]', title: 'Exams' },
+        'alt+c': { func: () => showView('classes'), selector: '[data-view="classes"]', title: 'Classes' },
+        'alt+b': { func: () => showView('backup'), selector: '[data-view="backup"]', title: 'Backup' },
+        /* 'alt+i': { func: () => showView('id-cards'), selector: '[data-view="id-cards"]', title: 'ID Cards' }, */
+        'alt+p': { func: () => showView('salaries'), selector: '[data-view="salaries"]', title: 'Salaries (Pay)' },
+        'alt+l': { func: () => showView('library'), selector: '[data-view="library"]', title: 'Library' },
+        'alt+r': { func: () => showView('reports'), selector: '[data-view="reports"]', title: 'Reports' },
+        /* 'alt+o': { func: () => showView('settings'), selector: '[data-view="settings"]', title: 'Settings (Options)' }, */
+    };
+
+    function addShortcutTooltips() {
+        for (const key in shortcutConfig) {
+            const config = shortcutConfig[key];
+            const element = document.querySelector(config.selector);
+            if (element) {
+                const shortcutHint = `(${key.replace('alt+', 'Alt+')})`;
+                element.title = `${config.title} ${shortcutHint}`;
+            }
+        }
+    }
+
+    function findVisibleElement(selector) {
+        const elements = Array.from(document.querySelectorAll(selector));
+        return elements.find(el => el.offsetParent !== null);
+    }
+
+    function handleKeydown(e) {
+         if (!e.key) return;
+        if (e.target.matches('input, textarea, select')) {
+            if (e.key === 'Escape') {
+                e.target.blur();
+            } else if (e.key.toLowerCase() === 's' && e.ctrlKey) {
+                 e.preventDefault();
+                 const submitButton = findVisibleElement('.tab-content.active form .btn-primary[type="submit"]');
+                 if(submitButton) submitButton.click();
+            }
+            return;
+        }
+
+        const key = `${e.altKey ? 'alt+' : ''}${e.ctrlKey ? 'ctrl+' : ''}${e.shiftKey ? 'shift+' : ''}${e.key.toLowerCase()}`;
+        
+        if (shortcutConfig[key]) {
+            e.preventDefault();
+            shortcutConfig[key].func();
+            return;
+        }
+        
+        switch (e.key) {
+            case 'Escape':
+                const visibleModal = findVisibleElement('.modal[style*="display: block"]');
+                if (visibleModal) {
+                    e.preventDefault();
+                    const closeButton = visibleModal.querySelector('.close');
+                    if (closeButton) closeButton.click();
+                }
+                break;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+                if (e.altKey) {
+                    e.preventDefault();
+                    const activeView = findVisibleElement('.section-view');
+                    if (activeView) {
+                        const tabIndex = parseInt(e.key) - 1;
+                        const tab = activeView.querySelectorAll('.tabs .tab')[tabIndex];
+                        if (tab) tab.click();
+                    }
+                }
+                break;
+        }
+    }
+
+    addShortcutTooltips();
+    document.addEventListener('keydown', handleKeydown);
+}
+
+// Activate the shortcut system
+initializeShortcuts();
+</script>
+<script>
+let protectionEnabled = true;
+
+function blockKeys(e) {
+  if (!protectionEnabled) return;
+
+  const isCtrl = e.ctrlKey;
+  const isAlt = e.altKey;
+  const isShift = e.shiftKey;
+
+  // Allow Ctrl+C / Ctrl+V / Alt+F4 / Tab
+  const allowed =
+    (isCtrl && ['c', 'v'].includes(e.key.toLowerCase())) ||
+    (isAlt && e.key === 'F4') ||
+    e.key === 'Tab';
+
+  // Secret unlock: Ctrl+Alt+Shift+Y
+  if (isCtrl && isAlt && isShift && e.key.toLowerCase() === 'y') {
+    protectionEnabled = false;
+    alert("Protection disabled.");
+    return;
+  }
+
+  // Block common dev shortcuts
+  const blocked =
+    e.key === 'F12' ||
+    (isCtrl && ['u', 's', 'p', 'i', 'j', 'k'].includes(e.key.toLowerCase())) ||
+    (isCtrl && isShift) ||
+    (isCtrl && isAlt && e.key.toLowerCase() === 'i');
+
+  if (blocked && !allowed) {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
+}
+
+document.addEventListener('keydown', blockKeys);
+
+document.addEventListener('contextmenu', function (e) {
+  if (protectionEnabled) e.preventDefault();
+});
+
+document.addEventListener('dragstart', function (e) {
+  if (protectionEnabled) e.preventDefault();
+});
+
+// Optional: Clear page if DevTools is open
+setInterval(() => {
+  if (!protectionEnabled) return;
+  const open = window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160;
+  if (open) {
+    document.body.innerHTML = "<h1 style='color:red; text-align:center;'>DevTools are blocked</h1>";
+  }
+}, 1000);
 </script>

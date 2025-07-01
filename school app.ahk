@@ -48,13 +48,16 @@ if (InStr(licenseData, "activated=1")) {
 }
 
 ; 👟 Step 1: Close Chrome
-Process, Close, chrome.exe
+;Process, Close, chrome.exe
+Process, Close, msedge.exe
 Sleep, 1000
 
 ; 🚀 Step 2: Launch Chrome in kiosk mode
-Run, "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk "C:\phpserver\www\madrasa\indexnewone.html"
+;Run, "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk "D:\yasin\indexnewone.html"
+;Run, "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --app="file:///D:/yasin/indexnewone.html" --user-data-dir="C:\EdgeProfiles\MyApp" --start-fullscreen
+Run, "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --app="file:///C:/yasin/indexnewone.html" --profile-directory="Default" --start-fullscreen --no-first-run
+
 
 Sleep, 3000
-Send, {F11}
 
 ExitApp
