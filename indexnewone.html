@@ -4218,6 +4218,7 @@
                 document.getElementById('total-teachers').parentElement.onclick = () => showDashboardDetailsPopup('Teachers List', generateTeacherDetailsHTML);
                 document.getElementById('monthly-fee').parentElement.onclick = () => showDashboardDetailsPopup(`Fee Collection - ${new Date(currentYear, currentMonth - 1).toLocaleString('default', { month: 'long' })}`, () => generateMonthlyCollectionDetailsHTML(currentMonth, currentYear));
                 document.getElementById('pending-fee').parentElement.onclick = () => showDashboardDetailsPopup('Outstanding Fee Details', generatePendingFeeDetailsHTML);
+                document.getElementById('today-attendance').parentElement.onclick = () => showDashboardDetailsPopup("Today's Attendance Details", generateTodaysAttendanceDetailsHTML);
                 await loadUpcomingEvents();
                 await loadRecentActivities();
             } catch (error) {
@@ -12461,6 +12462,53 @@
         } finally {
             hideLoading();
         }
+    }
+    async function generateTodaysAttendanceDetailsHTML() {
+        const todayISO = new Date().toISOString().split('T')[0];
+        const attendanceRecords = await getAllFromIndex(STORES.ATTENDANCE, 'date', todayISO);
+
+        if (attendanceRecords.length === 0) {
+            return '<div class="card"><p style="text-align:center;">No attendance was marked today.</p></div>';
+        }
+
+        const [allStudents, allClasses] = await Promise.all([
+            getAllFromStore(STORES.STUDENTS),
+            getAllFromStore(STORES.CLASSES)
+        ]);
+
+        const studentMap = new Map(allStudents.map(s => [s.id, s]));
+        const classMap = new Map(allClasses.map(c => [c.id, c.name]));
+
+        let tableHTML = `<div class="table-container" style="max-height: 70vh; overflow-y: auto;">
+                       <table class="table">
+                         <thead>
+                           <tr>
+                             <th>Roll No.</th>
+                             <th>Student Name</th>
+                             <th>Class</th>
+                             <th>Status</th>
+                             <th>Late</th>
+                           </tr>
+                         </thead>
+                         <tbody>`;
+
+        for (const record of attendanceRecords) {
+            const student = studentMap.get(record.studentId);
+            if (student) {
+                const statusText = record.isLeave ? 'On Leave' : (record.status.charAt(0).toUpperCase() + record.status.slice(1));
+                const statusColor = record.status === 'present' ? '#2ecc71' : (record.isLeave ? '#f39c12' : '#e74c3c');
+                tableHTML += `<tr>
+                            <td>${student.rollNumber || 'N/A'}</td>
+                            <td>${student.name || 'N/A'}</td>
+                            <td>${classMap.get(student.classId) || 'N/A'}</td>
+                            <td style="color: ${statusColor}; font-weight: bold;">${statusText}</td>
+                            <td>${record.isLate ? 'Yes' : 'No'}</td>
+                          </tr>`;
+            }
+        }
+
+        tableHTML += `</tbody></table></div>`;
+        return tableHTML;
     }
     async function performAutomaticBackup(settings) {
         console.log('Performing automatic backup...');
