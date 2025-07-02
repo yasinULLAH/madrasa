@@ -24,6 +24,14 @@
             email: 'accounts@school.com',
             role: 'accountant',
             status: 'active'
+        },
+        {
+            username: 'teacher',
+            password: 'teacher123', // Change this password
+            name: 'teacher',
+            email: 'teacher@school.com',
+            role: 'teacher',
+            status: 'active'
         }
     ];
 
