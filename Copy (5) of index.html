@@ -958,7 +958,6 @@
                 </tbody>
             </table>
         </div>
-        <!-- In the 'Classes' module, add a fee input to the form -->
         <div id="classes" class="module">
             <h2>کلاسوں کا انتظام</h2>
             <h3>نئی کلاس شامل کریں / ترمیم کریں</h3>
@@ -976,10 +975,6 @@
                     <div>
                         <label for="classSubjects">مضامین (کوما سے الگ کریں)</label>
                         <input type="text" id="classSubjects" required>
-                    </div>
-                    <div>
-                        <label for="classMonthlyFee">ماہانہ فیس (اختیاری)</label>
-                        <input type="number" id="classMonthlyFee" min="0" step="0.01" value="0">
                     </div>
                 </div>
                 <button type="submit">محفوظ کریں</button>
@@ -2503,50 +2498,31 @@
         }
         const classForm = document.getElementById('classForm');
         const classTableBody = document.getElementById('classesTable').querySelector('tbody');
-
         classForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const classId = document.getElementById('classId').value;
             const subjectsArray = document.getElementById('classSubjects').value.split(',').map(s => s.trim()).filter(s => s);
-            const monthlyFee = parseFloat(document.getElementById('classMonthlyFee').value);
-
             const cls = {
                 name: document.getElementById('className').value,
                 teacherId: parseInt(document.getElementById('classTeacher').value),
                 subjects: subjectsArray,
-                monthlyFee: monthlyFee // Store monthly fee with the class
             };
-
             try {
-                let savedClassId;
                 if (classId) {
                     cls.id = parseInt(classId);
                     await updateData(STORE_CLASSES, cls);
-                    savedClassId = cls.id;
                     alert('کلاس کی معلومات اپ ڈیٹ ہو گئیں۔');
                 } else {
                     const store = await getObjectStore(STORE_CLASSES, 'readonly');
                     const index = store.index('name');
                     const request = index.get(cls.name);
-
                     request.onsuccess = async () => {
                         if (request.result) {
                             alert('اس نام کی کلاس پہلے سے موجود ہے۔');
                         } else {
-                            savedClassId = await addData(STORE_CLASSES, cls); // Get the ID of the newly added class
+                            await addData(STORE_CLASSES, cls);
                             alert('نئی کلاس شامل ہو گئی۔');
                         }
-
-                        // If a monthly fee is specified, add/update it in fee structures
-                        if (savedClassId && monthlyFee > 0) {
-                            const feeStructure = {
-                                classId: savedClassId,
-                                feeType: 'Monthly Fee', // Fixed to 'Monthly Fee'
-                                amount: monthlyFee
-                            };
-                            await upsertFeeStructure(feeStructure); // Custom function to handle add/update
-                        }
-
                         resetClassForm();
                         loadClasses();
                         loadDashboardStats();
@@ -2561,27 +2537,8 @@
                         console.error("Error checking class name uniqueness:", event.target.error);
                         alert('ڈیٹا بیس میں خرابی۔');
                     };
-                    return; // Exit here to prevent duplicate execution from the outer try-catch
+                    return;
                 }
-
-                // For update path, also update fee structure if monthly fee is specified
-                if (savedClassId && monthlyFee > 0) {
-                    const feeStructure = {
-                        classId: savedClassId,
-                        feeType: 'Monthly Fee',
-                        amount: monthlyFee
-                    };
-                    await upsertFeeStructure(feeStructure);
-                } else if (savedClassId && monthlyFee === 0) {
-                    // If monthly fee is set to 0, attempt to remove 'Monthly Fee' structure for this class
-                    const existingFeeStructures = await getAll(STORE_FEE_STRUCTURES, 'classId', savedClassId);
-                    const monthlyFeeStructure = existingFeeStructures.find(fs => fs.feeType === 'Monthly Fee');
-                    if (monthlyFeeStructure) {
-                        await deleteData(STORE_FEE_STRUCTURES, monthlyFeeStructure.id);
-                    }
-                }
-
-
                 resetClassForm();
                 loadClasses();
                 loadDashboardStats();
@@ -2596,37 +2553,6 @@
                 alert('کلاس کو محفوظ کرنے میں خرابی: ' + error);
             }
         });
-
-        // Add a helper function to upsert fee structures
-        async function upsertFeeStructure(newFeeStructure) {
-            try {
-                const store = await getObjectStore(STORE_FEE_STRUCTURES, 'readwrite');
-                const index = store.index('classId_feeType');
-                const keyRange = IDBKeyRange.only([newFeeStructure.classId, newFeeStructure.feeType]);
-
-                const request = index.get(keyRange);
-
-                return new Promise((resolve, reject) => {
-                    request.onsuccess = async () => {
-                        const existing = request.result;
-                        if (existing) {
-                            existing.amount = newFeeStructure.amount;
-                            const updateReq = store.put(existing);
-                            updateReq.onsuccess = () => resolve(existing.id);
-                            updateReq.onerror = reject;
-                        } else {
-                            const addReq = store.add(newFeeStructure);
-                            addReq.onsuccess = () => resolve(addReq.result);
-                            addReq.onerror = reject;
-                        }
-                    };
-                    request.onerror = reject;
-                });
-            } catch (error) {
-                console.error("Error upserting fee structure:", error);
-                throw error;
-            }
-        }
         function resetClassForm() {
             classForm.reset();
             document.getElementById('classId').value = '';
@@ -2668,8 +2594,6 @@
                     document.getElementById('className').value = cls.name;
                     document.getElementById('classTeacher').value = cls.teacherId;
                     document.getElementById('classSubjects').value = cls.subjects ? cls.subjects.join(', ') : '';
-                    // Load monthly fee
-                    document.getElementById('classMonthlyFee').value = cls.monthlyFee || 0;
                     showModule('classes');
                     window.scrollTo(0, 0);
                 }
@@ -2978,33 +2902,27 @@
             const noStudentSelectedMsg = document.getElementById('noStudentSelectedMsg');
             const dueFeesList = document.getElementById('dueFeesList');
             const feeCollectionTypeSelect = document.getElementById('feeCollectionType');
-
             feeHistoryTableBody.innerHTML = '';
             dueFeesList.innerHTML = '';
             feeCollectionTypeSelect.innerHTML = '<option value="">-- منتخب کریں --</option>';
-
             if (!studentId || isNaN(studentId)) {
                 studentFeeDetailsContainer.style.display = 'none';
                 noStudentSelectedMsg.style.display = 'block';
                 return;
             }
-
             studentFeeDetailsContainer.style.display = 'block';
             noStudentSelectedMsg.style.display = 'none';
             feeHistoryTableBody.innerHTML = '<tr><td colspan="5">لوڈ ہو رہا ہے...</td></tr>';
             dueFeesList.innerHTML = '<li>لوڈ ہو رہا ہے...</li>';
-
             try {
                 const studentDues = await getAll('monthlyDues', 'studentId', studentId);
                 const outstandingDues = studentDues.filter(d => d.status !== 'paid');
-
                 dueFeesList.innerHTML = '';
                 feeCollectionTypeSelect.innerHTML = '<option value="">-- فیس کی قسم منتخب کریں --</option>';
-
                 if (outstandingDues.length > 0) {
                     outstandingDues.sort((a, b) => a.monthYear.localeCompare(b.monthYear)).forEach(due => {
                         const totalFee = due.amountDue || due.feeAmount || 0;
-                        const dueAmount = totalFee - (due.amountPaid || 0) - (due.discount || 0);
+                        const dueAmount = totalFee - due.amountPaid - due.discount;
                         const feeLabel = `${due.feeType} - ${due.monthYear}`;
                         const li = document.createElement('li');
                         li.textContent = `${feeLabel}: ${totalFee.toLocaleString()} (بقایا: ${dueAmount.toLocaleString()})`;
@@ -3018,18 +2936,16 @@
                     dueFeesList.innerHTML = '<li>کوئی فیس واجب الادا نہیں۔</li>';
                 }
                 feeCollectionTypeSelect.disabled = outstandingDues.length === 0;
-
                 const feePayments = await getAll(STORE_FEES, 'studentId', studentId);
                 feeHistoryTableBody.innerHTML = '';
-
                 if (feePayments.length > 0) {
                     feePayments.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(payment => {
                         const row = feeHistoryTableBody.insertRow();
                         row.innerHTML = `
                     <td>${payment.date}</td>
                     <td>${payment.feeType}</td>
-                    <td>${(payment.paidAmount || 0).toLocaleString()}</td>
-                    <td>${(payment.discount || 0).toLocaleString()}</td>
+                    <td>${payment.paidAmount.toLocaleString()}</td>
+                    <td>${payment.discount.toLocaleString()}</td>
                     <td><button class="delete" onclick="deleteFeeRecord(${payment.id})">حذف کریں</button></td>
                 `;
                     });
@@ -3040,66 +2956,18 @@
                 console.error("Error loading student fee details:", error);
             }
         }
-
-        async function deleteFeeRecord(feeId) {
-            if (!confirm('کیا آپ واقعی اس فیس ریکارڈ کو حذف کرنا چاہتے ہیں؟ یہ واجب الادا رقم کو بھی اپ ڈیٹ کر دے گا۔')) {
-                return;
-            }
-
-            try {
-                const feeStore = await getObjectStore(STORE_FEES, 'readwrite');
-                const feeRecord = await new Promise((res, rej) => {
-                    const req = feeStore.get(feeId);
-                    req.onsuccess = () => res(req.result);
-                    req.onerror = (e) => rej(e.target.error);
-                });
-
-                if (!feeRecord || !feeRecord.dueId) {
-                    await deleteData(STORE_FEES, feeId);
-                    alert('فیس ریکارڈ (بغیر ڈیو لنک کے) حذف ہو گیا۔');
-                    await loadStudentFeeDetails(feeStudentSelect.value);
-                    return;
+        async function deleteFeeRecord(id) {
+            if (confirm('کیا آپ واقعی اس فیس ریکارڈ کو حذف کرنا چاہتے ہیں؟')) {
+                try {
+                    const studentId = parseInt(feeStudentSelect.value);
+                    await deleteData(STORE_FEES, id);
+                    alert('فیس ریکارڈ حذف ہو گیا۔');
+                    loadStudentFeeDetails(studentId);
+                    loadDashboardStats();
+                } catch (error) {
+                    console.error("Error deleting fee record:", error);
+                    alert('فیس ریکارڈ کو حذف کرنے میں خرابی۔');
                 }
-
-                const dueStore = await getObjectStore(STORE_MONTHLY_DUES, 'readwrite');
-                const dueRecord = await new Promise((res, rej) => {
-                    const req = dueStore.get(feeRecord.dueId);
-                    req.onsuccess = () => res(req.result);
-                    req.onerror = (e) => rej(e.target.error);
-                });
-
-                if (dueRecord) {
-                    dueRecord.amountPaid = (dueRecord.amountPaid || 0) - feeRecord.paidAmount;
-                    dueRecord.discount = (dueRecord.discount || 0) - feeRecord.discount;
-
-                    if (dueRecord.amountPaid <= 0 && dueRecord.discount <= 0) {
-                        dueRecord.status = 'due';
-                        dueRecord.amountPaid = 0;
-                        dueRecord.discount = 0;
-                    } else {
-                        dueRecord.status = 'partial';
-                    }
-                    await new Promise((res, rej) => {
-                        const req = dueStore.put(dueRecord);
-                        req.onsuccess = res;
-                        req.onerror = (e) => rej(e.target.error);
-                    });
-                }
-
-                await new Promise((res, rej) => {
-                    const req = feeStore.delete(feeId);
-                    req.onsuccess = res;
-                    req.onerror = (e) => rej(e.target.error);
-                });
-
-
-                alert('فیس ریکارڈ حذف ہو گیا اور واجب الادا رقم اپ ڈیٹ ہو گئی۔');
-                await loadStudentFeeDetails(feeStudentSelect.value);
-                await loadDashboardStats();
-
-            } catch (error) {
-                console.error("Error deleting fee record:", error);
-                alert('فیس ریکارڈ کو حذف کرنے میں خرابی۔');
             }
         }
         async function generateReceipt() {
