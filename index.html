@@ -6595,79 +6595,6 @@
                 bottom: 8px;
             }
         </style>
-        <h2>آئی ڈی اور سرٹیفیکٹ</h2>
-        <h3>انفرادی آئی ڈی کارڈ جنریٹ کریں</h3>
-        <div class="form-grid">
-            <div>
-                <label for="idCardType">قسم</label>
-                <select id="idCardType" onchange="loadIDCardSelect()" required>
-                    <option value="">-- منتخب کریں --</option>
-                    <option value="student">طالب علم</option>
-                    <option value="teacher">استاد</option>
-                </select>
-            </div>
-            <div>
-                <label for="idCardSelect">شخص منتخب کریں</label>
-                <select id="idCardSelect" required>
-                    <option value="">-- منتخب کریں --</option>
-                </select>
-            </div>
-            <div>
-                <label for="idCardTemplate">ٹیمپلیٹ</label>
-                <select id="idCardTemplate" required>
-                    <option value="front">فرنٹ</option>
-                    <option value="back">بیک</option>
-                </select>
-            </div>
-            <div>
-                <label for="idCardPhoto">تصویر اپ لوڈ کریں (اختیاری)</label>
-                <input type="file" id="idCardPhoto" accept="image/*">
-            </div>
-        </div>
-        <button onclick="generateSingleIDCard()">آئی ڈی کارڈ جنریٹ کریں</button>
-        <button onclick="exportSingleIDCard()">ایکسپورٹ کریں (PNG)</button>
-        <div id="singleIDCardPreview" class="printable" style="display: none;">
-            <div id="idCardContent"></div>
-        </div>
-        <h3>بڑی تعداد میں آئی ڈی کارڈز جنریٹ کریں</h3>
-        <div class="form-grid">
-            <div>
-                <label for="bulkIdCardType">قسم</label>
-                <select id="bulkIdCardType" onchange="loadBulkIDCardSelect()" required>
-                    <option value="">-- منتخب کریں --</option>
-                    <option value="student">طالب علم</option>
-                    <option value="teacher">استاد</option>
-                </select>
-            </div>
-            <div>
-                <label for="bulkIdCardClass">کلاس (طلباء کے لیے)</label>
-                <select id="bulkIdCardClass" onchange="loadBulkIDCardSelect()">
-                    <option value="">-- تمام --</option>
-                </select>
-            </div>
-            <div>
-                <label for="bulkIdCardTemplate">ٹیمپلیٹ</label>
-                <select id="bulkIdCardTemplate" required>
-                    <option value="front">فرنٹ</option>
-                    <option value="back">بیک</option>
-                </select>
-            </div>
-        </div>
-        <button onclick="generateBulkIDCards()">بڑی تعداد میں آئی ڈی کارڈز جنریٹ کریں</button>
-        <button onclick="exportBulkIDCards()">ایکسپورٹ کریں (ZIP)</button>
-        <div id="bulkIDCardResult" style="margin-top: 10px;">
-            <table id="bulkIDCardTable" style="display: none;">
-                <thead>
-                    <tr>
-                        <th>آئی ڈی</th>
-                        <th>نام</th>
-                        <th>پریویو</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-                <hr class="one" style="margin: 40px 0;">
         <h2>سرٹیفکیٹ جنریٹر</h2>
         <div class="form-grid">
             <div>
@@ -6688,6 +6615,16 @@
             <div>
                 <label for="certificateIssueDate">تاریخِ اجراء</label>
                 <input type="date" id="certificateIssueDate" onchange="generateCertificate()">
+            </div>
+            <div>
+                <label for="certificateFrameSelect">فریم منتخب کریں</label>
+                <select id="certificateFrameSelect" onchange="generateCertificate()">
+                    <option value="bgc.png">فریم 1</option>
+                    <option value="bgc2.png">فریم 2</option>
+                    <option value="bgc3.png">فریم 3</option>
+                    <option value="bgc4.png">فریم 4</option>
+                    <option value="bgc5.png">فریم 5</option>
+                </select>
             </div>
         </div>
         <button class="print" onclick="printCertificate()" style="display: none;" id="printCertificateBtn">ایکسپورٹ کریں (PNG)</button>
@@ -6723,27 +6660,16 @@
         <label for="customCertificateIssueDate">تاریخِ اجراء</label>
         <input type="date" id="customCertificateIssueDate">
     </div>
-</div>
-<div id="internalDataSelector" class="form-grid">
-     <div style="grid-column: span 2;">
-        <label for="customBulkCertificateStudents">طالب علم منتخب کریں (ایک یا زیادہ)</label>
-        <select id="customBulkCertificateStudents" multiple size="6" style="height: 150px;"></select>
+    <div>
+        <label for="customCertificateFrameSelect">فریم منتخب کریں</label>
+        <select id="customCertificateFrameSelect">
+            <option value="bgc.png">فریم 1</option>
+            <option value="bgc2.png">فریم 2</option>
+            <option value="bgc3.png">فریم 3</option>
+            <option value="bgc4.png">فریم 4</option>
+            <option value="bgc5.png">فریم 5</option>
+        </select>
     </div>
-</div>
-<div id="csvDataSelector" style="display:none;">
-    <div class="form-grid">
-        <div class="full-width">
-            <label for="csvDataInput">یہاں CSV ڈیٹا پیسٹ کریں (ہیڈر کے ساتھ)</label>
-            <textarea id="csvDataInput" rows="8" placeholder="FullName,Award,Position
-احمد خان,بہترین کارکردگی,اول"></textarea>
-        </div>
-    </div>
-    <label for="csvFileInput">یا CSV فائل اپ لوڈ کریں:</label>
-    <input type="file" id="csvFileInput" accept=".csv" onchange="handleCSVFile(event)">
-</div>
-<button onclick="generateCustomCertificates()">سرٹیفکیٹس جنریٹ کریں</button>
-<button class="print" onclick="exportCustomCertificates()" style="display: none;" id="exportCustomCertificatesBtn">ایکسپورٹ کریں (ZIP)</button>
-<div id="customCertificatePreviewContainer" class="printable" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
 </div>
     `;
             container.appendChild(idCardModule);
@@ -8385,6 +8311,7 @@
             const studentId = parseInt(document.getElementById('certificateStudentSelect').value);
             const certType = document.getElementById('certificateTypeSelect').value;
             const issueDateEl = document.getElementById('certificateIssueDate');
+            const selectedFrame = document.getElementById('certificateFrameSelect').value;
             if (!issueDateEl.value) {
                 issueDateEl.value = new Date().toISOString().split('T')[0];
             }
@@ -8423,7 +8350,7 @@
                 }
                 const certificateHTML = `
                     <div class="certificate-paper">
-                        <div class="certificate-border">
+                        <div class="certificate-border" style="background-image: url('${selectedFrame}');">
                             <div class="certificate-inner-border">
                                 <div class="cert-header">
                                     <p class="bismillah">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</p>
@@ -8593,6 +8520,7 @@
             const certTitle = document.getElementById('customCertificateTitle').value;
             const certBodyTemplate = document.getElementById('customCertificateBody').value;
             const issueDateEl = document.getElementById('customCertificateIssueDate');
+            const selectedFrame = document.getElementById('customCertificateFrameSelect').value;
             const previewContainer = document.getElementById('customCertificatePreviewContainer');
             const exportBtn = document.getElementById('exportCustomCertificatesBtn');
             if (!issueDateEl.value) {
@@ -8657,7 +8585,7 @@
                     });
                     allCertificatesHTML += `
                 <div class="certificate-paper" data-student-name="${record.filename}">
-                    <div class="certificate-border">
+                    <div class="certificate-border" style="background-image: url('${selectedFrame}');">
                         <div class="certificate-inner-border">
                             <div class="cert-header">
                                 <p class="bismillah">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</p>
