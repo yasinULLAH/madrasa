@@ -6595,6 +6595,79 @@
                 bottom: 8px;
             }
         </style>
+                <h2>آئی ڈی اور سرٹیفیکٹ</h2>
+        <h3>انفرادی آئی ڈی کارڈ جنریٹ کریں</h3>
+        <div class="form-grid">
+            <div>
+                <label for="idCardType">قسم</label>
+                <select id="idCardType" onchange="loadIDCardSelect()" required>
+                    <option value="">-- منتخب کریں --</option>
+                    <option value="student">طالب علم</option>
+                    <option value="teacher">استاد</option>
+                </select>
+            </div>
+            <div>
+                <label for="idCardSelect">شخص منتخب کریں</label>
+                <select id="idCardSelect" required>
+                    <option value="">-- منتخب کریں --</option>
+                </select>
+            </div>
+            <div>
+                <label for="idCardTemplate">ٹیمپلیٹ</label>
+                <select id="idCardTemplate" required>
+                    <option value="front">فرنٹ</option>
+                    <option value="back">بیک</option>
+                </select>
+            </div>
+            <div>
+                <label for="idCardPhoto">تصویر اپ لوڈ کریں (اختیاری)</label>
+                <input type="file" id="idCardPhoto" accept="image/*">
+            </div>
+        </div>
+        <button onclick="generateSingleIDCard()">آئی ڈی کارڈ جنریٹ کریں</button>
+        <button onclick="exportSingleIDCard()">ایکسپورٹ کریں (PNG)</button>
+        <div id="singleIDCardPreview" class="printable" style="display: none;">
+            <div id="idCardContent"></div>
+        </div>
+        <h3>بڑی تعداد میں آئی ڈی کارڈز جنریٹ کریں</h3>
+        <div class="form-grid">
+            <div>
+                <label for="bulkIdCardType">قسم</label>
+                <select id="bulkIdCardType" onchange="loadBulkIDCardSelect()" required>
+                    <option value="">-- منتخب کریں --</option>
+                    <option value="student">طالب علم</option>
+                    <option value="teacher">استاد</option>
+                </select>
+            </div>
+            <div>
+                <label for="bulkIdCardClass">کلاس (طلباء کے لیے)</label>
+                <select id="bulkIdCardClass" onchange="loadBulkIDCardSelect()">
+                    <option value="">-- تمام --</option>
+                </select>
+            </div>
+            <div>
+                <label for="bulkIdCardTemplate">ٹیمپلیٹ</label>
+                <select id="bulkIdCardTemplate" required>
+                    <option value="front">فرنٹ</option>
+                    <option value="back">بیک</option>
+                </select>
+            </div>
+        </div>
+        <button onclick="generateBulkIDCards()">بڑی تعداد میں آئی ڈی کارڈز جنریٹ کریں</button>
+        <button onclick="exportBulkIDCards()">ایکسپورٹ کریں (ZIP)</button>
+        <div id="bulkIDCardResult" style="margin-top: 10px;">
+            <table id="bulkIDCardTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>آئی ڈی</th>
+                        <th>نام</th>
+                        <th>پریویو</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+                <hr class="one" style="margin: 40px 0;">
         <h2>سرٹیفکیٹ جنریٹر</h2>
         <div class="form-grid">
             <div>
