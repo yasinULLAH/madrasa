@@ -936,6 +936,94 @@
             content: ' (Error)';
             font-size: 0.8em;
         }
+
+        /* Find this rule and REPLACE it */
+        .certificate-container {
+            width: 800px;
+            height: 550px;
+            border: 5px double #2c3e50;
+            padding: 25px;
+            background-color: white;
+            text-align: center;
+            page-break-inside: avoid;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            /* --- MODIFIED LINES --- */
+            background-repeat: no-repeat;
+            background-size: 102% 106%;
+            background-position: center;
+            background-origin: border-box;
+            background-clip: padding-box;
+            position: relative;
+            transition: background-image 0.3s ease-in-out;
+            /* Added for smooth frame switching */
+        }
+
+        /* Find this rule and make sure it exists */
+        .certificate-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url(logo2.png);
+            background-size: 63%;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* Find this rule and REPLACE it */
+        .certificate-container [contenteditable="true"] {
+            cursor: text;
+            padding: 5px;
+            outline: 1px dashed rgba(52, 152, 219, 0.5);
+            /* Made outline subtle */
+            transition: all 0.2s ease-in-out;
+            min-height: 1.2em;
+            /* Ensure empty elements are clickable */
+        }
+
+        /* Find this rule and REPLACE it */
+        .certificate-container [contenteditable="true"]:hover,
+        .certificate-container [contenteditable="true"]:focus {
+            background-color: rgba(52, 152, 219, 0.1);
+            outline: 1px solid #3498db;
+        }
+
+        /* --- ADD these NEW rules for the buttons --- */
+        .certificate-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+            color: #777;
+        }
+
+        .cert-frame-btn {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .cert-frame-btn:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .certificate-container p {
+            padding: 0px 22px !important;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -11096,61 +11184,122 @@
             document.getElementById('generate-certificate-btn').addEventListener('click', generateCertificate);
             document.getElementById('bulk-export-zip-btn').addEventListener('click', exportAllCardsAsZip);
         }
+        // Add this NEW function before generateCertificate
+        function setupCertificateInteraction(studentId) {
+            const certificateFrames = ['bgc.png', 'bgc2.png', 'bgc3.png', 'bgc4.png', 'bgc5.png'];
+            let currentFrameIndex = 0;
+            const certContainer = document.getElementById(`cert-container-${studentId}`);
+
+            // Load saved frame from localStorage
+            const savedFrameIndex = localStorage.getItem(`certFrame_${studentId}`);
+            if (savedFrameIndex !== null) {
+                currentFrameIndex = parseInt(savedFrameIndex, 10);
+            }
+            certContainer.style.backgroundImage = `url(${certificateFrames[currentFrameIndex]})`;
+
+            // Add event listeners for frame switching
+            document.getElementById('cert-prev-frame').addEventListener('click', () => {
+                currentFrameIndex = (currentFrameIndex - 1 + certificateFrames.length) % certificateFrames.length;
+                certContainer.style.backgroundImage = `url(${certificateFrames[currentFrameIndex]})`;
+                localStorage.setItem(`certFrame_${studentId}`, currentFrameIndex);
+            });
+
+            document.getElementById('cert-next-frame').addEventListener('click', () => {
+                currentFrameIndex = (currentFrameIndex + 1) % certificateFrames.length;
+                certContainer.style.backgroundImage = `url(${certificateFrames[currentFrameIndex]})`;
+                localStorage.setItem(`certFrame_${studentId}`, currentFrameIndex);
+            });
+
+            // Make elements editable and handle saving
+            const editableElements = certContainer.querySelectorAll('[data-editable-id]');
+            editableElements.forEach(el => {
+                const editableId = el.dataset.editableId;
+
+                // Load saved text from localStorage
+                const savedText = localStorage.getItem(`certText_${studentId}_${editableId}`);
+                if (savedText) {
+                    el.innerHTML = savedText;
+                }
+
+                // Save text on edit
+                el.addEventListener('blur', () => {
+                    localStorage.setItem(`certText_${studentId}_${editableId}`, el.innerHTML);
+                    showNotification('Certificate text saved!', 'info');
+                });
+            });
+        }
+        // Find and completely REPLACE this function
         async function generateCertificate() {
             showLoading();
             const certType = document.getElementById('certificate-type').value;
             const studentId = parseInt(document.getElementById('certificate-student-filter').value);
             const outputDiv = document.getElementById('certificate-output');
             outputDiv.innerHTML = '';
+
             if (!studentId) {
                 showNotification('Please select a student.', 'error');
                 hideLoading();
                 return;
             }
+
             const student = await getFromStore(STORES.STUDENTS, studentId);
             const settings = await getFromStore(STORES.SETTINGS, 'general');
             const schoolName = settings?.schoolName || "Deeni Madrasa";
             const principalName = settings?.principalName || "Principal";
             const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : '';
             const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
             let title = "";
             let body = "";
+
             switch (certType) {
                 case 'promotion':
                     title = "Promotion Certificate";
-                    body = `<p>This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> has successfully completed Class <b>${className}</b> and is promoted to the next class. We wish them all the best for their future endeavors.</p>`;
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> has successfully completed Class <b>${className}</b> and is promoted to the next class. We wish them all the best for their future endeavors.</p>`;
                     break;
                 case 'leaving':
                     title = "Leaving Certificate";
-                    body = `<p>This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b>, Roll No. <b>${student.rollNumber}</b>, has been studying in our institution. This certificate is issued to them. We wish them a bright future.</p>`;
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b>, Roll No. <b>${student.rollNumber}</b>, has been studying in our institution. This certificate is issued to them. We wish them a bright future.</p>`;
                     break;
                 case 'character':
                     title = "Character Certificate";
-                    body = `<p>This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> is known to our institution as a student of good character and excellent morals. Their conduct with teachers and fellow students has always been positive.</p>`;
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> is known to our institution as a student of good character and excellent morals. Their conduct with teachers and fellow students has always been positive.</p>`;
                     break;
                 case 'achievement':
                     title = "Achievement Certificate";
                     const achievement = document.getElementById('achievement-description').value || 'Outstanding Performance';
-                    body = `<p>This certificate is presented to student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> for their <b>${achievement}</b>. The institution is proud of their remarkable achievement.</p>`;
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certificate is presented to student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> for their <b>${achievement}</b>. The institution is proud of their remarkable achievement.</p>`;
                     break;
             }
+
+            // Notice the new data-editable-id attributes and the new controls section
             const certificateHTML = `
     <div class="certificate-wrapper" id="cert-wrapper-${student.id}">
+        <div class="certificate-controls no-print">
+            <button id="cert-prev-frame" class="cert-frame-btn" title="Previous Frame">❮</button>
+            <span style="font-style: italic;">Click any text to edit. Changes are saved automatically.</span>
+            <button id="cert-next-frame" class="cert-frame-btn" title="Next Frame">❯</button>
+        </div>
         <button title="Download PNG" class="card-export-btn no-print" onclick="exportElementAsPNG('cert-container-${student.id}', 'Certificate-${student.rollNumber}.png')">↓</button>
         <div class="certificate-container" id="cert-container-${student.id}">
-            <h2>${schoolName}</h2>
-            <h3>${title}</h3>
+            <h2 data-editable-id="school_name" contenteditable="true">${schoolName}</h2>
+            <h3 data-editable-id="cert_title" contenteditable="true">${title}</h3>
             <hr>
             <div style="text-align: left; margin-top: 40px;">
                 ${body}
             </div>
             <div class="certificate-signature">
-                <div>Date: ${today}</div>
-                <div>Principal's Signature</div>
+                <div data-editable-id="cert_date" contenteditable="true">Date: ${today}</div>
+                <div data-editable-id="cert_signature_title" contenteditable="true">Principal's Signature</div>
             </div>
         </div>
     </div>`;
+
             outputDiv.innerHTML = certificateHTML;
+
+            // Call the new function to activate the features
+            setupCertificateInteraction(studentId);
+
             hideLoading();
         }
         async function exportElementAsPNG(elementId, filename) {
