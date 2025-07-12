@@ -8943,6 +8943,7 @@
                 hideLoading();
             }
         }
+        // Find and completely REPLACE this function
         async function collectFee() {
             try {
                 showLoading();
@@ -8952,29 +8953,40 @@
                 const monthlyFeeNow = feeStructure?.monthlyFee || student.monthlyFee || 0;
                 const monthNumber = parseInt(document.getElementById('fee-month').value);
                 const year = parseInt(document.getElementById('fee-year').value);
-                const payingNow = parseFloat(document.getElementById('fee-paying-now').value);
+
+                // This is the total money the user is giving you.
+                const amountReceived = parseFloat(document.getElementById('fee-paying-now').value);
+
                 const fine = parseFloat(document.getElementById('fee-fine').value) || 0;
                 const discount = parseFloat(document.getElementById('fee-discount').value) || 0;
+
+                // ** THIS IS THE FIX **
+                // We create the data object for saving.
                 const feeData = {
                     receiptNumber: 'FEE' + Date.now().toString().slice(-6),
                     studentId: studentId,
                     studentName: student.name,
                     month: monthNumber,
                     year: year,
-                    amount: payingNow,
+                    // 'amount' is the portion that covers the actual fee.
+                    // It's calculated by taking the total received and removing the fine/adding back the discount.
+                    amount: amountReceived - fine + discount,
                     fine: fine,
                     discount: discount,
-                    total: payingNow + fine - discount,
+                    // 'total' is the actual cash transaction amount.
+                    total: amountReceived,
                     monthlyFeeAtTimeOfPayment: monthlyFeeNow,
                     date: document.getElementById('fee-payment-date').value,
                     paymentMethod: document.getElementById('fee-payment-method').value,
                     notes: document.getElementById('fee-notes').value,
                 };
-                if (feeData.amount <= 0 && feeData.fine <= 0 && feeData.discount <= 0) {
+
+                if (feeData.total <= 0) {
                     showNotification('Total collected amount must be greater than zero.', 'error');
                     hideLoading();
                     return;
                 }
+
                 await addToStore(STORES.FEES, feeData);
                 showNotification('Fee collected successfully.', 'success');
                 await showFeeReceipt(feeData, student);
@@ -12553,144 +12565,144 @@
 
 
     function initializeShortcuts() {
-    const shortcutConfig = {
-        'alt+d': { func: () => showView('dashboard'), selector: '[data-view="dashboard"]', title: 'Dashboard' },
-        'alt+s': { func: () => showView('students'), selector: '[data-view="students"]', title: 'Students' },
-        'alt+t': { func: () => showView('teachers'), selector: '[data-view="teachers"]', title: 'Teachers' },
-        'alt+f': { func: () => showView('fees'), selector: '[data-view="fees"]', title: 'Fees' },
-        'alt+e': { func: () => showView('exams'), selector: '[data-view="exams"]', title: 'Exams' },
-        'alt+c': { func: () => showView('classes'), selector: '[data-view="classes"]', title: 'Classes' },
-        'alt+b': { func: () => showView('backup'), selector: '[data-view="backup"]', title: 'Backup' },
-        /* 'alt+i': { func: () => showView('id-cards'), selector: '[data-view="id-cards"]', title: 'ID Cards' }, */
-        'alt+p': { func: () => showView('salaries'), selector: '[data-view="salaries"]', title: 'Salaries (Pay)' },
-        'alt+l': { func: () => showView('library'), selector: '[data-view="library"]', title: 'Library' },
-        'alt+r': { func: () => showView('reports'), selector: '[data-view="reports"]', title: 'Reports' },
-        /* 'alt+o': { func: () => showView('settings'), selector: '[data-view="settings"]', title: 'Settings (Options)' }, */
-    };
+        const shortcutConfig = {
+            'alt+d': { func: () => showView('dashboard'), selector: '[data-view="dashboard"]', title: 'Dashboard' },
+            'alt+s': { func: () => showView('students'), selector: '[data-view="students"]', title: 'Students' },
+            'alt+t': { func: () => showView('teachers'), selector: '[data-view="teachers"]', title: 'Teachers' },
+            'alt+f': { func: () => showView('fees'), selector: '[data-view="fees"]', title: 'Fees' },
+            'alt+e': { func: () => showView('exams'), selector: '[data-view="exams"]', title: 'Exams' },
+            'alt+c': { func: () => showView('classes'), selector: '[data-view="classes"]', title: 'Classes' },
+            'alt+b': { func: () => showView('backup'), selector: '[data-view="backup"]', title: 'Backup' },
+            /* 'alt+i': { func: () => showView('id-cards'), selector: '[data-view="id-cards"]', title: 'ID Cards' }, */
+            'alt+p': { func: () => showView('salaries'), selector: '[data-view="salaries"]', title: 'Salaries (Pay)' },
+            'alt+l': { func: () => showView('library'), selector: '[data-view="library"]', title: 'Library' },
+            'alt+r': { func: () => showView('reports'), selector: '[data-view="reports"]', title: 'Reports' },
+            /* 'alt+o': { func: () => showView('settings'), selector: '[data-view="settings"]', title: 'Settings (Options)' }, */
+        };
 
-    function addShortcutTooltips() {
-        for (const key in shortcutConfig) {
-            const config = shortcutConfig[key];
-            const element = document.querySelector(config.selector);
-            if (element) {
-                const shortcutHint = `(${key.replace('alt+', 'Alt+')})`;
-                element.title = `${config.title} ${shortcutHint}`;
-            }
-        }
-    }
-
-    function findVisibleElement(selector) {
-        const elements = Array.from(document.querySelectorAll(selector));
-        return elements.find(el => el.offsetParent !== null);
-    }
-
-    function handleKeydown(e) {
-         if (!e.key) return;
-        if (e.target.matches('input, textarea, select')) {
-            if (e.key === 'Escape') {
-                e.target.blur();
-            } else if (e.key.toLowerCase() === 's' && e.ctrlKey) {
-                 e.preventDefault();
-                 const submitButton = findVisibleElement('.tab-content.active form .btn-primary[type="submit"]');
-                 if(submitButton) submitButton.click();
-            }
-            return;
-        }
-
-        const key = `${e.altKey ? 'alt+' : ''}${e.ctrlKey ? 'ctrl+' : ''}${e.shiftKey ? 'shift+' : ''}${e.key.toLowerCase()}`;
-        
-        if (shortcutConfig[key]) {
-            e.preventDefault();
-            shortcutConfig[key].func();
-            return;
-        }
-        
-        switch (e.key) {
-            case 'Escape':
-                const visibleModal = findVisibleElement('.modal[style*="display: block"]');
-                if (visibleModal) {
-                    e.preventDefault();
-                    const closeButton = visibleModal.querySelector('.close');
-                    if (closeButton) closeButton.click();
+        function addShortcutTooltips() {
+            for (const key in shortcutConfig) {
+                const config = shortcutConfig[key];
+                const element = document.querySelector(config.selector);
+                if (element) {
+                    const shortcutHint = `(${key.replace('alt+', 'Alt+')})`;
+                    element.title = `${config.title} ${shortcutHint}`;
                 }
-                break;
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-                if (e.altKey) {
+            }
+        }
+
+        function findVisibleElement(selector) {
+            const elements = Array.from(document.querySelectorAll(selector));
+            return elements.find(el => el.offsetParent !== null);
+        }
+
+        function handleKeydown(e) {
+            if (!e.key) return;
+            if (e.target.matches('input, textarea, select')) {
+                if (e.key === 'Escape') {
+                    e.target.blur();
+                } else if (e.key.toLowerCase() === 's' && e.ctrlKey) {
                     e.preventDefault();
-                    const activeView = findVisibleElement('.section-view');
-                    if (activeView) {
-                        const tabIndex = parseInt(e.key) - 1;
-                        const tab = activeView.querySelectorAll('.tabs .tab')[tabIndex];
-                        if (tab) tab.click();
+                    const submitButton = findVisibleElement('.tab-content.active form .btn-primary[type="submit"]');
+                    if (submitButton) submitButton.click();
+                }
+                return;
+            }
+
+            const key = `${e.altKey ? 'alt+' : ''}${e.ctrlKey ? 'ctrl+' : ''}${e.shiftKey ? 'shift+' : ''}${e.key.toLowerCase()}`;
+
+            if (shortcutConfig[key]) {
+                e.preventDefault();
+                shortcutConfig[key].func();
+                return;
+            }
+
+            switch (e.key) {
+                case 'Escape':
+                    const visibleModal = findVisibleElement('.modal[style*="display: block"]');
+                    if (visibleModal) {
+                        e.preventDefault();
+                        const closeButton = visibleModal.querySelector('.close');
+                        if (closeButton) closeButton.click();
                     }
-                }
-                break;
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    if (e.altKey) {
+                        e.preventDefault();
+                        const activeView = findVisibleElement('.section-view');
+                        if (activeView) {
+                            const tabIndex = parseInt(e.key) - 1;
+                            const tab = activeView.querySelectorAll('.tabs .tab')[tabIndex];
+                            if (tab) tab.click();
+                        }
+                    }
+                    break;
+            }
         }
+
+        addShortcutTooltips();
+        document.addEventListener('keydown', handleKeydown);
     }
 
-    addShortcutTooltips();
-    document.addEventListener('keydown', handleKeydown);
-}
-
-// Activate the shortcut system
-initializeShortcuts();
+    // Activate the shortcut system
+    initializeShortcuts();
 </script>
 <script>
-let protectionEnabled = true;
+    let protectionEnabled = true;
 
-function blockKeys(e) {
-  if (!protectionEnabled) return;
+    function blockKeys(e) {
+        if (!protectionEnabled) return;
 
-  const isCtrl = e.ctrlKey;
-  const isAlt = e.altKey;
-  const isShift = e.shiftKey;
+        const isCtrl = e.ctrlKey;
+        const isAlt = e.altKey;
+        const isShift = e.shiftKey;
 
-  // Allow Ctrl+C / Ctrl+V / Alt+F4 / Tab
-  const allowed =
-    (isCtrl && ['c', 'v'].includes(e.key.toLowerCase())) ||
-    (isAlt && e.key === 'F4') ||
-    e.key === 'Tab';
+        // Allow Ctrl+C / Ctrl+V / Alt+F4 / Tab
+        const allowed =
+            (isCtrl && ['c', 'v'].includes(e.key.toLowerCase())) ||
+            (isAlt && e.key === 'F4') ||
+            e.key === 'Tab';
 
-  // Secret unlock: Ctrl+Alt+Shift+Y
-  if (isCtrl && isAlt && isShift && e.key.toLowerCase() === 'y') {
-    protectionEnabled = false;
-    alert("Protection disabled.");
-    return;
-  }
+        // Secret unlock: Ctrl+Alt+Shift+Y
+        if (isCtrl && isAlt && isShift && e.key.toLowerCase() === 'y') {
+            protectionEnabled = false;
+            alert("Protection disabled.");
+            return;
+        }
 
-  // Block common dev shortcuts
-  const blocked =
-    e.key === 'F12' ||
-    (isCtrl && ['u', 's', 'p', 'i', 'j', 'k'].includes(e.key.toLowerCase())) ||
-    (isCtrl && isShift) ||
-    (isCtrl && isAlt && e.key.toLowerCase() === 'i');
+        // Block common dev shortcuts
+        const blocked =
+            e.key === 'F12' ||
+            (isCtrl && ['u', 's', 'p', 'i', 'j', 'k'].includes(e.key.toLowerCase())) ||
+            (isCtrl && isShift) ||
+            (isCtrl && isAlt && e.key.toLowerCase() === 'i');
 
-  if (blocked && !allowed) {
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  }
-}
+        if (blocked && !allowed) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }
 
-document.addEventListener('keydown', blockKeys);
+    document.addEventListener('keydown', blockKeys);
 
-document.addEventListener('contextmenu', function (e) {
-  if (protectionEnabled) e.preventDefault();
-});
+    document.addEventListener('contextmenu', function (e) {
+        if (protectionEnabled) e.preventDefault();
+    });
 
-document.addEventListener('dragstart', function (e) {
-  if (protectionEnabled) e.preventDefault();
-});
+    document.addEventListener('dragstart', function (e) {
+        if (protectionEnabled) e.preventDefault();
+    });
 
-// Optional: Clear page if DevTools is open
-setInterval(() => {
-  if (!protectionEnabled) return;
-  const open = window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160;
-  if (open) {
-    document.body.innerHTML = "<h1 style='color:red; text-align:center;'>DevTools are blocked</h1>";
-  }
-}, 1000);
+    // Optional: Clear page if DevTools is open
+    setInterval(() => {
+        if (!protectionEnabled) return;
+        const open = window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160;
+        if (open) {
+            document.body.innerHTML = "<h1 style='color:red; text-align:center;'>DevTools are blocked</h1>";
+        }
+    }, 1000);
 </script>
