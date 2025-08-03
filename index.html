@@ -610,16 +610,11 @@
 
         .chart-small-grid {
             grid-column: 1 / -1;
-
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-
             gap: 15px;
-
             margin-bottom: 20px;
-
         }
-
 
         .chart-panel canvas {
             max-width: 100% !important;
@@ -745,8 +740,6 @@
             </div>
             <hr style="margin: 20px 0;" class="one">
             <hr style="margin: 20px 0;" class="two">
-
-
             <h3>اعدادوشمار کے چارٹس</h3>
             <div class="form-grid">
                 <div class="form-grid chart-small-grid">
@@ -793,8 +786,6 @@
                     <canvas id="salaryDistributionChart"></canvas>
                 </div>
             </div>
-
-
             <hr style="margin: 20px 0;" class="one">
             <hr style="margin: 20px 0;" class="two">
             <div class="form-grid" id="advancedReportControls">
@@ -1502,10 +1493,31 @@
             <input type="text" id="schoolNamePrint" placeholder="مدرسہ کا نام درج کریں">
             <button onclick="savePrintSettings()">سیٹنگز محفوظ کریں</button>
         </div>
+        <div id="staffAttendance" class="module">
+            <h2>اسٹاف کی حاضری اور رخصت</h2>
+            <h3>حاضری لگائیں</h3>
+            <div class="form-grid">
+                <div>
+                    <label for="staffAttendanceDate">تاریخ</label>
+                    <input type="date" id="staffAttendanceDate" onchange="loadStaffForAttendance()">
+                </div>
+            </div>
+            <table id="staffAttendanceTable">
+                <thead>
+                    <tr>
+                        <th>اسٹاف کا نام</th>
+                        <th>حالت (Present/Absent/Leave)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button onclick="saveStaffAttendance()">حاضری محفوظ کریں</button>
+        </div>
     </div>
     <script>
         const DB_NAME = 'SchoolManagementDB';
-        const DB_VERSION = 17;
+        const DB_VERSION = 18;
         let db;
         const STORE_STUDENTS = 'students';
         const STORE_TEACHERS = 'teachers';
@@ -1530,6 +1542,7 @@
             { text: 'فیس', moduleId: 'fees' },
             { text: 'فیس اسٹرکچر', moduleId: 'feeStructures' },
             { text: 'حاضری', moduleId: 'attendance' },
+            { text: 'اسٹاف حاضری', moduleId: 'staffAttendance' },
             { text: 'نتائج', moduleId: 'results' },
             { text: 'ٹائم ٹیبل / ڈیوٹی روسٹر', moduleId: 'timetable' },
             { text: 'اخراجات', moduleId: 'expenses' },
@@ -1578,6 +1591,10 @@
                 request.onupgradeneeded = (event) => {
                     db = event.target.result;
                     console.log("Upgrading database...");
+                    if (!db.objectStoreNames.contains('staffAttendance')) {
+                        const staffAttendanceStore = db.createObjectStore('staffAttendance', { keyPath: 'id', autoIncrement: true });
+                        staffAttendanceStore.createIndex('date_staffId', ['date', 'staffId'], { unique: true });
+                    }
                     const upgradeTransaction = event.target.transaction;
                     if (!db.objectStoreNames.contains(STORE_STUDENTS)) {
                         const studentStore = db.createObjectStore(STORE_STUDENTS, { keyPath: 'id', autoIncrement: true });
@@ -1597,7 +1614,6 @@
                         duesStore.createIndex('studentId_feeType_monthYear', ['studentId', 'feeType', 'monthYear'], { unique: true });
                     } else {
                         const duesStore = upgradeTransaction.objectStore('monthlyDues');
-
                         if (duesStore.indexNames.contains('student_fee_month')) {
                             duesStore.deleteIndex('student_fee_month');
                         }
@@ -1719,7 +1735,6 @@
                 };
             });
         }
-
         async function generateRecurringDues() {
             console.log("Checking for recurring dues generation...");
             const today = new Date();
@@ -1727,27 +1742,22 @@
             const currentYear = today.getFullYear();
             const currentMonthYear = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
             const lastCheck = localStorage.getItem('duesGeneratedFor');
-
             if (lastCheck === currentMonthYear) {
                 console.log(`Dues for ${currentMonthYear} already generated.`);
                 return;
             }
-
             try {
                 const allFeeStructures = await getAll('feeStructures');
                 const recurringStructures = allFeeStructures.filter(fs =>
                     fs.feeType === 'Monthly Fee' || fs.feeType === 'Yearly Fee'
                 );
-
                 if (recurringStructures.length === 0) {
                     localStorage.setItem('duesGeneratedFor', currentMonthYear);
                     return;
                 }
-
                 const allStudents = await getAll(STORE_STUDENTS);
                 const dueStore = await getObjectStore('monthlyDues', 'readwrite');
                 let duesCreatedCount = 0;
-
                 for (const student of allStudents) {
                     const classStructures = recurringStructures.filter(fs => fs.classId === student.classId);
                     for (const structure of classStructures) {
@@ -1757,7 +1767,6 @@
                         } else if (structure.feeType === 'Yearly Fee' && currentMonth === 0) {
                             dueMonthYear = `${currentYear}`;
                         }
-
                         if (dueMonthYear) {
                             const dueRecord = {
                                 studentId: student.id,
@@ -1769,16 +1778,12 @@
                                 amountPaid: 0,
                                 discount: 0
                             };
-
-
                             const index = dueStore.index('studentId_feeType_monthYear');
                             const checkReq = index.get([student.id, structure.feeType, dueMonthYear]);
-
                             const existingDue = await new Promise((resolve, reject) => {
                                 checkReq.onsuccess = () => resolve(checkReq.result);
                                 checkReq.onerror = (e) => reject(e.target.error);
                             });
-
                             if (!existingDue) {
                                 await new Promise((resolve, reject) => {
                                     const addReq = dueStore.add(dueRecord);
@@ -1790,12 +1795,10 @@
                         }
                     }
                 }
-
                 if (duesCreatedCount > 0) {
                     console.log(`${duesCreatedCount} new recurring dues generated for ${currentMonthYear}.`);
                 }
                 localStorage.setItem('duesGeneratedFor', currentMonthYear);
-
             } catch (error) {
                 console.error("Failed to generate recurring dues:", error);
             }
@@ -1904,6 +1907,10 @@
             if (activeButton) {
                 activeButton.classList.add('active');
             }
+            if (moduleId === 'staffAttendance') {
+                document.getElementById('staffAttendanceDate').value = new Date().toISOString().split('T')[0];
+                loadStaffForAttendance();
+            }
             if (moduleId === 'students') loadStudents();
             if (moduleId === 'teachers') loadTeachers();
             if (moduleId === 'classes') loadClasses();
@@ -1911,7 +1918,6 @@
             if (moduleId === 'attendance') { loadClassesForAttendance(); loadStudentsForAttendance(); }
             if (moduleId === 'results') {
                 createResultsModule();
-
                 setTimeout(() => {
                     loadClassesForResults();
                     loadStudentsForResultCard();
@@ -2503,20 +2509,17 @@
         }
         const classForm = document.getElementById('classForm');
         const classTableBody = document.getElementById('classesTable').querySelector('tbody');
-
         classForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const classId = document.getElementById('classId').value;
             const subjectsArray = document.getElementById('classSubjects').value.split(',').map(s => s.trim()).filter(s => s);
             const monthlyFee = parseFloat(document.getElementById('classMonthlyFee').value);
-
             const cls = {
                 name: document.getElementById('className').value,
                 teacherId: parseInt(document.getElementById('classTeacher').value),
                 subjects: subjectsArray,
                 monthlyFee: monthlyFee // Store monthly fee with the class
             };
-
             try {
                 let savedClassId;
                 if (classId) {
@@ -2528,7 +2531,6 @@
                     const store = await getObjectStore(STORE_CLASSES, 'readonly');
                     const index = store.index('name');
                     const request = index.get(cls.name);
-
                     request.onsuccess = async () => {
                         if (request.result) {
                             alert('اس نام کی کلاس پہلے سے موجود ہے۔');
@@ -2536,7 +2538,6 @@
                             savedClassId = await addData(STORE_CLASSES, cls); // Get the ID of the newly added class
                             alert('نئی کلاس شامل ہو گئی۔');
                         }
-
                         // If a monthly fee is specified, add/update it in fee structures
                         if (savedClassId && monthlyFee > 0) {
                             const feeStructure = {
@@ -2546,7 +2547,6 @@
                             };
                             await upsertFeeStructure(feeStructure); // Custom function to handle add/update
                         }
-
                         resetClassForm();
                         loadClasses();
                         loadDashboardStats();
@@ -2563,7 +2563,6 @@
                     };
                     return; // Exit here to prevent duplicate execution from the outer try-catch
                 }
-
                 // For update path, also update fee structure if monthly fee is specified
                 if (savedClassId && monthlyFee > 0) {
                     const feeStructure = {
@@ -2580,8 +2579,6 @@
                         await deleteData(STORE_FEE_STRUCTURES, monthlyFeeStructure.id);
                     }
                 }
-
-
                 resetClassForm();
                 loadClasses();
                 loadDashboardStats();
@@ -2596,16 +2593,13 @@
                 alert('کلاس کو محفوظ کرنے میں خرابی: ' + error);
             }
         });
-
         // Add a helper function to upsert fee structures
         async function upsertFeeStructure(newFeeStructure) {
             try {
                 const store = await getObjectStore(STORE_FEE_STRUCTURES, 'readwrite');
                 const index = store.index('classId_feeType');
                 const keyRange = IDBKeyRange.only([newFeeStructure.classId, newFeeStructure.feeType]);
-
                 const request = index.get(keyRange);
-
                 return new Promise((resolve, reject) => {
                     request.onsuccess = async () => {
                         const existing = request.result;
@@ -2744,9 +2738,6 @@
                         alert('اس کلاس کے لیے یہ فیس کی قسم پہلے سے موجود ہے۔');
                         return;
                     }
-
-
-
                     let savedStructure;
                     if (structureId) {
                         structure.id = parseInt(structureId);
@@ -2758,10 +2749,7 @@
                         savedStructure = { ...structure, id: newId };
                         alert('نیا فیس اسٹرکچر شامل ہو گیا۔');
                     }
-
-
                     await updateMonthlyDuesForFeeStructureChange(savedStructure);
-
                     resetFeeStructureForm();
                     loadFeeStructures();
                 };
@@ -2978,29 +2966,23 @@
             const noStudentSelectedMsg = document.getElementById('noStudentSelectedMsg');
             const dueFeesList = document.getElementById('dueFeesList');
             const feeCollectionTypeSelect = document.getElementById('feeCollectionType');
-
             feeHistoryTableBody.innerHTML = '';
             dueFeesList.innerHTML = '';
             feeCollectionTypeSelect.innerHTML = '<option value="">-- منتخب کریں --</option>';
-
             if (!studentId || isNaN(studentId)) {
                 studentFeeDetailsContainer.style.display = 'none';
                 noStudentSelectedMsg.style.display = 'block';
                 return;
             }
-
             studentFeeDetailsContainer.style.display = 'block';
             noStudentSelectedMsg.style.display = 'none';
             feeHistoryTableBody.innerHTML = '<tr><td colspan="5">لوڈ ہو رہا ہے...</td></tr>';
             dueFeesList.innerHTML = '<li>لوڈ ہو رہا ہے...</li>';
-
             try {
                 const studentDues = await getAll('monthlyDues', 'studentId', studentId);
                 const outstandingDues = studentDues.filter(d => d.status !== 'paid');
-
                 dueFeesList.innerHTML = '';
                 feeCollectionTypeSelect.innerHTML = '<option value="">-- فیس کی قسم منتخب کریں --</option>';
-
                 if (outstandingDues.length > 0) {
                     outstandingDues.sort((a, b) => a.monthYear.localeCompare(b.monthYear)).forEach(due => {
                         const totalFee = due.amountDue || due.feeAmount || 0;
@@ -3018,10 +3000,8 @@
                     dueFeesList.innerHTML = '<li>کوئی فیس واجب الادا نہیں۔</li>';
                 }
                 feeCollectionTypeSelect.disabled = outstandingDues.length === 0;
-
                 const feePayments = await getAll(STORE_FEES, 'studentId', studentId);
                 feeHistoryTableBody.innerHTML = '';
-
                 if (feePayments.length > 0) {
                     feePayments.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(payment => {
                         const row = feeHistoryTableBody.insertRow();
@@ -3040,12 +3020,10 @@
                 console.error("Error loading student fee details:", error);
             }
         }
-
         async function deleteFeeRecord(feeId) {
             if (!confirm('کیا آپ واقعی اس فیس ریکارڈ کو حذف کرنا چاہتے ہیں؟ یہ واجب الادا رقم کو بھی اپ ڈیٹ کر دے گا۔')) {
                 return;
             }
-
             try {
                 const feeStore = await getObjectStore(STORE_FEES, 'readwrite');
                 const feeRecord = await new Promise((res, rej) => {
@@ -3053,25 +3031,21 @@
                     req.onsuccess = () => res(req.result);
                     req.onerror = (e) => rej(e.target.error);
                 });
-
                 if (!feeRecord || !feeRecord.dueId) {
                     await deleteData(STORE_FEES, feeId);
                     alert('فیس ریکارڈ (بغیر ڈیو لنک کے) حذف ہو گیا۔');
                     await loadStudentFeeDetails(feeStudentSelect.value);
                     return;
                 }
-
                 const dueStore = await getObjectStore(STORE_MONTHLY_DUES, 'readwrite');
                 const dueRecord = await new Promise((res, rej) => {
                     const req = dueStore.get(feeRecord.dueId);
                     req.onsuccess = () => res(req.result);
                     req.onerror = (e) => rej(e.target.error);
                 });
-
                 if (dueRecord) {
                     dueRecord.amountPaid = (dueRecord.amountPaid || 0) - feeRecord.paidAmount;
                     dueRecord.discount = (dueRecord.discount || 0) - feeRecord.discount;
-
                     if (dueRecord.amountPaid <= 0 && dueRecord.discount <= 0) {
                         dueRecord.status = 'due';
                         dueRecord.amountPaid = 0;
@@ -3085,18 +3059,14 @@
                         req.onerror = (e) => rej(e.target.error);
                     });
                 }
-
                 await new Promise((res, rej) => {
                     const req = feeStore.delete(feeId);
                     req.onsuccess = res;
                     req.onerror = (e) => rej(e.target.error);
                 });
-
-
                 alert('فیس ریکارڈ حذف ہو گیا اور واجب الادا رقم اپ ڈیٹ ہو گئی۔');
                 await loadStudentFeeDetails(feeStudentSelect.value);
                 await loadDashboardStats();
-
             } catch (error) {
                 console.error("Error deleting fee record:", error);
                 alert('فیس ریکارڈ کو حذف کرنے میں خرابی۔');
@@ -3188,6 +3158,70 @@
             } catch (error) {
                 console.error("Error loading students for attendance:", error);
                 attendanceTableBody.innerHTML = '<tr><td colspan="3">حاضری کے لیے طلباء کو لوڈ کرنے میں خرابی۔</td></tr>';
+            }
+        }
+        async function loadStaffForAttendance() {
+            const date = document.getElementById('staffAttendanceDate').value;
+            const tableBody = document.getElementById('staffAttendanceTable').querySelector('tbody');
+            tableBody.innerHTML = '<tr><td colspan="2">لوڈ ہو رہا ہے...</td></tr>';
+            if (!date) {
+                tableBody.innerHTML = '<tr><td colspan="2">براہ کرم تاریخ منتخب کریں.</td></tr>';
+                return;
+            }
+            try {
+                const allStaff = await getAll(STORE_TEACHERS);
+                const attendanceRecords = await getAll('staffAttendance', 'date_staffId');
+                const todaysRecords = attendanceRecords.filter(rec => rec.date === date);
+                const attendanceMap = todaysRecords.reduce((map, record) => {
+                    map[record.staffId] = record.status;
+                    return map;
+                }, {});
+                tableBody.innerHTML = '';
+                allStaff.sort((a, b) => a.name.localeCompare(b.name)).forEach(staff => {
+                    const status = attendanceMap[staff.id] || 'Present';
+                    const row = tableBody.insertRow();
+                    row.innerHTML = `
+                <td>${staff.name}</td>
+                <td>
+                    <label><input type="radio" name="status_${staff.id}" value="Present" ${status === 'Present' ? 'checked' : ''}> حاضر</label>
+                    <label><input type="radio" name="status_${staff.id}" value="Absent" ${status === 'Absent' ? 'checked' : ''}> غیر حاضر</label>
+                    <label><input type="radio" name="status_${staff.id}" value="Leave" ${status === 'Leave' ? 'checked' : ''}> رخصت</label>
+                </td>
+            `;
+                    row.dataset.staffId = staff.id;
+                });
+            } catch (error) {
+                console.error("Error loading staff for attendance:", error);
+                tableBody.innerHTML = '<tr><td colspan="2">اسٹاف لوڈ کرنے میں خرابی۔</td></tr>';
+            }
+        }
+        async function saveStaffAttendance() {
+            const date = document.getElementById('staffAttendanceDate').value;
+            const rows = document.getElementById('staffAttendanceTable').querySelectorAll('tbody tr');
+            if (!date || rows.length === 0) {
+                alert('براہ کرم تاریخ منتخب کریں اور اسٹاف موجود ہوں۔');
+                return;
+            }
+            try {
+                const store = await getObjectStore('staffAttendance', 'readwrite');
+                for (const row of rows) {
+                    const staffId = parseInt(row.dataset.staffId);
+                    const status = row.querySelector('input[type="radio"]:checked').value;
+                    const record = { date, staffId, status };
+                    const index = store.index('date_staffId');
+                    const request = index.get([date, staffId]);
+                    const existingRecord = await new Promise(resolve => {
+                        request.onsuccess = () => resolve(request.result);
+                    });
+                    if (existingRecord) {
+                        record.id = existingRecord.id;
+                    }
+                    store.put(record);
+                }
+                alert('اسٹاف کی حاضری محفوظ ہو گئی۔');
+            } catch (error) {
+                console.error("Error saving staff attendance:", error);
+                alert('حاضری محفوظ کرنے میں خرابی۔');
             }
         }
         async function saveAttendance() {
@@ -5088,7 +5122,6 @@
                 subtree: true
             });
         });
-        
         (function () {
             async function savePageOffline() {
                 try {
@@ -6589,6 +6622,25 @@
         </select>
     </div>
 </div>
+<div id="internalDataSelector" class="form-grid full-width">
+    <div>
+        <label for="customBulkCertificateStudents">طلباء منتخب کریں (ایک یا زیادہ)</label>
+        <select id="customBulkCertificateStudents" multiple size="5" style="height: 120px;"></select>
+    </div>
+</div>
+<div id="csvDataSelector" class="form-grid full-width" style="display: none;">
+    <div>
+        <label for="csvDataInput">CSV ڈیٹا پیسٹ کریں (ہیڈر سمیت)</label>
+        <textarea id="csvDataInput" rows="5" placeholder="FullName,Award,Date..."></textarea>
+        <label for="csvFileInput" style="margin-top: 10px;">یا CSV فائل اپ لوڈ کریں</label>
+        <input type="file" id="csvFileInput" accept=".csv" onchange="handleCSVFile(event)">
+    </div>
+</div>
+<div class="form-grid"> <button onclick="generateCustomCertificates()">کسٹم سرٹیفکیٹس جنریٹ کریں</button>
+    <button id="exportCustomCertificatesBtn" onclick="exportCustomCertificates()" style="display: none; background-color: #28a745;">ایکسپورٹ کریں (ZIP)</button>
+</div>
+<div id="customCertificatePreviewContainer" class="printable" style="display: none; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 20px; background: #eee; margin-top: 20px;">
+</div>
 <div class="form-grid">
     <div class="full-width">
         <label for="customCertificateTitle">سرٹیفکیٹ کا عنوان</label>
@@ -7080,200 +7132,51 @@
             link.rel = 'stylesheet';
             document.head.appendChild(link);
         });
-        function initializeMobileNav() {
-            const nav = document.querySelector('nav');
-            if (!nav) {
-                console.error('Navigation element not found');
-                return;
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu) {
+                const isVisible = mobileMenu.style.display === 'flex';
+                mobileMenu.style.display = isVisible ? 'none' : 'flex';
             }
-            nav.innerHTML = '';
-            const navButtons = [
-                { text: 'ڈیش بورڈ', module: 'dashboard' },
-                { text: 'طلباء', module: 'students' },
-                { text: 'اساتذہ', module: 'teachers' },
-                { text: 'کلاسیں', module: 'classes' },
-                { text: 'فیس', module: 'fees' },
-                { text: 'فیس اسٹرکچر', module: 'feeStructures' },
-                { text: 'حاضری', module: 'attendance' },
-                { text: 'نتائج', module: 'results' },
-                { text: 'ٹائم ٹیبل / ڈیوٹی روسٹر', module: 'timetable' },
-                { text: 'اخراجات', module: 'expenses' },
-                { text: 'رپورٹس', module: 'reports' },
-                { text: 'انوینٹری', module: 'inventory' },
-                { text: 'سیٹنگز', module: 'settings' },
-                { text: 'ڈیٹا ایکسپورٹ', module: 'exportData' },
-                { text: 'آئی ڈی اور سرٹیفیکٹ', module: 'idCardGenerator' }
-            ];
+        }
+        function initializeNavigation() {
+            const mainNavContainer = document.getElementById('main-nav-container');
+            if (!mainNavContainer) return;
+            mainNavContainer.innerHTML = '';
             const navDesktop = document.createElement('div');
             navDesktop.className = 'nav-desktop';
-            navButtons.forEach(btn => {
+            NAV_CONFIG.forEach(item => {
                 const button = document.createElement('button');
-                button.textContent = btn.text;
-                button.onclick = () => showModule(btn.module);
+                button.textContent = item.text;
+                button.dataset.moduleId = item.moduleId;
+                button.onclick = () => showModule(item.moduleId);
                 navDesktop.appendChild(button);
             });
-            nav.appendChild(navDesktop);
+            mainNavContainer.appendChild(navDesktop);
             const navMobile = document.createElement('div');
             navMobile.className = 'nav-mobile';
             const hamburger = document.createElement('button');
             hamburger.className = 'hamburger';
             hamburger.innerHTML = '☰';
             hamburger.onclick = toggleMobileMenu;
+            navMobile.appendChild(hamburger);
             const mobileMenu = document.createElement('div');
             mobileMenu.className = 'mobile-menu';
             mobileMenu.id = 'mobileMenu';
-            function populateMobileMenu() {
-                mobileMenu.innerHTML = '';
-                navButtons.forEach(btn => {
-                    const button = document.createElement('button');
-                    button.textContent = btn.text;
-                    button.onclick = () => showModule(btn.module);
-                    mobileMenu.appendChild(button);
-                });
-                const desktopButtons = Array.from(navDesktop.querySelectorAll('button'));
-                desktopButtons.forEach(desktopBtn => {
-                    if (!navButtons.some(b => b.text === desktopBtn.textContent)) {
-                        const button = document.createElement('button');
-                        button.textContent = desktopBtn.textContent;
-                        button.onclick = () => desktopBtn.click();
-                        mobileMenu.appendChild(button);
-                    }
-                });
-            }
-            populateMobileMenu();
-            navMobile.appendChild(hamburger);
+            NAV_CONFIG.forEach(item => {
+                const button = document.createElement('button');
+                button.textContent = item.text;
+                button.dataset.moduleId = item.moduleId;
+                button.onclick = () => showModule(item.moduleId);
+                mobileMenu.appendChild(button);
+            });
             navMobile.appendChild(mobileMenu);
-            nav.appendChild(navMobile);
-            const existingStyle = document.head.querySelector('style[data-nav-mobile]');
-            if (existingStyle) existingStyle.remove();
+            mainNavContainer.appendChild(navMobile);
+            const oldStyle = document.head.querySelector('style[data-nav-mobile]');
+            if (oldStyle) oldStyle.remove();
             const style = document.createElement('style');
             style.dataset.navMobile = 'true';
             style.textContent = `
-        .nav-desktop {
-            display: block;
-            text-align: center;
-        }
-        .nav-mobile {
-            display: none;
-        }
-        .hamburger {
-            background-color: #4a7bdc;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .hamburger:hover {
-            background-color: #3a6bcc;
-        }
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            background-color: #5a8dee;
-            padding: 10px;
-            position: absolute;
-            top: 50px;
-            right: 0;
-            width: 200px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        .mobile-menu button {
-            background-color: #4a7bdc;
-            color: white;
-            border: none;
-            padding: 10px;
-            margin: 5px 0;
-            cursor: pointer;
-            font-size: 1.2em;
-            border-radius: 4px;
-            text-align: right;
-        }
-        .mobile-menu button:hover {
-            background-color: #3a6bcc;
-        }
-        .mobile-menu button.active {
-            background-color: #2a5bad;
-        }
-        @media screen and (max-width: 768px) {
-            nav {
-                position: relative;
-                text-align: right;
-                padding: 10px;
-            }
-            .nav-desktop {
-                display: none !important;
-            }
-            .nav-mobile {
-                display: block !important;
-            }
-        }
-        .mobile-menu.active {
-            display: flex;
-        }
-    `;
-            document.head.appendChild(style);
-            const observer = new MutationObserver(() => {
-                populateMobileMenu();
-            });
-            observer.observe(navDesktop, { childList: true });
-            window.dispatchEvent(new Event('resize'));
-        }
-function toggleMobileMenu() {
-    const mobileMenu = document.getElementById('mobileMenu');
-    if (mobileMenu) {
-        const isVisible = mobileMenu.style.display === 'flex';
-        mobileMenu.style.display = isVisible ? 'none' : 'flex';
-    }
-}
-
-function initializeNavigation() {
-    const mainNavContainer = document.getElementById('main-nav-container');
-    if (!mainNavContainer) return;
-
-    mainNavContainer.innerHTML = '';
-
-    const navDesktop = document.createElement('div');
-    navDesktop.className = 'nav-desktop';
-    NAV_CONFIG.forEach(item => {
-        const button = document.createElement('button');
-        button.textContent = item.text;
-        button.dataset.moduleId = item.moduleId;
-        button.onclick = () => showModule(item.moduleId);
-        navDesktop.appendChild(button);
-    });
-    mainNavContainer.appendChild(navDesktop);
-
-    const navMobile = document.createElement('div');
-    navMobile.className = 'nav-mobile';
-
-    const hamburger = document.createElement('button');
-    hamburger.className = 'hamburger';
-    hamburger.innerHTML = '☰';
-    hamburger.onclick = toggleMobileMenu;
-    navMobile.appendChild(hamburger);
-
-    const mobileMenu = document.createElement('div');
-    mobileMenu.className = 'mobile-menu';
-    mobileMenu.id = 'mobileMenu';
-    NAV_CONFIG.forEach(item => {
-        const button = document.createElement('button');
-        button.textContent = item.text;
-        button.dataset.moduleId = item.moduleId;
-        button.onclick = () => showModule(item.moduleId);
-        mobileMenu.appendChild(button);
-    });
-    navMobile.appendChild(mobileMenu);
-    mainNavContainer.appendChild(navMobile);
-
-    const oldStyle = document.head.querySelector('style[data-nav-mobile]');
-    if (oldStyle) oldStyle.remove();
-
-    const style = document.createElement('style');
-    style.dataset.navMobile = 'true';
-    style.textContent = `
         .nav-desktop { display: block; text-align: center; }
         .nav-mobile { display: none; }
         .hamburger { background-color: #4a7bdc; color: white; border: none; padding: 10px 15px; font-size: 1.2em; cursor: pointer; border-radius: 4px; float: right; }
@@ -7285,24 +7188,19 @@ function initializeNavigation() {
             .nav-mobile { display: block !important; }
         }
     `;
-    document.head.appendChild(style);
-}
-
-const originalShowModuleForNav = window.showModule;
-window.showModule = function(moduleId) {
-    originalShowModuleForNav(moduleId);
-    const mobileMenu = document.getElementById('mobileMenu');
-    if (mobileMenu && mobileMenu.style.display === 'flex') {
-        mobileMenu.style.display = 'none';
-    }
-    document.querySelectorAll('#main-nav-container button[data-module-id]').forEach(button => {
-        button.classList.toggle('active', button.dataset.moduleId === moduleId);
-    });
-};
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initializeMobileNav, 200);
-        });
+            document.head.appendChild(style);
+        }
+        const originalShowModuleForNav = window.showModule;
+        window.showModule = function (moduleId) {
+            originalShowModuleForNav(moduleId);
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu && mobileMenu.style.display === 'flex') {
+                mobileMenu.style.display = 'none';
+            }
+            document.querySelectorAll('#main-nav-container button[data-module-id]').forEach(button => {
+                button.classList.toggle('active', button.dataset.moduleId === moduleId);
+            });
+        };
     </script>
     <script>
         (function () {
@@ -8926,49 +8824,35 @@ window.showModule = function(moduleId) {
                 }
             }
         }
-
-
         async function updateMonthlyDuesForFeeStructureChange(feeStructure) {
-
             if (feeStructure.feeType !== 'Monthly Fee' && feeStructure.feeType !== 'Yearly Fee') {
                 return;
             }
-
             const today = new Date();
             const currentYear = today.getFullYear();
             const currentMonth = today.getMonth();
-
             let targetMonthYear;
             if (feeStructure.feeType === 'Monthly Fee') {
-
                 targetMonthYear = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
             } else if (feeStructure.feeType === 'Yearly Fee') {
-
-
                 targetMonthYear = `${currentYear}-01`;
             }
-
             if (!targetMonthYear) {
                 return;
             }
-
             try {
                 const studentsInClass = await getAll(STORE_STUDENTS, 'classId', feeStructure.classId);
                 const dueStore = await getObjectStore(STORE_MONTHLY_DUES, 'readwrite');
-
                 for (const student of studentsInClass) {
                     const index = dueStore.index('studentId_feeType_monthYear');
                     const checkReq = index.get([student.id, feeStructure.feeType, targetMonthYear]);
-
                     const existingDue = await new Promise((resolve, reject) => {
                         checkReq.onsuccess = () => resolve(checkReq.result);
                         checkReq.onerror = (e) => reject(e.target.error);
                     });
-
                     if (existingDue) {
                         if (existingDue.amountDue !== feeStructure.amount) {
                             existingDue.amountDue = feeStructure.amount;
-
                             if (existingDue.amountPaid + existingDue.discount >= existingDue.amountDue) {
                                 existingDue.status = 'paid';
                             } else if (existingDue.amountPaid > 0 || existingDue.discount > 0) {
@@ -9004,7 +8888,6 @@ window.showModule = function(moduleId) {
                 console.error("Failed to update/add monthly dues after fee structure change:", error);
             }
         }
-
         async function printSalarySlip(expenseId) {
             const slipContainer = document.getElementById('salarySlipContainer');
             if (!slipContainer) {
@@ -9049,38 +8932,30 @@ window.showModule = function(moduleId) {
     <script id="comprehensive-patch-script">
         let studentsByClassChartInstance = null;
         let incomeVsExpensesChartInstance = null;
-
         let attendanceSummaryChartInstance = null;
         let averageMarksChartInstance = null;
         let feeStatusChartInstance = null;
         let salaryDistributionChartInstance = null;
-
         async function renderDashboardCharts() {
-
             if (studentsByClassChartInstance) studentsByClassChartInstance.destroy();
             if (incomeVsExpensesChartInstance) incomeVsExpensesChartInstance.destroy();
             if (attendanceSummaryChartInstance) attendanceSummaryChartInstance.destroy();
             if (averageMarksChartInstance) averageMarksChartInstance.destroy();
             if (feeStatusChartInstance) feeStatusChartInstance.destroy();
             if (salaryDistributionChartInstance) salaryDistributionChartInstance.destroy();
-
-
             const studentsByClassCtx = document.getElementById('studentsByClassChart').getContext('2d');
             try {
                 const students = await getAll(STORE_STUDENTS);
                 const classes = await getAll(STORE_CLASSES);
                 const classMap = classes.reduce((acc, cls) => { acc[cls.id] = cls.name; return acc; }, {});
-
                 const studentCountByClass = students.reduce((acc, student) => {
                     const className = classMap[student.classId] || 'نامعلوم';
                     acc[className] = (acc[className] || 0) + 1;
                     return acc;
                 }, {});
-
                 const labels = Object.keys(studentCountByClass);
                 const data = Object.values(studentCountByClass);
                 const backgroundColors = labels.map((_, i) => `hsl(${(i * 360 / labels.length) % 360}, 70%, 70%)`);
-
                 studentsByClassChartInstance = new Chart(studentsByClassCtx, {
                     type: 'pie',
                     data: {
@@ -9118,25 +8993,20 @@ window.showModule = function(moduleId) {
                 studentsByClassCtx.clearRect(0, 0, studentsByClassCtx.canvas.width, studentsByClassCtx.canvas.height);
                 studentsByClassCtx.fillText('چارٹ لوڈ نہیں ہو سکا۔', 10, 50);
             }
-
-
             const attendanceSummaryCtx = document.getElementById('attendanceSummaryChart').getContext('2d');
             try {
                 const attendanceRecords = await getAll(STORE_ATTENDANCE);
                 const thirtyDaysAgo = new Date();
                 thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
                 const todayStr = new Date().toISOString().split('T')[0];
-
                 const recentAttendance = attendanceRecords.filter(rec => {
                     const recDate = new Date(rec.date);
                     return recDate >= thirtyDaysAgo && recDate.toISOString().split('T')[0] <= todayStr;
                 });
-
                 const statusCounts = recentAttendance.reduce((acc, rec) => {
                     acc[rec.status] = (acc[rec.status] || 0) + 1;
                     return acc;
                 }, {});
-
                 const labels = ['حاضر', 'غیر حاضر', 'رخصت'];
                 const data = [
                     statusCounts['Present'] || 0,
@@ -9144,7 +9014,6 @@ window.showModule = function(moduleId) {
                     statusCounts['Leave'] || 0
                 ];
                 const backgroundColors = ['#28a745', '#dc3545', '#ffc107'];
-
                 attendanceSummaryChartInstance = new Chart(attendanceSummaryCtx, {
                     type: 'doughnut',
                     data: {
@@ -9182,14 +9051,11 @@ window.showModule = function(moduleId) {
                 attendanceSummaryCtx.clearRect(0, 0, attendanceSummaryCtx.canvas.width, attendanceSummaryCtx.canvas.height);
                 attendanceSummaryCtx.fillText('چارٹ لوڈ نہیں ہو سکا۔', 10, 50);
             }
-
-
             const averageMarksCtx = document.getElementById('averageMarksChart').getContext('2d');
             try {
                 const results = await getAll(STORE_RESULTS);
                 const classes = await getAll(STORE_CLASSES);
                 const classMap = classes.reduce((acc, cls) => { acc[cls.id] = cls.name; return acc; }, {});
-
                 const marksByClass = results.reduce((acc, res) => {
                     const className = classMap[res.classId] || 'نامعلوم';
                     if (!acc[className]) {
@@ -9199,14 +9065,12 @@ window.showModule = function(moduleId) {
                     acc[className].totalMax += res.totalMarks;
                     return acc;
                 }, {});
-
                 const labels = Object.keys(marksByClass);
                 const data = labels.map(label => {
                     const classData = marksByClass[label];
                     return classData.totalMax > 0 ? ((classData.totalObtained / classData.totalMax) * 100).toFixed(1) : 0;
                 });
                 const backgroundColors = labels.map((_, i) => `hsl(${(i * 50) % 360}, 60%, 65%)`);
-
                 averageMarksChartInstance = new Chart(averageMarksCtx, {
                     type: 'bar',
                     data: {
@@ -9268,13 +9132,10 @@ window.showModule = function(moduleId) {
                 averageMarksCtx.clearRect(0, 0, averageMarksCtx.canvas.width, averageMarksCtx.canvas.height);
                 averageMarksCtx.fillText('چارٹ لوڈ نہیں ہو سکا۔', 10, 50);
             }
-
-
             const feeStatusCtx = document.getElementById('feeStatusChart').getContext('2d');
             const totalExpectedFeesDisplay = document.getElementById('totalExpectedFeesDisplay');
             const totalPaidFeesDisplay = document.getElementById('totalPaidFeesDisplay');
             const feeStatusChartFilter = document.getElementById('feeStatusChartFilter');
-
             try {
                 const allMonthlyDues = await getAll(STORE_MONTHLY_DUES);
                 let filteredMonthlyDues = [];
@@ -9282,7 +9143,6 @@ window.showModule = function(moduleId) {
                 const today = new Date();
                 let startDate = null;
                 let endDate = null;
-
                 if (filterType === 'this_month') {
                     startDate = new Date(today.getFullYear(), today.getMonth(), 1);
                     endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
@@ -9293,42 +9153,28 @@ window.showModule = function(moduleId) {
                     startDate = new Date(today.getFullYear(), 0, 1);
                     endDate = new Date(today.getFullYear(), 11, 31);
                 }
-
-
-
                 filteredMonthlyDues = allMonthlyDues.filter(due => {
                     if (filterType === 'overall') return true;
-
-
                     const [dueYear, dueMonth] = due.monthYear.split('-').map(Number);
                     const dueStartDate = new Date(dueYear, dueMonth - 1, 1);
                     const dueEndDate = new Date(dueYear, dueMonth, 0);
-
-
                     return (dueEndDate >= startDate && dueStartDate <= endDate);
                 });
-
-
                 let totalExpectedOverall = 0;
                 let totalPaidOverall = 0;
-
                 filteredMonthlyDues.forEach(due => {
                     const currentExpectedAmount = due.amountDue || due.feeAmount || 0;
                     const currentPaidAmount = due.amountPaid || 0;
-
                     totalExpectedOverall += currentExpectedAmount;
                     totalPaidOverall += currentPaidAmount;
                 });
-
                 const remainingDueOverall = totalExpectedOverall - totalPaidOverall;
-
                 const labels = ['ادا شدہ فیس', 'واجب الادا فیس'];
                 const data = [
                     totalPaidOverall,
                     remainingDueOverall > 0 ? remainingDueOverall : 0
                 ];
                 const backgroundColors = ['#17a2b8', '#ff4d4d'];
-
                 feeStatusChartInstance = new Chart(feeStatusCtx, {
                     type: 'doughnut',
                     data: {
@@ -9361,14 +9207,12 @@ window.showModule = function(moduleId) {
                         }
                     }
                 });
-
                 if (totalExpectedFeesDisplay) {
                     totalExpectedFeesDisplay.textContent = totalExpectedOverall.toLocaleString();
                 }
                 if (totalPaidFeesDisplay) {
                     totalPaidFeesDisplay.textContent = totalPaidOverall.toLocaleString();
                 }
-
             } catch (error) {
                 console.error("Error rendering Fee Status Chart:", error);
                 feeStatusCtx.clearRect(0, 0, feeStatusCtx.canvas.width, feeStatusCtx.canvas.height);
@@ -9380,20 +9224,16 @@ window.showModule = function(moduleId) {
                     totalPaidFeesDisplay.textContent = 'خرابی';
                 }
             }
-
-
             const incomeVsExpensesCtx = document.getElementById('incomeVsExpensesChart').getContext('2d');
             try {
                 const allTransactions = await getAll(STORE_EXPENSES);
                 const monthlyData = {};
                 const today = new Date();
-
                 for (let i = 5; i >= 0; i--) {
                     const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
                     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                     monthlyData[monthKey] = { income: 0, expenses: 0 };
                 }
-
                 allTransactions.forEach(t => {
                     const transactionDate = new Date(t.date);
                     const monthKey = `${transactionDate.getFullYear()}-${String(transactionDate.getMonth() + 1).padStart(2, '0')}`;
@@ -9405,7 +9245,6 @@ window.showModule = function(moduleId) {
                         }
                     }
                 });
-
                 const monthLabels = Object.keys(monthlyData).map(key => {
                     const [year, monthNum] = key.split('-');
                     const monthNames = ["جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر"];
@@ -9413,7 +9252,6 @@ window.showModule = function(moduleId) {
                 });
                 const incomeData = Object.values(monthlyData).map(data => data.income);
                 const expensesData = Object.values(monthlyData).map(data => data.expenses);
-
                 incomeVsExpensesChartInstance = new Chart(incomeVsExpensesCtx, {
                     type: 'bar',
                     data: {
@@ -9484,18 +9322,14 @@ window.showModule = function(moduleId) {
                 incomeVsExpensesCtx.clearRect(0, 0, incomeVsExpensesCtx.canvas.width, incomeVsExpensesCtx.canvas.height);
                 incomeVsExpensesCtx.fillText('چارٹ لوڈ نہیں ہو سکا۔', 10, 50);
             }
-
-
             const salaryDistributionCtx = document.getElementById('salaryDistributionChart').getContext('2d');
             try {
                 const allExpenses = await getAll(STORE_EXPENSES);
                 const teachers = await getAll(STORE_TEACHERS);
                 const teacherNamesMap = teachers.reduce((acc, t) => { acc[t.name] = t.name; return acc; }, {});
-
                 const oneYearAgo = new Date();
                 oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
                 const todayStr = new Date().toISOString().split('T')[0];
-
                 const recentSalaryPayments = allExpenses.filter(exp => {
                     const expDate = new Date(exp.date);
                     return exp.recordType === 'expense' &&
@@ -9504,16 +9338,13 @@ window.showModule = function(moduleId) {
                         teacherNamesMap[exp.paidTo] &&
                         expDate >= oneYearAgo && expDate.toISOString().split('T')[0] <= todayStr;
                 });
-
                 const salaryByTeacher = recentSalaryPayments.reduce((acc, exp) => {
                     acc[exp.paidTo] = (acc[exp.paidTo] || 0) + exp.amount;
                     return acc;
                 }, {});
-
                 const labels = Object.keys(salaryByTeacher);
                 const data = Object.values(salaryByTeacher);
                 const backgroundColors = labels.map((_, i) => `hsl(${(i * 70) % 360}, 65%, 60%)`);
-
                 salaryDistributionChartInstance = new Chart(salaryDistributionCtx, {
                     type: 'bar',
                     data: {
