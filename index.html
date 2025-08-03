@@ -634,7 +634,7 @@
 <body>
     <div class="container">
         <h1>مدرسہ مینجمنٹ سسٹم</h1>
-        <nav style="overflow-x: auto;" id="main-nav-container"></nav>
+        <nav id="main-nav-container"></nav>
         <div id="inventory" class="module">
             <h2>انوینٹری کا انتظام</h2>
             <h3>نیا آئٹم شامل کریں / ترمیم کریں</h3>
@@ -5148,132 +5148,6 @@
             document.body.appendChild(icon);
         })();
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Breadcrumb script running');
-            const isMobile = window.matchMedia("(max-width: 768px)").matches;
-            console.log('Is mobile:', isMobile);
-            if (!isMobile) return;
-            const nav = document.querySelector('nav');
-            if (!nav) {
-                console.error('Navigation bar not found');
-                return;
-            }
-            const originalButtons = nav.querySelectorAll('button');
-            if (originalButtons.length === 0) {
-                console.error('No buttons found in navigation');
-                return;
-            }
-            const container = document.querySelector('.container');
-            if (!container) {
-                console.error('Container not found');
-                return;
-            }
-            const breadcrumb = document.createElement('div');
-            breadcrumb.className = 'breadcrumb';
-            breadcrumb.style.cssText = `
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        background-color: #5a8dee;
-        color: white;
-        font-family: 'Noto Nastaliq Urdu', sans-serif;
-        font-size: 1.2em;
-        margin-bottom: 10px;
-        width: 100%;
-        box-sizing: border-box;
-        position: relative;
-        z-index: 1000;
-    `;
-            const menuButton = document.createElement('button');
-            menuButton.textContent = '☰';
-            menuButton.style.cssText = `
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1em;
-        cursor: pointer;
-        margin-left: 10px;
-        padding: 5px 10px;
-    `;
-            const currentPage = document.createElement('span');
-            currentPage.textContent = 'ڈیش بورڈ';
-            currentPage.style.cssText = `
-        flex: 1;
-        text-align: right;
-    `;
-            const dropdown = document.createElement('div');
-            dropdown.className = 'dropdown-menu';
-            dropdown.style.cssText = `
-        display: none;
-        position: absolute;
-        top: 100%;
-        right: 10px;
-        background-color: #4a7bdc;
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        z-index: 1001;
-        min-width: 200px;
-    `;
-            originalButtons.forEach(button => {
-                const moduleIdMatch = button.getAttribute('onclick')?.match(/showModule\('([^']+)'\)/);
-                if (!moduleIdMatch) {
-                    console.warn('Button missing valid onclick:', button.textContent);
-                    return;
-                }
-                const moduleId = moduleIdMatch[1];
-                const menuItem = document.createElement('button');
-                menuItem.textContent = button.textContent;
-                menuItem.style.cssText = `
-            display: block;
-            width: 100%;
-            padding: 10px 15px;
-            background: none;
-            border: none;
-            color: white;
-            text-align: right;
-            cursor: pointer;
-            font-family: 'Noto Nastaliq Urdu', sans-serif;
-            font-size: 1.2em;
-        `;
-                menuItem.addEventListener('click', () => {
-                    console.log('Menu item clicked:', moduleId);
-                    window.showModule(moduleId);
-                    currentPage.textContent = button.textContent;
-                    dropdown.style.display = 'none';
-                    console.log('Dropdown hidden after menu item click');
-                });
-                dropdown.appendChild(menuItem);
-            });
-            menuButton.addEventListener('click', () => {
-                const isVisible = dropdown.style.display === 'block';
-                dropdown.style.display = isVisible ? 'none' : 'block';
-                console.log('Dropdown toggled:', dropdown.style.display);
-            });
-            document.addEventListener('click', (e) => {
-                if (!breadcrumb.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.style.display = 'none';
-                    console.log('Dropdown closed (outside click)');
-                }
-            });
-            breadcrumb.appendChild(menuButton);
-            breadcrumb.appendChild(currentPage);
-            breadcrumb.appendChild(dropdown);
-            nav.style.display = 'none';
-            container.insertBefore(breadcrumb, container.firstChild);
-            console.log('Breadcrumb inserted');
-            const originalShowModule = window.showModule;
-            window.showModule = function (moduleId) {
-                console.log('showModule called:', moduleId);
-                originalShowModule(moduleId);
-                const activeButton = Array.from(originalButtons).find(btn =>
-                    btn.getAttribute('onclick')?.includes(moduleId));
-                if (activeButton) {
-                    currentPage.textContent = activeButton.textContent;
-                    dropdown.style.display = 'none';
-                    console.log('Current page updated:', activeButton.textContent);
-                }
-            };
-        });
-        document.addEventListener('DOMContentLoaded', () => {
             const tableConfigs = [
                 { id: 'studentsTable', searchable: true, sortable: true, paginated: true },
                 { id: 'teachersTable', searchable: true, sortable: true, paginated: true },
@@ -7347,164 +7221,85 @@
             observer.observe(navDesktop, { childList: true });
             window.dispatchEvent(new Event('resize'));
         }
-        function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            if (mobileMenu) {
-                mobileMenu.classList.toggle('active');
-            }
-        }
-        function initializeNavigation() {
-            const mainNavContainer = document.getElementById('main-nav-container');
-            if (!mainNavContainer) {
-                console.error('Main navigation container not found.');
-                return;
-            }
-            mainNavContainer.innerHTML = '';
-            const navDesktop = document.createElement('div');
-            navDesktop.className = 'nav-desktop';
-            mainNavContainer.appendChild(navDesktop);
-            NAV_CONFIG.forEach(item => {
-                const button = document.createElement('button');
-                button.textContent = item.text;
-                button.dataset.moduleId = item.moduleId;
-                button.onclick = () => showModule(item.moduleId);
-                navDesktop.appendChild(button);
-            });
-            let navMobile = mainNavContainer.querySelector('.nav-mobile');
-            let hamburger = mainNavContainer.querySelector('.hamburger');
-            let mobileMenu = document.getElementById('mobileMenu');
-            if (!navMobile) {
-                navMobile = document.createElement('div');
-                navMobile.className = 'nav-mobile';
-                mainNavContainer.appendChild(navMobile);
-            }
-            if (!hamburger) {
-                hamburger = document.createElement('button');
-                hamburger.className = 'hamburger';
-                hamburger.innerHTML = '☰';
-                hamburger.onclick = toggleMobileMenu;
-                navMobile.appendChild(hamburger);
-            }
-            if (!mobileMenu) {
-                mobileMenu = document.createElement('div');
-                mobileMenu.className = 'mobile-menu';
-                mobileMenu.id = 'mobileMenu';
-                navMobile.appendChild(mobileMenu);
-            }
-            mobileMenu.innerHTML = '';
-            NAV_CONFIG.forEach(item => {
-                const button = document.createElement('button');
-                button.textContent = item.text;
-                button.dataset.moduleId = item.moduleId;
-                button.onclick = () => showModule(item.moduleId);
-                mobileMenu.appendChild(button);
-            });
-            const existingStyle = document.head.querySelector('style[data-nav-mobile]');
-            if (existingStyle) existingStyle.remove();
-            const style = document.createElement('style');
-            style.dataset.navMobile = 'true';
-            style.textContent = `
-        .nav-desktop {
-            display: block;
-            text-align: center;
-        }
-        .nav-mobile {
-            display: none;
-        }
-        .hamburger {
-            background-color: #4a7bdc;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .hamburger:hover {
-            background-color: #3a6bcc;
-        }
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            background-color: #5a8dee;
-            padding: 10px;
-            position: absolute;
-            top: 50px;
-            right: 0;
-            width: 200px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            direction: rtl;
-            text-align: right;
-        }
-        .mobile-menu button {
-            background-color: #4a7bdc;
-            color: white;
-            border: none;
-            padding: 10px;
-            margin: 5px 0;
-            cursor: pointer;
-            font-size: 1.2em;
-            border-radius: 4px;
-            text-align: right;
-        }
-        .mobile-menu button:hover {
-            background-color: #3a6bcc;
-        }
-        .mobile-menu button.active {
-            background-color: #2a5bad;
-        }
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenu) {
+        const isVisible = mobileMenu.style.display === 'flex';
+        mobileMenu.style.display = isVisible ? 'none' : 'flex';
+    }
+}
+
+function initializeNavigation() {
+    const mainNavContainer = document.getElementById('main-nav-container');
+    if (!mainNavContainer) return;
+
+    mainNavContainer.innerHTML = '';
+
+    const navDesktop = document.createElement('div');
+    navDesktop.className = 'nav-desktop';
+    NAV_CONFIG.forEach(item => {
+        const button = document.createElement('button');
+        button.textContent = item.text;
+        button.dataset.moduleId = item.moduleId;
+        button.onclick = () => showModule(item.moduleId);
+        navDesktop.appendChild(button);
+    });
+    mainNavContainer.appendChild(navDesktop);
+
+    const navMobile = document.createElement('div');
+    navMobile.className = 'nav-mobile';
+
+    const hamburger = document.createElement('button');
+    hamburger.className = 'hamburger';
+    hamburger.innerHTML = '☰';
+    hamburger.onclick = toggleMobileMenu;
+    navMobile.appendChild(hamburger);
+
+    const mobileMenu = document.createElement('div');
+    mobileMenu.className = 'mobile-menu';
+    mobileMenu.id = 'mobileMenu';
+    NAV_CONFIG.forEach(item => {
+        const button = document.createElement('button');
+        button.textContent = item.text;
+        button.dataset.moduleId = item.moduleId;
+        button.onclick = () => showModule(item.moduleId);
+        mobileMenu.appendChild(button);
+    });
+    navMobile.appendChild(mobileMenu);
+    mainNavContainer.appendChild(navMobile);
+
+    const oldStyle = document.head.querySelector('style[data-nav-mobile]');
+    if (oldStyle) oldStyle.remove();
+
+    const style = document.createElement('style');
+    style.dataset.navMobile = 'true';
+    style.textContent = `
+        .nav-desktop { display: block; text-align: center; }
+        .nav-mobile { display: none; }
+        .hamburger { background-color: #4a7bdc; color: white; border: none; padding: 10px 15px; font-size: 1.2em; cursor: pointer; border-radius: 4px; float: right; }
+        .mobile-menu { display: none; flex-direction: column; background-color: #5a8dee; padding: 10px; position: absolute; top: 100%; right: 0; width: 220px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1001; clear: both; }
+        .mobile-menu button { background-color: #4a7bdc; color: white; border: none; padding: 12px; margin: 5px 0; cursor: pointer; font-size: 1.1em; border-radius: 4px; text-align: right; }
         @media screen and (max-width: 768px) {
-            #main-nav-container {
-                position: relative;
-                text-align: right;
-                padding: 10px 0;
-            }
-            .nav-desktop {
-                display: none !important;
-            }
-            .nav-mobile {
-                display: block !important;
-            }
-        }
-        .mobile-menu.active {
-            display: flex;
+            #main-nav-container { position: relative; z-index: 999; text-align: right; padding: 10px; min-height: 55px; }
+            .nav-desktop { display: none !important; }
+            .nav-mobile { display: block !important; }
         }
     `;
-            document.head.appendChild(style);
-        }
-        const originalShowModule = window.showModule || function () { };
-        window.showModule = function (moduleId) {
-            originalShowModule(moduleId);
-            const allButtons = document.querySelectorAll('nav button');
-            allButtons.forEach(button => {
-                button.classList.remove('active');
-                const moduleName = document.querySelector(`#${moduleId} h2`)?.textContent || '';
-                if (
-                    button.textContent === moduleName ||
-                    (moduleId === 'dashboard' && button.textContent === 'ڈیش بورڈ') ||
-                    (moduleId === 'students' && button.textContent === 'طلباء') ||
-                    (moduleId === 'teachers' && button.textContent === 'اساتذہ') ||
-                    (moduleId === 'classes' && button.textContent === 'کلاسیں') ||
-                    (moduleId === 'feeStructures' && button.textContent === 'فیس اسٹرکچر') ||
-                    (moduleId === 'fees' && button.textContent === 'فیس') ||
-                    (moduleId === 'attendance' && button.textContent === 'حاضری') ||
-                    (moduleId === 'results' && button.textContent === 'نتائج') ||
-                    (moduleId === 'timetable' && button.textContent === 'ٹائم ٹیبل / ڈیوٹی روسٹر') ||
-                    (moduleId === 'expenses' && button.textContent === 'اخراجات') ||
-                    (moduleId === 'reports' && button.textContent === 'رپورٹس') ||
-                    (moduleId === 'settings' && button.textContent === 'سیٹنگز') ||
-                    (moduleId === 'exportData' && button.textContent === 'ڈیٹا ایکسپورٹ') ||
-                    (moduleId === 'idCardGenerator' && button.textContent === 'آئی ڈی اور سرٹیفیکٹ')
-                ) {
-                    button.classList.add('active');
-                }
-            });
-            const mobileMenu = document.getElementById('mobileMenu');
-            if (mobileMenu && mobileMenu.classList.contains('active')) {
-                mobileMenu.classList.remove('active');
-            }
-        };
+    document.head.appendChild(style);
+}
+
+const originalShowModuleForNav = window.showModule;
+window.showModule = function(moduleId) {
+    originalShowModuleForNav(moduleId);
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenu && mobileMenu.style.display === 'flex') {
+        mobileMenu.style.display = 'none';
+    }
+    document.querySelectorAll('#main-nav-container button[data-module-id]').forEach(button => {
+        button.classList.toggle('active', button.dataset.moduleId === moduleId);
+    });
+};
+        
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(initializeMobileNav, 200);
         });
