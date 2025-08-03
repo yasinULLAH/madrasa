@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School & Madrasa Management System</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>School &amp; Madrasa Management System</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -633,1035 +634,979 @@
             }
         }
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-    <div id="loginSection">
-        <div class="container">
-            <div class="content" style="max-width: 400px; margin: 100px auto;">
-                <div class="card-header">
-                    <h2 class="card-title text-center">School & Madrasa Management</h2>
-                </div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>User Role</label>
-                        <select id="userRole" class="form-control" required>
-                            <option value="">Select Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="teacher">Teacher</option>
-                            <option value="accountant">Accountant</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" id="username" class="form-control" value="admin" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="password" class="form-control" value="admin123" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="mainApp" class="hidden">
-        <div class="container">
-            <!-- Header -->
-            <div class="header">
-                <div class="logo">
-                    <img id="schoolLogo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiMyYzNlNTAiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik0xMiAzTDEgOWwxMSA2IDktNS05LTdtMCAwdjguMThtMC04LjE4TDIwIDEwdjdtLTggOWwtOS03Ii8+Cjwvc3ZnPgo8L3N2Zz4K" alt="School Logo">
-                    <div>
-                        <h1 id="schoolName">Al-Noor School & Madrasa</h1>
-                        <small id="currentUser"></small>
-                    </div>
-                </div>
-                <div class="user-info">
-                    <button class="language-toggle" onclick="toggleLanguage()">
-                        <span id="langToggle">اردو</span>
-                    </button>
-                    <button class="btn btn-danger" onclick="logout()">Logout</button>
-                </div>
-            </div>
-
-            <!-- Navigation -->
-            <div class="nav no-print">
-                <div class="nav-grid" id="navigationGrid">
-                    <button class="nav-item" onclick="showSection('dashboard')">
-                        <span style="font-size: 2rem;">📊</span>
-                        <span data-en="Dashboard" data-ur="ڈیش بورڈ">Dashboard</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('students')">
-                        <span style="font-size: 2rem;">👨‍🎓</span>
-                        <span data-en="Students" data-ur="طلباء">Students</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('teachers')">
-                        <span style="font-size: 2rem;">👨‍🏫</span>
-                        <span data-en="Teachers" data-ur="اساتذہ">Teachers</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('classes')">
-                        <span style="font-size: 2rem;">🏫</span>
-                        <span data-en="Classes" data-ur="کلاسیں">Classes</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('attendance')">
-                        <span style="font-size: 2rem;">📝</span>
-                        <span data-en="Attendance" data-ur="حاضری">Attendance</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('exams')">
-                        <span style="font-size: 2rem;">📋</span>
-                        <span data-en="Exams" data-ur="امتحانات">Exams</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('fees')">
-                        <span style="font-size: 2rem;">💰</span>
-                        <span data-en="Fees" data-ur="فیس">Fees</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('salary')">
-                        <span style="font-size: 2rem;">💳</span>
-                        <span data-en="Salary" data-ur="تنخواہ">Salary</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('library')">
-                        <span style="font-size: 2rem;">📚</span>
-                        <span data-en="Library" data-ur="لائبریری">Library</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('madrasa')">
-                        <span style="font-size: 2rem;">📖</span>
-                        <span data-en="Madrasa" data-ur="مدرسہ">Madrasa</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('reports')">
-                        <span style="font-size: 2rem;">📈</span>
-                        <span data-en="Reports" data-ur="رپورٹس">Reports</span>
-                    </button>
-                    <button class="nav-item" onclick="showSection('settings')">
-                        <span style="font-size: 2rem;">⚙️</span>
-                        <span data-en="Settings" data-ur="ترتیبات">Settings</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Content Area -->
-            <div class="content">
-                <!-- Dashboard Section -->
-                <div id="dashboardSection" class="section">
-                    <h2 data-en="Dashboard" data-ur="ڈیش بورڈ">Dashboard</h2>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number" id="totalStudents">0</div>
-                            <div class="stat-label" data-en="Total Students" data-ur="کل طلباء">Total Students</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="totalTeachers">0</div>
-                            <div class="stat-label" data-en="Total Teachers" data-ur="کل اساتذہ">Total Teachers</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="totalFeeCollected">₨0</div>
-                            <div class="stat-label" data-en="Fee Collected" data-ur="فیس جمع">Fee Collected</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="pendingFees">₨0</div>
-                            <div class="stat-label" data-en="Pending Fees" data-ur="بقایا فیس">Pending Fees</div>
-                        </div>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Recent Activities" data-ur="حالیہ سرگرمیاں">Recent Activities</h3>
-                            </div>
-                            <div id="recentActivities">
-                                <p data-en="No recent activities" data-ur="کوئی حالیہ سرگرمی نہیں">No recent activities</p>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Quick Actions" data-ur="فوری اعمال">Quick Actions</h3>
-                            </div>
-                            <div style="display: grid; gap: 10px;">
-                                <button class="btn btn-primary" onclick="showSection('students')">
-                                    <span data-en="Add New Student" data-ur="نیا طالب علم شامل کریں">Add New Student</span>
-                                </button>
-                                <button class="btn btn-success" onclick="showSection('attendance')">
-                                    <span data-en="Mark Attendance" data-ur="حاضری لگائیں">Mark Attendance</span>
-                                </button>
-                                <button class="btn btn-warning" onclick="showSection('fees')">
-                                    <span data-en="Collect Fees" data-ur="فیس جمع کریں">Collect Fees</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <canvas id="dashboardChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Students Section -->
-                <div id="studentsSection" class="section hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 data-en="Students Management" data-ur="طلباء کا انتظام">Students Management</h2>
-                        <button class="btn btn-primary" onclick="openModal('studentModal')">
-                            <span data-en="Add New Student" data-ur="نیا طالب علم شامل کریں">Add New Student</span>
-                        </button>
-                    </div>
-
-                    <div class="search-filters">
-                        <div class="search-box">
-                            <input type="text" id="studentSearch" class="form-control search-input" 
-                                   placeholder="Search students..." onkeyup="searchStudents()">
-                            <span class="search-icon">🔍</span>
-                        </div>
-                        <div class="form-group">
-                            <select id="classFilter" class="form-control" onchange="filterStudents()">
-                                <option value="">All Classes</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <select id="feeStatusFilter" class="form-control" onchange="filterStudents()">
-                                <option value="">All Fee Status</option>
-                                <option value="paid">Fee Paid</option>
-                                <option value="pending">Fee Pending</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th data-en="ID" data-ur="شناخت">ID</th>
-                                    <th data-en="Name" data-ur="نام">Name</th>
-                                    <th data-en="Class" data-ur="کلاس">Class</th>
-                                    <th data-en="Father Name" data-ur="والد کا نام">Father Name</th>
-                                    <th data-en="Phone" data-ur="فون">Phone</th>
-                                    <th data-en="Fee Status" data-ur="فیس کی صورتحال">Fee Status</th>
-                                    <th data-en="Actions" data-ur="اعمال">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="studentsTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Teachers Section -->
-                <div id="teachersSection" class="section hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 data-en="Teachers Management" data-ur="اساتذہ کا انتظام">Teachers Management</h2>
-                        <button class="btn btn-primary" onclick="openModal('teacherModal')">
-                            <span data-en="Add New Teacher" data-ur="نیا استاد شامل کریں">Add New Teacher</span>
-                        </button>
-                    </div>
-
-                    <div class="search-filters">
-                        <div class="search-box">
-                            <input type="text" id="teacherSearch" class="form-control search-input" 
-                                   placeholder="Search teachers..." onkeyup="searchTeachers()">
-                            <span class="search-icon">🔍</span>
-                        </div>
-                        <div class="form-group">
-                            <select id="subjectFilter" class="form-control" onchange="filterTeachers()">
-                                <option value="">All Subjects</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th data-en="ID" data-ur="شناخت">ID</th>
-                                    <th data-en="Name" data-ur="نام">Name</th>
-                                    <th data-en="Subject" data-ur="مضمون">Subject</th>
-                                    <th data-en="Qualification" data-ur="تعلیمی قابلیت">Qualification</th>
-                                    <th data-en="Phone" data-ur="فون">Phone</th>
-                                    <th data-en="Salary" data-ur="تنخواہ">Salary</th>
-                                    <th data-en="Actions" data-ur="اعمال">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="teachersTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Classes Section -->
-                <div id="classesSection" class="section hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 data-en="Classes & Subjects" data-ur="کلاسیں اور مضامین">Classes & Subjects</h2>
-                        <div>
-                            <button class="btn btn-primary" onclick="openModal('classModal')" style="margin-right: 10px;">
-                                <span data-en="Add Class" data-ur="کلاس شامل کریں">Add Class</span>
-                            </button>
-                            <button class="btn btn-success" onclick="openModal('subjectModal')">
-                                <span data-en="Add Subject" data-ur="مضمون شامل کریں">Add Subject</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Classes" data-ur="کلاسیں">Classes</h3>
-                            </div>
-                            <div id="classesList"></div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Subjects" data-ur="مضامین">Subjects</h3>
-                            </div>
-                            <div id="subjectsList"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Attendance Section -->
-                <div id="attendanceSection" class="section hidden">
-                    <h2 data-en="Attendance Management" data-ur="حاضری کا انتظام">Attendance Management</h2>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title" data-en="Mark Today's Attendance" data-ur="آج کی حاضری لگائیں">Mark Today's Attendance</h3>
-                        </div>
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label data-en="Select Class" data-ur="کلاس منتخب کریں">Select Class</label>
-                                <select id="attendanceClass" class="form-control" onchange="loadStudentsForAttendance()">
-                                    <option value="">Select Class</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label data-en="Date" data-ur="تاریخ">Date</label>
-                                <input type="date" id="attendanceDate" class="form-control">
-                            </div>
-                        </div>
-
-                        <div id="attendanceGrid" class="attendance-grid"></div>
-
-                        <div style="text-align: center; margin-top: 20px;">
-                            <button class="btn btn-success" onclick="saveAttendance()">
-                                <span data-en="Save Attendance" data-ur="حاضری محفوظ کریں">Save Attendance</span>
-                            </button>
-                            <button class="btn btn-primary" onclick="generateAttendanceReport()" style="margin-left: 10px;">
-                                <span data-en="Generate Report" data-ur="رپورٹ بنائیں">Generate Report</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Exams Section -->
-                <div id="examsSection" class="section hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 data-en="Examinations" data-ur="امتحانات">Examinations</h2>
-                        <button class="btn btn-primary" onclick="openModal('examModal')">
-                            <span data-en="Create New Exam" data-ur="نیا امتحان بنائیں">Create New Exam</span>
-                        </button>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Exam List" data-ur="امتحانات کی فہرست">Exam List</h3>
-                            </div>
-                            <div id="examsList"></div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Enter Marks" data-ur="نمبر داخل کریں">Enter Marks</h3>
-                            </div>
-                            <div class="form-group">
-                                <label data-en="Select Exam" data-ur="امتحان منتخب کریں">Select Exam</label>
-                                <select id="marksExamSelect" class="form-control" onchange="loadExamMarks()">
-                                    <option value="">Select Exam</option>
-                                </select>
-                            </div>
-                            <div id="marksEntry"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fees Section -->
-                <div id="feesSection" class="section hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 data-en="Fee Management" data-ur="فیس کا انتظام">Fee Management</h2>
-                        <div>
-                            <button class="btn btn-primary" onclick="openModal('feeStructureModal')" style="margin-right: 10px;">
-                                <span data-en="Fee Structure" data-ur="فیس کی ساخت">Fee Structure</span>
-                            </button>
-                            <button class="btn btn-success" onclick="openModal('feeCollectionModal')">
-                                <span data-en="Collect Fee" data-ur="فیس جمع کریں">Collect Fee</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="search-filters">
-                        <div class="search-box">
-                            <input type="text" id="feeSearch" class="form-control search-input" 
-                                   placeholder="Search by student name or ID..." onkeyup="searchFees()">
-                            <span class="search-icon">🔍</span>
-                        </div>
-                        <div class="form-group">
-                            <select id="feeStatusFilter2" class="form-control" onchange="filterFees()">
-                                <option value="">All Status</option>
-                                <option value="paid">Paid</option>
-                                <option value="pending">Pending</option>
-                                <option value="partial">Partially Paid</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th data-en="Student" data-ur="طالب علم">Student</th>
-                                    <th data-en="Class" data-ur="کلاس">Class</th>
-                                    <th data-en="Total Fee" data-ur="کل فیس">Total Fee</th>
-                                    <th data-en="Paid" data-ur="ادا شدہ">Paid</th>
-                                    <th data-en="Pending" data-ur="باقی">Pending</th>
-                                    <th data-en="Status" data-ur="صورتحال">Status</th>
-                                    <th data-en="Actions" data-ur="اعمال">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="feesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Salary Section -->
-                <div id="salarySection" class="section hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 data-en="Salary Management" data-ur="تنخواہ کا انتظام">Salary Management</h2>
-                        <button class="btn btn-success" onclick="processMonthlySalary()">
-                            <span data-en="Process Monthly Salary" data-ur="ماہانہ تنخواہ کا عمل">Process Monthly Salary</span>
-                        </button>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label data-en="Select Month" data-ur="مہینہ منتخب کریں">Select Month</label>
-                            <input type="month" id="salaryMonth" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <button class="btn btn-primary" onclick="generateSalaryReport()">
-                                <span data-en="Generate Salary Report" data-ur="تنخواہ کی رپورٹ بنائیں">Generate Salary Report</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th data-en="Teacher" data-ur="استاد">Teacher</th>
-                                    <th data-en="Basic Salary" data-ur="بنیادی تنخواہ">Basic Salary</th>
-                                    <th data-en="Allowances" data-ur="الاؤنسز">Allowances</th>
-                                    <th data-en="Deductions" data-ur="کٹوتیاں">Deductions</th>
-                                    <th data-en="Net Salary" data-ur="خالص تنخواہ">Net Salary</th>
-                                    <th data-en="Status" data-ur="صورتحال">Status</th>
-                                    <th data-en="Actions" data-ur="اعمال">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="salaryTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Library Section -->
-                <div id="librarySection" class="section hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 data-en="Library Management" data-ur="لائبریری کا انتظام">Library Management</h2>
-                        <button class="btn btn-primary" onclick="openModal('bookModal')">
-                            <span data-en="Add New Book" data-ur="نئی کتاب شامل کریں">Add New Book</span>
-                        </button>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Book Issue/Return" data-ur="کتاب جاری/واپسی">Book Issue/Return</h3>
-                            </div>
-                            <form id="bookIssueForm">
-                                <div class="form-group">
-                                    <label data-en="Student" data-ur="طالب علم">Student</label>
-                                    <select id="issueStudent" class="form-control" required>
-                                        <option value="">Select Student</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Book" data-ur="کتاب">Book</label>
-                                    <select id="issueBook" class="form-control" required>
-                                        <option value="">Select Book</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Return Date" data-ur="واپسی کی تاریخ">Return Date</label>
-                                    <input type="date" id="returnDate" class="form-control" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">
-                                    <span data-en="Issue Book" data-ur="کتاب جاری کریں">Issue Book</span>
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Issued Books" data-ur="جاری کردہ کتابیں">Issued Books</h3>
-                            </div>
-                            <div id="issuedBooksList"></div>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th data-en="Book ID" data-ur="کتاب کی شناخت">Book ID</th>
-                                    <th data-en="Title" data-ur="عنوان">Title</th>
-                                    <th data-en="Author" data-ur="مصنف">Author</th>
-                                    <th data-en="Category" data-ur="قسم">Category</th>
-                                    <th data-en="Copies" data-ur="کاپیاں">Copies</th>
-                                    <th data-en="Available" data-ur="دستیاب">Available</th>
-                                    <th data-en="Actions" data-ur="اعمال">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="booksTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Madrasa Section -->
-                <div id="madrasaSection" class="section hidden">
-                    <h2 data-en="Madrasa Management" data-ur="مدرسہ کا انتظام">Madrasa Management</h2>
-
-                    <div class="form-grid">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Hifz Progress" data-ur="حفظ کی پیش قدمی">Hifz Progress</h3>
-                            </div>
-                            <form id="hifzProgressForm">
-                                <div class="form-group">
-                                    <label data-en="Student" data-ur="طالب علم">Student</label>
-                                    <select id="hifzStudent" class="form-control" required>
-                                        <option value="">Select Student</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Sabaq (New Lesson)" data-ur="سبق (نیا سبق)">Sabaq (New Lesson)</label>
-                                    <input type="text" id="sabaq" class="form-control" placeholder="Surah and Ayah" required>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Sabaqi (Recent Revision)" data-ur="سبقی (حالیہ اعادہ)">Sabaqi (Recent Revision)</label>
-                                    <input type="text" id="sabaqi" class="form-control" placeholder="Surah and Ayah">
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Manzil (Old Revision)" data-ur="منزل (پرانا اعادہ)">Manzil (Old Revision)</label>
-                                    <input type="text" id="manzil" class="form-control" placeholder="Surah and Ayah">
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Performance" data-ur="کارکردگی">Performance</label>
-                                    <select id="hifzPerformance" class="form-control" required>
-                                        <option value="">Select Performance</option>
-                                        <option value="excellent">Excellent</option>
-                                        <option value="good">Good</option>
-                                        <option value="average">Average</option>
-                                        <option value="needs-improvement">Needs Improvement</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-success">
-                                    <span data-en="Save Progress" data-ur="پیش قدمی محفوظ کریں">Save Progress</span>
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Progress Report" data-ur="پیش قدمی کی رپورٹ">Progress Report</h3>
-                            </div>
-                            <div class="form-group">
-                                <label data-en="Select Student" data-ur="طالب علم منتخب کریں">Select Student</label>
-                                <select id="progressReportStudent" class="form-control" onchange="loadHifzProgress()">
-                                    <option value="">Select Student</option>
-                                </select>
-                            </div>
-                            <div id="hifzProgressReport"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reports Section -->
-                <div id="reportsSection" class="section hidden">
-                    <h2 data-en="Reports & Analytics" data-ur="رپورٹس اور تجزیات">Reports & Analytics</h2>
-
-                    <div class="form-grid">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Generate Reports" data-ur="رپورٹس بنائیں">Generate Reports</h3>
-                            </div>
-                            <div style="display: grid; gap: 15px;">
-                                <button class="btn btn-primary" onclick="generateStudentReport()">
-                                    <span data-en="Student Report" data-ur="طلباء کی رپورٹ">Student Report</span>
-                                </button>
-                                <button class="btn btn-primary" onclick="generateAttendanceReport()">
-                                    <span data-en="Attendance Report" data-ur="حاضری کی رپورٹ">Attendance Report</span>
-                                </button>
-                                <button class="btn btn-primary" onclick="generateFeeReport()">
-                                    <span data-en="Fee Collection Report" data-ur="فیس جمع کرنے کی رپورٹ">Fee Collection Report</span>
-                                </button>
-                                <button class="btn btn-primary" onclick="generateExamReport()">
-                                    <span data-en="Exam Results Report" data-ur="امتحانی نتائج کی رپورٹ">Exam Results Report</span>
-                                </button>
-                                <button class="btn btn-primary" onclick="generateIDCards()">
-                                    <span data-en="Generate ID Cards" data-ur="شناختی کارڈ بنائیں">Generate ID Cards</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title" data-en="Data Management" data-ur="ڈیٹا کا انتظام">Data Management</h3>
-                            </div>
-                            <div style="display: grid; gap: 15px;">
-                                <button class="btn btn-success" onclick="exportData()">
-                                    <span data-en="Export Data" data-ur="ڈیٹا ایکسپورٹ کریں">Export Data</span>
-                                </button>
-                                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData()">
-                                <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
-                                    <span data-en="Import Data" data-ur="ڈیٹا درآمد کریں">Import Data</span>
-                                </button>
-                                <button class="btn btn-danger" onclick="clearAllData()">
-                                    <span data-en="Clear All Data" data-ur="تمام ڈیٹا صاف کریں">Clear All Data</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <canvas id="reportsChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Settings Section -->
-                <div id="settingsSection" class="section hidden">
-                    <h2 data-en="Settings" data-ur="ترتیبات">Settings</h2>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title" data-en="Institution Settings" data-ur="ادارے کی ترتیبات">Institution Settings</h3>
-                        </div>
-                        <form id="settingsForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label data-en="Institution Name" data-ur="ادارے کا نام">Institution Name</label>
-                                    <input type="text" id="institutionName" class="form-control" value="Al-Noor School & Madrasa">
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Address" data-ur="پتہ">Address</label>
-                                    <textarea id="institutionAddress" class="form-control" rows="3"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Phone" data-ur="فون">Phone</label>
-                                    <input type="tel" id="institutionPhone" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Email" data-ur="ای میل">Email</label>
-                                    <input type="email" id="institutionEmail" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Academic Year Start" data-ur="تعلیمی سال کی شروعات">Academic Year Start</label>
-                                    <input type="date" id="academicYearStart" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label data-en="Academic Year End" data-ur="تعلیمی سال کا اختتام">Academic Year End</label>
-                                    <input type="date" id="academicYearEnd" class="form-control">
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-success">
-                                <span data-en="Save Settings" data-ur="ترتیبات محفوظ کریں">Save Settings</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modals -->
-    <!-- Student Modal -->
-    <div id="studentModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 data-en="Add/Edit Student" data-ur="طالب علم شامل/ترمیم کریں">Add/Edit Student</h3>
-                <span class="close" onclick="closeModal('studentModal')">&times;</span>
-            </div>
-            <form id="studentForm">
-                <input type="hidden" id="studentId">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label data-en="Student Name" data-ur="طالب علم کا نام">Student Name</label>
-                        <input type="text" id="studentName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Father Name" data-ur="والد کا نام">Father Name</label>
-                        <input type="text" id="fatherName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Date of Birth" data-ur="تاریخ پیدائش">Date of Birth</label>
-                        <input type="date" id="dateOfBirth" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Class" data-ur="کلاس">Class</label>
-                        <select id="studentClass" class="form-control" required>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Address" data-ur="پتہ">Address</label>
-                        <textarea id="studentAddress" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Phone" data-ur="فون">Phone</label>
-                        <input type="tel" id="studentPhone" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Email" data-ur="ای میل">Email</label>
-                        <input type="email" id="studentEmail" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Fee Category" data-ur="فیس کی قسم">Fee Category</label>
-                        <select id="feeCategory" class="form-control">
-                            <option value="general">General</option>
-                            <option value="deserving">Deserving</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn btn-success">
-                        <span data-en="Save Student" data-ur="طالب علم محفوظ کریں">Save Student</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('studentModal')" style="margin-left: 10px;">
-                        <span data-en="Cancel" data-ur="منسوخ">Cancel</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Teacher Modal -->
-    <div id="teacherModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 data-en="Add/Edit Teacher" data-ur="استاد شامل/ترمیم کریں">Add/Edit Teacher</h3>
-                <span class="close" onclick="closeModal('teacherModal')">&times;</span>
-            </div>
-            <form id="teacherForm">
-                <input type="hidden" id="teacherId">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label data-en="Teacher Name" data-ur="استاد کا نام">Teacher Name</label>
-                        <input type="text" id="teacherName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Subject" data-ur="مضمون">Subject</label>
-                        <select id="teacherSubject" class="form-control" required>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Qualification" data-ur="تعلیمی قابلیت">Qualification</label>
-                        <input type="text" id="teacherQualification" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Experience (Years)" data-ur="تجربہ (سال)">Experience (Years)</label>
-                        <input type="number" id="teacherExperience" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Phone" data-ur="فون">Phone</label>
-                        <input type="tel" id="teacherPhone" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Email" data-ur="ای میل">
-                                                    <input type="email" id="teacherEmail" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Address" data-ur="پتہ">Address</label>
-                        <textarea id="teacherAddress" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Salary" data-ur="تنخواہ">Salary</label>
-                        <input type="number" id="teacherSalary" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Joining Date" data-ur="ملازمت کی تاریخ">Joining Date</label>
-                        <input type="date" id="teacherJoiningDate" class="form-control">
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn btn-success">
-                        <span data-en="Save Teacher" data-ur="استاد محفوظ کریں">Save Teacher</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('teacherModal')" style="margin-left: 10px;">
-                        <span data-en="Cancel" data-ur="منسوخ">Cancel</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Class Modal -->
-    <div id="classModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 data-en="Add Class" data-ur="کلاس شامل کریں">Add Class</h3>
-                <span class="close" onclick="closeModal('classModal')">&times;</span>
-            </div>
-            <form id="classForm">
-                <div class="form-group">
-                    <label data-en="Class Name" data-ur="کلاس کا نام">Class Name</label>
-                    <input type="text" id="className" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label data-en="Section" data-ur="سیکشن">Section</label>
-                    <input type="text" id="classSection" class="form-control">
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn btn-success">
-                        <span data-en="Add Class" data-ur="کلاس شامل کریں">Add Class</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('classModal')" style="margin-left: 10px;">
-                        <span data-en="Cancel" data-ur="منسوخ">Cancel</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Subject Modal -->
-    <div id="subjectModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 data-en="Add Subject" data-ur="مضمون شامل کریں">Add Subject</h3>
-                <span class="close" onclick="closeModal('subjectModal')">&times;</span>
-            </div>
-            <form id="subjectForm">
-                <div class="form-group">
-                    <label data-en="Subject Name" data-ur="مضمون کا نام">Subject Name</label>
-                    <input type="text" id="subjectName" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label data-en="Subject Code" data-ur="مضمون کا کوڈ">Subject Code</label>
-                    <input type="text" id="subjectCode" class="form-control">
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn btn-success">
-                        <span data-en="Add Subject" data-ur="مضمون شامل کریں">Add Subject</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('subjectModal')" style="margin-left: 10px;">
-                        <span data-en="Cancel" data-ur="منسوخ">Cancel</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Exam Modal -->
-    <div id="examModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 data-en="Create Exam" data-ur="امتحان بنائیں">Create Exam</h3>
-                <span class="close" onclick="closeModal('examModal')">&times;</span>
-            </div>
-            <form id="examForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label data-en="Exam Name" data-ur="امتحان کا نام">Exam Name</label>
-                        <input type="text" id="examName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Exam Type" data-ur="امتحان کی قسم">Exam Type</label>
-                        <select id="examType" class="form-control" required>
-                            <option value="">Select Type</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="midterm">Mid Term</option>
-                            <option value="final">Final</option>
-                            <option value="quiz">Quiz</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Class" data-ur="کلاس">Class</label>
-                        <select id="examClass" class="form-control" required>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Subject" data-ur="مضمون">Subject</label>
-                        <select id="examSubject" class="form-control" required>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Total Marks" data-ur="کل نمبر">Total Marks</label>
-                        <input type="number" id="examTotalMarks" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Exam Date" data-ur="امتحان کی تاریخ">Exam Date</label>
-                        <input type="date" id="examDate" class="form-control" required>
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn btn-success">
-                        <span data-en="Create Exam" data-ur="امتحان بنائیں">Create Exam</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('examModal')" style="margin-left: 10px;">
-                        <span data-en="Cancel" data-ur="منسوخ">Cancel</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Fee Structure Modal -->
-    <div id="feeStructureModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 data-en="Fee Structure" data-ur="فیس کی ساخت">Fee Structure</h3>
-                <span class="close" onclick="closeModal('feeStructureModal')">&times;</span>
-            </div>
-            <form id="feeStructureForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label data-en="Class" data-ur="کلاس">Class</label>
-                        <select id="feeClass" class="form-control" required>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Category" data-ur="قسم">Category</label>
-                        <select id="feeCategoryType" class="form-control" required>
-                            <option value="general">General</option>
-                            <option value="deserving">Deserving</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Tuition Fee" data-ur="تعلیمی فیس">Tuition Fee</label>
-                        <input type="number" id="tuitionFee" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Admission Fee" data-ur="داخلہ فیس">Admission Fee</label>
-                        <input type="number" id="admissionFee" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Exam Fee" data-ur="امتحانی فیس">Exam Fee</label>
-                        <input type="number" id="examFee" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Other Fee" data-ur="دیگر فیس">Other Fee</label>
-                        <input type="number" id="otherFee" class="form-control">
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn btn-success">
-                        <span data-en="Save Fee Structure" data-ur="فیس کی ساخت محفوظ کریں">Save Fee Structure</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('feeStructureModal')" style="margin-left: 10px;">
-                        <span data-en="Cancel" data-ur="منسوخ">Cancel</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Fee Collection Modal -->
-    <div id="feeCollectionModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 data-en="Collect Fee" data-ur="فیس جمع کریں">Collect Fee</h3>
-                <span class="close" onclick="closeModal('feeCollectionModal')">&times;</span>
-            </div>
-            <form id="feeCollectionForm">
-                <div class="form-group">
-                    <label data-en="Student" data-ur="طالب علم">Student</label>
-                    <select id="feeStudent" class="form-control" required onchange="loadStudentFeeDetails()">
-                        <option value="">Select Student</option>
-                    </select>
-                </div>
-                <div id="studentFeeDetails"></div>
-                <div class="form-group">
-                    <label data-en="Amount Paying" data-ur="ادا کرنے والی رقم">Amount Paying</label>
-                    <input type="number" id="amountPaying" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label data-en="Payment Method" data-ur="ادائیگی کا طریقہ">Payment Method</label>
-                    <select id="paymentMethod" class="form-control" required>
-                        <option value="cash">Cash</option>
-                        <option value="bank">Bank Transfer</option>
-                        <option value="cheque">Cheque</option>
-                    </select>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn btn-success">
-                        <span data-en="Collect Fee" data-ur="فیس جمع کریں">Collect Fee</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('feeCollectionModal')" style="margin-left: 10px;">
-                        <span data-en="Cancel" data-ur="منسوخ">Cancel</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Book Modal -->
-    <div id="bookModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 data-en="Add Book" data-ur="کتاب شامل کریں">Add Book</h3>
-                <span class="close" onclick="closeModal('bookModal')">&times;</span>
-            </div>
-            <form id="bookForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label data-en="Book Title" data-ur="کتاب کا عنوان">Book Title</label>
-                        <input type="text" id="bookTitle" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Author" data-ur="مصنف">Author</label>
-                        <input type="text" id="bookAuthor" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="ISBN" data-ur="آئی ایس بی این">ISBN</label>
-                        <input type="text" id="bookISBN" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Category" data-ur="قسم">Category</label>
-                        <select id="bookCategory" class="form-control" required>
-                            <option value="">Select Category</option>
-                            <option value="academic">Academic</option>
-                            <option value="islamic">Islamic</option>
-                            <option value="literature">Literature</option>
-                            <option value="reference">Reference</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Total Copies" data-ur="کل کاپیاں">Total Copies</label>
-                        <input type="number" id="bookCopies" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Publisher" data-ur="پبلشر">Publisher</label>
-                        <input type="text" id="bookPublisher" class="form-control">
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button type="submit" class="btn btn-success">
-                        <span data-en="Add Book" data-ur="کتاب شامل کریں">Add Book</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('bookModal')" style="margin-left: 10px;">
-                        <span data-en="Cancel" data-ur="منسوخ">Cancel</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
-
-    <script>
+<div id="loginSection">
+<div class="container">
+<div class="content" style="max-width: 400px; margin: 100px auto;">
+<div class="card-header">
+<h2 class="card-title text-center">School &amp; Madrasa Management</h2>
+</div>
+<form id="loginForm">
+<div class="form-group">
+<label>User Role</label>
+<select class="form-control" id="userRole" required="">
+<option value="">Select Role</option>
+<option value="admin">Admin</option>
+<option value="teacher">Teacher</option>
+<option value="accountant">Accountant</option>
+</select>
+</div>
+<div class="form-group">
+<label>Username</label>
+<input class="form-control" id="username" required="" type="text" value="admin"/>
+</div>
+<div class="form-group">
+<label>Password</label>
+<input class="form-control" id="password" required="" type="password" value="admin123"/>
+</div>
+<button class="btn btn-primary" style="width: 100%;" type="submit">Login</button>
+</form>
+</div>
+</div>
+</div>
+<div class="hidden" id="mainApp">
+<div class="container">
+<!-- Header -->
+<div class="header">
+<div class="logo">
+<img alt="School Logo" id="schoolLogo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiMyYzNlNTAiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik0xMiAzTDEgOWwxMSA2IDktNS05LTdtMCAwdjguMThtMC04LjE4TDIwIDEwdjdtLTggOWwtOS03Ii8+Cjwvc3ZnPgo8L3N2Zz4K"/>
+<div>
+<h1 id="schoolName">Al-Noor School &amp; Madrasa</h1>
+<small id="currentUser"></small>
+</div>
+</div>
+<div class="user-info">
+<button class="language-toggle" onclick="toggleLanguage()">
+<span id="langToggle">اردو</span>
+</button>
+<button class="btn btn-danger" onclick="logout()">Logout</button>
+</div>
+</div>
+<!-- Navigation -->
+<div class="nav no-print">
+<div class="nav-grid" id="navigationGrid">
+<button class="nav-item" onclick="showSection('dashboard')">
+<span style="font-size: 2rem;">📊</span>
+<span data-en="Dashboard" data-ur="ڈیش بورڈ">Dashboard</span>
+</button>
+<button class="nav-item" onclick="showSection('students')">
+<span style="font-size: 2rem;">👨‍🎓</span>
+<span data-en="Students" data-ur="طلباء">Students</span>
+</button>
+<button class="nav-item" onclick="showSection('teachers')">
+<span style="font-size: 2rem;">👨‍🏫</span>
+<span data-en="Teachers" data-ur="اساتذہ">Teachers</span>
+</button>
+<button class="nav-item" onclick="showSection('classes')">
+<span style="font-size: 2rem;">🏫</span>
+<span data-en="Classes" data-ur="کلاسیں">Classes</span>
+</button>
+<button class="nav-item" onclick="showSection('attendance')">
+<span style="font-size: 2rem;">📝</span>
+<span data-en="Attendance" data-ur="حاضری">Attendance</span>
+</button>
+<button class="nav-item" onclick="showSection('exams')">
+<span style="font-size: 2rem;">📋</span>
+<span data-en="Exams" data-ur="امتحانات">Exams</span>
+</button>
+<button class="nav-item" onclick="showSection('fees')">
+<span style="font-size: 2rem;">💰</span>
+<span data-en="Fees" data-ur="فیس">Fees</span>
+</button>
+<button class="nav-item" onclick="showSection('salary')">
+<span style="font-size: 2rem;">💳</span>
+<span data-en="Salary" data-ur="تنخواہ">Salary</span>
+</button>
+<button class="nav-item" onclick="showSection('library')">
+<span style="font-size: 2rem;">📚</span>
+<span data-en="Library" data-ur="لائبریری">Library</span>
+</button>
+<button class="nav-item" onclick="showSection('madrasa')">
+<span style="font-size: 2rem;">📖</span>
+<span data-en="Madrasa" data-ur="مدرسہ">Madrasa</span>
+</button>
+<button class="nav-item" onclick="showSection('reports')">
+<span style="font-size: 2rem;">📈</span>
+<span data-en="Reports" data-ur="رپورٹس">Reports</span>
+</button>
+<button class="nav-item" onclick="showSection('settings')">
+<span style="font-size: 2rem;">⚙️</span>
+<span data-en="Settings" data-ur="ترتیبات">Settings</span>
+</button>
+</div>
+</div>
+<!-- Content Area -->
+<div class="content">
+<!-- Dashboard Section -->
+<div class="section" id="dashboardSection">
+<h2 data-en="Dashboard" data-ur="ڈیش بورڈ">Dashboard</h2>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-number" id="totalStudents">0</div>
+<div class="stat-label" data-en="Total Students" data-ur="کل طلباء">Total Students</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="totalTeachers">0</div>
+<div class="stat-label" data-en="Total Teachers" data-ur="کل اساتذہ">Total Teachers</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="totalFeeCollected">₨0</div>
+<div class="stat-label" data-en="Fee Collected" data-ur="فیس جمع">Fee Collected</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="pendingFees">₨0</div>
+<div class="stat-label" data-en="Pending Fees" data-ur="بقایا فیس">Pending Fees</div>
+</div>
+</div>
+<div class="form-grid">
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Recent Activities" data-ur="حالیہ سرگرمیاں">Recent Activities</h3>
+</div>
+<div id="recentActivities">
+<p data-en="No recent activities" data-ur="کوئی حالیہ سرگرمی نہیں">No recent activities</p>
+</div>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Quick Actions" data-ur="فوری اعمال">Quick Actions</h3>
+</div>
+<div style="display: grid; gap: 10px;">
+<button class="btn btn-primary" onclick="showSection('students')">
+<span data-en="Add New Student" data-ur="نیا طالب علم شامل کریں">Add New Student</span>
+</button>
+<button class="btn btn-success" onclick="showSection('attendance')">
+<span data-en="Mark Attendance" data-ur="حاضری لگائیں">Mark Attendance</span>
+</button>
+<button class="btn btn-warning" onclick="showSection('fees')">
+<span data-en="Collect Fees" data-ur="فیس جمع کریں">Collect Fees</span>
+</button>
+</div>
+</div>
+</div>
+<div class="chart-container">
+<canvas id="dashboardChart"></canvas>
+</div>
+</div>
+<!-- Students Section -->
+<div class="section hidden" id="studentsSection">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 data-en="Students Management" data-ur="طلباء کا انتظام">Students Management</h2>
+<button class="btn btn-primary" onclick="openModal('studentModal')">
+<span data-en="Add New Student" data-ur="نیا طالب علم شامل کریں">Add New Student</span>
+</button>
+</div>
+<div class="search-filters">
+<div class="search-box">
+<input class="form-control search-input" id="studentSearch" onkeyup="searchStudents()" placeholder="Search students..." type="text"/>
+<span class="search-icon">🔍</span>
+</div>
+<div class="form-group">
+<select class="form-control" id="classFilter" onchange="filterStudents()">
+<option value="">All Classes</option>
+</select>
+</div>
+<div class="form-group">
+<select class="form-control" id="feeStatusFilter" onchange="filterStudents()">
+<option value="">All Fee Status</option>
+<option value="paid">Fee Paid</option>
+<option value="pending">Fee Pending</option>
+</select>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table">
+<thead>
+<tr>
+<th data-en="ID" data-ur="شناخت">ID</th>
+<th data-en="Name" data-ur="نام">Name</th>
+<th data-en="Class" data-ur="کلاس">Class</th>
+<th data-en="Father Name" data-ur="والد کا نام">Father Name</th>
+<th data-en="Phone" data-ur="فون">Phone</th>
+<th data-en="Fee Status" data-ur="فیس کی صورتحال">Fee Status</th>
+<th data-en="Actions" data-ur="اعمال">Actions</th>
+</tr>
+</thead>
+<tbody id="studentsTableBody"></tbody>
+</table>
+</div>
+</div>
+<!-- Teachers Section -->
+<div class="section hidden" id="teachersSection">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 data-en="Teachers Management" data-ur="اساتذہ کا انتظام">Teachers Management</h2>
+<button class="btn btn-primary" onclick="openModal('teacherModal')">
+<span data-en="Add New Teacher" data-ur="نیا استاد شامل کریں">Add New Teacher</span>
+</button>
+</div>
+<div class="search-filters">
+<div class="search-box">
+<input class="form-control search-input" id="teacherSearch" onkeyup="searchTeachers()" placeholder="Search teachers..." type="text"/>
+<span class="search-icon">🔍</span>
+</div>
+<div class="form-group">
+<select class="form-control" id="subjectFilter" onchange="filterTeachers()">
+<option value="">All Subjects</option>
+</select>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table">
+<thead>
+<tr>
+<th data-en="ID" data-ur="شناخت">ID</th>
+<th data-en="Name" data-ur="نام">Name</th>
+<th data-en="Subject" data-ur="مضمون">Subject</th>
+<th data-en="Qualification" data-ur="تعلیمی قابلیت">Qualification</th>
+<th data-en="Phone" data-ur="فون">Phone</th>
+<th data-en="Salary" data-ur="تنخواہ">Salary</th>
+<th data-en="Actions" data-ur="اعمال">Actions</th>
+</tr>
+</thead>
+<tbody id="teachersTableBody"></tbody>
+</table>
+</div>
+</div>
+<!-- Classes Section -->
+<div class="section hidden" id="classesSection">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 data-en="Classes &amp; Subjects" data-ur="کلاسیں اور مضامین">Classes &amp; Subjects</h2>
+<div>
+<button class="btn btn-primary" onclick="openModal('classModal')" style="margin-right: 10px;">
+<span data-en="Add Class" data-ur="کلاس شامل کریں">Add Class</span>
+</button>
+<button class="btn btn-success" onclick="openModal('subjectModal')">
+<span data-en="Add Subject" data-ur="مضمون شامل کریں">Add Subject</span>
+</button>
+</div>
+</div>
+<div class="form-grid">
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Classes" data-ur="کلاسیں">Classes</h3>
+</div>
+<div id="classesList"></div>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Subjects" data-ur="مضامین">Subjects</h3>
+</div>
+<div id="subjectsList"></div>
+</div>
+</div>
+</div>
+<!-- Attendance Section -->
+<div class="section hidden" id="attendanceSection">
+<h2 data-en="Attendance Management" data-ur="حاضری کا انتظام">Attendance Management</h2>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Mark Today's Attendance" data-ur="آج کی حاضری لگائیں">Mark Today's Attendance</h3>
+</div>
+<div class="form-grid">
+<div class="form-group">
+<label data-en="Select Class" data-ur="کلاس منتخب کریں">Select Class</label>
+<select class="form-control" id="attendanceClass" onchange="loadStudentsForAttendance()">
+<option value="">Select Class</option>
+</select>
+</div>
+<div class="form-group">
+<label data-en="Date" data-ur="تاریخ">Date</label>
+<input class="form-control" id="attendanceDate" type="date"/>
+</div>
+</div>
+<div class="attendance-grid" id="attendanceGrid"></div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" onclick="saveAttendance()">
+<span data-en="Save Attendance" data-ur="حاضری محفوظ کریں">Save Attendance</span>
+</button>
+<button class="btn btn-primary" onclick="generateAttendanceReport()" style="margin-left: 10px;">
+<span data-en="Generate Report" data-ur="رپورٹ بنائیں">Generate Report</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Exams Section -->
+<div class="section hidden" id="examsSection">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 data-en="Examinations" data-ur="امتحانات">Examinations</h2>
+<button class="btn btn-primary" onclick="openModal('examModal')">
+<span data-en="Create New Exam" data-ur="نیا امتحان بنائیں">Create New Exam</span>
+</button>
+</div>
+<div class="form-grid">
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Exam List" data-ur="امتحانات کی فہرست">Exam List</h3>
+</div>
+<div id="examsList"></div>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Enter Marks" data-ur="نمبر داخل کریں">Enter Marks</h3>
+</div>
+<div class="form-group">
+<label data-en="Select Exam" data-ur="امتحان منتخب کریں">Select Exam</label>
+<select class="form-control" id="marksExamSelect" onchange="loadExamMarks()">
+<option value="">Select Exam</option>
+</select>
+</div>
+<div id="marksEntry"></div>
+</div>
+</div>
+</div>
+<!-- Fees Section -->
+<div class="section hidden" id="feesSection">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 data-en="Fee Management" data-ur="فیس کا انتظام">Fee Management</h2>
+<div>
+<button class="btn btn-primary" onclick="openModal('feeStructureModal')" style="margin-right: 10px;">
+<span data-en="Fee Structure" data-ur="فیس کی ساخت">Fee Structure</span>
+</button>
+<button class="btn btn-success" onclick="openModal('feeCollectionModal')">
+<span data-en="Collect Fee" data-ur="فیس جمع کریں">Collect Fee</span>
+</button>
+</div>
+</div>
+<div class="search-filters">
+<div class="search-box">
+<input class="form-control search-input" id="feeSearch" onkeyup="searchFees()" placeholder="Search by student name or ID..." type="text"/>
+<span class="search-icon">🔍</span>
+</div>
+<div class="form-group">
+<select class="form-control" id="feeStatusFilter2" onchange="filterFees()">
+<option value="">All Status</option>
+<option value="paid">Paid</option>
+<option value="pending">Pending</option>
+<option value="partial">Partially Paid</option>
+</select>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table">
+<thead>
+<tr>
+<th data-en="Student" data-ur="طالب علم">Student</th>
+<th data-en="Class" data-ur="کلاس">Class</th>
+<th data-en="Total Fee" data-ur="کل فیس">Total Fee</th>
+<th data-en="Paid" data-ur="ادا شدہ">Paid</th>
+<th data-en="Pending" data-ur="باقی">Pending</th>
+<th data-en="Status" data-ur="صورتحال">Status</th>
+<th data-en="Actions" data-ur="اعمال">Actions</th>
+</tr>
+</thead>
+<tbody id="feesTableBody"></tbody>
+</table>
+</div>
+</div>
+<!-- Salary Section -->
+<div class="section hidden" id="salarySection">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 data-en="Salary Management" data-ur="تنخواہ کا انتظام">Salary Management</h2>
+<button class="btn btn-success" onclick="processMonthlySalary()">
+<span data-en="Process Monthly Salary" data-ur="ماہانہ تنخواہ کا عمل">Process Monthly Salary</span>
+</button>
+</div>
+<div class="form-grid">
+<div class="form-group">
+<label data-en="Select Month" data-ur="مہینہ منتخب کریں">Select Month</label>
+<input class="form-control" id="salaryMonth" type="month"/>
+</div>
+<div class="form-group">
+<button class="btn btn-primary" onclick="generateSalaryReport()">
+<span data-en="Generate Salary Report" data-ur="تنخواہ کی رپورٹ بنائیں">Generate Salary Report</span>
+</button>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table">
+<thead>
+<tr>
+<th data-en="Teacher" data-ur="استاد">Teacher</th>
+<th data-en="Basic Salary" data-ur="بنیادی تنخواہ">Basic Salary</th>
+<th data-en="Allowances" data-ur="الاؤنسز">Allowances</th>
+<th data-en="Deductions" data-ur="کٹوتیاں">Deductions</th>
+<th data-en="Net Salary" data-ur="خالص تنخواہ">Net Salary</th>
+<th data-en="Status" data-ur="صورتحال">Status</th>
+<th data-en="Actions" data-ur="اعمال">Actions</th>
+</tr>
+</thead>
+<tbody id="salaryTableBody"></tbody>
+</table>
+</div>
+</div>
+<!-- Library Section -->
+<div class="section hidden" id="librarySection">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 data-en="Library Management" data-ur="لائبریری کا انتظام">Library Management</h2>
+<button class="btn btn-primary" onclick="openModal('bookModal')">
+<span data-en="Add New Book" data-ur="نئی کتاب شامل کریں">Add New Book</span>
+</button>
+</div>
+<div class="form-grid">
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Book Issue/Return" data-ur="کتاب جاری/واپسی">Book Issue/Return</h3>
+</div>
+<form id="bookIssueForm">
+<div class="form-group">
+<label data-en="Student" data-ur="طالب علم">Student</label>
+<select class="form-control" id="issueStudent" required="">
+<option value="">Select Student</option>
+</select>
+</div>
+<div class="form-group">
+<label data-en="Book" data-ur="کتاب">Book</label>
+<select class="form-control" id="issueBook" required="">
+<option value="">Select Book</option>
+</select>
+</div>
+<div class="form-group">
+<label data-en="Return Date" data-ur="واپسی کی تاریخ">Return Date</label>
+<input class="form-control" id="returnDate" required="" type="date"/>
+</div>
+<button class="btn btn-success" type="submit">
+<span data-en="Issue Book" data-ur="کتاب جاری کریں">Issue Book</span>
+</button>
+</form>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Issued Books" data-ur="جاری کردہ کتابیں">Issued Books</h3>
+</div>
+<div id="issuedBooksList"></div>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table">
+<thead>
+<tr>
+<th data-en="Book ID" data-ur="کتاب کی شناخت">Book ID</th>
+<th data-en="Title" data-ur="عنوان">Title</th>
+<th data-en="Author" data-ur="مصنف">Author</th>
+<th data-en="Category" data-ur="قسم">Category</th>
+<th data-en="Copies" data-ur="کاپیاں">Copies</th>
+<th data-en="Available" data-ur="دستیاب">Available</th>
+<th data-en="Actions" data-ur="اعمال">Actions</th>
+</tr>
+</thead>
+<tbody id="booksTableBody"></tbody>
+</table>
+</div>
+</div>
+<!-- Madrasa Section -->
+<div class="section hidden" id="madrasaSection">
+<h2 data-en="Madrasa Management" data-ur="مدرسہ کا انتظام">Madrasa Management</h2>
+<div class="form-grid">
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Hifz Progress" data-ur="حفظ کی پیش قدمی">Hifz Progress</h3>
+</div>
+<form id="hifzProgressForm">
+<div class="form-group">
+<label data-en="Student" data-ur="طالب علم">Student</label>
+<select class="form-control" id="hifzStudent" required="">
+<option value="">Select Student</option>
+</select>
+</div>
+<div class="form-group">
+<label data-en="Sabaq (New Lesson)" data-ur="سبق (نیا سبق)">Sabaq (New Lesson)</label>
+<input class="form-control" id="sabaq" placeholder="Surah and Ayah" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Sabaqi (Recent Revision)" data-ur="سبقی (حالیہ اعادہ)">Sabaqi (Recent Revision)</label>
+<input class="form-control" id="sabaqi" placeholder="Surah and Ayah" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Manzil (Old Revision)" data-ur="منزل (پرانا اعادہ)">Manzil (Old Revision)</label>
+<input class="form-control" id="manzil" placeholder="Surah and Ayah" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Performance" data-ur="کارکردگی">Performance</label>
+<select class="form-control" id="hifzPerformance" required="">
+<option value="">Select Performance</option>
+<option value="excellent">Excellent</option>
+<option value="good">Good</option>
+<option value="average">Average</option>
+<option value="needs-improvement">Needs Improvement</option>
+</select>
+</div>
+<button class="btn btn-success" type="submit">
+<span data-en="Save Progress" data-ur="پیش قدمی محفوظ کریں">Save Progress</span>
+</button>
+</form>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Progress Report" data-ur="پیش قدمی کی رپورٹ">Progress Report</h3>
+</div>
+<div class="form-group">
+<label data-en="Select Student" data-ur="طالب علم منتخب کریں">Select Student</label>
+<select class="form-control" id="progressReportStudent" onchange="loadHifzProgress()">
+<option value="">Select Student</option>
+</select>
+</div>
+<div id="hifzProgressReport"></div>
+</div>
+</div>
+</div>
+<!-- Reports Section -->
+<div class="section hidden" id="reportsSection">
+<h2 data-en="Reports &amp; Analytics" data-ur="رپورٹس اور تجزیات">Reports &amp; Analytics</h2>
+<div class="form-grid">
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Generate Reports" data-ur="رپورٹس بنائیں">Generate Reports</h3>
+</div>
+<div style="display: grid; gap: 15px;">
+<button class="btn btn-primary" onclick="generateStudentReport()">
+<span data-en="Student Report" data-ur="طلباء کی رپورٹ">Student Report</span>
+</button>
+<button class="btn btn-primary" onclick="generateAttendanceReport()">
+<span data-en="Attendance Report" data-ur="حاضری کی رپورٹ">Attendance Report</span>
+</button>
+<button class="btn btn-primary" onclick="generateFeeReport()">
+<span data-en="Fee Collection Report" data-ur="فیس جمع کرنے کی رپورٹ">Fee Collection Report</span>
+</button>
+<button class="btn btn-primary" onclick="generateExamReport()">
+<span data-en="Exam Results Report" data-ur="امتحانی نتائج کی رپورٹ">Exam Results Report</span>
+</button>
+<button class="btn btn-primary" onclick="generateIDCards()">
+<span data-en="Generate ID Cards" data-ur="شناختی کارڈ بنائیں">Generate ID Cards</span>
+</button>
+</div>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Data Management" data-ur="ڈیٹا کا انتظام">Data Management</h3>
+</div>
+<div style="display: grid; gap: 15px;">
+<button class="btn btn-success" onclick="exportData()">
+<span data-en="Export Data" data-ur="ڈیٹا ایکسپورٹ کریں">Export Data</span>
+</button>
+<input accept=".json" id="importFile" onchange="importData()" style="display: none;" type="file"/>
+<button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
+<span data-en="Import Data" data-ur="ڈیٹا درآمد کریں">Import Data</span>
+</button>
+<button class="btn btn-danger" onclick="clearAllData()">
+<span data-en="Clear All Data" data-ur="تمام ڈیٹا صاف کریں">Clear All Data</span>
+</button>
+</div>
+</div>
+</div>
+<div class="chart-container">
+<canvas id="reportsChart"></canvas>
+</div>
+</div>
+<!-- Settings Section -->
+<div class="section hidden" id="settingsSection">
+<h2 data-en="Settings" data-ur="ترتیبات">Settings</h2>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-en="Institution Settings" data-ur="ادارے کی ترتیبات">Institution Settings</h3>
+</div>
+<form id="settingsForm">
+<div class="form-grid">
+<div class="form-group">
+<label data-en="Institution Name" data-ur="ادارے کا نام">Institution Name</label>
+<input class="form-control" id="institutionName" type="text" value="Al-Noor School &amp; Madrasa"/>
+</div>
+<div class="form-group">
+<label data-en="Address" data-ur="پتہ">Address</label>
+<textarea class="form-control" id="institutionAddress" rows="3"></textarea>
+</div>
+<div class="form-group">
+<label data-en="Phone" data-ur="فون">Phone</label>
+<input class="form-control" id="institutionPhone" type="tel"/>
+</div>
+<div class="form-group">
+<label data-en="Email" data-ur="ای میل">Email</label>
+<input class="form-control" id="institutionEmail" type="email"/>
+</div>
+<div class="form-group">
+<label data-en="Academic Year Start" data-ur="تعلیمی سال کی شروعات">Academic Year Start</label>
+<input class="form-control" id="academicYearStart" type="date"/>
+</div>
+<div class="form-group">
+<label data-en="Academic Year End" data-ur="تعلیمی سال کا اختتام">Academic Year End</label>
+<input class="form-control" id="academicYearEnd" type="date"/>
+</div>
+</div>
+<button class="btn btn-success" type="submit">
+<span data-en="Save Settings" data-ur="ترتیبات محفوظ کریں">Save Settings</span>
+</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modals -->
+<!-- Student Modal -->
+<div class="modal" id="studentModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 data-en="Add/Edit Student" data-ur="طالب علم شامل/ترمیم کریں">Add/Edit Student</h3>
+<span class="close" onclick="closeModal('studentModal')">×</span>
+</div>
+<form id="studentForm">
+<input id="studentId" type="hidden"/>
+<div class="form-grid">
+<div class="form-group">
+<label data-en="Student Name" data-ur="طالب علم کا نام">Student Name</label>
+<input class="form-control" id="studentName" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Father Name" data-ur="والد کا نام">Father Name</label>
+<input class="form-control" id="fatherName" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Date of Birth" data-ur="تاریخ پیدائش">Date of Birth</label>
+<input class="form-control" id="dateOfBirth" type="date"/>
+</div>
+<div class="form-group">
+<label data-en="Class" data-ur="کلاس">Class</label>
+<select class="form-control" id="studentClass" required="">
+</select>
+</div>
+<div class="form-group">
+<label data-en="Address" data-ur="پتہ">Address</label>
+<textarea class="form-control" id="studentAddress" rows="2"></textarea>
+</div>
+<div class="form-group">
+<label data-en="Phone" data-ur="فون">Phone</label>
+<input class="form-control" id="studentPhone" type="tel"/>
+</div>
+<div class="form-group">
+<label data-en="Email" data-ur="ای میل">Email</label>
+<input class="form-control" id="studentEmail" type="email"/>
+</div>
+<div class="form-group">
+<label data-en="Fee Category" data-ur="فیس کی قسم">Fee Category</label>
+<select class="form-control" id="feeCategory">
+<option value="general">General</option>
+<option value="deserving">Deserving</option>
+</select>
+</div>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" type="submit">
+<span data-en="Save Student" data-ur="طالب علم محفوظ کریں">Save Student</span>
+</button>
+<button class="btn btn-secondary" onclick="closeModal('studentModal')" style="margin-left: 10px;" type="button">
+<span data-en="Cancel" data-ur="منسوخ">Cancel</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Teacher Modal -->
+<div class="modal" id="teacherModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 data-en="Add/Edit Teacher" data-ur="استاد شامل/ترمیم کریں">Add/Edit Teacher</h3>
+<span class="close" onclick="closeModal('teacherModal')">×</span>
+</div>
+<form id="teacherForm">
+<input id="teacherId" type="hidden"/>
+<div class="form-grid">
+<div class="form-group">
+<label data-en="Teacher Name" data-ur="استاد کا نام">Teacher Name</label>
+<input class="form-control" id="teacherName" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Subject" data-ur="مضمون">Subject</label>
+<select class="form-control" id="teacherSubject" required="">
+</select>
+</div>
+<div class="form-group">
+<label data-en="Qualification" data-ur="تعلیمی قابلیت">Qualification</label>
+<input class="form-control" id="teacherQualification" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Experience (Years)" data-ur="تجربہ (سال)">Experience (Years)</label>
+<input class="form-control" id="teacherExperience" type="number"/>
+</div>
+<div class="form-group">
+<label data-en="Phone" data-ur="فون">Phone</label>
+<input class="form-control" id="teacherPhone" required="" type="tel"/>
+</div>
+<div class="form-group">
+<label data-en="Email" data-ur="ای میل">
+<input class="form-control" id="teacherEmail" type="email"/>
+</label></div>
+<div class="form-group">
+<label data-en="Address" data-ur="پتہ">Address</label>
+<textarea class="form-control" id="teacherAddress" rows="2"></textarea>
+</div>
+<div class="form-group">
+<label data-en="Salary" data-ur="تنخواہ">Salary</label>
+<input class="form-control" id="teacherSalary" required="" type="number"/>
+</div>
+<div class="form-group">
+<label data-en="Joining Date" data-ur="ملازمت کی تاریخ">Joining Date</label>
+<input class="form-control" id="teacherJoiningDate" type="date"/>
+</div>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" type="submit">
+<span data-en="Save Teacher" data-ur="استاد محفوظ کریں">Save Teacher</span>
+</button>
+<button class="btn btn-secondary" onclick="closeModal('teacherModal')" style="margin-left: 10px;" type="button">
+<span data-en="Cancel" data-ur="منسوخ">Cancel</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Class Modal -->
+<div class="modal" id="classModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 data-en="Add Class" data-ur="کلاس شامل کریں">Add Class</h3>
+<span class="close" onclick="closeModal('classModal')">×</span>
+</div>
+<form id="classForm">
+<div class="form-group">
+<label data-en="Class Name" data-ur="کلاس کا نام">Class Name</label>
+<input class="form-control" id="className" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Section" data-ur="سیکشن">Section</label>
+<input class="form-control" id="classSection" type="text"/>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" type="submit">
+<span data-en="Add Class" data-ur="کلاس شامل کریں">Add Class</span>
+</button>
+<button class="btn btn-secondary" onclick="closeModal('classModal')" style="margin-left: 10px;" type="button">
+<span data-en="Cancel" data-ur="منسوخ">Cancel</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Subject Modal -->
+<div class="modal" id="subjectModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 data-en="Add Subject" data-ur="مضمون شامل کریں">Add Subject</h3>
+<span class="close" onclick="closeModal('subjectModal')">×</span>
+</div>
+<form id="subjectForm">
+<div class="form-group">
+<label data-en="Subject Name" data-ur="مضمون کا نام">Subject Name</label>
+<input class="form-control" id="subjectName" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Subject Code" data-ur="مضمون کا کوڈ">Subject Code</label>
+<input class="form-control" id="subjectCode" type="text"/>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" type="submit">
+<span data-en="Add Subject" data-ur="مضمون شامل کریں">Add Subject</span>
+</button>
+<button class="btn btn-secondary" onclick="closeModal('subjectModal')" style="margin-left: 10px;" type="button">
+<span data-en="Cancel" data-ur="منسوخ">Cancel</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Exam Modal -->
+<div class="modal" id="examModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 data-en="Create Exam" data-ur="امتحان بنائیں">Create Exam</h3>
+<span class="close" onclick="closeModal('examModal')">×</span>
+</div>
+<form id="examForm">
+<div class="form-grid">
+<div class="form-group">
+<label data-en="Exam Name" data-ur="امتحان کا نام">Exam Name</label>
+<input class="form-control" id="examName" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Exam Type" data-ur="امتحان کی قسم">Exam Type</label>
+<select class="form-control" id="examType" required="">
+<option value="">Select Type</option>
+<option value="monthly">Monthly</option>
+<option value="midterm">Mid Term</option>
+<option value="final">Final</option>
+<option value="quiz">Quiz</option>
+</select>
+</div>
+<div class="form-group">
+<label data-en="Class" data-ur="کلاس">Class</label>
+<select class="form-control" id="examClass" required="">
+</select>
+</div>
+<div class="form-group">
+<label data-en="Subject" data-ur="مضمون">Subject</label>
+<select class="form-control" id="examSubject" required="">
+</select>
+</div>
+<div class="form-group">
+<label data-en="Total Marks" data-ur="کل نمبر">Total Marks</label>
+<input class="form-control" id="examTotalMarks" required="" type="number"/>
+</div>
+<div class="form-group">
+<label data-en="Exam Date" data-ur="امتحان کی تاریخ">Exam Date</label>
+<input class="form-control" id="examDate" required="" type="date"/>
+</div>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" type="submit">
+<span data-en="Create Exam" data-ur="امتحان بنائیں">Create Exam</span>
+</button>
+<button class="btn btn-secondary" onclick="closeModal('examModal')" style="margin-left: 10px;" type="button">
+<span data-en="Cancel" data-ur="منسوخ">Cancel</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Fee Structure Modal -->
+<div class="modal" id="feeStructureModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 data-en="Fee Structure" data-ur="فیس کی ساخت">Fee Structure</h3>
+<span class="close" onclick="closeModal('feeStructureModal')">×</span>
+</div>
+<form id="feeStructureForm">
+<div class="form-grid">
+<div class="form-group">
+<label data-en="Class" data-ur="کلاس">Class</label>
+<select class="form-control" id="feeClass" required="">
+</select>
+</div>
+<div class="form-group">
+<label data-en="Category" data-ur="قسم">Category</label>
+<select class="form-control" id="feeCategoryType" required="">
+<option value="general">General</option>
+<option value="deserving">Deserving</option>
+</select>
+</div>
+<div class="form-group">
+<label data-en="Tuition Fee" data-ur="تعلیمی فیس">Tuition Fee</label>
+<input class="form-control" id="tuitionFee" required="" type="number"/>
+</div>
+<div class="form-group">
+<label data-en="Admission Fee" data-ur="داخلہ فیس">Admission Fee</label>
+<input class="form-control" id="admissionFee" type="number"/>
+</div>
+<div class="form-group">
+<label data-en="Exam Fee" data-ur="امتحانی فیس">Exam Fee</label>
+<input class="form-control" id="examFee" type="number"/>
+</div>
+<div class="form-group">
+<label data-en="Other Fee" data-ur="دیگر فیس">Other Fee</label>
+<input class="form-control" id="otherFee" type="number"/>
+</div>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" type="submit">
+<span data-en="Save Fee Structure" data-ur="فیس کی ساخت محفوظ کریں">Save Fee Structure</span>
+</button>
+<button class="btn btn-secondary" onclick="closeModal('feeStructureModal')" style="margin-left: 10px;" type="button">
+<span data-en="Cancel" data-ur="منسوخ">Cancel</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Fee Collection Modal -->
+<div class="modal" id="feeCollectionModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 data-en="Collect Fee" data-ur="فیس جمع کریں">Collect Fee</h3>
+<span class="close" onclick="closeModal('feeCollectionModal')">×</span>
+</div>
+<form id="feeCollectionForm">
+<div class="form-group">
+<label data-en="Student" data-ur="طالب علم">Student</label>
+<select class="form-control" id="feeStudent" onchange="loadStudentFeeDetails()" required="">
+<option value="">Select Student</option>
+</select>
+</div>
+<div id="studentFeeDetails"></div>
+<div class="form-group">
+<label data-en="Amount Paying" data-ur="ادا کرنے والی رقم">Amount Paying</label>
+<input class="form-control" id="amountPaying" required="" type="number"/>
+</div>
+<div class="form-group">
+<label data-en="Payment Method" data-ur="ادائیگی کا طریقہ">Payment Method</label>
+<select class="form-control" id="paymentMethod" required="">
+<option value="cash">Cash</option>
+<option value="bank">Bank Transfer</option>
+<option value="cheque">Cheque</option>
+</select>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" type="submit">
+<span data-en="Collect Fee" data-ur="فیس جمع کریں">Collect Fee</span>
+</button>
+<button class="btn btn-secondary" onclick="closeModal('feeCollectionModal')" style="margin-left: 10px;" type="button">
+<span data-en="Cancel" data-ur="منسوخ">Cancel</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Book Modal -->
+<div class="modal" id="bookModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 data-en="Add Book" data-ur="کتاب شامل کریں">Add Book</h3>
+<span class="close" onclick="closeModal('bookModal')">×</span>
+</div>
+<form id="bookForm">
+<div class="form-grid">
+<div class="form-group">
+<label data-en="Book Title" data-ur="کتاب کا عنوان">Book Title</label>
+<input class="form-control" id="bookTitle" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Author" data-ur="مصنف">Author</label>
+<input class="form-control" id="bookAuthor" required="" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="ISBN" data-ur="آئی ایس بی این">ISBN</label>
+<input class="form-control" id="bookISBN" type="text"/>
+</div>
+<div class="form-group">
+<label data-en="Category" data-ur="قسم">Category</label>
+<select class="form-control" id="bookCategory" required="">
+<option value="">Select Category</option>
+<option value="academic">Academic</option>
+<option value="islamic">Islamic</option>
+<option value="literature">Literature</option>
+<option value="reference">Reference</option>
+</select>
+</div>
+<div class="form-group">
+<label data-en="Total Copies" data-ur="کل کاپیاں">Total Copies</label>
+<input class="form-control" id="bookCopies" required="" type="number"/>
+</div>
+<div class="form-group">
+<label data-en="Publisher" data-ur="پبلشر">Publisher</label>
+<input class="form-control" id="bookPublisher" type="text"/>
+</div>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-success" type="submit">
+<span data-en="Add Book" data-ur="کتاب شامل کریں">Add Book</span>
+</button>
+<button class="btn btn-secondary" onclick="closeModal('bookModal')" style="margin-left: 10px;" type="button">
+<span data-en="Cancel" data-ur="منسوخ">Cancel</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Notification -->
+<div class="notification" id="notification"></div>
+<script>
         // Global Variables
         let currentUser = null;
         let currentLanguage = 'en';
@@ -3435,5 +3380,5 @@
         });
 
     </script>
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

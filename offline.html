@@ -1,0 +1,2 @@
+<!DOCTYPE html>
+<html><head><title>Offline</title><link href="manifest.json" rel="manifest"/></head><body><h1>You are offline.</h1><p>Please check your connection.</p><script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body></html>

@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+
+<html dir="rtl" lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دینی مدرسہ مینجمنٹ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>دینی مدرسہ مینجمنٹ</title>
+<link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style>
         body { font-family: 'Noto Nastaliq Urdu', serif; }
         .en-font { font-family: sans-serif; direction: ltr; text-align: left;}
         .ur-font { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; text-align: right; }
@@ -37,619 +38,604 @@
         .table thead th { background-color: #f8f9fa; }
         .dynamic-th { display: table-cell; } /* Ensure dynamic headers are displayed */
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body class="ur-font">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success no-print">
-        <div class="container-fluid">
-            <a class="navbar-brand ur-font" href="#" data-l="a1">دینی مدرسہ مینجمنٹ</a>
-            <a class="navbar-brand en-font hidden" href="#" data-l="a2">Deeni Madrasa Management</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#a3" aria-controls="a3" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="a3">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                     <li class="nav-item"><a class="nav-link active" data-l="a5" onclick="f1('a6')" data-tab="a6">طلباء</a></li>
-                     <li class="nav-item"><a class="nav-link" data-l="a7" onclick="f1('a8')" data-tab="a8">اساتذہ</a></li>
-                     <li class="nav-item"><a class="nav-link" data-l="a9" onclick="f1('a10')" data-tab="a10">کلاسز</a></li>
-                     <li class="nav-item"><a class="nav-link" data-l="a11" onclick="f1('a12')" data-tab="a12">حاضری</a></li>
-                     <li class="nav-item"><a class="nav-link" data-l="a13" onclick="f1('a14')" data-tab="a14">فیس/تنخواہ</a></li>
-                     <li class="nav-item"><a class="nav-link" data-l="a167" onclick="f1('a168')" data-tab="a168">آمدنی/اخراجات</a></li> {/* New Tab */}
-                     <li class="nav-item"><a class="nav-link" data-l="a15" onclick="f1('a16')" data-tab="a16">رپورٹس</a></li>
-                </ul>
-                <select class="form-select form-select-sm w-auto" id="a17" onchange="f2(this.value)">
-                    <option value="ur">اردو</option>
-                    <option value="en">English</option>
-                </select>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container-fluid mt-3">
-        <!-- Student Management -->
-        <div id="a6" class="tab-content">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 data-l="a18">طلباء کا انتظام</h5>
-                    <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a19" onclick="f3()" data-l="a20">نیا طالب علم</button>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th data-l="a21">نام</th>
-                                    <th data-l="a22">والد کا نام</th>
-                                    <th data-l="a23">عمر</th>
-                                    <th data-l="a24">کلاس</th>
-                                    <th data-l="a25">داخلہ تاریخ</th>
-                                    <th data-l="a26">رابطہ</th>
-                                    <th data-l="a27">پتہ</th>
-                                    <th id="a28" class="dynamic-th"></th> {/* Dynamic TH */}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success no-print">
+<div class="container-fluid">
+<a class="navbar-brand ur-font" data-l="a1" href="#">دینی مدرسہ مینجمنٹ</a>
+<a class="navbar-brand en-font hidden" data-l="a2" href="#">Deeni Madrasa Management</a>
+<button aria-controls="a3" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#a3" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="a3">
+<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+<li class="nav-item"><a class="nav-link active" data-l="a5" data-tab="a6" onclick="f1('a6')">طلباء</a></li>
+<li class="nav-item"><a class="nav-link" data-l="a7" data-tab="a8" onclick="f1('a8')">اساتذہ</a></li>
+<li class="nav-item"><a class="nav-link" data-l="a9" data-tab="a10" onclick="f1('a10')">کلاسز</a></li>
+<li class="nav-item"><a class="nav-link" data-l="a11" data-tab="a12" onclick="f1('a12')">حاضری</a></li>
+<li class="nav-item"><a class="nav-link" data-l="a13" data-tab="a14" onclick="f1('a14')">فیس/تنخواہ</a></li>
+<li class="nav-item"><a class="nav-link" data-l="a167" data-tab="a168" onclick="f1('a168')">آمدنی/اخراجات</a></li> {/* New Tab */}
+                     <li class="nav-item"><a class="nav-link" data-l="a15" data-tab="a16" onclick="f1('a16')">رپورٹس</a></li>
+</ul>
+<select class="form-select form-select-sm w-auto" id="a17" onchange="f2(this.value)">
+<option value="ur">اردو</option>
+<option value="en">English</option>
+</select>
+</div>
+</div>
+</nav>
+<div class="container-fluid mt-3">
+<!-- Student Management -->
+<div class="tab-content" id="a6">
+<div class="card">
+<div class="card-header d-flex justify-content-between align-items-center">
+<h5 data-l="a18">طلباء کا انتظام</h5>
+<button class="btn btn-success btn-sm no-print" data-bs-target="#a19" data-bs-toggle="modal" data-l="a20" onclick="f3()">نیا طالب علم</button>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th data-l="a21">نام</th>
+<th data-l="a22">والد کا نام</th>
+<th data-l="a23">عمر</th>
+<th data-l="a24">کلاس</th>
+<th data-l="a25">داخلہ تاریخ</th>
+<th data-l="a26">رابطہ</th>
+<th data-l="a27">پتہ</th>
+<th class="dynamic-th" id="a28"></th> {/* Dynamic TH */}
                                     <th class="no-print" data-l="a29">اعمال</th>
-                                </tr>
-                            </thead>
-                            <tbody id="a30"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Teacher Management -->
-        <div id="a8" class="tab-content" style="display: none;">
-            <div class="card">
-                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 data-l="a31">اساتذہ کا انتظام</h5>
-                    <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a32" onclick="f4()" data-l="a33">نیا استاد</button>
-                </div>
-                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th data-l="a34">نام</th>
-                                    <th data-l="a35">قابلیت</th>
-                                    <th data-l="a36">رابطہ</th>
-                                    <th data-l="a37">پتہ</th>
-                                    <th data-l="a38">شمولیت کی تاریخ</th>
-                                     <th id="a39" class="dynamic-th"></th> {/* Dynamic TH */}
+</tr>
+</thead>
+<tbody id="a30"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Teacher Management -->
+<div class="tab-content" id="a8" style="display: none;">
+<div class="card">
+<div class="card-header d-flex justify-content-between align-items-center">
+<h5 data-l="a31">اساتذہ کا انتظام</h5>
+<button class="btn btn-success btn-sm no-print" data-bs-target="#a32" data-bs-toggle="modal" data-l="a33" onclick="f4()">نیا استاد</button>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th data-l="a34">نام</th>
+<th data-l="a35">قابلیت</th>
+<th data-l="a36">رابطہ</th>
+<th data-l="a37">پتہ</th>
+<th data-l="a38">شمولیت کی تاریخ</th>
+<th class="dynamic-th" id="a39"></th> {/* Dynamic TH */}
                                     <th class="no-print" data-l="a29">اعمال</th>
-                                </tr>
-                            </thead>
-                            <tbody id="a40"></tbody>
-                        </table>
-                    </div>
-                 </div>
-            </div>
-        </div>
-
-        <!-- Class Management -->
-        <div id="a10" class="tab-content" style="display: none;">
-            <div class="card">
-                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 data-l="a41">کلاس/درس کا انتظام</h5>
-                    <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a42" onclick="f5()" data-l="a43">نئی کلاس</button>
-                </div>
-                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th data-l="a44">کلاس کا نام</th>
-                                    <th data-l="a45">استاد</th>
-                                    <th data-l="a46">طلباء کی تعداد</th>
-                                    <th class="no-print" data-l="a29">اعمال</th>
-                                </tr>
-                            </thead>
-                            <tbody id="a47"></tbody>
-                        </table>
-                    </div>
-                 </div>
-            </div>
-        </div>
-
-        <!-- Attendance Tracking -->
-        <div id="a12" class="tab-content" style="display: none;">
-             <div class="card">
-                 <div class="card-header">
-                     <h5 data-l="a48">حاضری ٹریکنگ</h5>
-                 </div>
-                 <div class="card-body">
-                     <div class="row mb-3 no-print">
-                         <div class="col-md-4">
-                             <label for="a49" class="form-label" data-l="a50">کلاس منتخب کریں</label>
-                             <select id="a49" class="form-select" onchange="f6()"> </select>
-                         </div>
-                         <div class="col-md-4">
-                             <label for="a51" class="form-label" data-l="a52">تاریخ</label>
-                             <input type="date" id="a51" class="form-control en-font" onchange="f6()" value="">
-                         </div>
-                     </div>
-                     <div class="table-responsive">
-                         <table class="table table-striped table-bordered">
-                             <thead>
-                                 <tr>
-                                     <th data-l="a21">طالب علم کا نام</th>
-                                     <th data-l="a53">حاضری</th>
-                                 </tr>
-                             </thead>
-                             <tbody id="a54"></tbody>
-                         </table>
-                     </div>
-                     <button class="btn btn-success mt-3 no-print" onclick="f7()" data-l="a55">حاضری محفوظ کریں</button>
-                 </div>
-             </div>
-        </div>
-
-        <!-- Fee/Salary Management -->
-        <div id="a14" class="tab-content" style="display: none;">
-             <div class="card">
-                 <div class="card-header">
-                    <h5 data-l="a56">فیس اور تنخواہ کا انتظام</h5>
-                 </div>
-                 <div class="card-body">
-                    <ul class="nav nav-tabs no-print" id="a57" role="tablist">
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="a58-tab" data-bs-toggle="tab" data-bs-target="#a58" type="button" role="tab" aria-controls="a58" aria-selected="true" data-l="a59">فیس وصولی</button>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="a60-tab" data-bs-toggle="tab" data-bs-target="#a60" type="button" role="tab" aria-controls="a60" aria-selected="false" data-l="a61">تنخواہ کی ادائیگی</button>
-                      </li>
-                    </ul>
-                    <div class="tab-content pt-3" id="a62">
-                      <div class="tab-pane fade show active" id="a58" role="tabpanel" aria-labelledby="a58-tab">
-                        <h6 data-l="a63">طالب علم کی فیس</h6>
-                        <div class="row mb-3 no-print">
-                           <div class="col-md-4">
-                               <label for="a64" class="form-label" data-l="a65">طالب علم منتخب کریں</label>
-                               <select id="a64" class="form-select"></select>
-                           </div>
-                            <div class="col-md-3">
-                               <label for="a66" class="form-label" data-l="a67">مہینہ/سال</label>
-                               <input type="month" id="a66" class="form-control en-font">
-                            </div>
-                            <div class="col-md-2">
-                               <label for="a68" class="form-label" data-l="a69">رقم</label>
-                               <input type="number" id="a68" class="form-control en-font">
-                            </div>
-                            <div class="col-md-3 align-self-end">
-                                <button class="btn btn-success" onclick="f8()" data-l="a70">فیس ریکارڈ کریں</button>
-                            </div>
-                        </div>
-                         <div class="table-responsive">
-                             <table class="table table-striped table-bordered">
-                                 <thead>
-                                     <tr>
-                                         <th data-l="a21">طالب علم</th>
-                                         <th data-l="a67">مہینہ/سال</th>
-                                         <th data-l="a69">رقم</th>
-                                         <th data-l="a71">تاریخ</th>
-                                         <th class="no-print" data-l="a29">اعمال</th>
-                                     </tr>
-                                 </thead>
-                                 <tbody id="a72"></tbody>
-                             </table>
-                         </div>
-                      </div>
-                      <div class="tab-pane fade" id="a60" role="tabpanel" aria-labelledby="a60-tab">
-                         <h6 data-l="a73">استاد کی تنخواہ</h6>
-                         <div class="row mb-3 no-print">
-                           <div class="col-md-4">
-                               <label for="a74" class="form-label" data-l="a75">استاد منتخب کریں</label>
-                               <select id="a74" class="form-select"></select>
-                           </div>
-                            <div class="col-md-3">
-                               <label for="a76" class="form-label" data-l="a67">مہینہ/سال</label>
-                               <input type="month" id="a76" class="form-control en-font">
-                            </div>
-                            <div class="col-md-2">
-                               <label for="a77" class="form-label" data-l="a78">تنخواہ</label>
-                               <input type="number" id="a77" class="form-control en-font">
-                            </div>
-                            <div class="col-md-3 align-self-end">
-                                <button class="btn btn-success" onclick="f9()" data-l="a79">تنخواہ ریکارڈ کریں</button>
-                            </div>
-                         </div>
-                         <div class="table-responsive">
-                             <table class="table table-striped table-bordered">
-                                 <thead>
-                                     <tr>
-                                         <th data-l="a7">استاد</th>
-                                         <th data-l="a67">مہینہ/سال</th>
-                                         <th data-l="a78">تنخواہ</th>
-                                         <th data-l="a71">تاریخ</th>
-                                          <th class="no-print" data-l="a29">اعمال</th>
-                                     </tr>
-                                 </thead>
-                                 <tbody id="a80"></tbody>
-                             </table>
-                         </div>
-                      </div>
-                    </div>
-                 </div>
-             </div>
-        </div>
-
-        <!-- Income/Expenses Management -->
-        <div id="a168" class="tab-content" style="display: none;">
-             <div class="card">
-                 <div class="card-header">
-                     <h5 data-l="a167">آمدنی اور اخراجات کا انتظام</h5>
-                 </div>
-                 <div class="card-body">
-                    <ul class="nav nav-tabs no-print" id="a169" role="tablist">
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="a170-tab" data-bs-toggle="tab" data-bs-target="#a170" type="button" role="tab" aria-controls="a170" aria-selected="true" data-l="a171">آمدنی</button>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="a172-tab" data-bs-toggle="tab" data-bs-target="#a172" type="button" role="tab" aria-controls="a172" aria-selected="false" data-l="a173">اخراجات</button>
-                      </li>
-                    </ul>
-                    <div class="tab-content pt-3" id="a174">
-                      <div class="tab-pane fade show active" id="a170" role="tabpanel" aria-labelledby="a170-tab">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 data-l="a171">آمدنی</h6>
-                            <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a175" onclick="f47()" data-l="a176">نئی آمدنی</button>
-                        </div>
-                         <div class="table-responsive">
-                             <table class="table table-striped table-bordered">
-                                 <thead>
-                                     <tr>
-                                         <th data-l="a177">تفصیل</th>
-                                         <th data-l="a178">کیٹیگری</th>
-                                         <th data-l="a69">رقم</th>
-                                         <th data-l="a71">تاریخ</th>
-                                         <th class="no-print" data-l="a29">اعمال</th>
-                                     </tr>
-                                 </thead>
-                                 <tbody id="a179"></tbody>
-                             </table>
-                         </div>
-                      </div>
-                      <div class="tab-pane fade" id="a172" role="tabpanel" aria-labelledby="a172-tab">
-                         <div class="d-flex justify-content-between align-items-center mb-2">
-                             <h6 data-l="a173">اخراجات</h6>
-                             <button class="btn btn-success btn-sm no-print" data-bs-toggle="modal" data-bs-target="#a180" onclick="f48()" data-l="a181">نیا خرچہ</button>
-                         </div>
-                         <div class="table-responsive">
-                             <table class="table table-striped table-bordered">
-                                 <thead>
-                                     <tr>
-                                         <th data-l="a177">تفصیل</th>
-                                         <th data-l="a178">کیٹیگری</th>
-                                         <th data-l="a69">رقم</th>
-                                         <th data-l="a71">تاریخ</th>
-                                          <th class="no-print" data-l="a29">اعمال</th>
-                                     </tr>
-                                 </thead>
-                                 <tbody id="a182"></tbody>
-                             </table>
-                         </div>
-                      </div>
-                    </div>
-                 </div>
-             </div>
-        </div>
-
-
-        <!-- Reports -->
-        <div id="a16" class="tab-content" style="display: none;">
-             <div class="card">
-                 <div class="card-header">
-                    <h5 data-l="a81">رپورٹس</h5>
-                 </div>
-                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                           <label for="a82" class="form-label" data-l="a83">رپورٹ کی قسم</label>
-                           <select id="a82" class="form-select" onchange="f10()">
-                               <option value="s" data-l="a84">طلباء کی فہرست</option>
-                               <option value="t" data-l="a85">اساتذہ کی فہرست</option>
-                               <option value="c" data-l="a86">کلاسز کی فہرست</option>
-                               <option value="a" data-l="a87">حاضری رپورٹ</option>
-                               <option value="f" data-l="a88">فیس رپورٹ</option>
-                               <option value="p" data-l="a89">تنخواہ رپورٹ</option>
-                               <option value="inc" data-l="a183">آمدنی رپورٹ</option> {/* New Report */}
-                               <option value="exp" data-l="a184">اخراجات رپورٹ</option> {/* New Report */}
+</tr>
+</thead>
+<tbody id="a40"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Management -->
+<div class="tab-content" id="a10" style="display: none;">
+<div class="card">
+<div class="card-header d-flex justify-content-between align-items-center">
+<h5 data-l="a41">کلاس/درس کا انتظام</h5>
+<button class="btn btn-success btn-sm no-print" data-bs-target="#a42" data-bs-toggle="modal" data-l="a43" onclick="f5()">نئی کلاس</button>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th data-l="a44">کلاس کا نام</th>
+<th data-l="a45">استاد</th>
+<th data-l="a46">طلباء کی تعداد</th>
+<th class="no-print" data-l="a29">اعمال</th>
+</tr>
+</thead>
+<tbody id="a47"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Attendance Tracking -->
+<div class="tab-content" id="a12" style="display: none;">
+<div class="card">
+<div class="card-header">
+<h5 data-l="a48">حاضری ٹریکنگ</h5>
+</div>
+<div class="card-body">
+<div class="row mb-3 no-print">
+<div class="col-md-4">
+<label class="form-label" data-l="a50" for="a49">کلاس منتخب کریں</label>
+<select class="form-select" id="a49" onchange="f6()"> </select>
+</div>
+<div class="col-md-4">
+<label class="form-label" data-l="a52" for="a51">تاریخ</label>
+<input class="form-control en-font" id="a51" onchange="f6()" type="date" value=""/>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th data-l="a21">طالب علم کا نام</th>
+<th data-l="a53">حاضری</th>
+</tr>
+</thead>
+<tbody id="a54"></tbody>
+</table>
+</div>
+<button class="btn btn-success mt-3 no-print" data-l="a55" onclick="f7()">حاضری محفوظ کریں</button>
+</div>
+</div>
+</div>
+<!-- Fee/Salary Management -->
+<div class="tab-content" id="a14" style="display: none;">
+<div class="card">
+<div class="card-header">
+<h5 data-l="a56">فیس اور تنخواہ کا انتظام</h5>
+</div>
+<div class="card-body">
+<ul class="nav nav-tabs no-print" id="a57" role="tablist">
+<li class="nav-item" role="presentation">
+<button aria-controls="a58" aria-selected="true" class="nav-link active" data-bs-target="#a58" data-bs-toggle="tab" data-l="a59" id="a58-tab" role="tab" type="button">فیس وصولی</button>
+</li>
+<li class="nav-item" role="presentation">
+<button aria-controls="a60" aria-selected="false" class="nav-link" data-bs-target="#a60" data-bs-toggle="tab" data-l="a61" id="a60-tab" role="tab" type="button">تنخواہ کی ادائیگی</button>
+</li>
+</ul>
+<div class="tab-content pt-3" id="a62">
+<div aria-labelledby="a58-tab" class="tab-pane fade show active" id="a58" role="tabpanel">
+<h6 data-l="a63">طالب علم کی فیس</h6>
+<div class="row mb-3 no-print">
+<div class="col-md-4">
+<label class="form-label" data-l="a65" for="a64">طالب علم منتخب کریں</label>
+<select class="form-select" id="a64"></select>
+</div>
+<div class="col-md-3">
+<label class="form-label" data-l="a67" for="a66">مہینہ/سال</label>
+<input class="form-control en-font" id="a66" type="month"/>
+</div>
+<div class="col-md-2">
+<label class="form-label" data-l="a69" for="a68">رقم</label>
+<input class="form-control en-font" id="a68" type="number"/>
+</div>
+<div class="col-md-3 align-self-end">
+<button class="btn btn-success" data-l="a70" onclick="f8()">فیس ریکارڈ کریں</button>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th data-l="a21">طالب علم</th>
+<th data-l="a67">مہینہ/سال</th>
+<th data-l="a69">رقم</th>
+<th data-l="a71">تاریخ</th>
+<th class="no-print" data-l="a29">اعمال</th>
+</tr>
+</thead>
+<tbody id="a72"></tbody>
+</table>
+</div>
+</div>
+<div aria-labelledby="a60-tab" class="tab-pane fade" id="a60" role="tabpanel">
+<h6 data-l="a73">استاد کی تنخواہ</h6>
+<div class="row mb-3 no-print">
+<div class="col-md-4">
+<label class="form-label" data-l="a75" for="a74">استاد منتخب کریں</label>
+<select class="form-select" id="a74"></select>
+</div>
+<div class="col-md-3">
+<label class="form-label" data-l="a67" for="a76">مہینہ/سال</label>
+<input class="form-control en-font" id="a76" type="month"/>
+</div>
+<div class="col-md-2">
+<label class="form-label" data-l="a78" for="a77">تنخواہ</label>
+<input class="form-control en-font" id="a77" type="number"/>
+</div>
+<div class="col-md-3 align-self-end">
+<button class="btn btn-success" data-l="a79" onclick="f9()">تنخواہ ریکارڈ کریں</button>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th data-l="a7">استاد</th>
+<th data-l="a67">مہینہ/سال</th>
+<th data-l="a78">تنخواہ</th>
+<th data-l="a71">تاریخ</th>
+<th class="no-print" data-l="a29">اعمال</th>
+</tr>
+</thead>
+<tbody id="a80"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Income/Expenses Management -->
+<div class="tab-content" id="a168" style="display: none;">
+<div class="card">
+<div class="card-header">
+<h5 data-l="a167">آمدنی اور اخراجات کا انتظام</h5>
+</div>
+<div class="card-body">
+<ul class="nav nav-tabs no-print" id="a169" role="tablist">
+<li class="nav-item" role="presentation">
+<button aria-controls="a170" aria-selected="true" class="nav-link active" data-bs-target="#a170" data-bs-toggle="tab" data-l="a171" id="a170-tab" role="tab" type="button">آمدنی</button>
+</li>
+<li class="nav-item" role="presentation">
+<button aria-controls="a172" aria-selected="false" class="nav-link" data-bs-target="#a172" data-bs-toggle="tab" data-l="a173" id="a172-tab" role="tab" type="button">اخراجات</button>
+</li>
+</ul>
+<div class="tab-content pt-3" id="a174">
+<div aria-labelledby="a170-tab" class="tab-pane fade show active" id="a170" role="tabpanel">
+<div class="d-flex justify-content-between align-items-center mb-2">
+<h6 data-l="a171">آمدنی</h6>
+<button class="btn btn-success btn-sm no-print" data-bs-target="#a175" data-bs-toggle="modal" data-l="a176" onclick="f47()">نئی آمدنی</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th data-l="a177">تفصیل</th>
+<th data-l="a178">کیٹیگری</th>
+<th data-l="a69">رقم</th>
+<th data-l="a71">تاریخ</th>
+<th class="no-print" data-l="a29">اعمال</th>
+</tr>
+</thead>
+<tbody id="a179"></tbody>
+</table>
+</div>
+</div>
+<div aria-labelledby="a172-tab" class="tab-pane fade" id="a172" role="tabpanel">
+<div class="d-flex justify-content-between align-items-center mb-2">
+<h6 data-l="a173">اخراجات</h6>
+<button class="btn btn-success btn-sm no-print" data-bs-target="#a180" data-bs-toggle="modal" data-l="a181" onclick="f48()">نیا خرچہ</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th data-l="a177">تفصیل</th>
+<th data-l="a178">کیٹیگری</th>
+<th data-l="a69">رقم</th>
+<th data-l="a71">تاریخ</th>
+<th class="no-print" data-l="a29">اعمال</th>
+</tr>
+</thead>
+<tbody id="a182"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Reports -->
+<div class="tab-content" id="a16" style="display: none;">
+<div class="card">
+<div class="card-header">
+<h5 data-l="a81">رپورٹس</h5>
+</div>
+<div class="card-body">
+<div class="row">
+<div class="col-md-4 mb-3">
+<label class="form-label" data-l="a83" for="a82">رپورٹ کی قسم</label>
+<select class="form-select" id="a82" onchange="f10()">
+<option data-l="a84" value="s">طلباء کی فہرست</option>
+<option data-l="a85" value="t">اساتذہ کی فہرست</option>
+<option data-l="a86" value="c">کلاسز کی فہرست</option>
+<option data-l="a87" value="a">حاضری رپورٹ</option>
+<option data-l="a88" value="f">فیس رپورٹ</option>
+<option data-l="a89" value="p">تنخواہ رپورٹ</option>
+<option data-l="a183" value="inc">آمدنی رپورٹ</option> {/* New Report */}
+                               <option data-l="a184" value="exp">اخراجات رپورٹ</option> {/* New Report */}
                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3" id="a90" style="display: none;"> {/* Class Filter */}
-                            <label for="a91" class="form-label" data-l="a50">کلاس منتخب کریں</label>
-                            <select id="a91" class="form-select"></select>
-                        </div>
-                         <div class="col-md-4 mb-3" id="a92" style="display: none;"> {/* Date Filter */}
-                            <label for="a93" class="form-label" data-l="a94">تاریخ منتخب کریں</label>
-                            <input type="date" id="a93" class="form-control en-font">
-                        </div>
-                         <div class="col-md-4 mb-3" id="a95" style="display: none;"> {/* Month Filter */}
-                            <label for="a96" class="form-label" data-l="a97">مہینہ منتخب کریں</label>
-                            <input type="month" id="a96" class="form-control en-font">
-                        </div>
-                        <div class="col-md-4 mb-3" id="a185" style="display: none;"> {/* Date Range Filters */}
-                             <label for="a186" class="form-label" data-l="a187">شروع کی تاریخ</label>
-                             <input type="date" id="a186" class="form-control en-font">
-                        </div>
-                         <div class="col-md-4 mb-3" id="a188" style="display: none;">
-                              <label for="a189" class="form-label" data-l="a190">اختتامی تاریخ</label>
-                              <input type="date" id="a189" class="form-control en-font">
-                         </div>
-                        <div class="col-md-12 mb-3">
-                             <button class="btn btn-primary me-2 no-print" onclick="f11()" data-l="a98">رپورٹ دیکھیں</button>
-                             <button class="btn btn-secondary me-2 no-print" onclick="window.print()" data-l="a99">پرنٹ</button>
-                             <button class="btn btn-info no-print" onclick="f12()" data-l="a100">CSV ایکسپورٹ</button>
-                        </div>
-                    </div>
-                    <div id="a4" class="table-responsive">
-                        <h5 id="a101"></h5>
-                        <table class="table table-bordered table-striped">
-                            <thead id="a102"></thead>
-                            <tbody id="a103"></tbody>
-                        </table>
-                    </div>
-                 </div>
-             </div>
-        </div>
-    </div>
-
-    <!-- Student Modal -->
-    <div class="modal fade" id="a19" tabindex="-1" aria-labelledby="a104" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title ur-font" id="a104" data-l="a105">طالب علم کا فارم</h5>
-            <h5 class="modal-title en-font hidden" data-l="a106">Student Form</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="a107">
-              <input type="hidden" id="s_id">
-              <div class="row">
-                  <div class="col-md-6">
-                      <label for="s_name_ur" class="form-label" data-l="a108">نام (اردو)</label>
-                      <input type="text" class="form-control ur-font" id="s_name_ur" required>
-                  </div>
-                   <div class="col-md-6">
-                       <label for="s_name_en" class="form-label en-font" data-l="a109">Name (English)</label>
-                       <input type="text" class="form-control en-font" id="s_name_en">
-                   </div>
-                   <div class="col-md-6">
-                      <label for="s_fname_ur" class="form-label" data-l="a110">والد کا نام (اردو)</label>
-                      <input type="text" class="form-control ur-font" id="s_fname_ur" required>
-                  </div>
-                  <div class="col-md-6">
-                      <label for="s_fname_en" class="form-label en-font" data-l="a111">Father's Name (English)</label>
-                      <input type="text" class="form-control en-font" id="s_fname_en">
-                  </div>
-                  <div class="col-md-4">
-                      <label for="s_age" class="form-label" data-l="a23">عمر</label>
-                      <input type="number" class="form-control en-font" id="s_age">
-                  </div>
-                   <div class="col-md-4">
-                      <label for="s_class" class="form-label" data-l="a24">کلاس</label>
-                      <select class="form-select" id="s_class"></select>
-                  </div>
-                  <div class="col-md-4">
-                      <label for="s_adm_date" class="form-label" data-l="a25">داخلہ تاریخ</label>
-                      <input type="date" class="form-control en-font" id="s_adm_date" required>
-                  </div>
-                   <div class="col-md-6">
-                      <label for="s_contact" class="form-label" data-l="a26">رابطہ</label>
-                      <input type="text" class="form-control en-font" id="s_contact">
-                  </div>
-                  <div class="col-md-6">
-                      <label for="s_address_ur" class="form-label" data-l="a112">پتہ (اردو)</label>
-                      <input type="text" class="form-control ur-font" id="s_address_ur">
-                  </div>
-                   <div class="col-md-6">
-                      <label for="s_address_en" class="form-label en-font" data-l="a113">Address (English)</label>
-                      <input type="text" class="form-control en-font" id="s_address_en">
-                  </div>
-              </div>
-              <h6 class="mt-3" data-l="a114">اضافی معلومات</h6>
-              <div id="a115"></div>
-              <button type="button" class="btn btn-outline-secondary btn-sm mt-2 no-print" onclick="f13('a115', 's')" data-l="a116">فیلڈ شامل کریں</button>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
-            <button type="button" class="btn btn-success no-print" onclick="f14()" data-l="a118">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Teacher Modal -->
-    <div class="modal fade" id="a32" tabindex="-1" aria-labelledby="a119" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title ur-font" id="a119" data-l="a120">استاد کا فارم</h5>
-             <h5 class="modal-title en-font hidden" data-l="a121">Teacher Form</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="a122">
-              <input type="hidden" id="t_id">
-              <div class="row">
-                  <div class="col-md-6">
-                      <label for="t_name_ur" class="form-label" data-l="a108">نام (اردو)</label>
-                      <input type="text" class="form-control ur-font" id="t_name_ur" required>
-                  </div>
-                  <div class="col-md-6">
-                      <label for="t_name_en" class="form-label en-font" data-l="a109">Name (English)</label>
-                      <input type="text" class="form-control en-font" id="t_name_en">
-                  </div>
-                   <div class="col-md-6">
-                      <label for="t_qual_ur" class="form-label" data-l="a123">قابلیت (اردو)</label>
-                      <input type="text" class="form-control ur-font" id="t_qual_ur">
-                  </div>
-                   <div class="col-md-6">
-                      <label for="t_qual_en" class="form-label en-font" data-l="a124">Qualification (English)</label>
-                      <input type="text" class="form-control en-font" id="t_qual_en">
-                  </div>
-                   <div class="col-md-6">
-                      <label for="t_contact" class="form-label" data-l="a36">رابطہ</label>
-                      <input type="text" class="form-control en-font" id="t_contact">
-                  </div>
-                   <div class="col-md-6">
-                      <label for="t_join_date" class="form-label" data-l="a38">شمولیت کی تاریخ</label>
-                      <input type="date" class="form-control en-font" id="t_join_date" required>
-                  </div>
-                   <div class="col-md-6">
-                      <label for="t_address_ur" class="form-label" data-l="a112">پتہ (اردو)</label>
-                      <input type="text" class="form-control ur-font" id="t_address_ur">
-                  </div>
-                   <div class="col-md-6">
-                      <label for="t_address_en" class="form-label en-font" data-l="a113">Address (English)</label>
-                      <input type="text" class="form-control en-font" id="t_address_en">
-                  </div>
-              </div>
-              <h6 class="mt-3" data-l="a114">اضافی معلومات</h6>
-              <div id="a125"></div>
-              <button type="button" class="btn btn-outline-secondary btn-sm mt-2 no-print" onclick="f13('a125', 't')" data-l="a116">فیلڈ شامل کریں</button>
-            </form>
-          </div>
-          <div class="modal-footer">
-             <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
-            <button type="button" class="btn btn-success no-print" onclick="f15()" data-l="a118">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Class Modal -->
-    <div class="modal fade" id="a42" tabindex="-1" aria-labelledby="a126" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title ur-font" id="a126" data-l="a127">کلاس فارم</h5>
-            <h5 class="modal-title en-font hidden" data-l="a128">Class Form</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="a129">
-              <input type="hidden" id="c_id">
-               <div class="mb-3">
-                  <label for="c_name_ur" class="form-label" data-l="a130">کلاس کا نام (اردو)</label>
-                  <input type="text" class="form-control ur-font" id="c_name_ur" required>
-              </div>
-              <div class="mb-3">
-                   <label for="c_name_en" class="form-label en-font" data-l="a131">Class Name (English)</label>
-                   <input type="text" class="form-control en-font" id="c_name_en">
-               </div>
-               <div class="mb-3">
-                  <label for="c_teacher" class="form-label" data-l="a45">استاد</label>
-                  <select class="form-select" id="c_teacher"> </select>
-              </div>
-               <div class="mb-3">
-                    <label class="form-label" data-l="a132">طلباء منتخب کریں</label>
-                    <div id="a133" style="max-height: 200px; overflow-y: auto; border: 1px solid #ced4da; padding: 10px; border-radius: 0.25rem;"></div>
-               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
-            <button type="button" class="btn btn-success no-print" onclick="f16()" data-l="a118">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-     <!-- Income Modal -->
-    <div class="modal fade" id="a175" tabindex="-1" aria-labelledby="a191" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title ur-font" id="a191" data-l="a176">نئی آمدنی</h5>
-             <h5 class="modal-title en-font hidden" data-l="a192">New Income</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="a193">
-              <input type="hidden" id="inc_id">
-               <div class="mb-3">
-                  <label for="inc_desc_ur" class="form-label" data-l="a194">تفصیل (اردو)</label>
-                  <input type="text" class="form-control ur-font" id="inc_desc_ur" required>
-              </div>
-               <div class="mb-3">
-                   <label for="inc_desc_en" class="form-label en-font" data-l="a195">Description (Eng)</label>
-                   <input type="text" class="form-control en-font" id="inc_desc_en">
-               </div>
-               <div class="mb-3">
-                  <label for="inc_cat_ur" class="form-label" data-l="a196">کیٹیگری (اردو)</label>
-                  <input type="text" class="form-control ur-font" id="inc_cat_ur">
-              </div>
-               <div class="mb-3">
-                   <label for="inc_cat_en" class="form-label en-font" data-l="a197">Category (Eng)</label>
-                   <input type="text" class="form-control en-font" id="inc_cat_en">
-               </div>
-               <div class="mb-3">
-                  <label for="inc_amt" class="form-label" data-l="a69">رقم</label>
-                  <input type="number" step="0.01" class="form-control en-font" id="inc_amt" required>
-              </div>
-              <div class="mb-3">
-                   <label for="inc_dt" class="form-label" data-l="a71">تاریخ</label>
-                   <input type="date" class="form-control en-font" id="inc_dt" required>
-               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
-            <button type="button" class="btn btn-success no-print" onclick="f49()" data-l="a118">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Expense Modal -->
-    <div class="modal fade" id="a180" tabindex="-1" aria-labelledby="a198" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title ur-font" id="a198" data-l="a181">نیا خرچہ</h5>
-            <h5 class="modal-title en-font hidden" data-l="a199">New Expense</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="a200">
-              <input type="hidden" id="exp_id">
-                <div class="mb-3">
-                   <label for="exp_desc_ur" class="form-label" data-l="a194">تفصیل (اردو)</label>
-                   <input type="text" class="form-control ur-font" id="exp_desc_ur" required>
-               </div>
-                <div class="mb-3">
-                    <label for="exp_desc_en" class="form-label en-font" data-l="a195">Description (Eng)</label>
-                    <input type="text" class="form-control en-font" id="exp_desc_en">
-                </div>
-                <div class="mb-3">
-                   <label for="exp_cat_ur" class="form-label" data-l="a196">کیٹیگری (اردو)</label>
-                   <input type="text" class="form-control ur-font" id="exp_cat_ur">
-               </div>
-                <div class="mb-3">
-                    <label for="exp_cat_en" class="form-label en-font" data-l="a197">Category (Eng)</label>
-                    <input type="text" class="form-control en-font" id="exp_cat_en">
-                </div>
-                <div class="mb-3">
-                   <label for="exp_amt" class="form-label" data-l="a69">رقم</label>
-                   <input type="number" step="0.01" class="form-control en-font" id="exp_amt" required>
-               </div>
-               <div class="mb-3">
-                    <label for="exp_dt" class="form-label" data-l="a71">تاریخ</label>
-                    <input type="date" class="form-control en-font" id="exp_dt" required>
-                </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117">بند کریں</button>
-            <button type="button" class="btn btn-success no-print" onclick="f50()" data-l="a118">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
+</div>
+<div class="col-md-4 mb-3" id="a90" style="display: none;"> {/* Class Filter */}
+                            <label class="form-label" data-l="a50" for="a91">کلاس منتخب کریں</label>
+<select class="form-select" id="a91"></select>
+</div>
+<div class="col-md-4 mb-3" id="a92" style="display: none;"> {/* Date Filter */}
+                            <label class="form-label" data-l="a94" for="a93">تاریخ منتخب کریں</label>
+<input class="form-control en-font" id="a93" type="date"/>
+</div>
+<div class="col-md-4 mb-3" id="a95" style="display: none;"> {/* Month Filter */}
+                            <label class="form-label" data-l="a97" for="a96">مہینہ منتخب کریں</label>
+<input class="form-control en-font" id="a96" type="month"/>
+</div>
+<div class="col-md-4 mb-3" id="a185" style="display: none;"> {/* Date Range Filters */}
+                             <label class="form-label" data-l="a187" for="a186">شروع کی تاریخ</label>
+<input class="form-control en-font" id="a186" type="date"/>
+</div>
+<div class="col-md-4 mb-3" id="a188" style="display: none;">
+<label class="form-label" data-l="a190" for="a189">اختتامی تاریخ</label>
+<input class="form-control en-font" id="a189" type="date"/>
+</div>
+<div class="col-md-12 mb-3">
+<button class="btn btn-primary me-2 no-print" data-l="a98" onclick="f11()">رپورٹ دیکھیں</button>
+<button class="btn btn-secondary me-2 no-print" data-l="a99" onclick="window.print()">پرنٹ</button>
+<button class="btn btn-info no-print" data-l="a100" onclick="f12()">CSV ایکسپورٹ</button>
+</div>
+</div>
+<div class="table-responsive" id="a4">
+<h5 id="a101"></h5>
+<table class="table table-bordered table-striped">
+<thead id="a102"></thead>
+<tbody id="a103"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Student Modal -->
+<div aria-hidden="true" aria-labelledby="a104" class="modal fade" id="a19" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title ur-font" data-l="a105" id="a104">طالب علم کا فارم</h5>
+<h5 class="modal-title en-font hidden" data-l="a106">Student Form</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="a107">
+<input id="s_id" type="hidden"/>
+<div class="row">
+<div class="col-md-6">
+<label class="form-label" data-l="a108" for="s_name_ur">نام (اردو)</label>
+<input class="form-control ur-font" id="s_name_ur" required="" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label en-font" data-l="a109" for="s_name_en">Name (English)</label>
+<input class="form-control en-font" id="s_name_en" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" data-l="a110" for="s_fname_ur">والد کا نام (اردو)</label>
+<input class="form-control ur-font" id="s_fname_ur" required="" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label en-font" data-l="a111" for="s_fname_en">Father's Name (English)</label>
+<input class="form-control en-font" id="s_fname_en" type="text"/>
+</div>
+<div class="col-md-4">
+<label class="form-label" data-l="a23" for="s_age">عمر</label>
+<input class="form-control en-font" id="s_age" type="number"/>
+</div>
+<div class="col-md-4">
+<label class="form-label" data-l="a24" for="s_class">کلاس</label>
+<select class="form-select" id="s_class"></select>
+</div>
+<div class="col-md-4">
+<label class="form-label" data-l="a25" for="s_adm_date">داخلہ تاریخ</label>
+<input class="form-control en-font" id="s_adm_date" required="" type="date"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" data-l="a26" for="s_contact">رابطہ</label>
+<input class="form-control en-font" id="s_contact" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" data-l="a112" for="s_address_ur">پتہ (اردو)</label>
+<input class="form-control ur-font" id="s_address_ur" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label en-font" data-l="a113" for="s_address_en">Address (English)</label>
+<input class="form-control en-font" id="s_address_en" type="text"/>
+</div>
+</div>
+<h6 class="mt-3" data-l="a114">اضافی معلومات</h6>
+<div id="a115"></div>
+<button class="btn btn-outline-secondary btn-sm mt-2 no-print" data-l="a116" onclick="f13('a115', 's')" type="button">فیلڈ شامل کریں</button>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117" type="button">بند کریں</button>
+<button class="btn btn-success no-print" data-l="a118" onclick="f14()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Teacher Modal -->
+<div aria-hidden="true" aria-labelledby="a119" class="modal fade" id="a32" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title ur-font" data-l="a120" id="a119">استاد کا فارم</h5>
+<h5 class="modal-title en-font hidden" data-l="a121">Teacher Form</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="a122">
+<input id="t_id" type="hidden"/>
+<div class="row">
+<div class="col-md-6">
+<label class="form-label" data-l="a108" for="t_name_ur">نام (اردو)</label>
+<input class="form-control ur-font" id="t_name_ur" required="" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label en-font" data-l="a109" for="t_name_en">Name (English)</label>
+<input class="form-control en-font" id="t_name_en" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" data-l="a123" for="t_qual_ur">قابلیت (اردو)</label>
+<input class="form-control ur-font" id="t_qual_ur" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label en-font" data-l="a124" for="t_qual_en">Qualification (English)</label>
+<input class="form-control en-font" id="t_qual_en" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" data-l="a36" for="t_contact">رابطہ</label>
+<input class="form-control en-font" id="t_contact" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" data-l="a38" for="t_join_date">شمولیت کی تاریخ</label>
+<input class="form-control en-font" id="t_join_date" required="" type="date"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" data-l="a112" for="t_address_ur">پتہ (اردو)</label>
+<input class="form-control ur-font" id="t_address_ur" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label en-font" data-l="a113" for="t_address_en">Address (English)</label>
+<input class="form-control en-font" id="t_address_en" type="text"/>
+</div>
+</div>
+<h6 class="mt-3" data-l="a114">اضافی معلومات</h6>
+<div id="a125"></div>
+<button class="btn btn-outline-secondary btn-sm mt-2 no-print" data-l="a116" onclick="f13('a125', 't')" type="button">فیلڈ شامل کریں</button>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117" type="button">بند کریں</button>
+<button class="btn btn-success no-print" data-l="a118" onclick="f15()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Modal -->
+<div aria-hidden="true" aria-labelledby="a126" class="modal fade" id="a42" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title ur-font" data-l="a127" id="a126">کلاس فارم</h5>
+<h5 class="modal-title en-font hidden" data-l="a128">Class Form</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="a129">
+<input id="c_id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" data-l="a130" for="c_name_ur">کلاس کا نام (اردو)</label>
+<input class="form-control ur-font" id="c_name_ur" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label en-font" data-l="a131" for="c_name_en">Class Name (English)</label>
+<input class="form-control en-font" id="c_name_en" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" data-l="a45" for="c_teacher">استاد</label>
+<select class="form-select" id="c_teacher"> </select>
+</div>
+<div class="mb-3">
+<label class="form-label" data-l="a132">طلباء منتخب کریں</label>
+<div id="a133" style="max-height: 200px; overflow-y: auto; border: 1px solid #ced4da; padding: 10px; border-radius: 0.25rem;"></div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117" type="button">بند کریں</button>
+<button class="btn btn-success no-print" data-l="a118" onclick="f16()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Income Modal -->
+<div aria-hidden="true" aria-labelledby="a191" class="modal fade" id="a175" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title ur-font" data-l="a176" id="a191">نئی آمدنی</h5>
+<h5 class="modal-title en-font hidden" data-l="a192">New Income</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="a193">
+<input id="inc_id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" data-l="a194" for="inc_desc_ur">تفصیل (اردو)</label>
+<input class="form-control ur-font" id="inc_desc_ur" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label en-font" data-l="a195" for="inc_desc_en">Description (Eng)</label>
+<input class="form-control en-font" id="inc_desc_en" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" data-l="a196" for="inc_cat_ur">کیٹیگری (اردو)</label>
+<input class="form-control ur-font" id="inc_cat_ur" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label en-font" data-l="a197" for="inc_cat_en">Category (Eng)</label>
+<input class="form-control en-font" id="inc_cat_en" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" data-l="a69" for="inc_amt">رقم</label>
+<input class="form-control en-font" id="inc_amt" required="" step="0.01" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" data-l="a71" for="inc_dt">تاریخ</label>
+<input class="form-control en-font" id="inc_dt" required="" type="date"/>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117" type="button">بند کریں</button>
+<button class="btn btn-success no-print" data-l="a118" onclick="f49()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Expense Modal -->
+<div aria-hidden="true" aria-labelledby="a198" class="modal fade" id="a180" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title ur-font" data-l="a181" id="a198">نیا خرچہ</h5>
+<h5 class="modal-title en-font hidden" data-l="a199">New Expense</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="a200">
+<input id="exp_id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" data-l="a194" for="exp_desc_ur">تفصیل (اردو)</label>
+<input class="form-control ur-font" id="exp_desc_ur" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label en-font" data-l="a195" for="exp_desc_en">Description (Eng)</label>
+<input class="form-control en-font" id="exp_desc_en" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" data-l="a196" for="exp_cat_ur">کیٹیگری (اردو)</label>
+<input class="form-control ur-font" id="exp_cat_ur" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label en-font" data-l="a197" for="exp_cat_en">Category (Eng)</label>
+<input class="form-control en-font" id="exp_cat_en" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" data-l="a69" for="exp_amt">رقم</label>
+<input class="form-control en-font" id="exp_amt" required="" step="0.01" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" data-l="a71" for="exp_dt">تاریخ</label>
+<input class="form-control en-font" id="exp_dt" required="" type="date"/>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary no-print" data-bs-dismiss="modal" data-l="a117" type="button">بند کریں</button>
+<button class="btn btn-success no-print" data-l="a118" onclick="f50()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<script crossorigin="anonymous" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
         let db;
         let cl = 'ur'; // Current language
         const v1 = 2; // DB version Increased for new stores
@@ -1664,5 +1650,5 @@
         }
 
     </script>
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

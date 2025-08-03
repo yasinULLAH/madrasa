@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
 
+<html dir="rtl" lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Yasin Ullah, Pakistani">
-    <meta name="description"
-        content="A complete Madrasa Management System for Pakistani Islamic institutions. Manage students, fees, attendance, library, and more. Developed by Yasin Ullah.">
-    <meta name="keywords"
-        content="madrasa management system, islamic school software, student management, fee management, urdu software, pakistan, yasin ullah">
-    <title>مدرسہ انتظامی نظام - جامعہ اسلامیہ</title>
-    <link rel="icon"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90' fill='%234CAF50'%3E🕌%3C/text%3E%3C/svg%3E">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Yasin Ullah, Pakistani" name="author"/>
+<meta content="A complete Madrasa Management System for Pakistani Islamic institutions. Manage students, fees, attendance, library, and more. Developed by Yasin Ullah." name="description"/>
+<meta content="madrasa management system, islamic school software, student management, fee management, urdu software, pakistan, yasin ullah" name="keywords"/>
+<title>مدرسہ انتظامی نظام - جامعہ اسلامیہ</title>
+<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90' fill='%234CAF50'%3E🕌%3C/text%3E%3C/svg%3E" rel="icon"/>
+<style>
         :root {
             --bg-dark: #121212;
             --bg-surface: #1e1e1e;
@@ -721,93 +718,82 @@
             overflow-y: auto;
         }
     </style>
-</head>
-
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-    <div id="login-screen">
-        <div class="login-box">
-            <h2>مدرسہ انتظامی نظام</h2>
-            <p>براہ کرم لاگ ان کریں۔</p>
-            <form id="login-form">
-                <div class="form-group" style="text-align: right;">
-                    <label for="username">صارف نام</label>
-                    <input type="text" id="username" class="form-control" value="admin" required>
-                </div>
-                <div class="form-group" style="text-align: right;">
-                    <label for="password">پاس ورڈ</label>
-                    <input type="password" id="password" class="form-control" value="admin123" required>
-                </div>
-                <p id="login-error" style="color: var(--danger); display: none;"></p>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">لاگ ان</button>
-            </form>
-            <p style="margin-top: 20px; font-size: 0.8em;">(ایڈمن: admin/admin123 | استاد: teacher/teacher123)</p>
-        </div>
-    </div>
-    <div id="app-container" style="display: none;">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <span class="icon-only">🕌</span>
-                <h2>جامعہ اسلامیہ</h2>
-            </div>
-            <ul class="sidebar-nav">
-                <li><a href="#dashboard" class="nav-link active"><span class="nav-icon">🏠</span> <span
-                            class="nav-text">ڈیش بورڈ</span></a></li>
-                <li><a href="#students" class="nav-link"><span class="nav-icon">👨‍🎓</span> <span
-                            class="nav-text">طلباء</span></a></li>
-                <li><a href="#fees" class="nav-link"><span class="nav-icon">💰</span> <span
-                            class="nav-text">فیس</span></a></li>
-                <li><a href="#attendance" class="nav-link"><span class="nav-icon">📅</span> <span
-                            class="nav-text">حاضری</span></a></li>
-                <li><a href="#library" class="nav-link"><span class="nav-icon">📖</span> <span
-                            class="nav-text">لائبریری</span></a></li>
-                <li data-role="admin"><a href="#users" class="nav-link"><span class="nav-icon">👥</span> <span
-                            class="nav-text">صارفین</span></a></li>
-                <li><a href="#reports" class="nav-link"><span class="nav-icon">📊</span> <span
-                            class="nav-text">رپورٹس</span></a></li>
-                <li data-role="admin"><a href="#settings" class="nav-link"><span class="nav-icon">⚙️</span> <span
-                            class="nav-text">ترتیبات</span></a></li>
-                <li data-role="admin"><a href="#backup" class="nav-link"><span class="nav-icon">💾</span> <span
-                            class="nav-text">بیک اپ</span></a></li>
-            </ul>
-            <div class="sidebar-footer">
-                <p>&copy; <span id="currentYear"></span> Yasin Ullah</p>
-                <p>ورژن 1.0</p>
-            </div>
-        </aside>
-        <main class="main-content">
-            <header class="header">
-                <div class="header-left">
-                    <button class="toggle-sidebar-btn">☰</button>
-                    <h1 id="page-title" class="page-title">ڈیش بورڈ</h1>
-                </div>
-                <div class="user-menu">
-                    <button id="logout-btn"><span id="currentUserDisplay"></span> <span
-                            class="user-icon">👤</span></button>
-                </div>
-            </header>
-            <div id="content-area">
-            </div>
-        </main>
-    </div>
-    <div id="appModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title" class="modal-title">Modal Title</h2>
-                <span class="close-btn">&times;</span>
-            </div>
-            <div id="modal-body" class="modal-body">
-            </div>
-            <div id="modal-footer" class="modal-footer">
-                <button id="modal-close-btn" class="btn btn-secondary">بند کریں</button>
-            </div>
-        </div>
-    </div>
-    <div id="notification-container"></div>
-    <div id="loader">
-        <div class="spinner"></div>
-    </div>
-    <div id="printable-content" class="printable-area"></div>
-    <script>
+<div id="login-screen">
+<div class="login-box">
+<h2>مدرسہ انتظامی نظام</h2>
+<p>براہ کرم لاگ ان کریں۔</p>
+<form id="login-form">
+<div class="form-group" style="text-align: right;">
+<label for="username">صارف نام</label>
+<input class="form-control" id="username" required="" type="text" value="admin"/>
+</div>
+<div class="form-group" style="text-align: right;">
+<label for="password">پاس ورڈ</label>
+<input class="form-control" id="password" required="" type="password" value="admin123"/>
+</div>
+<p id="login-error" style="color: var(--danger); display: none;"></p>
+<button class="btn btn-primary" style="width: 100%;" type="submit">لاگ ان</button>
+</form>
+<p style="margin-top: 20px; font-size: 0.8em;">(ایڈمن: admin/admin123 | استاد: teacher/teacher123)</p>
+</div>
+</div>
+<div id="app-container" style="display: none;">
+<aside class="sidebar">
+<div class="sidebar-header">
+<span class="icon-only">🕌</span>
+<h2>جامعہ اسلامیہ</h2>
+</div>
+<ul class="sidebar-nav">
+<li><a class="nav-link active" href="#dashboard"><span class="nav-icon">🏠</span> <span class="nav-text">ڈیش بورڈ</span></a></li>
+<li><a class="nav-link" href="#students"><span class="nav-icon">👨‍🎓</span> <span class="nav-text">طلباء</span></a></li>
+<li><a class="nav-link" href="#fees"><span class="nav-icon">💰</span> <span class="nav-text">فیس</span></a></li>
+<li><a class="nav-link" href="#attendance"><span class="nav-icon">📅</span> <span class="nav-text">حاضری</span></a></li>
+<li><a class="nav-link" href="#library"><span class="nav-icon">📖</span> <span class="nav-text">لائبریری</span></a></li>
+<li data-role="admin"><a class="nav-link" href="#users"><span class="nav-icon">👥</span> <span class="nav-text">صارفین</span></a></li>
+<li><a class="nav-link" href="#reports"><span class="nav-icon">📊</span> <span class="nav-text">رپورٹس</span></a></li>
+<li data-role="admin"><a class="nav-link" href="#settings"><span class="nav-icon">⚙️</span> <span class="nav-text">ترتیبات</span></a></li>
+<li data-role="admin"><a class="nav-link" href="#backup"><span class="nav-icon">💾</span> <span class="nav-text">بیک اپ</span></a></li>
+</ul>
+<div class="sidebar-footer">
+<p>© <span id="currentYear"></span> Yasin Ullah</p>
+<p>ورژن 1.0</p>
+</div>
+</aside>
+<main class="main-content">
+<header class="header">
+<div class="header-left">
+<button class="toggle-sidebar-btn">☰</button>
+<h1 class="page-title" id="page-title">ڈیش بورڈ</h1>
+</div>
+<div class="user-menu">
+<button id="logout-btn"><span id="currentUserDisplay"></span> <span class="user-icon">👤</span></button>
+</div>
+</header>
+<div id="content-area">
+</div>
+</main>
+</div>
+<div class="modal" id="appModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="modal-title">Modal Title</h2>
+<span class="close-btn">×</span>
+</div>
+<div class="modal-body" id="modal-body">
+</div>
+<div class="modal-footer" id="modal-footer">
+<button class="btn btn-secondary" id="modal-close-btn">بند کریں</button>
+</div>
+</div>
+</div>
+<div id="notification-container"></div>
+<div id="loader">
+<div class="spinner"></div>
+</div>
+<div class="printable-area" id="printable-content"></div>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             const App = {
                 db: null,
@@ -2839,6 +2825,5 @@
             window.App = App;
         });
     </script>
-</body>
-
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+
+<html dir="rtl" lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدرسہ انتظامی نظام</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400..700&display=swap" rel="stylesheet">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مدرسہ انتظامی نظام</title>
+<link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400..700&amp;display=swap" rel="stylesheet"/>
+<style>
         body { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; text-align: right; }
         .nav-link.active { font-weight: bold; background-color: #e9ecef; }
         .form-label { font-weight: bold; }
@@ -29,782 +30,750 @@
             .no-print { display: none; }
         }
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top no-print">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#" id="navMadrasaName">مدرسہ انتظامی نظام</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav nav-pills me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="#" data-section="dashboard">ڈیش بورڈ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="students">طلباء</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="teachers">اساتذہ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="classes">کلاسز</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="attendance">حاضری</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="fees">فیس</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="salaries">تنخواہیں</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="inventory">انوینٹری</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="expenses">اخراجات</a></li>
-                     <li class="nav-item"><a class="nav-link" href="#" data-section="reports">رپورٹس</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="backupRestore">بیک اپ / بحال کریں</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="settings">ترتیبات</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container-fluid mt-3">
-        <div id="dashboard" class="app-section">
-             <h2>ڈیش بورڈ</h2>
-             <p>مدرسہ انتظامی نظام میں خوش آمدید۔</p>
-             <div class="row">
-                 <div class="col-md-3 mb-3">
-                     <div class="card text-center">
-                         <div class="card-body">
-                             <h5 class="card-title">کل طلباء</h5>
-                             <p class="card-text fs-4" id="dashboardTotalStudents">0</p>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col-md-3 mb-3">
-                     <div class="card text-center">
-                         <div class="card-body">
-                             <h5 class="card-title">کل اساتذہ</h5>
-                             <p class="card-text fs-4" id="dashboardTotalTeachers">0</p>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col-md-3 mb-3">
-                      <div class="card text-center">
-                         <div class="card-body">
-                             <h5 class="card-title">کل کلاسز</h5>
-                             <p class="card-text fs-4" id="dashboardTotalClasses">0</p>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col-md-3 mb-3">
-                      <div class="card text-center">
-                         <div class="card-body">
-                             <h5 class="card-title">آج کی آمدنی</h5>
-                             <p class="card-text fs-4" id="dashboardTodayIncome">0</p>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-        </div>
-
-        <div id="students" class="app-section d-none">
-            <h2>طلباء کا انتظام</h2>
-            <button class="btn btn-primary mb-3 no-print" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="prepareStudentForm()">نیا طالب علم شامل کریں</button>
-             <div class="input-group mb-3 no-print">
-                <input type="text" id="studentSearch" class="form-control" placeholder="تلاش کریں (نام، والد کا نام، کلاس)">
-                <button class="btn btn-outline-secondary" type="button" onclick="displayStudents()">تلاش</button>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>شمار</th>
-                            <th>نام</th>
-                            <th>والد کا نام</th>
-                            <th>عمر</th>
-                            <th>کلاس</th>
-                            <th>داخلہ تاریخ</th>
-                            <th>رابطہ نمبر</th>
-                            <th>پتہ</th>
-                            <th id="studentCustomFieldsHeader">اضافی معلومات</th>
-                            <th class="no-print">کارروائیاں</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentsTableBody">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-         <div id="teachers" class="app-section d-none">
-            <h2>اساتذہ کا انتظام</h2>
-            <button class="btn btn-primary mb-3 no-print" data-bs-toggle="modal" data-bs-target="#teacherModal" onclick="prepareTeacherForm()">نیا استاد شامل کریں</button>
-             <div class="input-group mb-3 no-print">
-                <input type="text" id="teacherSearch" class="form-control" placeholder="تلاش کریں (نام)">
-                <button class="btn btn-outline-secondary" type="button" onclick="displayTeachers()">تلاش</button>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>شمار</th>
-                            <th>نام</th>
-                            <th>رابطہ نمبر</th>
-                            <th>پتہ</th>
-                            <th>شمولیت کی تاریخ</th>
-                             <th id="teacherCustomFieldsHeader">اضافی معلومات</th>
-                            <th class="no-print">کارروائیاں</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teachersTableBody">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="classes" class="app-section d-none">
-            <h2>کلاسز کا انتظام</h2>
-            <button class="btn btn-primary mb-3 no-print" data-bs-toggle="modal" data-bs-target="#classModal" onclick="prepareClassForm()">نئی کلاس بنائیں</button>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>شمار</th>
-                            <th>کلاس کا نام</th>
-                            <th>تفویض کردہ استاد</th>
-                            <th>کل طلباء</th>
-                            <th class="no-print">کارروائیاں</th>
-                        </tr>
-                    </thead>
-                    <tbody id="classesTableBody">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="attendance" class="app-section d-none">
-            <h2>حاضری</h2>
-             <div class="row mb-3 no-print">
-                 <div class="col-md-4">
-                     <label for="attendanceClassSelect" class="form-label">کلاس منتخب کریں</label>
-                     <select id="attendanceClassSelect" class="form-select" onchange="loadAttendanceSheet()"></select>
-                 </div>
-                 <div class="col-md-4">
-                     <label for="attendanceDate" class="form-label">تاریخ منتخب کریں</label>
-                     <input type="date" id="attendanceDate" class="form-control" onchange="loadAttendanceSheet()">
-                 </div>
-                  <div class="col-md-4 align-self-end">
-                     <button class="btn btn-success" onclick="saveAttendance()">حاضری محفوظ کریں</button>
-                 </div>
-             </div>
-             <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>شمار</th>
-                            <th>طالب علم کا نام</th>
-                            <th>حاضری</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceTableBody">
-                    </tbody>
-                </table>
-            </div>
-            <button class="btn btn-secondary mt-3 no-print" onclick="generateAttendanceReport()">حاضری رپورٹ دیکھیں</button>
-        </div>
-
-        <div id="fees" class="app-section d-none">
-             <h2>فیس کا انتظام</h2>
-              <button class="btn btn-primary mb-3 no-print" data-bs-toggle="modal" data-bs-target="#feeStructureModal" onclick="loadClassOptions('#feeStructureClass')">فیس اسٹرکچر سیٹ کریں</button>
-              <button class="btn btn-success mb-3 no-print" data-bs-toggle="modal" data-bs-target="#feePaymentModal" onclick="loadStudentOptions('#feePaymentStudent')">فیس وصول کریں</button>
-             <h3 class="mt-4">فیس کی تفصیلات</h3>
-              <div class="input-group mb-3 no-print">
-                <input type="text" id="feeSearch" class="form-control" placeholder="طالب علم کے نام سے تلاش کریں">
-                 <select id="feeStatusFilter" class="form-select">
-                     <option value="">تمام اسٹیٹس</option>
-                     <option value="pending">واجب الادا</option>
-                     <option value="paid">ادا شدہ</option>
-                 </select>
-                <button class="btn btn-outline-secondary" type="button" onclick="displayFeeRecords()">تلاش</button>
-            </div>
-             <div class="table-responsive">
-                 <table class="table table-striped table-bordered">
-                     <thead>
-                         <tr>
-                             <th>شمار</th>
-                             <th>طالب علم</th>
-                             <th>کلاس</th>
-                             <th>مہینہ/مدت</th>
-                             <th>مقررہ فیس</th>
-                             <th>وصول شدہ رقم</th>
-                             <th>تاریخ وصولی</th>
-                             <th>بقايا</th>
-                             <th>اسٹیٹس</th>
-                             <th class="no-print">کارروائی</th>
-                         </tr>
-                     </thead>
-                     <tbody id="feesTableBody">
-                     </tbody>
-                 </table>
-             </div>
-        </div>
-
-        <div id="salaries" class="app-section d-none">
-            <h2>تنخواہوں کا انتظام</h2>
-             <button class="btn btn-primary mb-3 no-print" data-bs-toggle="modal" data-bs-target="#salaryStructureModal" onclick="loadTeacherOptions('#salaryStructureTeacher')">تنخواہ اسٹرکچر سیٹ کریں</button>
-             <button class="btn btn-success mb-3 no-print" data-bs-toggle="modal" data-bs-target="#salaryPaymentModal" onclick="loadTeacherOptions('#salaryPaymentTeacher')">تنخواہ ادا کریں</button>
-            <h3 class="mt-4">تنخواہ کی تفصیلات</h3>
-            <div class="input-group mb-3 no-print">
-                 <input type="text" id="salarySearch" class="form-control" placeholder="استاد کے نام سے تلاش کریں">
-                 <button class="btn btn-outline-secondary" type="button" onclick="displaySalaryRecords()">تلاش</button>
-            </div>
-            <div class="table-responsive">
-                 <table class="table table-striped table-bordered">
-                     <thead>
-                         <tr>
-                             <th>شمار</th>
-                             <th>استاد</th>
-                             <th>مہینہ/مدت</th>
-                             <th>مقررہ تنخواہ</th>
-                             <th>ادا شدہ رقم</th>
-                             <th>ادائیگی کی تاریخ</th>
-                             <th>اسٹیٹس</th>
-                             <th class="no-print">کارروائی</th>
-                         </tr>
-                     </thead>
-                     <tbody id="salariesTableBody">
-                     </tbody>
-                 </table>
-             </div>
-        </div>
-
-        <div id="inventory" class="app-section d-none">
-            <h2>انوینٹری کا انتظام</h2>
-            <button class="btn btn-primary mb-3 no-print" data-bs-toggle="modal" data-bs-target="#inventoryModal" onclick="prepareInventoryForm()">نیا آئٹم شامل کریں</button>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>شمار</th>
-                            <th>آئٹم کا نام</th>
-                            <th>مقدار</th>
-                            <th>تفصیل</th>
-                            <th>شامل کرنے کی تاریخ</th>
-                            <th class="no-print">کارروائیاں</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventoryTableBody">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-         <div id="expenses" class="app-section d-none">
-            <h2>آمدنی و اخراجات</h2>
-             <button class="btn btn-success mb-3 no-print" data-bs-toggle="modal" data-bs-target="#transactionModal" onclick="prepareTransactionForm('income')">نئی آمدنی شامل کریں</button>
-             <button class="btn btn-danger mb-3 no-print" data-bs-toggle="modal" data-bs-target="#transactionModal" onclick="prepareTransactionForm('expense')">نیا خرچہ شامل کریں</button>
-             <div class="input-group mb-3 no-print">
-                 <input type="month" id="expenseMonthFilter" class="form-control">
-                 <select id="expenseTypeFilter" class="form-select">
-                     <option value="">تمام اقسام</option>
-                     <option value="income">آمدنی</option>
-                     <option value="expense">خرچہ</option>
-                 </select>
-                 <button class="btn btn-outline-secondary" type="button" onclick="displayTransactions()">فلٹر</button>
-             </div>
-             <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>شمار</th>
-                            <th>تاریخ</th>
-                            <th>تفصیل</th>
-                            <th>قسم</th>
-                            <th>رقم</th>
-                            <th class="no-print">کارروائیاں</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactionsTableBody">
-                    </tbody>
-                </table>
-             </div>
-              <div class="mt-3">
-                 <h5>خلاصہ:</h5>
-                 <p>کل آمدنی: <span id="totalIncome">0</span></p>
-                 <p>کل اخراجات: <span id="totalExpenses">0</span></p>
-                 <p>بیلنس: <span id="netBalance">0</span></p>
-             </div>
-        </div>
-
-
-        <div id="reports" class="app-section d-none">
-            <h2>رپورٹس</h2>
-             <div class="list-group no-print">
-               <button type="button" class="list-group-item list-group-item-action" onclick="generateReport('students')">طلباء کی رپورٹ</button>
-               <button type="button" class="list-group-item list-group-item-action" onclick="generateReport('teachers')">اساتذہ کی رپورٹ</button>
-               <button type="button" class="list-group-item list-group-item-action" onclick="generateReport('classes')">کلاسز کی رپورٹ</button>
-               <button type="button" class="list-group-item list-group-item-action" onclick="showAttendanceReportOptions()">حاضری کی رپورٹ</button>
-               <button type="button" class="list-group-item list-group-item-action" onclick="showFeeReportOptions()">فیس کی رپورٹ</button>
-               <button type="button" class="list-group-item list-group-item-action" onclick="showSalaryReportOptions()">تنخواہوں کی رپورٹ</button>
-               <button type="button" class="list-group-item list-group-item-action" onclick="generateReport('inventory')">انوینٹری کی رپورٹ</button>
-               <button type="button" class="list-group-item list-group-item-action" onclick="showExpenseReportOptions()">آمدنی و اخراجات کی رپورٹ</button>
-             </div>
-
-             <div id="reportOptionsContainer" class="mt-3 no-print"></div>
-
-             <div id="reportOutput" class="mt-4">
-                <div class="d-flex justify-content-between align-items-center mb-3 no-print">
-                     <h3 id="reportTitle">رپورٹ</h3>
-                     <div>
-                         <button class="btn btn-sm btn-secondary" onclick="exportReportToCSV()">CSV میں ایکسپورٹ کریں</button>
-                         <button class="btn btn-sm btn-info" onclick="printReport()">پرنٹ کریں</button>
-                     </div>
-                 </div>
-                 <div id="printSection">
-                    <div class="text-center mb-3 d-none" id="reportHeader">
-                        <img id="reportLogo" src="" alt="Madrasa Logo" style="max-height: 80px; margin-bottom: 10px;">
-                        <h4 id="reportMadrasaName"></h4>
-                        <p id="reportMadrasaAddress"></p>
-                        <p id="reportMadrasaPhone"></p>
-                        <hr>
-                    </div>
-                    <div id="reportTableContainer" class="table-responsive">
-                        </div>
-                 </div>
-             </div>
-        </div>
-
-
-        <div id="backupRestore" class="app-section d-none">
-            <h2>بیک اپ / بحال کریں</h2>
-            <div class="card mb-3">
-                 <div class="card-body">
-                     <h5 class="card-title">ڈیٹا بیک اپ</h5>
-                     <p class="card-text">اپنے تمام مدرسہ ڈیٹا کا بیک اپ فائل میں محفوظ کریں۔</p>
-                     <button class="btn btn-primary" onclick="backupData()">بیک اپ بنائیں</button>
-                 </div>
-             </div>
-             <div class="card">
-                 <div class="card-body">
-                     <h5 class="card-title">ڈیٹا بحال کریں</h5>
-                     <p class="card-text">بیک اپ فائل سے ڈیٹا بحال کریں۔ موجودہ ڈیٹا حذف ہو جائے گا۔</p>
-                     <label for="restoreFile" class="form-label">بیک اپ فائل منتخب کریں (.json)</label>
-                     <input class="form-control" type="file" id="restoreFile" accept=".json">
-                     <button class="btn btn-warning mt-2" onclick="restoreData()">ڈیٹا بحال کریں</button>
-                 </div>
-             </div>
-        </div>
-
-         <div id="settings" class="app-section d-none">
-             <h2>ترتیبات</h2>
-             <form id="settingsForm">
-                 <div class="mb-3">
-                     <label for="madrasaName" class="form-label">مدرسہ کا نام</label>
-                     <input type="text" class="form-control" id="madrasaName">
-                 </div>
-                 <div class="mb-3">
-                     <label for="madrasaAddress" class="form-label">مدرسہ کا پتہ</label>
-                     <textarea class="form-control" id="madrasaAddress" rows="3"></textarea>
-                 </div>
-                 <div class="mb-3">
-                     <label for="madrasaPhone" class="form-label">مدرسہ فون نمبر</label>
-                     <input type="tel" class="form-control" id="madrasaPhone">
-                 </div>
-                  <div class="mb-3">
-                     <label for="madrasaLogo" class="form-label">مدرسہ لوگو</label>
-                     <input class="form-control" type="file" id="madrasaLogo" accept="image/*">
-                     <img id="madrasaLogoPreview" src="#" alt="لوگو پیش نظارہ" class="d-none"/>
-                     <input type="hidden" id="madrasaLogoData">
-                 </div>
-
-                 <hr>
-                 <h4>اضافی فیلڈز کا انتظام</h4>
-                 <div class="row">
-                    <div class="col-md-6">
-                        <h5>طلباء کے لیے اضافی فیلڈز</h5>
-                        <div id="studentCustomFieldsContainer"></div>
-                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addCustomFieldInput('student')">نیا فیلڈ شامل کریں</button>
-                    </div>
-                     <div class="col-md-6">
-                        <h5>اساتذہ کے لیے اضافی فیلڈز</h5>
-                        <div id="teacherCustomFieldsContainer"></div>
-                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addCustomFieldInput('teacher')">نیا فیلڈ شامل کریں</button>
-                    </div>
-                 </div>
-
-                 <button type="button" class="btn btn-success mt-4" onclick="saveSettings()">ترتیبات محفوظ کریں</button>
-             </form>
-        </div>
-
-    </div>
-
-    <!-- Modals -->
-    <!-- Student Modal -->
-    <div class="modal fade" id="studentModal" tabindex="-1" aria-labelledby="studentModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="studentModalLabel">طالب علم فارم</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="studentForm">
-              <input type="hidden" id="studentId">
-              <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="studentName" class="form-label">نام</label>
-                    <input type="text" class="form-control" id="studentName" required>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="studentFatherName" class="form-label">والد کا نام</label>
-                    <input type="text" class="form-control" id="studentFatherName" required>
-                  </div>
-              </div>
-               <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="studentAge" class="form-label">عمر</label>
-                    <input type="number" class="form-control" id="studentAge">
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="studentClass" class="form-label">کلاس</label>
-                    <select class="form-select" id="studentClass" required></select>
-                  </div>
-               </div>
-                <div class="row">
-                   <div class="col-md-6 mb-3">
-                    <label for="studentAdmissionDate" class="form-label">داخلہ تاریخ</label>
-                    <input type="date" class="form-control" id="studentAdmissionDate" required>
-                  </div>
-                   <div class="col-md-6 mb-3">
-                    <label for="studentContact" class="form-label">رابطہ نمبر</label>
-                    <input type="tel" class="form-control" id="studentContact">
-                  </div>
-                </div>
-              <div class="mb-3">
-                <label for="studentAddress" class="form-label">پتہ</label>
-                <textarea class="form-control" id="studentAddress" rows="2"></textarea>
-              </div>
-               <hr>
-              <h5>اضافی معلومات</h5>
-              <div id="studentCustomFieldsFormContainer"></div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-            <button type="button" class="btn btn-primary" onclick="saveStudent()">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Teacher Modal -->
-    <div class="modal fade" id="teacherModal" tabindex="-1" aria-labelledby="teacherModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="teacherModalLabel">استاد فارم</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="teacherForm">
-              <input type="hidden" id="teacherId">
-               <div class="row">
-                 <div class="col-md-6 mb-3">
-                    <label for="teacherName" class="form-label">نام</label>
-                    <input type="text" class="form-control" id="teacherName" required>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="teacherContact" class="form-label">رابطہ نمبر</label>
-                    <input type="tel" class="form-control" id="teacherContact">
-                  </div>
-               </div>
-               <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="teacherJoinDate" class="form-label">شمولیت کی تاریخ</label>
-                    <input type="date" class="form-control" id="teacherJoinDate" required>
-                  </div>
-                   <div class="col-md-6 mb-3">
-                     <label for="teacherAddress" class="form-label">پتہ</label>
-                     <textarea class="form-control" id="teacherAddress" rows="1"></textarea>
-                   </div>
-               </div>
-               <hr>
-               <h5>اضافی معلومات</h5>
-               <div id="teacherCustomFieldsFormContainer"></div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-            <button type="button" class="btn btn-primary" onclick="saveTeacher()">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Class Modal -->
-    <div class="modal fade" id="classModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="classModalLabel">کلاس فارم</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="classForm">
-              <input type="hidden" id="classId">
-              <div class="mb-3">
-                <label for="className" class="form-label">کلاس کا نام</label>
-                <input type="text" class="form-control" id="className" required>
-              </div>
-               <div class="mb-3">
-                 <label for="classTeacher" class="form-label">استاد تفویض کریں</label>
-                 <select class="form-select" id="classTeacher">
-                     <option value="">کوئی نہیں</option>
-                 </select>
-               </div>
-               <div class="mb-3">
-                 <label for="classStudents" class="form-label">طلباء تفویض کریں</label>
-                 <select class="form-select" id="classStudents" multiple size="5"></select>
-                  <small class="form-text text-muted">ایک سے زیادہ طلباء منتخب کرنے کے لیے Ctrl/Cmd دبا کر کلک کریں۔</small>
-               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-            <button type="button" class="btn btn-primary" onclick="saveClass()">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-     <!-- Fee Structure Modal -->
-    <div class="modal fade" id="feeStructureModal" tabindex="-1" aria-labelledby="feeStructureModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="feeStructureModalLabel">فیس اسٹرکچر سیٹ کریں</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="feeStructureForm">
-              <div class="mb-3">
-                <label for="feeStructureClass" class="form-label">کلاس</label>
-                <select class="form-select" id="feeStructureClass" required onchange="loadFeeStructure()"></select>
-              </div>
-              <div class="mb-3">
-                <label for="feeStructureAmount" class="form-label">ماہانہ فیس رقم</label>
-                <input type="number" class="form-control" id="feeStructureAmount" required min="0">
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-            <button type="button" class="btn btn-primary" onclick="saveFeeStructure()">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Fee Payment Modal -->
-    <div class="modal fade" id="feePaymentModal" tabindex="-1" aria-labelledby="feePaymentModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="feePaymentModalLabel">فیس وصولی</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="feePaymentForm">
-              <input type="hidden" id="feePaymentId">
-               <div class="mb-3">
-                 <label for="feePaymentStudent" class="form-label">طالب علم</label>
-                 <select class="form-select" id="feePaymentStudent" required onchange="loadStudentFeeInfo()"></select>
-               </div>
-               <div class="mb-3">
-                 <label for="feePaymentMonth" class="form-label">مہینہ/مدت</label>
-                 <input type="month" class="form-control" id="feePaymentMonth" required>
-               </div>
-               <div class="mb-3">
-                 <label for="feePaymentAmountDue" class="form-label">مقررہ فیس</label>
-                 <input type="number" class="form-control" id="feePaymentAmountDue" readonly>
-               </div>
-               <div class="mb-3">
-                 <label for="feePaymentAmountPaid" class="form-label">وصول شدہ رقم</label>
-                 <input type="number" class="form-control" id="feePaymentAmountPaid" required min="0">
-               </div>
-               <div class="mb-3">
-                 <label for="feePaymentDate" class="form-label">وصولی کی تاریخ</label>
-                 <input type="date" class="form-control" id="feePaymentDate" required>
-               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-            <button type="button" class="btn btn-primary" onclick="saveFeePayment()">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Salary Structure Modal -->
-    <div class="modal fade" id="salaryStructureModal" tabindex="-1" aria-labelledby="salaryStructureModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="salaryStructureModalLabel">تنخواہ اسٹرکچر سیٹ کریں</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="salaryStructureForm">
-               <div class="mb-3">
-                 <label for="salaryStructureTeacher" class="form-label">استاد</label>
-                 <select class="form-select" id="salaryStructureTeacher" required onchange="loadSalaryStructure()"></select>
-               </div>
-               <div class="mb-3">
-                 <label for="salaryStructureAmount" class="form-label">ماہانہ تنخواہ رقم</label>
-                 <input type="number" class="form-control" id="salaryStructureAmount" required min="0">
-               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-            <button type="button" class="btn btn-primary" onclick="saveSalaryStructure()">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Salary Payment Modal -->
-    <div class="modal fade" id="salaryPaymentModal" tabindex="-1" aria-labelledby="salaryPaymentModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="salaryPaymentModalLabel">تنخواہ ادائیگی</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="salaryPaymentForm">
-              <input type="hidden" id="salaryPaymentId">
-               <div class="mb-3">
-                 <label for="salaryPaymentTeacher" class="form-label">استاد</label>
-                 <select class="form-select" id="salaryPaymentTeacher" required onchange="loadTeacherSalaryInfo()"></select>
-               </div>
-               <div class="mb-3">
-                 <label for="salaryPaymentMonth" class="form-label">مہینہ/مدت</label>
-                 <input type="month" class="form-control" id="salaryPaymentMonth" required>
-               </div>
-                <div class="mb-3">
-                 <label for="salaryPaymentAmountDue" class="form-label">مقررہ تنخواہ</label>
-                 <input type="number" class="form-control" id="salaryPaymentAmountDue" readonly>
-               </div>
-               <div class="mb-3">
-                 <label for="salaryPaymentAmountPaid" class="form-label">ادا شدہ رقم</label>
-                 <input type="number" class="form-control" id="salaryPaymentAmountPaid" required min="0">
-               </div>
-               <div class="mb-3">
-                 <label for="salaryPaymentDate" class="form-label">ادائیگی کی تاریخ</label>
-                 <input type="date" class="form-control" id="salaryPaymentDate" required>
-               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-            <button type="button" class="btn btn-primary" onclick="saveSalaryPayment()">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Inventory Modal -->
-    <div class="modal fade" id="inventoryModal" tabindex="-1" aria-labelledby="inventoryModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="inventoryModalLabel">انوینٹری فارم</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="inventoryForm">
-              <input type="hidden" id="inventoryId">
-              <div class="mb-3">
-                <label for="inventoryItemName" class="form-label">آئٹم کا نام</label>
-                <input type="text" class="form-control" id="inventoryItemName" required>
-              </div>
-              <div class="mb-3">
-                <label for="inventoryQuantity" class="form-label">مقدار</label>
-                <input type="number" class="form-control" id="inventoryQuantity" required min="0">
-              </div>
-              <div class="mb-3">
-                <label for="inventoryDescription" class="form-label">تفصیل</label>
-                <textarea class="form-control" id="inventoryDescription" rows="3"></textarea>
-              </div>
-               <input type="hidden" id="inventoryAddDate">
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-            <button type="button" class="btn btn-primary" onclick="saveInventoryItem()">محفوظ کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Transaction Modal (Income/Expense) -->
-    <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="transactionModalLabel">لین دین فارم</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="transactionForm">
-                        <input type="hidden" id="transactionId">
-                        <input type="hidden" id="transactionType">
-                        <div class="mb-3">
-                            <label for="transactionDate" class="form-label">تاریخ</label>
-                            <input type="date" class="form-control" id="transactionDate" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="transactionDescription" class="form-label">تفصیل</label>
-                            <input type="text" class="form-control" id="transactionDescription" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="transactionAmount" class="form-label">رقم</label>
-                            <input type="number" class="form-control" id="transactionAmount" required min="0">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں</button>
-                    <button type="button" class="btn btn-primary" onclick="saveTransaction()">محفوظ کریں</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmModalLabel">تصدیق</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p id="confirmModalMessage">کیا آپ واقعی حذف کرنا چاہتے ہیں؟</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-            <button type="button" class="btn btn-danger" id="confirmModalButton">جی کریں</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-     <!-- Toast Container -->
-    <div class="toast-container position-fixed bottom-0 start-0 p-3">
-      <div id="appToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-          <strong class="me-auto" id="toastTitle">اطلاع</strong>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body" id="toastBody">
-        </div>
-      </div>
-    </div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top no-print">
+<div class="container-fluid">
+<a class="navbar-brand" href="#" id="navMadrasaName">مدرسہ انتظامی نظام</a>
+<button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav nav-pills me-auto mb-2 mb-lg-0">
+<li class="nav-item"><a class="nav-link active" data-section="dashboard" href="#">ڈیش بورڈ</a></li>
+<li class="nav-item"><a class="nav-link" data-section="students" href="#">طلباء</a></li>
+<li class="nav-item"><a class="nav-link" data-section="teachers" href="#">اساتذہ</a></li>
+<li class="nav-item"><a class="nav-link" data-section="classes" href="#">کلاسز</a></li>
+<li class="nav-item"><a class="nav-link" data-section="attendance" href="#">حاضری</a></li>
+<li class="nav-item"><a class="nav-link" data-section="fees" href="#">فیس</a></li>
+<li class="nav-item"><a class="nav-link" data-section="salaries" href="#">تنخواہیں</a></li>
+<li class="nav-item"><a class="nav-link" data-section="inventory" href="#">انوینٹری</a></li>
+<li class="nav-item"><a class="nav-link" data-section="expenses" href="#">اخراجات</a></li>
+<li class="nav-item"><a class="nav-link" data-section="reports" href="#">رپورٹس</a></li>
+<li class="nav-item"><a class="nav-link" data-section="backupRestore" href="#">بیک اپ / بحال کریں</a></li>
+<li class="nav-item"><a class="nav-link" data-section="settings" href="#">ترتیبات</a></li>
+</ul>
+</div>
+</div>
+</nav>
+<div class="container-fluid mt-3">
+<div class="app-section" id="dashboard">
+<h2>ڈیش بورڈ</h2>
+<p>مدرسہ انتظامی نظام میں خوش آمدید۔</p>
+<div class="row">
+<div class="col-md-3 mb-3">
+<div class="card text-center">
+<div class="card-body">
+<h5 class="card-title">کل طلباء</h5>
+<p class="card-text fs-4" id="dashboardTotalStudents">0</p>
+</div>
+</div>
+</div>
+<div class="col-md-3 mb-3">
+<div class="card text-center">
+<div class="card-body">
+<h5 class="card-title">کل اساتذہ</h5>
+<p class="card-text fs-4" id="dashboardTotalTeachers">0</p>
+</div>
+</div>
+</div>
+<div class="col-md-3 mb-3">
+<div class="card text-center">
+<div class="card-body">
+<h5 class="card-title">کل کلاسز</h5>
+<p class="card-text fs-4" id="dashboardTotalClasses">0</p>
+</div>
+</div>
+</div>
+<div class="col-md-3 mb-3">
+<div class="card text-center">
+<div class="card-body">
+<h5 class="card-title">آج کی آمدنی</h5>
+<p class="card-text fs-4" id="dashboardTodayIncome">0</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="app-section d-none" id="students">
+<h2>طلباء کا انتظام</h2>
+<button class="btn btn-primary mb-3 no-print" data-bs-target="#studentModal" data-bs-toggle="modal" onclick="prepareStudentForm()">نیا طالب علم شامل کریں</button>
+<div class="input-group mb-3 no-print">
+<input class="form-control" id="studentSearch" placeholder="تلاش کریں (نام، والد کا نام، کلاس)" type="text"/>
+<button class="btn btn-outline-secondary" onclick="displayStudents()" type="button">تلاش</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>شمار</th>
+<th>نام</th>
+<th>والد کا نام</th>
+<th>عمر</th>
+<th>کلاس</th>
+<th>داخلہ تاریخ</th>
+<th>رابطہ نمبر</th>
+<th>پتہ</th>
+<th id="studentCustomFieldsHeader">اضافی معلومات</th>
+<th class="no-print">کارروائیاں</th>
+</tr>
+</thead>
+<tbody id="studentsTableBody">
+</tbody>
+</table>
+</div>
+</div>
+<div class="app-section d-none" id="teachers">
+<h2>اساتذہ کا انتظام</h2>
+<button class="btn btn-primary mb-3 no-print" data-bs-target="#teacherModal" data-bs-toggle="modal" onclick="prepareTeacherForm()">نیا استاد شامل کریں</button>
+<div class="input-group mb-3 no-print">
+<input class="form-control" id="teacherSearch" placeholder="تلاش کریں (نام)" type="text"/>
+<button class="btn btn-outline-secondary" onclick="displayTeachers()" type="button">تلاش</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>شمار</th>
+<th>نام</th>
+<th>رابطہ نمبر</th>
+<th>پتہ</th>
+<th>شمولیت کی تاریخ</th>
+<th id="teacherCustomFieldsHeader">اضافی معلومات</th>
+<th class="no-print">کارروائیاں</th>
+</tr>
+</thead>
+<tbody id="teachersTableBody">
+</tbody>
+</table>
+</div>
+</div>
+<div class="app-section d-none" id="classes">
+<h2>کلاسز کا انتظام</h2>
+<button class="btn btn-primary mb-3 no-print" data-bs-target="#classModal" data-bs-toggle="modal" onclick="prepareClassForm()">نئی کلاس بنائیں</button>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>شمار</th>
+<th>کلاس کا نام</th>
+<th>تفویض کردہ استاد</th>
+<th>کل طلباء</th>
+<th class="no-print">کارروائیاں</th>
+</tr>
+</thead>
+<tbody id="classesTableBody">
+</tbody>
+</table>
+</div>
+</div>
+<div class="app-section d-none" id="attendance">
+<h2>حاضری</h2>
+<div class="row mb-3 no-print">
+<div class="col-md-4">
+<label class="form-label" for="attendanceClassSelect">کلاس منتخب کریں</label>
+<select class="form-select" id="attendanceClassSelect" onchange="loadAttendanceSheet()"></select>
+</div>
+<div class="col-md-4">
+<label class="form-label" for="attendanceDate">تاریخ منتخب کریں</label>
+<input class="form-control" id="attendanceDate" onchange="loadAttendanceSheet()" type="date"/>
+</div>
+<div class="col-md-4 align-self-end">
+<button class="btn btn-success" onclick="saveAttendance()">حاضری محفوظ کریں</button>
+</div>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>شمار</th>
+<th>طالب علم کا نام</th>
+<th>حاضری</th>
+</tr>
+</thead>
+<tbody id="attendanceTableBody">
+</tbody>
+</table>
+</div>
+<button class="btn btn-secondary mt-3 no-print" onclick="generateAttendanceReport()">حاضری رپورٹ دیکھیں</button>
+</div>
+<div class="app-section d-none" id="fees">
+<h2>فیس کا انتظام</h2>
+<button class="btn btn-primary mb-3 no-print" data-bs-target="#feeStructureModal" data-bs-toggle="modal" onclick="loadClassOptions('#feeStructureClass')">فیس اسٹرکچر سیٹ کریں</button>
+<button class="btn btn-success mb-3 no-print" data-bs-target="#feePaymentModal" data-bs-toggle="modal" onclick="loadStudentOptions('#feePaymentStudent')">فیس وصول کریں</button>
+<h3 class="mt-4">فیس کی تفصیلات</h3>
+<div class="input-group mb-3 no-print">
+<input class="form-control" id="feeSearch" placeholder="طالب علم کے نام سے تلاش کریں" type="text"/>
+<select class="form-select" id="feeStatusFilter">
+<option value="">تمام اسٹیٹس</option>
+<option value="pending">واجب الادا</option>
+<option value="paid">ادا شدہ</option>
+</select>
+<button class="btn btn-outline-secondary" onclick="displayFeeRecords()" type="button">تلاش</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>شمار</th>
+<th>طالب علم</th>
+<th>کلاس</th>
+<th>مہینہ/مدت</th>
+<th>مقررہ فیس</th>
+<th>وصول شدہ رقم</th>
+<th>تاریخ وصولی</th>
+<th>بقايا</th>
+<th>اسٹیٹس</th>
+<th class="no-print">کارروائی</th>
+</tr>
+</thead>
+<tbody id="feesTableBody">
+</tbody>
+</table>
+</div>
+</div>
+<div class="app-section d-none" id="salaries">
+<h2>تنخواہوں کا انتظام</h2>
+<button class="btn btn-primary mb-3 no-print" data-bs-target="#salaryStructureModal" data-bs-toggle="modal" onclick="loadTeacherOptions('#salaryStructureTeacher')">تنخواہ اسٹرکچر سیٹ کریں</button>
+<button class="btn btn-success mb-3 no-print" data-bs-target="#salaryPaymentModal" data-bs-toggle="modal" onclick="loadTeacherOptions('#salaryPaymentTeacher')">تنخواہ ادا کریں</button>
+<h3 class="mt-4">تنخواہ کی تفصیلات</h3>
+<div class="input-group mb-3 no-print">
+<input class="form-control" id="salarySearch" placeholder="استاد کے نام سے تلاش کریں" type="text"/>
+<button class="btn btn-outline-secondary" onclick="displaySalaryRecords()" type="button">تلاش</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>شمار</th>
+<th>استاد</th>
+<th>مہینہ/مدت</th>
+<th>مقررہ تنخواہ</th>
+<th>ادا شدہ رقم</th>
+<th>ادائیگی کی تاریخ</th>
+<th>اسٹیٹس</th>
+<th class="no-print">کارروائی</th>
+</tr>
+</thead>
+<tbody id="salariesTableBody">
+</tbody>
+</table>
+</div>
+</div>
+<div class="app-section d-none" id="inventory">
+<h2>انوینٹری کا انتظام</h2>
+<button class="btn btn-primary mb-3 no-print" data-bs-target="#inventoryModal" data-bs-toggle="modal" onclick="prepareInventoryForm()">نیا آئٹم شامل کریں</button>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>شمار</th>
+<th>آئٹم کا نام</th>
+<th>مقدار</th>
+<th>تفصیل</th>
+<th>شامل کرنے کی تاریخ</th>
+<th class="no-print">کارروائیاں</th>
+</tr>
+</thead>
+<tbody id="inventoryTableBody">
+</tbody>
+</table>
+</div>
+</div>
+<div class="app-section d-none" id="expenses">
+<h2>آمدنی و اخراجات</h2>
+<button class="btn btn-success mb-3 no-print" data-bs-target="#transactionModal" data-bs-toggle="modal" onclick="prepareTransactionForm('income')">نئی آمدنی شامل کریں</button>
+<button class="btn btn-danger mb-3 no-print" data-bs-target="#transactionModal" data-bs-toggle="modal" onclick="prepareTransactionForm('expense')">نیا خرچہ شامل کریں</button>
+<div class="input-group mb-3 no-print">
+<input class="form-control" id="expenseMonthFilter" type="month"/>
+<select class="form-select" id="expenseTypeFilter">
+<option value="">تمام اقسام</option>
+<option value="income">آمدنی</option>
+<option value="expense">خرچہ</option>
+</select>
+<button class="btn btn-outline-secondary" onclick="displayTransactions()" type="button">فلٹر</button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>شمار</th>
+<th>تاریخ</th>
+<th>تفصیل</th>
+<th>قسم</th>
+<th>رقم</th>
+<th class="no-print">کارروائیاں</th>
+</tr>
+</thead>
+<tbody id="transactionsTableBody">
+</tbody>
+</table>
+</div>
+<div class="mt-3">
+<h5>خلاصہ:</h5>
+<p>کل آمدنی: <span id="totalIncome">0</span></p>
+<p>کل اخراجات: <span id="totalExpenses">0</span></p>
+<p>بیلنس: <span id="netBalance">0</span></p>
+</div>
+</div>
+<div class="app-section d-none" id="reports">
+<h2>رپورٹس</h2>
+<div class="list-group no-print">
+<button class="list-group-item list-group-item-action" onclick="generateReport('students')" type="button">طلباء کی رپورٹ</button>
+<button class="list-group-item list-group-item-action" onclick="generateReport('teachers')" type="button">اساتذہ کی رپورٹ</button>
+<button class="list-group-item list-group-item-action" onclick="generateReport('classes')" type="button">کلاسز کی رپورٹ</button>
+<button class="list-group-item list-group-item-action" onclick="showAttendanceReportOptions()" type="button">حاضری کی رپورٹ</button>
+<button class="list-group-item list-group-item-action" onclick="showFeeReportOptions()" type="button">فیس کی رپورٹ</button>
+<button class="list-group-item list-group-item-action" onclick="showSalaryReportOptions()" type="button">تنخواہوں کی رپورٹ</button>
+<button class="list-group-item list-group-item-action" onclick="generateReport('inventory')" type="button">انوینٹری کی رپورٹ</button>
+<button class="list-group-item list-group-item-action" onclick="showExpenseReportOptions()" type="button">آمدنی و اخراجات کی رپورٹ</button>
+</div>
+<div class="mt-3 no-print" id="reportOptionsContainer"></div>
+<div class="mt-4" id="reportOutput">
+<div class="d-flex justify-content-between align-items-center mb-3 no-print">
+<h3 id="reportTitle">رپورٹ</h3>
+<div>
+<button class="btn btn-sm btn-secondary" onclick="exportReportToCSV()">CSV میں ایکسپورٹ کریں</button>
+<button class="btn btn-sm btn-info" onclick="printReport()">پرنٹ کریں</button>
+</div>
+</div>
+<div id="printSection">
+<div class="text-center mb-3 d-none" id="reportHeader">
+<img alt="Madrasa Logo" id="reportLogo" src="" style="max-height: 80px; margin-bottom: 10px;"/>
+<h4 id="reportMadrasaName"></h4>
+<p id="reportMadrasaAddress"></p>
+<p id="reportMadrasaPhone"></p>
+<hr/>
+</div>
+<div class="table-responsive" id="reportTableContainer">
+</div>
+</div>
+</div>
+</div>
+<div class="app-section d-none" id="backupRestore">
+<h2>بیک اپ / بحال کریں</h2>
+<div class="card mb-3">
+<div class="card-body">
+<h5 class="card-title">ڈیٹا بیک اپ</h5>
+<p class="card-text">اپنے تمام مدرسہ ڈیٹا کا بیک اپ فائل میں محفوظ کریں۔</p>
+<button class="btn btn-primary" onclick="backupData()">بیک اپ بنائیں</button>
+</div>
+</div>
+<div class="card">
+<div class="card-body">
+<h5 class="card-title">ڈیٹا بحال کریں</h5>
+<p class="card-text">بیک اپ فائل سے ڈیٹا بحال کریں۔ موجودہ ڈیٹا حذف ہو جائے گا۔</p>
+<label class="form-label" for="restoreFile">بیک اپ فائل منتخب کریں (.json)</label>
+<input accept=".json" class="form-control" id="restoreFile" type="file"/>
+<button class="btn btn-warning mt-2" onclick="restoreData()">ڈیٹا بحال کریں</button>
+</div>
+</div>
+</div>
+<div class="app-section d-none" id="settings">
+<h2>ترتیبات</h2>
+<form id="settingsForm">
+<div class="mb-3">
+<label class="form-label" for="madrasaName">مدرسہ کا نام</label>
+<input class="form-control" id="madrasaName" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="madrasaAddress">مدرسہ کا پتہ</label>
+<textarea class="form-control" id="madrasaAddress" rows="3"></textarea>
+</div>
+<div class="mb-3">
+<label class="form-label" for="madrasaPhone">مدرسہ فون نمبر</label>
+<input class="form-control" id="madrasaPhone" type="tel"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="madrasaLogo">مدرسہ لوگو</label>
+<input accept="image/*" class="form-control" id="madrasaLogo" type="file"/>
+<img alt="لوگو پیش نظارہ" class="d-none" id="madrasaLogoPreview" src="#">
+<input id="madrasaLogoData" type="hidden"/>
+</img></div>
+<hr/>
+<h4>اضافی فیلڈز کا انتظام</h4>
+<div class="row">
+<div class="col-md-6">
+<h5>طلباء کے لیے اضافی فیلڈز</h5>
+<div id="studentCustomFieldsContainer"></div>
+<button class="btn btn-sm btn-secondary mt-2" onclick="addCustomFieldInput('student')" type="button">نیا فیلڈ شامل کریں</button>
+</div>
+<div class="col-md-6">
+<h5>اساتذہ کے لیے اضافی فیلڈز</h5>
+<div id="teacherCustomFieldsContainer"></div>
+<button class="btn btn-sm btn-secondary mt-2" onclick="addCustomFieldInput('teacher')" type="button">نیا فیلڈ شامل کریں</button>
+</div>
+</div>
+<button class="btn btn-success mt-4" onclick="saveSettings()" type="button">ترتیبات محفوظ کریں</button>
+</form>
+</div>
+</div>
+<!-- Modals -->
+<!-- Student Modal -->
+<div aria-hidden="true" aria-labelledby="studentModalLabel" class="modal fade" id="studentModal" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="studentModalLabel">طالب علم فارم</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="studentForm">
+<input id="studentId" type="hidden"/>
+<div class="row">
+<div class="col-md-6 mb-3">
+<label class="form-label" for="studentName">نام</label>
+<input class="form-control" id="studentName" required="" type="text"/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label" for="studentFatherName">والد کا نام</label>
+<input class="form-control" id="studentFatherName" required="" type="text"/>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3">
+<label class="form-label" for="studentAge">عمر</label>
+<input class="form-control" id="studentAge" type="number"/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label" for="studentClass">کلاس</label>
+<select class="form-select" id="studentClass" required=""></select>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3">
+<label class="form-label" for="studentAdmissionDate">داخلہ تاریخ</label>
+<input class="form-control" id="studentAdmissionDate" required="" type="date"/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label" for="studentContact">رابطہ نمبر</label>
+<input class="form-control" id="studentContact" type="tel"/>
+</div>
+</div>
+<div class="mb-3">
+<label class="form-label" for="studentAddress">پتہ</label>
+<textarea class="form-control" id="studentAddress" rows="2"></textarea>
+</div>
+<hr/>
+<h5>اضافی معلومات</h5>
+<div id="studentCustomFieldsFormContainer"></div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveStudent()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Teacher Modal -->
+<div aria-hidden="true" aria-labelledby="teacherModalLabel" class="modal fade" id="teacherModal" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="teacherModalLabel">استاد فارم</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="teacherForm">
+<input id="teacherId" type="hidden"/>
+<div class="row">
+<div class="col-md-6 mb-3">
+<label class="form-label" for="teacherName">نام</label>
+<input class="form-control" id="teacherName" required="" type="text"/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label" for="teacherContact">رابطہ نمبر</label>
+<input class="form-control" id="teacherContact" type="tel"/>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6 mb-3">
+<label class="form-label" for="teacherJoinDate">شمولیت کی تاریخ</label>
+<input class="form-control" id="teacherJoinDate" required="" type="date"/>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label" for="teacherAddress">پتہ</label>
+<textarea class="form-control" id="teacherAddress" rows="1"></textarea>
+</div>
+</div>
+<hr/>
+<h5>اضافی معلومات</h5>
+<div id="teacherCustomFieldsFormContainer"></div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveTeacher()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Modal -->
+<div aria-hidden="true" aria-labelledby="classModalLabel" class="modal fade" id="classModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="classModalLabel">کلاس فارم</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="classForm">
+<input id="classId" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="className">کلاس کا نام</label>
+<input class="form-control" id="className" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="classTeacher">استاد تفویض کریں</label>
+<select class="form-select" id="classTeacher">
+<option value="">کوئی نہیں</option>
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="classStudents">طلباء تفویض کریں</label>
+<select class="form-select" id="classStudents" multiple="" size="5"></select>
+<small class="form-text text-muted">ایک سے زیادہ طلباء منتخب کرنے کے لیے Ctrl/Cmd دبا کر کلک کریں۔</small>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveClass()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Fee Structure Modal -->
+<div aria-hidden="true" aria-labelledby="feeStructureModalLabel" class="modal fade" id="feeStructureModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="feeStructureModalLabel">فیس اسٹرکچر سیٹ کریں</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="feeStructureForm">
+<div class="mb-3">
+<label class="form-label" for="feeStructureClass">کلاس</label>
+<select class="form-select" id="feeStructureClass" onchange="loadFeeStructure()" required=""></select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="feeStructureAmount">ماہانہ فیس رقم</label>
+<input class="form-control" id="feeStructureAmount" min="0" required="" type="number"/>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveFeeStructure()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Fee Payment Modal -->
+<div aria-hidden="true" aria-labelledby="feePaymentModalLabel" class="modal fade" id="feePaymentModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="feePaymentModalLabel">فیس وصولی</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="feePaymentForm">
+<input id="feePaymentId" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="feePaymentStudent">طالب علم</label>
+<select class="form-select" id="feePaymentStudent" onchange="loadStudentFeeInfo()" required=""></select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="feePaymentMonth">مہینہ/مدت</label>
+<input class="form-control" id="feePaymentMonth" required="" type="month"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="feePaymentAmountDue">مقررہ فیس</label>
+<input class="form-control" id="feePaymentAmountDue" readonly="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="feePaymentAmountPaid">وصول شدہ رقم</label>
+<input class="form-control" id="feePaymentAmountPaid" min="0" required="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="feePaymentDate">وصولی کی تاریخ</label>
+<input class="form-control" id="feePaymentDate" required="" type="date"/>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveFeePayment()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Salary Structure Modal -->
+<div aria-hidden="true" aria-labelledby="salaryStructureModalLabel" class="modal fade" id="salaryStructureModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="salaryStructureModalLabel">تنخواہ اسٹرکچر سیٹ کریں</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="salaryStructureForm">
+<div class="mb-3">
+<label class="form-label" for="salaryStructureTeacher">استاد</label>
+<select class="form-select" id="salaryStructureTeacher" onchange="loadSalaryStructure()" required=""></select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salaryStructureAmount">ماہانہ تنخواہ رقم</label>
+<input class="form-control" id="salaryStructureAmount" min="0" required="" type="number"/>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveSalaryStructure()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Salary Payment Modal -->
+<div aria-hidden="true" aria-labelledby="salaryPaymentModalLabel" class="modal fade" id="salaryPaymentModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="salaryPaymentModalLabel">تنخواہ ادائیگی</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="salaryPaymentForm">
+<input id="salaryPaymentId" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="salaryPaymentTeacher">استاد</label>
+<select class="form-select" id="salaryPaymentTeacher" onchange="loadTeacherSalaryInfo()" required=""></select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salaryPaymentMonth">مہینہ/مدت</label>
+<input class="form-control" id="salaryPaymentMonth" required="" type="month"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salaryPaymentAmountDue">مقررہ تنخواہ</label>
+<input class="form-control" id="salaryPaymentAmountDue" readonly="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salaryPaymentAmountPaid">ادا شدہ رقم</label>
+<input class="form-control" id="salaryPaymentAmountPaid" min="0" required="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salaryPaymentDate">ادائیگی کی تاریخ</label>
+<input class="form-control" id="salaryPaymentDate" required="" type="date"/>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveSalaryPayment()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Inventory Modal -->
+<div aria-hidden="true" aria-labelledby="inventoryModalLabel" class="modal fade" id="inventoryModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="inventoryModalLabel">انوینٹری فارم</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="inventoryForm">
+<input id="inventoryId" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="inventoryItemName">آئٹم کا نام</label>
+<input class="form-control" id="inventoryItemName" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="inventoryQuantity">مقدار</label>
+<input class="form-control" id="inventoryQuantity" min="0" required="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="inventoryDescription">تفصیل</label>
+<textarea class="form-control" id="inventoryDescription" rows="3"></textarea>
+</div>
+<input id="inventoryAddDate" type="hidden"/>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveInventoryItem()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Transaction Modal (Income/Expense) -->
+<div aria-hidden="true" aria-labelledby="transactionModalLabel" class="modal fade" id="transactionModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="transactionModalLabel">لین دین فارم</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="transactionForm">
+<input id="transactionId" type="hidden"/>
+<input id="transactionType" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="transactionDate">تاریخ</label>
+<input class="form-control" id="transactionDate" required="" type="date"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="transactionDescription">تفصیل</label>
+<input class="form-control" id="transactionDescription" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="transactionAmount">رقم</label>
+<input class="form-control" id="transactionAmount" min="0" required="" type="number"/>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں</button>
+<button class="btn btn-primary" onclick="saveTransaction()" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Confirmation Modal -->
+<div aria-hidden="true" aria-labelledby="confirmModalLabel" class="modal fade" id="confirmModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="confirmModalLabel">تصدیق</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<p id="confirmModalMessage">کیا آپ واقعی حذف کرنا چاہتے ہیں؟</p>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-danger" id="confirmModalButton" type="button">جی کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 start-0 p-3">
+<div aria-atomic="true" aria-live="assertive" class="toast" id="appToast" role="alert">
+<div class="toast-header">
+<strong class="me-auto" id="toastTitle">اطلاع</strong>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="toast" type="button"></button>
+</div>
+<div class="toast-body" id="toastBody">
+</div>
+</div>
+</div>
+<script crossorigin="anonymous" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const DB_NAME = 'madrasaDB';
     const DB_VERSION = 1;
@@ -3978,17 +3947,8 @@
     });
 
 </script>
-
-
-
-
-
-
 <script>
-
-
 </script>
-
 <script>
 // Donation Modal - Fullscreen, vertical icon, notification dot, modern, no global conflicts
 (function () {
@@ -4251,5 +4211,5 @@ Earn Sadaqah Jariyah by supporting this religious cause.`,
   }
 })();
 </script>
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

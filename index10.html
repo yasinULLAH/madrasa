@@ -1,14 +1,14 @@
 
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
 
+<html dir="rtl" lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دینی مدرسہ مینجمنٹ سسٹم</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>دینی مدرسہ مینجمنٹ سسٹم</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap');
         body {
             font-family: 'Noto Nastaliq Urdu', serif;
@@ -92,12 +92,12 @@
             }
         }
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-primary">
 <div class="container-fluid">
 <a class="navbar-brand" href="#">دینی مدرسہ مینجمنٹ سسٹم</a>
-<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+<button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
 <span class="navbar-toggler-icon"></span>
 </button>
 <div class="collapse navbar-collapse" id="navbarNav">
@@ -109,1094 +109,1058 @@
 </div>
 </div>
 </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2 sidebar no-print">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" data-page="dashboard">
-                            <i class="bi bi-speedometer2"></i> ڈیش بورڈ
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-2 sidebar no-print">
+<ul class="nav flex-column">
+<li class="nav-item">
+<a class="nav-link active" data-page="dashboard" href="#">
+<i class="bi bi-speedometer2"></i> ڈیش بورڈ
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="students">
-                            <i class="bi bi-mortarboard"></i> طلبہ
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="students" href="#">
+<i class="bi bi-mortarboard"></i> طلبہ
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="teachers">
-                            <i class="bi bi-person"></i> اساتذہ
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="teachers" href="#">
+<i class="bi bi-person"></i> اساتذہ
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="classes">
-                            <i class="bi bi-book"></i> کلاسز
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="classes" href="#">
+<i class="bi bi-book"></i> کلاسز
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="attendance">
-                            <i class="bi bi-calendar-check"></i> حاضری
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="attendance" href="#">
+<i class="bi bi-calendar-check"></i> حاضری
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="fees">
-                            <i class="bi bi-cash-stack"></i> فیس
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="fees" href="#">
+<i class="bi bi-cash-stack"></i> فیس
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="salaries">
-                            <i class="bi bi-wallet"></i> تنخواہیں
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="salaries" href="#">
+<i class="bi bi-wallet"></i> تنخواہیں
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="reports">
-                            <i class="bi bi-file-earmark-text"></i> رپورٹس
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="reports" href="#">
+<i class="bi bi-file-earmark-text"></i> رپورٹس
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="inventory">
-                            <i class="bi bi-box"></i> انوینٹری
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="inventory" href="#">
+<i class="bi bi-box"></i> انوینٹری
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="expenses">
-                            <i class="bi bi-cash"></i> اخراجات
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="expenses" href="#">
+<i class="bi bi-cash"></i> اخراجات
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-page="backup">
-                            <i class="bi bi-cloud-arrow-up"></i> بیک اپ اور ریسٹور
+</li>
+<li class="nav-item">
+<a class="nav-link" data-page="backup" href="#">
+<i class="bi bi-cloud-arrow-up"></i> بیک اپ اور ریسٹور
                         </a>
-                    </li>
-                </ul>
-            </div>
-    
-            <div class="col-md-10 main-content">
-                <!-- Dashboard Page -->
-                <div id="dashboard-page">
-                    <h2 class="mb-4">ڈیش بورڈ</h2>
-                    <div class="row">
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">کل طلبہ</h5>
-                                    <p class="card-text fs-2" id="total-students">0</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-success text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">کل اساتذہ</h5>
-                                    <p class="card-text fs-2" id="total-teachers">0</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-warning text-dark">
-                                <div class="card-body">
-                                    <h5 class="card-title">کل کلاسز</h5>
-                                    <p class="card-text fs-2" id="total-classes">0</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-4">
-                            <div class="card bg-info text-dark">
-                                <div class="card-body">
-                                    <h5 class="card-title">آج کی حاضری</h5>
-                                    <p class="card-text fs-2" id="today-attendance">0</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>حالیہ فیس ادائیگی</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped" id="recent-fees">
-                                            <thead>
-                                                <tr>
-                                                    <th>طالب علم</th>
-                                                    <th>کلاس</th>
-                                                    <th>رقم</th>
-                                                    <th>تاریخ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- Will be filled dynamically -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>حالیہ اخراجات</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped" id="recent-expenses">
-                                            <thead>
-                                                <tr>
-                                                    <th>تفصیل</th>
-                                                    <th>زمرہ</th>
-                                                    <th>رقم</th>
-                                                    <th>تاریخ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- Will be filled dynamically -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Students Page -->
-                <div id="students-page" style="display: none;">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>طلبہ کا انتظام</h2>
-                        <button class="btn btn-primary" id="add-student-btn">
-                            <i class="bi bi-plus-circle"></i> نیا طالب علم
+</li>
+</ul>
+</div>
+<div class="col-md-10 main-content">
+<!-- Dashboard Page -->
+<div id="dashboard-page">
+<h2 class="mb-4">ڈیش بورڈ</h2>
+<div class="row">
+<div class="col-md-3 mb-4">
+<div class="card bg-primary text-white">
+<div class="card-body">
+<h5 class="card-title">کل طلبہ</h5>
+<p class="card-text fs-2" id="total-students">0</p>
+</div>
+</div>
+</div>
+<div class="col-md-3 mb-4">
+<div class="card bg-success text-white">
+<div class="card-body">
+<h5 class="card-title">کل اساتذہ</h5>
+<p class="card-text fs-2" id="total-teachers">0</p>
+</div>
+</div>
+</div>
+<div class="col-md-3 mb-4">
+<div class="card bg-warning text-dark">
+<div class="card-body">
+<h5 class="card-title">کل کلاسز</h5>
+<p class="card-text fs-2" id="total-classes">0</p>
+</div>
+</div>
+</div>
+<div class="col-md-3 mb-4">
+<div class="card bg-info text-dark">
+<div class="card-body">
+<h5 class="card-title">آج کی حاضری</h5>
+<p class="card-text fs-2" id="today-attendance">0</p>
+</div>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6">
+<div class="card">
+<div class="card-header">
+<h5>حالیہ فیس ادائیگی</h5>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped" id="recent-fees">
+<thead>
+<tr>
+<th>طالب علم</th>
+<th>کلاس</th>
+<th>رقم</th>
+<th>تاریخ</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="card">
+<div class="card-header">
+<h5>حالیہ اخراجات</h5>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped" id="recent-expenses">
+<thead>
+<tr>
+<th>تفصیل</th>
+<th>زمرہ</th>
+<th>رقم</th>
+<th>تاریخ</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Students Page -->
+<div id="students-page" style="display: none;">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<h2>طلبہ کا انتظام</h2>
+<button class="btn btn-primary" id="add-student-btn">
+<i class="bi bi-plus-circle"></i> نیا طالب علم
                         </button>
-                    </div>
-    
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5>طلبہ کی فہرست</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <input type="text" class="form-control" id="student-search" placeholder="طالب علم کی تلاش...">
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped" id="students-table">
-                                    <thead>
-                                        <tr>
-                                            <th>آئی ڈی</th>
-                                            <th>نام</th>
-                                            <th>والد کا نام</th>
-                                            <th>عمر</th>
-                                            <th>کلاس</th>
-                                            <th>داخلہ کی تاریخ</th>
-                                            <th>رابطہ</th>
-                                            <th>ایکشنز</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Will be filled dynamically -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Student Modal -->
-                <div class="modal fade" id="student-modal" tabindex="-1">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="student-modal-title">طالب علم کا اندراج</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="student-form">
-                                    <input type="hidden" id="student-id">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="student-name" class="form-label">نام</label>
-                                            <input type="text" class="form-control" id="student-name" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="student-father" class="form-label">والد کا نام</label>
-                                            <input type="text" class="form-control" id="student-father" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-4">
-                                            <label for="student-age" class="form-label">عمر</label>
-                                            <input type="number" class="form-control" id="student-age" required>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="student-class" class="form-label">کلاس</label>
-                                            <select class="form-select" id="student-class" required>
-                                                <!-- Will be filled dynamically -->
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="student-admission-date" class="form-label">داخلہ کی تاریخ</label>
-                                            <input type="date" class="form-control" id="student-admission-date" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="student-contact" class="form-label">رابطہ</label>
-                                            <input type="text" class="form-control" id="student-contact" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="student-address" class="form-label">پتہ</label>
-                                            <textarea class="form-control" id="student-address" rows="2" required></textarea>
-                                        </div>
-                                    </div>
-                                    <div id="custom-fields-container">
-                                        <!-- Custom fields will be added here -->
-                                    </div>
-                                    <button type="button" id="add-custom-field" class="btn btn-outline-secondary mb-3">
-                                        <i class="bi bi-plus-circle"></i> کسٹم فیلڈ شامل کریں
+</div>
+<div class="card mb-4">
+<div class="card-header">
+<h5>طلبہ کی فہرست</h5>
+</div>
+<div class="card-body">
+<div class="mb-3">
+<input class="form-control" id="student-search" placeholder="طالب علم کی تلاش..." type="text"/>
+</div>
+<div class="table-responsive">
+<table class="table table-striped" id="students-table">
+<thead>
+<tr>
+<th>آئی ڈی</th>
+<th>نام</th>
+<th>والد کا نام</th>
+<th>عمر</th>
+<th>کلاس</th>
+<th>داخلہ کی تاریخ</th>
+<th>رابطہ</th>
+<th>ایکشنز</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Student Modal -->
+<div class="modal fade" id="student-modal" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="student-modal-title">طالب علم کا اندراج</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="student-form">
+<input id="student-id" type="hidden"/>
+<div class="row mb-3">
+<div class="col-md-6">
+<label class="form-label" for="student-name">نام</label>
+<input class="form-control" id="student-name" required="" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" for="student-father">والد کا نام</label>
+<input class="form-control" id="student-father" required="" type="text"/>
+</div>
+</div>
+<div class="row mb-3">
+<div class="col-md-4">
+<label class="form-label" for="student-age">عمر</label>
+<input class="form-control" id="student-age" required="" type="number"/>
+</div>
+<div class="col-md-4">
+<label class="form-label" for="student-class">کلاس</label>
+<select class="form-select" id="student-class" required="">
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="col-md-4">
+<label class="form-label" for="student-admission-date">داخلہ کی تاریخ</label>
+<input class="form-control" id="student-admission-date" required="" type="date"/>
+</div>
+</div>
+<div class="row mb-3">
+<div class="col-md-6">
+<label class="form-label" for="student-contact">رابطہ</label>
+<input class="form-control" id="student-contact" required="" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" for="student-address">پتہ</label>
+<textarea class="form-control" id="student-address" required="" rows="2"></textarea>
+</div>
+</div>
+<div id="custom-fields-container">
+<!-- Custom fields will be added here -->
+</div>
+<button class="btn btn-outline-secondary mb-3" id="add-custom-field" type="button">
+<i class="bi bi-plus-circle"></i> کسٹم فیلڈ شامل کریں
                                     </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-                                <button type="button" class="btn btn-primary" id="save-student">محفوظ کریں</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Teachers Page -->
-                <div id="teachers-page" style="display: none;">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>اساتذہ کا انتظام</h2>
-                        <button class="btn btn-primary" id="add-teacher-btn">
-                            <i class="bi bi-plus-circle"></i> نیا استاد
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-primary" id="save-student" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Teachers Page -->
+<div id="teachers-page" style="display: none;">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<h2>اساتذہ کا انتظام</h2>
+<button class="btn btn-primary" id="add-teacher-btn">
+<i class="bi bi-plus-circle"></i> نیا استاد
                         </button>
-                    </div>
-    
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5>اساتذہ کی فہرست</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <input type="text" class="form-control" id="teacher-search" placeholder="استاد کی تلاش...">
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped" id="teachers-table">
-                                    <thead>
-                                        <tr>
-                                            <th>آئی ڈی</th>
-                                            <th>نام</th>
-                                            <th>تخصص</th>
-                                            <th>تعلیم</th>
-                                            <th>رابطہ</th>
-                                            <th>شمولیت کی تاریخ</th>
-                                            <th>تنخواہ</th>
-                                            <th>ایکشنز</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Will be filled dynamically -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Teacher Modal -->
-                <div class="modal fade" id="teacher-modal" tabindex="-1">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="teacher-modal-title">استاد کا اندراج</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="teacher-form">
-                                    <input type="hidden" id="teacher-id">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="teacher-name" class="form-label">نام</label>
-                                            <input type="text" class="form-control" id="teacher-name" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="teacher-specialization" class="form-label">تخصص</label>
-                                            <input type="text" class="form-control" id="teacher-specialization" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="teacher-education" class="form-label">تعلیم</label>
-                                            <input type="text" class="form-control" id="teacher-education" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="teacher-join-date" class="form-label">شمولیت کی تاریخ</label>
-                                            <input type="date" class="form-control" id="teacher-join-date" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="teacher-contact" class="form-label">رابطہ</label>
-                                            <input type="text" class="form-control" id="teacher-contact" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="teacher-salary" class="form-label">تنخواہ</label>
-                                            <input type="number" class="form-control" id="teacher-salary" required>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="teacher-address" class="form-label">پتہ</label>
-                                        <textarea class="form-control" id="teacher-address" rows="2" required></textarea>
-                                    </div>
-                                    <div id="teacher-custom-fields-container">
-                                        <!-- Custom fields will be added here -->
-                                    </div>
-                                    <button type="button" id="add-teacher-custom-field" class="btn btn-outline-secondary mb-3">
-                                        <i class="bi bi-plus-circle"></i> کسٹم فیلڈ شامل کریں
+</div>
+<div class="card mb-4">
+<div class="card-header">
+<h5>اساتذہ کی فہرست</h5>
+</div>
+<div class="card-body">
+<div class="mb-3">
+<input class="form-control" id="teacher-search" placeholder="استاد کی تلاش..." type="text"/>
+</div>
+<div class="table-responsive">
+<table class="table table-striped" id="teachers-table">
+<thead>
+<tr>
+<th>آئی ڈی</th>
+<th>نام</th>
+<th>تخصص</th>
+<th>تعلیم</th>
+<th>رابطہ</th>
+<th>شمولیت کی تاریخ</th>
+<th>تنخواہ</th>
+<th>ایکشنز</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Teacher Modal -->
+<div class="modal fade" id="teacher-modal" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="teacher-modal-title">استاد کا اندراج</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="teacher-form">
+<input id="teacher-id" type="hidden"/>
+<div class="row mb-3">
+<div class="col-md-6">
+<label class="form-label" for="teacher-name">نام</label>
+<input class="form-control" id="teacher-name" required="" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" for="teacher-specialization">تخصص</label>
+<input class="form-control" id="teacher-specialization" required="" type="text"/>
+</div>
+</div>
+<div class="row mb-3">
+<div class="col-md-6">
+<label class="form-label" for="teacher-education">تعلیم</label>
+<input class="form-control" id="teacher-education" required="" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" for="teacher-join-date">شمولیت کی تاریخ</label>
+<input class="form-control" id="teacher-join-date" required="" type="date"/>
+</div>
+</div>
+<div class="row mb-3">
+<div class="col-md-6">
+<label class="form-label" for="teacher-contact">رابطہ</label>
+<input class="form-control" id="teacher-contact" required="" type="text"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" for="teacher-salary">تنخواہ</label>
+<input class="form-control" id="teacher-salary" required="" type="number"/>
+</div>
+</div>
+<div class="mb-3">
+<label class="form-label" for="teacher-address">پتہ</label>
+<textarea class="form-control" id="teacher-address" required="" rows="2"></textarea>
+</div>
+<div id="teacher-custom-fields-container">
+<!-- Custom fields will be added here -->
+</div>
+<button class="btn btn-outline-secondary mb-3" id="add-teacher-custom-field" type="button">
+<i class="bi bi-plus-circle"></i> کسٹم فیلڈ شامل کریں
                                     </button>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-                                <button type="button" class="btn btn-primary" id="save-teacher">محفوظ کریں</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Classes Page -->
-                <div id="classes-page" style="display: none;">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>کلاسز کا انتظام</h2>
-                        <button class="btn btn-primary" id="add-class-btn">
-                            <i class="bi bi-plus-circle"></i> نئی کلاس
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-primary" id="save-teacher" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Classes Page -->
+<div id="classes-page" style="display: none;">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<h2>کلاسز کا انتظام</h2>
+<button class="btn btn-primary" id="add-class-btn">
+<i class="bi bi-plus-circle"></i> نئی کلاس
                         </button>
-                    </div>
-    
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5>کلاسز کی فہرست</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped" id="classes-table">
-                                    <thead>
-                                        <tr>
-                                            <th>آئی ڈی</th>
-                                            <th>کلاس کا نام</th>
-                                            <th>درجہ</th>
-                                            <th>استاد</th>
-                                            <th>طلبہ کی تعداد</th>
-                                            <th>کمرہ</th>
-                                            <th>ایکشنز</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Will be filled dynamically -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Class Modal -->
-                <div class="modal fade" id="class-modal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="class-modal-title">نئی کلاس</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="class-form">
-                                    <input type="hidden" id="class-id">
-                                    <div class="mb-3">
-                                        <label for="class-name" class="form-label">کلاس کا نام</label>
-                                        <input type="text" class="form-control" id="class-name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="class-level" class="form-label">درجہ</label>
-                                        <input type="text" class="form-control" id="class-level" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="class-teacher" class="form-label">استاد</label>
-                                        <select class="form-select" id="class-teacher" required>
-                                            <!-- Will be filled dynamically -->
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="class-room" class="form-label">کمرہ</label>
-                                        <input type="text" class="form-control" id="class-room" required>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-                                <button type="button" class="btn btn-primary" id="save-class">محفوظ کریں</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Attendance Page -->
-                <div id="attendance-page" style="display: none;">
-                    <h2 class="mb-4">حاضری کا انتظام</h2>
-    
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5>حاضری درج کریں</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="attendance-date" class="form-label">تاریخ</label>
-                                    <input type="date" class="form-control" id="attendance-date" value="">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="attendance-class" class="form-label">کلاس</label>
-                                    <select class="form-select" id="attendance-class">
-                                        <option value="">کلاس منتخب کریں</option>
-                                        <!-- Will be filled dynamically -->
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button class="btn btn-primary d-block" id="load-attendance">حاضری لوڈ کریں</button>
-                                </div>
-                            </div>
-    
-                            <div id="attendance-container" style="display: none;">
-                                <div class="table-responsive">
-                                    <table class="table" id="attendance-table">
-                                        <thead>
-                                            <tr>
-                                                <th>طالب علم کا نام</th>
-                                                <th>حاضری</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Will be filled dynamically -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <button class="btn btn-success" id="save-attendance">حاضری محفوظ کریں</button>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>حاضری رپورٹ</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label for="attendance-report-class" class="form-label">کلاس</label>
-                                    <select class="form-select" id="attendance-report-class">
-                                        <option value="">تمام کلاسز</option>
-                                        <!-- Will be filled dynamically -->
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="attendance-report-student" class="form-label">طالب علم</label>
-                                    <select class="form-select" id="attendance-report-student">
-                                        <option value="">تمام طلبہ</option>
-                                        <!-- Will be filled dynamically -->
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="attendance-report-from" class="form-label">شروع تاریخ</label>
-                                    <input type="date" class="form-control" id="attendance-report-from">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="attendance-report-to" class="form-label">ختم تاریخ</label>
-                                    <input type="date" class="form-control" id="attendance-report-to">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <button class="btn btn-primary" id="generate-attendance-report">رپورٹ جنریٹ کریں</button>
-                                <button class="btn btn-success ms-2" id="export-attendance-report">ایکسپورٹ (CSV)</button>
-                                <button class="btn btn-info ms-2" id="print-attendance-report">پرنٹ کریں</button>
-                            </div>
-    
-                            <div id="attendance-report-container" style="display: none;">
-                                <div class="table-responsive">
-                                    <table class="table table-striped" id="attendance-report-table">
-                                        <thead>
-                                            <tr>
-                                                <th>طالب علم</th>
-                                                <th>کلاس</th>
-                                                <th>تاریخ</th>
-                                                <th>حاضری</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Will be filled dynamically -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Fees Page -->
-                <div id="fees-page" style="display: none;">
-                    <h2 class="mb-4">فیس کا انتظام</h2>
-    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header d-flex justify-content-between">
-                                    <h5>فیس کی ساخت</h5>
-                                    <button class="btn btn-sm btn-primary" id="add-fee-structure-btn">
-                                        <i class="bi bi-plus-circle"></i> نئی فیس ساخت
+</div>
+<div class="card mb-4">
+<div class="card-header">
+<h5>کلاسز کی فہرست</h5>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped" id="classes-table">
+<thead>
+<tr>
+<th>آئی ڈی</th>
+<th>کلاس کا نام</th>
+<th>درجہ</th>
+<th>استاد</th>
+<th>طلبہ کی تعداد</th>
+<th>کمرہ</th>
+<th>ایکشنز</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Modal -->
+<div class="modal fade" id="class-modal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="class-modal-title">نئی کلاس</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="class-form">
+<input id="class-id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="class-name">کلاس کا نام</label>
+<input class="form-control" id="class-name" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="class-level">درجہ</label>
+<input class="form-control" id="class-level" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="class-teacher">استاد</label>
+<select class="form-select" id="class-teacher" required="">
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="class-room">کمرہ</label>
+<input class="form-control" id="class-room" required="" type="text"/>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-primary" id="save-class" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Attendance Page -->
+<div id="attendance-page" style="display: none;">
+<h2 class="mb-4">حاضری کا انتظام</h2>
+<div class="card mb-4">
+<div class="card-header">
+<h5>حاضری درج کریں</h5>
+</div>
+<div class="card-body">
+<div class="row mb-3">
+<div class="col-md-4">
+<label class="form-label" for="attendance-date">تاریخ</label>
+<input class="form-control" id="attendance-date" type="date" value=""/>
+</div>
+<div class="col-md-4">
+<label class="form-label" for="attendance-class">کلاس</label>
+<select class="form-select" id="attendance-class">
+<option value="">کلاس منتخب کریں</option>
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="col-md-4">
+<label class="form-label"> </label>
+<button class="btn btn-primary d-block" id="load-attendance">حاضری لوڈ کریں</button>
+</div>
+</div>
+<div id="attendance-container" style="display: none;">
+<div class="table-responsive">
+<table class="table" id="attendance-table">
+<thead>
+<tr>
+<th>طالب علم کا نام</th>
+<th>حاضری</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+<button class="btn btn-success" id="save-attendance">حاضری محفوظ کریں</button>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-header">
+<h5>حاضری رپورٹ</h5>
+</div>
+<div class="card-body">
+<div class="row mb-3">
+<div class="col-md-3">
+<label class="form-label" for="attendance-report-class">کلاس</label>
+<select class="form-select" id="attendance-report-class">
+<option value="">تمام کلاسز</option>
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="attendance-report-student">طالب علم</label>
+<select class="form-select" id="attendance-report-student">
+<option value="">تمام طلبہ</option>
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="attendance-report-from">شروع تاریخ</label>
+<input class="form-control" id="attendance-report-from" type="date"/>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="attendance-report-to">ختم تاریخ</label>
+<input class="form-control" id="attendance-report-to" type="date"/>
+</div>
+</div>
+<div class="mb-3">
+<button class="btn btn-primary" id="generate-attendance-report">رپورٹ جنریٹ کریں</button>
+<button class="btn btn-success ms-2" id="export-attendance-report">ایکسپورٹ (CSV)</button>
+<button class="btn btn-info ms-2" id="print-attendance-report">پرنٹ کریں</button>
+</div>
+<div id="attendance-report-container" style="display: none;">
+<div class="table-responsive">
+<table class="table table-striped" id="attendance-report-table">
+<thead>
+<tr>
+<th>طالب علم</th>
+<th>کلاس</th>
+<th>تاریخ</th>
+<th>حاضری</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Fees Page -->
+<div id="fees-page" style="display: none;">
+<h2 class="mb-4">فیس کا انتظام</h2>
+<div class="row">
+<div class="col-md-6">
+<div class="card mb-4">
+<div class="card-header d-flex justify-content-between">
+<h5>فیس کی ساخت</h5>
+<button class="btn btn-sm btn-primary" id="add-fee-structure-btn">
+<i class="bi bi-plus-circle"></i> نئی فیس ساخت
                                     </button>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped" id="fee-structure-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>کلاس</th>
-                                                    <th>فیس کی قسم</th>
-                                                    <th>رقم</th>
-                                                    <th>ادائیگی کا دورانیہ</th>
-                                                    <th>ایکشنز</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- Will be filled dynamically -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header d-flex justify-content-between">
-                                    <h5>فیس کی ادائیگی</h5>
-                                    <button class="btn btn-sm btn-primary" id="add-fee-payment-btn">
-                                        <i class="bi bi-plus-circle"></i> نئی ادائیگی
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped" id="fee-structure-table">
+<thead>
+<tr>
+<th>کلاس</th>
+<th>فیس کی قسم</th>
+<th>رقم</th>
+<th>ادائیگی کا دورانیہ</th>
+<th>ایکشنز</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="card mb-4">
+<div class="card-header d-flex justify-content-between">
+<h5>فیس کی ادائیگی</h5>
+<button class="btn btn-sm btn-primary" id="add-fee-payment-btn">
+<i class="bi bi-plus-circle"></i> نئی ادائیگی
                                     </button>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped" id="fee-payment-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>طالب علم</th>
-                                                    <th>فیس کی قسم</th>
-                                                    <th>رقم</th>
-                                                    <th>تاریخ</th>
-                                                    <th>حیثیت</th>
-                                                    <th>ایکشنز</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- Will be filled dynamically -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>فیس کی رپورٹ</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label for="fee-report-class" class="form-label">کلاس</label>
-                                    <select class="form-select" id="fee-report-class">
-                                        <option value="">تمام کلاسز</option>
-                                        <!-- Will be filled dynamically -->
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="fee-report-student" class="form-label">طالب علم</label>
-                                    <select class="form-select" id="fee-report-student">
-                                        <option value="">تمام طلبہ</option>
-                                        <!-- Will be filled dynamically -->
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="fee-report-from" class="form-label">شروع تاریخ</label>
-                                    <input type="date" class="form-control" id="fee-report-from">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="fee-report-to" class="form-label">ختم تاریخ</label>
-                                    <input type="date" class="form-control" id="fee-report-to">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <button class="btn btn-primary" id="generate-fee-report">رپورٹ جنریٹ کریں</button>
-                                <button class="btn btn-success ms-2" id="export-fee-report">ایکسپورٹ (CSV)</button>
-                                <button class="btn btn-info ms-2" id="print-fee-report">پرنٹ کریں</button>
-                            </div>
-    
-                            <div id="fee-report-container" style="display: none;">
-                                <div class="table-responsive">
-                                    <table class="table table-striped" id="fee-report-table">
-                                        <thead>
-                                            <tr>
-                                                <th>طالب علم</th>
-                                                <th>کلاس</th>
-                                                <th>فیس کی قسم</th>
-                                                <th>رقم</th>
-                                                <th>تاریخ</th>
-                                                <th>حیثیت</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Will be filled dynamically -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Fee Structure Modal -->
-                <div class="modal fade" id="fee-structure-modal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="fee-structure-modal-title">نئی فیس ساخت</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="fee-structure-form">
-                                    <input type="hidden" id="fee-structure-id">
-                                    <div class="mb-3">
-                                        <label for="fee-structure-class" class="form-label">کلاس</label>
-                                        <select class="form-select" id="fee-structure-class" required>
-                                            <!-- Will be filled dynamically -->
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="fee-structure-type" class="form-label">فیس کی قسم</label>
-                                        <input type="text" class="form-control" id="fee-structure-type" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="fee-structure-amount" class="form-label">رقم</label>
-                                        <input type="number" class="form-control" id="fee-structure-amount" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="fee-structure-period" class="form-label">ادائیگی کا دورانیہ</label>
-                                        <select class="form-select" id="fee-structure-period" required>
-                                            <option value="monthly">ماہانہ</option>
-                                            <option value="quarterly">سہ ماہی</option>
-                                            <option value="half-yearly">ششماہی</option>
-                                            <option value="yearly">سالانہ</option>
-                                            <option value="one-time">ایک بار</option>
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-                                <button type="button" class="btn btn-primary" id="save-fee-structure">محفوظ کریں</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Fee Payment Modal -->
-                <div class="modal fade" id="fee-payment-modal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="fee-payment-modal-title">نئی فیس ادائیگی</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="fee-payment-form">
-                                    <input type="hidden" id="fee-payment-id">
-                                    <div class="mb-3">
-                                        <label for="fee-payment-student" class="form-label">طالب علم</label>
-                                        <select class="form-select" id="fee-payment-student" required>
-                                            <!-- Will be filled dynamically -->
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="fee-payment-type" class="form-label">فیس کی قسم</label>
-                                        <select class="form-select" id="fee-payment-type" required>
-                                            <!-- Will be filled dynamically -->
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="fee-payment-amount" class="form-label">رقم</label>
-                                        <input type="number" class="form-control" id="fee-payment-amount" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="fee-payment-date" class="form-label">تاریخ</label>
-                                        <input type="date" class="form-control" id="fee-payment-date" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="fee-payment-status" class="form-label">حیثیت</label>
-                                        <select class="form-select" id="fee-payment-status" required>
-                                            <option value="paid">ادا شدہ</option>
-                                            <option value="pending">زیر التواء</option>
-                                            <option value="partial">جزوی</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="fee-payment-notes" class="form-label">نوٹس</label>
-                                        <textarea class="form-control" id="fee-payment-notes" rows="2"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-                                <button type="button" class="btn btn-primary" id="save-fee-payment">محفوظ کریں</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Salaries Page -->
-                <div id="salaries-page" style="display: none;">
-                    <h2 class="mb-4">تنخواہوں کا انتظام</h2>
-    
-                    <div class="card mb-4">
-                        <div class="card-header d-flex justify-content-between">
-                            <h5>تنخواہ ادائیگی</h5>
-                            <button class="btn btn-sm btn-primary" id="add-salary-payment-btn">
-                                <i class="bi bi-plus-circle"></i> نئی ادائیگی
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped" id="fee-payment-table">
+<thead>
+<tr>
+<th>طالب علم</th>
+<th>فیس کی قسم</th>
+<th>رقم</th>
+<th>تاریخ</th>
+<th>حیثیت</th>
+<th>ایکشنز</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-header">
+<h5>فیس کی رپورٹ</h5>
+</div>
+<div class="card-body">
+<div class="row mb-3">
+<div class="col-md-3">
+<label class="form-label" for="fee-report-class">کلاس</label>
+<select class="form-select" id="fee-report-class">
+<option value="">تمام کلاسز</option>
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="fee-report-student">طالب علم</label>
+<select class="form-select" id="fee-report-student">
+<option value="">تمام طلبہ</option>
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="fee-report-from">شروع تاریخ</label>
+<input class="form-control" id="fee-report-from" type="date"/>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="fee-report-to">ختم تاریخ</label>
+<input class="form-control" id="fee-report-to" type="date"/>
+</div>
+</div>
+<div class="mb-3">
+<button class="btn btn-primary" id="generate-fee-report">رپورٹ جنریٹ کریں</button>
+<button class="btn btn-success ms-2" id="export-fee-report">ایکسپورٹ (CSV)</button>
+<button class="btn btn-info ms-2" id="print-fee-report">پرنٹ کریں</button>
+</div>
+<div id="fee-report-container" style="display: none;">
+<div class="table-responsive">
+<table class="table table-striped" id="fee-report-table">
+<thead>
+<tr>
+<th>طالب علم</th>
+<th>کلاس</th>
+<th>فیس کی قسم</th>
+<th>رقم</th>
+<th>تاریخ</th>
+<th>حیثیت</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Fee Structure Modal -->
+<div class="modal fade" id="fee-structure-modal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="fee-structure-modal-title">نئی فیس ساخت</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="fee-structure-form">
+<input id="fee-structure-id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="fee-structure-class">کلاس</label>
+<select class="form-select" id="fee-structure-class" required="">
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="fee-structure-type">فیس کی قسم</label>
+<input class="form-control" id="fee-structure-type" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="fee-structure-amount">رقم</label>
+<input class="form-control" id="fee-structure-amount" required="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="fee-structure-period">ادائیگی کا دورانیہ</label>
+<select class="form-select" id="fee-structure-period" required="">
+<option value="monthly">ماہانہ</option>
+<option value="quarterly">سہ ماہی</option>
+<option value="half-yearly">ششماہی</option>
+<option value="yearly">سالانہ</option>
+<option value="one-time">ایک بار</option>
+</select>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-primary" id="save-fee-structure" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Fee Payment Modal -->
+<div class="modal fade" id="fee-payment-modal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="fee-payment-modal-title">نئی فیس ادائیگی</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="fee-payment-form">
+<input id="fee-payment-id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="fee-payment-student">طالب علم</label>
+<select class="form-select" id="fee-payment-student" required="">
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="fee-payment-type">فیس کی قسم</label>
+<select class="form-select" id="fee-payment-type" required="">
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="fee-payment-amount">رقم</label>
+<input class="form-control" id="fee-payment-amount" required="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="fee-payment-date">تاریخ</label>
+<input class="form-control" id="fee-payment-date" required="" type="date"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="fee-payment-status">حیثیت</label>
+<select class="form-select" id="fee-payment-status" required="">
+<option value="paid">ادا شدہ</option>
+<option value="pending">زیر التواء</option>
+<option value="partial">جزوی</option>
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="fee-payment-notes">نوٹس</label>
+<textarea class="form-control" id="fee-payment-notes" rows="2"></textarea>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-primary" id="save-fee-payment" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Salaries Page -->
+<div id="salaries-page" style="display: none;">
+<h2 class="mb-4">تنخواہوں کا انتظام</h2>
+<div class="card mb-4">
+<div class="card-header d-flex justify-content-between">
+<h5>تنخواہ ادائیگی</h5>
+<button class="btn btn-sm btn-primary" id="add-salary-payment-btn">
+<i class="bi bi-plus-circle"></i> نئی ادائیگی
                             </button>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped" id="salary-payment-table">
-                                    <thead>
-                                        <tr>
-                                            <th>استاد</th>
-                                            <th>مہینہ</th>
-                                            <th>سال</th>
-                                            <th>بنیادی تنخواہ</th>
-                                            <th>الاؤنس</th>
-                                            <th>کل رقم</th>
-                                            <th>ادائیگی کی تاریخ</th>
-                                            <th>حیثیت</th>
-                                            <th>ایکشنز</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Will be filled dynamically -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>تنخواہوں کی رپورٹ</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label for="salary-report-teacher" class="form-label">استاد</label>
-                                    <select class="form-select" id="salary-report-teacher">
-                                        <option value="">تمام اساتذہ</option>
-                                        <!-- Will be filled dynamically -->
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="salary-report-year" class="form-label">سال</label>
-                                    <select class="form-select" id="salary-report-year">
-                                        <!-- Will be filled dynamically -->
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="salary-report-month" class="form-label">مہینہ</label>
-                                    <select class="form-select" id="salary-report-month">
-                                        <option value="">تمام مہینے</option>
-                                        <option value="1">جنوری</option>
-                                        <option value="2">فروری</option>
-                                        <option value="3">مارچ</option>
-                                        <option value="4">اپریل</option>
-                                        <option value="5">مئی</option>
-                                        <option value="6">جون</option>
-                                        <option value="7">جولائی</option>
-                                        <option value="8">اگست</option>
-                                        <option value="9">ستمبر</option>
-                                        <option value="10">اکتوبر</option>
-                                        <option value="11">نومبر</option>
-                                        <option value="12">دسمبر</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="salary-report-status" class="form-label">حیثیت</label>
-                                    <select class="form-select" id="salary-report-status">
-                                        <option value="">تمام</option>
-                                        <option value="paid">ادا شدہ</option>
-                                        <option value="pending">زیر التواء</option>
-                                        <option value="partial">جزوی</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <button class="btn btn-primary" id="generate-salary-report">رپورٹ جنریٹ کریں</button>
-                                <button class="btn btn-success ms-2" id="export-salary-report">ایکسپورٹ (CSV)</button>
-                                <button class="btn btn-info ms-2" id="print-salary-report">پرنٹ کریں</button>
-                            </div>
-    
-                            <div id="salary-report-container" style="display: none;">
-                                <div class="table-responsive">
-                                    <table class="table table-striped" id="salary-report-table">
-                                        <thead>
-                                            <tr>
-                                                <th>استاد</th>
-                                                <th>مہینہ</th>
-                                                <th>سال</th>
-                                                <th>بنیادی تنخواہ</th>
-                                                <th>الاؤنس</th>
-                                                <th>کل رقم</th>
-                                                <th>ادائیگی کی تاریخ</th>
-                                                <th>حیثیت</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Will be filled dynamically -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Salary Payment Modal -->
-                <div class="modal fade" id="salary-payment-modal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="salary-payment-modal-title">نئی تنخواہ ادائیگی</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="salary-payment-form">
-                                    <input type="hidden" id="salary-payment-id">
-                                    <div class="mb-3">
-                                        <label for="salary-payment-teacher" class="form-label">استاد</label>
-                                        <select class="form-select" id="salary-payment-teacher" required>
-                                            <!-- Will be filled dynamically -->
-                                        </select>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="salary-payment-month" class="form-label">مہینہ</label>
-                                            <select class="form-select" id="salary-payment-month" required>
-                                                <option value="1">جنوری</option>
-                                                <option value="2">فروری</option>
-                                                <option value="3">مارچ</option>
-                                                <option value="4">اپریل</option>
-                                                <option value="5">مئی</option>
-                                                <option value="6">جون</option>
-                                                <option value="7">جولائی</option>
-                                                <option value="8">اگست</option>
-                                                <option value="9">ستمبر</option>
-                                                <option value="10">اکتوبر</option>
-                                                <option value="11">نومبر</option>
-                                                <option value="12">دسمبر</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="salary-payment-year" class="form-label">سال</label>
-                                            <select class="form-select" id="salary-payment-year" required>
-                                                <!-- Will be filled dynamically -->
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="salary-payment-base" class="form-label">بنیادی تنخواہ</label>
-                                        <input type="number" class="form-control" id="salary-payment-base" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="salary-payment-allowance" class="form-label">الاؤنس</label>
-                                        <input type="number" class="form-control" id="salary-payment-allowance" value="0">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="salary-payment-total" class="form-label">کل رقم</label>
-                                        <input type="number" class="form-control" id="salary-payment-total" readonly>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="salary-payment-date" class="form-label">ادائیگی کی تاریخ</label>
-                                        <input type="date" class="form-control" id="salary-payment-date" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="salary-payment-status" class="form-label">حیثیت</label>
-                                        <select class="form-select" id="salary-payment-status" required>
-                                            <option value="paid">ادا شدہ</option>
-                                            <option value="pending">زیر التواء</option>
-                                            <option value="partial">جزوی</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="salary-payment-notes" class="form-label">نوٹس</label>
-                                        <textarea class="form-control" id="salary-payment-notes" rows="2"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-                                <button type="button" class="btn btn-primary" id="save-salary-payment">محفوظ کریں</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Reports Page -->
-                <div id="reports-page" style="display: none;">
-                    <h2 class="mb-4">رپورٹس</h2>
-    
-                    <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">طلبہ کی رپورٹ</h5>
-                                    <p class="card-text">طلبہ کی تفصیلی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
-                                    <a href="#" class="btn btn-primary" data-report="student">رپورٹ دیکھیں</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">حاضری کی رپورٹ</h5>
-                                    <p class="card-text">طلبہ کی حاضری کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
-                                    <a href="#" class="btn btn-primary" data-report="attendance">رپورٹ دیکھیں</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">فیس کی رپورٹ</h5>
-                                    <p class="card-text">فیس کی ادائیگی کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
-                                    <a href="#" class="btn btn-primary" data-report="fee">رپورٹ دیکھیں</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">تنخواہ کی رپورٹ</h5>
-                                    <p class="card-text">اساتذہ کی تنخواہ کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
-                                    <a href="#" class="btn btn-primary" data-report="salary">رپورٹ دیکھیں</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">اخراجات کی رپورٹ</h5>
-                                    <p class="card-text">مدرسے کے اخراجات کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
-                                    <a href="#" class="btn btn-primary" data-report="expense">رپورٹ دیکھیں</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">انوینٹری کی رپورٹ</h5>
-                                    <p class="card-text">مدرسے کی انوینٹری کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
-                                    <a href="#" class="btn btn-primary" data-report="inventory">رپورٹ دیکھیں</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <div class="card" id="report-container" style="display: none;">
-                        <div class="card-header d-flex justify-content-between">
-                            <h5 id="report-title">رپورٹ</h5>
-                            <div>
-                                <button class="btn btn-sm btn-success" id="export-report">ایکسپورٹ (CSV)</button>
-                                <button class="btn btn-sm btn-info ms-2" id="print-report">پرنٹ کریں</button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div id="report-filters" class="mb-3">
-                                <!-- Filters will be added dynamically -->
-                            </div>
-                            <div id="report-data">
-                                <!-- Report data will be added dynamically -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Inventory Page -->
-                <div id="inventory-page" style="display: none;">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>انوینٹری کا انتظام</h2>
-                        <button class="btn btn-primary" id="add-inventory-btn">
-                            <i class="bi bi-plus-circle"></i> نئی آئٹم
+</div>
+<div class="card-body">
+<div class="table-responsive">
+<table class="table table-striped" id="salary-payment-table">
+<thead>
+<tr>
+<th>استاد</th>
+<th>مہینہ</th>
+<th>سال</th>
+<th>بنیادی تنخواہ</th>
+<th>الاؤنس</th>
+<th>کل رقم</th>
+<th>ادائیگی کی تاریخ</th>
+<th>حیثیت</th>
+<th>ایکشنز</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-header">
+<h5>تنخواہوں کی رپورٹ</h5>
+</div>
+<div class="card-body">
+<div class="row mb-3">
+<div class="col-md-3">
+<label class="form-label" for="salary-report-teacher">استاد</label>
+<select class="form-select" id="salary-report-teacher">
+<option value="">تمام اساتذہ</option>
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="salary-report-year">سال</label>
+<select class="form-select" id="salary-report-year">
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="salary-report-month">مہینہ</label>
+<select class="form-select" id="salary-report-month">
+<option value="">تمام مہینے</option>
+<option value="1">جنوری</option>
+<option value="2">فروری</option>
+<option value="3">مارچ</option>
+<option value="4">اپریل</option>
+<option value="5">مئی</option>
+<option value="6">جون</option>
+<option value="7">جولائی</option>
+<option value="8">اگست</option>
+<option value="9">ستمبر</option>
+<option value="10">اکتوبر</option>
+<option value="11">نومبر</option>
+<option value="12">دسمبر</option>
+</select>
+</div>
+<div class="col-md-3">
+<label class="form-label" for="salary-report-status">حیثیت</label>
+<select class="form-select" id="salary-report-status">
+<option value="">تمام</option>
+<option value="paid">ادا شدہ</option>
+<option value="pending">زیر التواء</option>
+<option value="partial">جزوی</option>
+</select>
+</div>
+</div>
+<div class="mb-3">
+<button class="btn btn-primary" id="generate-salary-report">رپورٹ جنریٹ کریں</button>
+<button class="btn btn-success ms-2" id="export-salary-report">ایکسپورٹ (CSV)</button>
+<button class="btn btn-info ms-2" id="print-salary-report">پرنٹ کریں</button>
+</div>
+<div id="salary-report-container" style="display: none;">
+<div class="table-responsive">
+<table class="table table-striped" id="salary-report-table">
+<thead>
+<tr>
+<th>استاد</th>
+<th>مہینہ</th>
+<th>سال</th>
+<th>بنیادی تنخواہ</th>
+<th>الاؤنس</th>
+<th>کل رقم</th>
+<th>ادائیگی کی تاریخ</th>
+<th>حیثیت</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Salary Payment Modal -->
+<div class="modal fade" id="salary-payment-modal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="salary-payment-modal-title">نئی تنخواہ ادائیگی</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="salary-payment-form">
+<input id="salary-payment-id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="salary-payment-teacher">استاد</label>
+<select class="form-select" id="salary-payment-teacher" required="">
+<!-- Will be filled dynamically -->
+</select>
+</div>
+<div class="row mb-3">
+<div class="col-md-6">
+<label class="form-label" for="salary-payment-month">مہینہ</label>
+<select class="form-select" id="salary-payment-month" required="">
+<option value="1">جنوری</option>
+<option value="2">فروری</option>
+<option value="3">مارچ</option>
+<option value="4">اپریل</option>
+<option value="5">مئی</option>
+<option value="6">جون</option>
+<option value="7">جولائی</option>
+<option value="8">اگست</option>
+<option value="9">ستمبر</option>
+<option value="10">اکتوبر</option>
+<option value="11">نومبر</option>
+<option value="12">دسمبر</option>
+</select>
+</div>
+<div class="col-md-6">
+<label class="form-label" for="salary-payment-year">سال</label>
+<select class="form-select" id="salary-payment-year" required="">
+<!-- Will be filled dynamically -->
+</select>
+</div>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salary-payment-base">بنیادی تنخواہ</label>
+<input class="form-control" id="salary-payment-base" required="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salary-payment-allowance">الاؤنس</label>
+<input class="form-control" id="salary-payment-allowance" type="number" value="0"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salary-payment-total">کل رقم</label>
+<input class="form-control" id="salary-payment-total" readonly="" type="number"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salary-payment-date">ادائیگی کی تاریخ</label>
+<input class="form-control" id="salary-payment-date" required="" type="date"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salary-payment-status">حیثیت</label>
+<select class="form-select" id="salary-payment-status" required="">
+<option value="paid">ادا شدہ</option>
+<option value="pending">زیر التواء</option>
+<option value="partial">جزوی</option>
+</select>
+</div>
+<div class="mb-3">
+<label class="form-label" for="salary-payment-notes">نوٹس</label>
+<textarea class="form-control" id="salary-payment-notes" rows="2"></textarea>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-primary" id="save-salary-payment" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Reports Page -->
+<div id="reports-page" style="display: none;">
+<h2 class="mb-4">رپورٹس</h2>
+<div class="row">
+<div class="col-md-4 mb-4">
+<div class="card">
+<div class="card-body">
+<h5 class="card-title">طلبہ کی رپورٹ</h5>
+<p class="card-text">طلبہ کی تفصیلی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
+<a class="btn btn-primary" data-report="student" href="#">رپورٹ دیکھیں</a>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="card">
+<div class="card-body">
+<h5 class="card-title">حاضری کی رپورٹ</h5>
+<p class="card-text">طلبہ کی حاضری کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
+<a class="btn btn-primary" data-report="attendance" href="#">رپورٹ دیکھیں</a>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="card">
+<div class="card-body">
+<h5 class="card-title">فیس کی رپورٹ</h5>
+<p class="card-text">فیس کی ادائیگی کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
+<a class="btn btn-primary" data-report="fee" href="#">رپورٹ دیکھیں</a>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="card">
+<div class="card-body">
+<h5 class="card-title">تنخواہ کی رپورٹ</h5>
+<p class="card-text">اساتذہ کی تنخواہ کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
+<a class="btn btn-primary" data-report="salary" href="#">رپورٹ دیکھیں</a>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="card">
+<div class="card-body">
+<h5 class="card-title">اخراجات کی رپورٹ</h5>
+<p class="card-text">مدرسے کے اخراجات کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
+<a class="btn btn-primary" data-report="expense" href="#">رپورٹ دیکھیں</a>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="card">
+<div class="card-body">
+<h5 class="card-title">انوینٹری کی رپورٹ</h5>
+<p class="card-text">مدرسے کی انوینٹری کی رپورٹ جنریٹ کریں، فلٹر اور ایکسپورٹ کریں۔</p>
+<a class="btn btn-primary" data-report="inventory" href="#">رپورٹ دیکھیں</a>
+</div>
+</div>
+</div>
+</div>
+<div class="card" id="report-container" style="display: none;">
+<div class="card-header d-flex justify-content-between">
+<h5 id="report-title">رپورٹ</h5>
+<div>
+<button class="btn btn-sm btn-success" id="export-report">ایکسپورٹ (CSV)</button>
+<button class="btn btn-sm btn-info ms-2" id="print-report">پرنٹ کریں</button>
+</div>
+</div>
+<div class="card-body">
+<div class="mb-3" id="report-filters">
+<!-- Filters will be added dynamically -->
+</div>
+<div id="report-data">
+<!-- Report data will be added dynamically -->
+</div>
+</div>
+</div>
+</div>
+<!-- Inventory Page -->
+<div id="inventory-page" style="display: none;">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<h2>انوینٹری کا انتظام</h2>
+<button class="btn btn-primary" id="add-inventory-btn">
+<i class="bi bi-plus-circle"></i> نئی آئٹم
                         </button>
-                    </div>
-    
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5>انوینٹری کی فہرست</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <input type="text" class="form-control" id="inventory-search" placeholder="آئٹم کی تلاش...">
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped" id="inventory-table">
-                                    <thead>
-                                        <tr>
-                                            <th>آئی ڈی</th>
-                                            <th>آئٹم کا نام</th>
-                                            <th>زمرہ</th>
-                                            <th>تعداد</th>
-                                            <th>یونٹ</th>
-                                            <th>خریداری کی تاریخ</th>
-                                            <th>قیمت</th>
-                                            <th>ایکشنز</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Will be filled dynamically -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Inventory Modal -->
-                <div class="modal fade" id="inventory-modal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="inventory-modal-title">نئی انوینٹری آئٹم</h5>
-                                
-<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="card mb-4">
+<div class="card-header">
+<h5>انوینٹری کی فہرست</h5>
+</div>
+<div class="card-body">
+<div class="mb-3">
+<input class="form-control" id="inventory-search" placeholder="آئٹم کی تلاش..." type="text"/>
+</div>
+<div class="table-responsive">
+<table class="table table-striped" id="inventory-table">
+<thead>
+<tr>
+<th>آئی ڈی</th>
+<th>آئٹم کا نام</th>
+<th>زمرہ</th>
+<th>تعداد</th>
+<th>یونٹ</th>
+<th>خریداری کی تاریخ</th>
+<th>قیمت</th>
+<th>ایکشنز</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Inventory Modal -->
+<div class="modal fade" id="inventory-modal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="inventory-modal-title">نئی انوینٹری آئٹم</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
 </div>
 <div class="modal-body">
 <form id="inventory-form">
-<input type="hidden" id="inventory-id">
+<input id="inventory-id" type="hidden"/>
 <div class="mb-3">
-<label for="inventory-name" class="form-label">آئٹم کا نام</label>
-<input type="text" class="form-control" id="inventory-name" required>
+<label class="form-label" for="inventory-name">آئٹم کا نام</label>
+<input class="form-control" id="inventory-name" required="" type="text"/>
 </div>
 <div class="mb-3">
-<label for="inventory-category" class="form-label">زمرہ</label>
-<select class="form-select" id="inventory-category" required>
+<label class="form-label" for="inventory-category">زمرہ</label>
+<select class="form-select" id="inventory-category" required="">
 <option value="furniture">فرنیچر</option>
 <option value="stationary">سٹیشنری</option>
 <option value="electronics">الیکٹرانکس</option>
@@ -1206,178 +1170,170 @@
 </div>
 <div class="row mb-3">
 <div class="col-md-6">
-<label for="inventory-quantity" class="form-label">تعداد</label>
-<input type="number" class="form-control" id="inventory-quantity" required>
+<label class="form-label" for="inventory-quantity">تعداد</label>
+<input class="form-control" id="inventory-quantity" required="" type="number"/>
 </div>
 <div class="col-md-6">
-<label for="inventory-unit" class="form-label">یونٹ</label>
-<input type="text" class="form-control" id="inventory-unit" required>
+<label class="form-label" for="inventory-unit">یونٹ</label>
+<input class="form-control" id="inventory-unit" required="" type="text"/>
 </div>
 </div>
 <div class="row mb-3">
 <div class="col-md-6">
-<label for="inventory-purchase-date" class="form-label">خریداری کی تاریخ</label>
-<input type="date" class="form-control" id="inventory-purchase-date" required>
+<label class="form-label" for="inventory-purchase-date">خریداری کی تاریخ</label>
+<input class="form-control" id="inventory-purchase-date" required="" type="date"/>
 </div>
 <div class="col-md-6">
-<label for="inventory-price" class="form-label">قیمت</label>
-<input type="number" class="form-control" id="inventory-price" required>
+<label class="form-label" for="inventory-price">قیمت</label>
+<input class="form-control" id="inventory-price" required="" type="number"/>
 </div>
 </div>
 <div class="mb-3">
-<label for="inventory-notes" class="form-label">نوٹس</label>
+<label class="form-label" for="inventory-notes">نوٹس</label>
 <textarea class="form-control" id="inventory-notes" rows="2"></textarea>
 </div>
 </form>
 </div>
 <div class="modal-footer">
-<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-<button type="button" class="btn btn-primary" id="save-inventory">محفوظ کریں</button>
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-primary" id="save-inventory" type="button">محفوظ کریں</button>
 </div>
 </div>
 </div>
 </div>
-
-                <!-- Expenses Page -->
-                <div id="expenses-page" style="display: none;">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>اخراجات کا انتظام</h2>
-                        <button class="btn btn-primary" id="add-expense-btn">
-                            <i class="bi bi-plus-circle"></i> نیا خرچہ
+<!-- Expenses Page -->
+<div id="expenses-page" style="display: none;">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<h2>اخراجات کا انتظام</h2>
+<button class="btn btn-primary" id="add-expense-btn">
+<i class="bi bi-plus-circle"></i> نیا خرچہ
                         </button>
-                    </div>
-    
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5>اخراجات کی فہرست</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <input type="text" class="form-control" id="expense-search" placeholder="خرچہ تلاش کریں...">
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped" id="expenses-table">
-                                    <thead>
-                                        <tr>
-                                            <th>آئی ڈی</th>
-                                            <th>تفصیل</th>
-                                            <th>زمرہ</th>
-                                            <th>رقم</th>
-                                            <th>تاریخ</th>
-                                            <th>ادا کنندہ</th>
-                                            <th>ایکشنز</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Will be filled dynamically -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Expense Modal -->
-                <div class="modal fade" id="expense-modal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="expense-modal-title">نیا خرچہ</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="expense-form">
-                                    <input type="hidden" id="expense-id">
-                                    <div class="mb-3">
-                                        <label for="expense-description" class="form-label">تفصیل</label>
-                                        <input type="text" class="form-control" id="expense-description" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="expense-category" class="form-label">زمرہ</label>
-                                        <select class="form-select" id="expense-category" required>
-                                            <option value="utilities">یوٹیلٹیز</option>
-                                            <option value="maintenance">مرمت</option>
-                                            <option value="salaries">تنخواہیں</option>
-                                            <option value="stationary">سٹیشنری</option>
-                                            <option value="furniture">فرنیچر</option>
-                                            <option value="electronics">الیکٹرانکس</option>
-                                            <option value="other">دیگر</option>
-                                        </select>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="expense-amount" class="form-label">رقم</label>
-                                            <input type="number" class="form-control" id="expense-amount" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="expense-date" class="form-label">تاریخ</label>
-                                            <input type="date" class="form-control" id="expense-date" required>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="expense-paid-by" class="form-label">ادا کنندہ</label>
-                                        <input type="text" class="form-control" id="expense-paid-by" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="expense-notes" class="form-label">نوٹس</label>
-                                        <textarea class="form-control" id="expense-notes" rows="2"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
-                                <button type="button" class="btn btn-primary" id="save-expense">محفوظ کریں</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Backup and Restore Page -->
-                <div id="backup-page" style="display: none;">
-                    <h2 class="mb-4">بیک اپ اور ریسٹور</h2>
-    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5>ڈیٹا بیک اپ</h5>
-                                </div>
-                                <div class="card-body">
-                                    <p>اپنے تمام ڈیٹا کا بیک اپ لیں اور اسے اپنے کمپیوٹر پر محفوظ کریں۔</p>
-                                    <button class="btn btn-primary" id="backup-data">
-                                        <i class="bi bi-download"></i> ڈیٹا بیک اپ کریں
+</div>
+<div class="card mb-4">
+<div class="card-header">
+<h5>اخراجات کی فہرست</h5>
+</div>
+<div class="card-body">
+<div class="mb-3">
+<input class="form-control" id="expense-search" placeholder="خرچہ تلاش کریں..." type="text"/>
+</div>
+<div class="table-responsive">
+<table class="table table-striped" id="expenses-table">
+<thead>
+<tr>
+<th>آئی ڈی</th>
+<th>تفصیل</th>
+<th>زمرہ</th>
+<th>رقم</th>
+<th>تاریخ</th>
+<th>ادا کنندہ</th>
+<th>ایکشنز</th>
+</tr>
+</thead>
+<tbody>
+<!-- Will be filled dynamically -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Expense Modal -->
+<div class="modal fade" id="expense-modal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="expense-modal-title">نیا خرچہ</h5>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<form id="expense-form">
+<input id="expense-id" type="hidden"/>
+<div class="mb-3">
+<label class="form-label" for="expense-description">تفصیل</label>
+<input class="form-control" id="expense-description" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="expense-category">زمرہ</label>
+<select class="form-select" id="expense-category" required="">
+<option value="utilities">یوٹیلٹیز</option>
+<option value="maintenance">مرمت</option>
+<option value="salaries">تنخواہیں</option>
+<option value="stationary">سٹیشنری</option>
+<option value="furniture">فرنیچر</option>
+<option value="electronics">الیکٹرانکس</option>
+<option value="other">دیگر</option>
+</select>
+</div>
+<div class="row mb-3">
+<div class="col-md-6">
+<label class="form-label" for="expense-amount">رقم</label>
+<input class="form-control" id="expense-amount" required="" type="number"/>
+</div>
+<div class="col-md-6">
+<label class="form-label" for="expense-date">تاریخ</label>
+<input class="form-control" id="expense-date" required="" type="date"/>
+</div>
+</div>
+<div class="mb-3">
+<label class="form-label" for="expense-paid-by">ادا کنندہ</label>
+<input class="form-control" id="expense-paid-by" required="" type="text"/>
+</div>
+<div class="mb-3">
+<label class="form-label" for="expense-notes">نوٹس</label>
+<textarea class="form-control" id="expense-notes" rows="2"></textarea>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">منسوخ کریں</button>
+<button class="btn btn-primary" id="save-expense" type="button">محفوظ کریں</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Backup and Restore Page -->
+<div id="backup-page" style="display: none;">
+<h2 class="mb-4">بیک اپ اور ریسٹور</h2>
+<div class="row">
+<div class="col-md-6">
+<div class="card mb-4">
+<div class="card-header">
+<h5>ڈیٹا بیک اپ</h5>
+</div>
+<div class="card-body">
+<p>اپنے تمام ڈیٹا کا بیک اپ لیں اور اسے اپنے کمپیوٹر پر محفوظ کریں۔</p>
+<button class="btn btn-primary" id="backup-data">
+<i class="bi bi-download"></i> ڈیٹا بیک اپ کریں
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="col-md-6">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5>ڈیٹا ریسٹور</h5>
-                                </div>
-                                <div class="card-body">
-                                    <p>پہلے محفوظ کیا گیا بیک اپ فائل استعمال کرکے اپنا ڈیٹا ریسٹور کریں۔</p>
-                                    <div class="mb-3">
-                                        <input class="form-control" type="file" id="restore-file" accept=".json">
-                                    </div>
-                                    <button class="btn btn-danger" id="restore-data">
-                                        <i class="bi bi-upload"></i> ڈیٹا ریسٹور کریں
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="card mb-4">
+<div class="card-header">
+<h5>ڈیٹا ریسٹور</h5>
+</div>
+<div class="card-body">
+<p>پہلے محفوظ کیا گیا بیک اپ فائل استعمال کرکے اپنا ڈیٹا ریسٹور کریں۔</p>
+<div class="mb-3">
+<input accept=".json" class="form-control" id="restore-file" type="file"/>
+</div>
+<button class="btn btn-danger" id="restore-data">
+<i class="bi bi-upload"></i> ڈیٹا ریسٹور کریں
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Print Section -->
-    <div id="print-section" class="print-section"></div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Print Section -->
+<div class="print-section" id="print-section"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
         // Database initialization
         let db;
         const DB_NAME = 'DeeniMadrasaDB';
@@ -4208,5 +4164,5 @@ case 12: monthText = 'دسمبر'; break;
             }
         }
     </script>
-    </body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

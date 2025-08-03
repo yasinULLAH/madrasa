@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المدرسة</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <style>
+<html dir="rtl" lang="ur">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>نظام إدارة المدرسة</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&amp;family=Inter:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" referrerpolicy="no-referrer" rel="stylesheet">
+<style>
         /* Apply Urdu font globally, with Inter as fallback */
         body {
             font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif;
@@ -122,324 +122,313 @@
         /* Add more RTL adjustments as needed */
 
     </style>
-</head>
+</link><link href="manifest.json" rel="manifest"/></head>
 <body class="bg-gray-100">
-
-    <div id="loading-spinner" class="hidden">
-        <div class="spinner"></div>
-    </div>
-
-    <div id="notification-area"></div>
-
-    <div class="flex h-screen overflow-hidden">
-        <aside id="sidebar" class="fixed inset-y-0 right-0 z-30 w-64 bg-gray-800 text-white p-4 overflow-y-auto md:translate-x-0 sidebar-hidden">
-            <h2 class="text-2xl font-semibold mb-6 text-center">نظام المدرسة</h2>
-            <nav>
-                <ul>
-                    <li class="mb-3">
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="dashboard">
-                            <i class="fas fa-tachometer-alt mr-2"></i> لوحة التحكم
+<div class="hidden" id="loading-spinner">
+<div class="spinner"></div>
+</div>
+<div id="notification-area"></div>
+<div class="flex h-screen overflow-hidden">
+<aside class="fixed inset-y-0 right-0 z-30 w-64 bg-gray-800 text-white p-4 overflow-y-auto md:translate-x-0 sidebar-hidden" id="sidebar">
+<h2 class="text-2xl font-semibold mb-6 text-center">نظام المدرسة</h2>
+<nav>
+<ul>
+<li class="mb-3">
+<a class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="dashboard" href="#">
+<i class="fas fa-tachometer-alt mr-2"></i> لوحة التحكم
                         </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="students">
-                            <i class="fas fa-user-graduate mr-2"></i> طلباء
+</li>
+<li class="mb-3">
+<a class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="students" href="#">
+<i class="fas fa-user-graduate mr-2"></i> طلباء
                         </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="teachers">
-                            <i class="fas fa-chalkboard-teacher mr-2"></i> اساتذہ
+</li>
+<li class="mb-3">
+<a class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="teachers" href="#">
+<i class="fas fa-chalkboard-teacher mr-2"></i> اساتذہ
                         </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="classes">
-                            <i class="fas fa-school mr-2"></i> کلاسیں
+</li>
+<li class="mb-3">
+<a class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="classes" href="#">
+<i class="fas fa-school mr-2"></i> کلاسیں
                         </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="attendance">
-                            <i class="fas fa-user-check mr-2"></i> حاضری
+</li>
+<li class="mb-3">
+<a class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="attendance" href="#">
+<i class="fas fa-user-check mr-2"></i> حاضری
                         </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="fees">
-                            <i class="fas fa-money-bill-wave mr-2"></i> فیس
+</li>
+<li class="mb-3">
+<a class="flex items-center p-2 rounded hover:bg-gray-700 nav-link" data-target="fees" href="#">
+<i class="fas fa-money-bill-wave mr-2"></i> فیس
                         </a>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
-
-        <main id="main-content" class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 transition-all duration-300 ease-in-out">
-            <header class="flex justify-between items-center mb-6">
-                <button id="menu-toggle" class="text-gray-700 md:hidden">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-                <h1 id="page-title" class="text-2xl font-semibold text-gray-800">لوحة التحكم</h1>
-                <div></div>
-            </header>
-
-            <div id="content-area">
-                <section id="dashboard" class="content-section">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-600 mb-1">کل طلباء</h3>
-                                <p id="student-count" class="text-3xl font-bold text-blue-600">0</p>
-                            </div>
-                            <i class="fas fa-user-graduate text-4xl text-blue-400"></i>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-600 mb-1">کل اساتذہ</h3>
-                                <p id="teacher-count" class="text-3xl font-bold text-green-600">0</p>
-                            </div>
-                            <i class="fas fa-chalkboard-teacher text-4xl text-green-400"></i>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
-                             <div>
-                                <h3 class="text-lg font-semibold text-gray-600 mb-1">کل کلاسیں</h3>
-                                <p id="class-count" class="text-3xl font-bold text-purple-600">0</p>
-                            </div>
-                            <i class="fas fa-school text-4xl text-purple-400"></i>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="students" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold">طلباء کا انتظام</h2>
-                        <button id="add-student-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center">
-                            <i class="fas fa-plus mr-2"></i> نیا طالب علم شامل کریں
+</li>
+</ul>
+</nav>
+</aside>
+<main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 transition-all duration-300 ease-in-out" id="main-content">
+<header class="flex justify-between items-center mb-6">
+<button class="text-gray-700 md:hidden" id="menu-toggle">
+<i class="fas fa-bars text-2xl"></i>
+</button>
+<h1 class="text-2xl font-semibold text-gray-800" id="page-title">لوحة التحكم</h1>
+<div></div>
+</header>
+<div id="content-area">
+<section class="content-section" id="dashboard">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+<div>
+<h3 class="text-lg font-semibold text-gray-600 mb-1">کل طلباء</h3>
+<p class="text-3xl font-bold text-blue-600" id="student-count">0</p>
+</div>
+<i class="fas fa-user-graduate text-4xl text-blue-400"></i>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+<div>
+<h3 class="text-lg font-semibold text-gray-600 mb-1">کل اساتذہ</h3>
+<p class="text-3xl font-bold text-green-600" id="teacher-count">0</p>
+</div>
+<i class="fas fa-chalkboard-teacher text-4xl text-green-400"></i>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+<div>
+<h3 class="text-lg font-semibold text-gray-600 mb-1">کل کلاسیں</h3>
+<p class="text-3xl font-bold text-purple-600" id="class-count">0</p>
+</div>
+<i class="fas fa-school text-4xl text-purple-400"></i>
+</div>
+</div>
+</section>
+<section class="content-section hidden bg-white p-6 rounded-lg shadow-md" id="students">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-semibold">طلباء کا انتظام</h2>
+<button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center" id="add-student-btn">
+<i class="fas fa-plus mr-2"></i> نیا طالب علم شامل کریں
                         </button>
-                    </div>
-                     <div class="mb-4">
-                        <input type="text" id="student-search" placeholder="نام یا ID سے تلاش کریں..." class="w-full p-2 border border-gray-300 rounded">
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white">
-                            <thead class="bg-gray-200">
-                                <tr>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">نام</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">والد کا نام</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">کلاس</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">رابطہ نمبر</th>
-                                    <th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
-                                </tr>
-                            </thead>
-                            <tbody id="student-table-body" class="text-gray-700">
-                                <tr><td colspan="6" class="text-center py-4">کوئی طلباء نہیں ملے</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="student-form-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40">
-                        <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
-                            <form id="student-form" class="space-y-4">
-                                <h3 id="student-form-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">طالب علم شامل کریں/ترمیم کریں</h3>
-                                <input type="hidden" id="student-id">
-                                <div>
-                                    <label for="student-name" class="block text-sm font-medium text-gray-700">نام</label>
-                                    <input type="text" id="student-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <div>
-                                    <label for="student-father-name" class="block text-sm font-medium text-gray-700">والد کا نام</label>
-                                    <input type="text" id="student-father-name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <div>
-                                    <label for="student-class" class="block text-sm font-medium text-gray-700">کلاس</label>
-                                    <select id="student-class" required class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                        <option value="">کلاس منتخب کریں</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="student-contact" class="block text-sm font-medium text-gray-700">رابطہ نمبر</label>
-                                    <input type="tel" id="student-contact" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <div>
-                                    <label for="student-address" class="block text-sm font-medium text-gray-700">پتہ</label>
-                                    <textarea id="student-address" rows="2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                                </div>
-                                <div class="flex justify-end space-x-reverse space-x-2 pt-4">
-                                    <button type="button" id="cancel-student-form" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">منسوخ کریں</button>
-                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">محفوظ کریں</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="teachers" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold">اساتذہ کا انتظام</h2>
-                        <button id="add-teacher-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center">
-                            <i class="fas fa-plus mr-2"></i> نیا استاد شامل کریں
+</div>
+<div class="mb-4">
+<input class="w-full p-2 border border-gray-300 rounded" id="student-search" placeholder="نام یا ID سے تلاش کریں..." type="text"/>
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full bg-white">
+<thead class="bg-gray-200">
+<tr>
+<th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">نام</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">والد کا نام</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">کلاس</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">رابطہ نمبر</th>
+<th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
+</tr>
+</thead>
+<tbody class="text-gray-700" id="student-table-body">
+<tr><td class="text-center py-4" colspan="6">کوئی طلباء نہیں ملے</td></tr>
+</tbody>
+</table>
+</div>
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40" id="student-form-modal">
+<div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+<form class="space-y-4" id="student-form">
+<h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="student-form-title">طالب علم شامل کریں/ترمیم کریں</h3>
+<input id="student-id" type="hidden"/>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="student-name">نام</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="student-name" required="" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="student-father-name">والد کا نام</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="student-father-name" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="student-class">کلاس</label>
+<select class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="student-class" required="">
+<option value="">کلاس منتخب کریں</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="student-contact">رابطہ نمبر</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="student-contact" type="tel"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="student-address">پتہ</label>
+<textarea class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="student-address" rows="2"></textarea>
+</div>
+<div class="flex justify-end space-x-reverse space-x-2 pt-4">
+<button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" id="cancel-student-form" type="button">منسوخ کریں</button>
+<button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" type="submit">محفوظ کریں</button>
+</div>
+</form>
+</div>
+</div>
+</section>
+<section class="content-section hidden bg-white p-6 rounded-lg shadow-md" id="teachers">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-semibold">اساتذہ کا انتظام</h2>
+<button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center" id="add-teacher-btn">
+<i class="fas fa-plus mr-2"></i> نیا استاد شامل کریں
                         </button>
-                    </div>
-                     <div class="mb-4">
-                        <input type="text" id="teacher-search" placeholder="نام یا ID سے تلاش کریں..." class="w-full p-2 border border-gray-300 rounded">
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white">
-                            <thead class="bg-gray-200">
-                                <tr>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">نام</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">مضمون</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">رابطہ نمبر</th>
-                                    <th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
-                                </tr>
-                            </thead>
-                            <tbody id="teacher-table-body" class="text-gray-700">
-                                <tr><td colspan="5" class="text-center py-4">کوئی اساتذہ نہیں ملے</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="teacher-form-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40">
-                         <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
-                            <form id="teacher-form" class="space-y-4">
-                                <h3 id="teacher-form-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">استاد شامل کریں/ترمیم کریں</h3>
-                                <input type="hidden" id="teacher-id">
-                                <div>
-                                    <label for="teacher-name" class="block text-sm font-medium text-gray-700">نام</label>
-                                    <input type="text" id="teacher-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <div>
-                                    <label for="teacher-subject" class="block text-sm font-medium text-gray-700">مضمون</label>
-                                    <input type="text" id="teacher-subject" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <div>
-                                    <label for="teacher-contact" class="block text-sm font-medium text-gray-700">رابطہ نمبر</label>
-                                    <input type="tel" id="teacher-contact" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <div>
-                                    <label for="teacher-address" class="block text-sm font-medium text-gray-700">پتہ</label>
-                                    <textarea id="teacher-address" rows="2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                                </div>
-                                <div class="flex justify-end space-x-reverse space-x-2 pt-4">
-                                    <button type="button" id="cancel-teacher-form" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">منسوخ کریں</button>
-                                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">محفوظ کریں</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="classes" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
-                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold">کلاسوں کا انتظام</h2>
-                        <button id="add-class-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded flex items-center">
-                            <i class="fas fa-plus mr-2"></i> نئی کلاس شامل کریں
+</div>
+<div class="mb-4">
+<input class="w-full p-2 border border-gray-300 rounded" id="teacher-search" placeholder="نام یا ID سے تلاش کریں..." type="text"/>
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full bg-white">
+<thead class="bg-gray-200">
+<tr>
+<th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">نام</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">مضمون</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">رابطہ نمبر</th>
+<th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
+</tr>
+</thead>
+<tbody class="text-gray-700" id="teacher-table-body">
+<tr><td class="text-center py-4" colspan="5">کوئی اساتذہ نہیں ملے</td></tr>
+</tbody>
+</table>
+</div>
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40" id="teacher-form-modal">
+<div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+<form class="space-y-4" id="teacher-form">
+<h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="teacher-form-title">استاد شامل کریں/ترمیم کریں</h3>
+<input id="teacher-id" type="hidden"/>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="teacher-name">نام</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="teacher-name" required="" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="teacher-subject">مضمون</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="teacher-subject" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="teacher-contact">رابطہ نمبر</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="teacher-contact" type="tel"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="teacher-address">پتہ</label>
+<textarea class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="teacher-address" rows="2"></textarea>
+</div>
+<div class="flex justify-end space-x-reverse space-x-2 pt-4">
+<button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" id="cancel-teacher-form" type="button">منسوخ کریں</button>
+<button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded" type="submit">محفوظ کریں</button>
+</div>
+</form>
+</div>
+</div>
+</section>
+<section class="content-section hidden bg-white p-6 rounded-lg shadow-md" id="classes">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xl font-semibold">کلاسوں کا انتظام</h2>
+<button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded flex items-center" id="add-class-btn">
+<i class="fas fa-plus mr-2"></i> نئی کلاس شامل کریں
                         </button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white">
-                            <thead class="bg-gray-200">
-                                <tr>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">کلاس کا نام</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">استاد</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">طلباء کی تعداد</th>
-                                    <th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
-                                </tr>
-                            </thead>
-                            <tbody id="class-table-body" class="text-gray-700">
-                                <tr><td colspan="5" class="text-center py-4">کوئی کلاسیں نہیں ملیں</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                     <div id="class-form-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40">
-                         <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
-                            <form id="class-form" class="space-y-4">
-                                <h3 id="class-form-title" class="text-lg leading-6 font-medium text-gray-900 mb-4">کلاس شامل کریں/ترمیم کریں</h3>
-                                <input type="hidden" id="class-id">
-                                <div>
-                                    <label for="class-name" class="block text-sm font-medium text-gray-700">کلاس کا نام</label>
-                                    <input type="text" id="class-name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <div>
-                                    <label for="class-teacher" class="block text-sm font-medium text-gray-700">استاد منتخب کریں</label>
-                                    <select id="class-teacher" required class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                        <option value="">استاد منتخب کریں</option>
-                                        </select>
-                                </div>
-                                <div class="flex justify-end space-x-reverse space-x-2 pt-4">
-                                    <button type="button" id="cancel-class-form" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">منسوخ کریں</button>
-                                    <button type="submit" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">محفوظ کریں</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="attendance" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4">حاضری کا انتظام</h2>
-                     <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="attendance-class-select" class="block text-sm font-medium text-gray-700">کلاس منتخب کریں</label>
-                            <select id="attendance-class-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">کلاس منتخب کریں</option>
-                                </select>
-                        </div>
-                         <div>
-                            <label for="attendance-date" class="block text-sm font-medium text-gray-700">تاریخ</label>
-                            <input type="date" id="attendance-date" value="" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                    </div>
-                    <div id="attendance-student-list" class="mt-4">
-                        <p class="text-gray-500">حاضری لینے کے لیے کلاس اور تاریخ منتخب کریں۔</p>
-                    </div>
-                     <div class="mt-6 flex justify-end">
-                         <button id="save-attendance-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded hidden">حاضری محفوظ کریں</button>
-                     </div>
-                </section>
-
-                <section id="fees" class="content-section hidden bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4">فیس کا انتظام</h2>
-                     <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                         <div>
-                             <label for="fee-student-select" class="block text-sm font-medium text-gray-700">طالب علم منتخب کریں</label>
-                             <select id="fee-student-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                 <option value="">طالب علم منتخب کریں</option>
-                                 </select>
-                         </div>
-                         <div>
-                             <label for="fee-amount" class="block text-sm font-medium text-gray-700">رقم</label>
-                             <input type="number" id="fee-amount" placeholder="رقم درج کریں" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                         </div>
-                         <div>
-                             <label for="fee-date" class="block text-sm font-medium text-gray-700">تاریخ</label>
-                             <input type="date" id="fee-date" value="" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                         </div>
-                     </div>
-                     <div class="flex justify-end mb-6">
-                         <button id="add-fee-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded flex items-center">
-                             <i class="fas fa-plus mr-2"></i> فیس شامل کریں
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full bg-white">
+<thead class="bg-gray-200">
+<tr>
+<th class="py-3 px-4 text-right font-semibold text-sm">ID</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">کلاس کا نام</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">استاد</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">طلباء کی تعداد</th>
+<th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
+</tr>
+</thead>
+<tbody class="text-gray-700" id="class-table-body">
+<tr><td class="text-center py-4" colspan="5">کوئی کلاسیں نہیں ملیں</td></tr>
+</tbody>
+</table>
+</div>
+<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden z-40" id="class-form-modal">
+<div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+<form class="space-y-4" id="class-form">
+<h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="class-form-title">کلاس شامل کریں/ترمیم کریں</h3>
+<input id="class-id" type="hidden"/>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="class-name">کلاس کا نام</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="class-name" required="" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="class-teacher">استاد منتخب کریں</label>
+<select class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="class-teacher" required="">
+<option value="">استاد منتخب کریں</option>
+</select>
+</div>
+<div class="flex justify-end space-x-reverse space-x-2 pt-4">
+<button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" id="cancel-class-form" type="button">منسوخ کریں</button>
+<button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded" type="submit">محفوظ کریں</button>
+</div>
+</form>
+</div>
+</div>
+</section>
+<section class="content-section hidden bg-white p-6 rounded-lg shadow-md" id="attendance">
+<h2 class="text-xl font-semibold mb-4">حاضری کا انتظام</h2>
+<div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-medium text-gray-700" for="attendance-class-select">کلاس منتخب کریں</label>
+<select class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="attendance-class-select">
+<option value="">کلاس منتخب کریں</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="attendance-date">تاریخ</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="attendance-date" type="date" value=""/>
+</div>
+</div>
+<div class="mt-4" id="attendance-student-list">
+<p class="text-gray-500">حاضری لینے کے لیے کلاس اور تاریخ منتخب کریں۔</p>
+</div>
+<div class="mt-6 flex justify-end">
+<button class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded hidden" id="save-attendance-btn">حاضری محفوظ کریں</button>
+</div>
+</section>
+<section class="content-section hidden bg-white p-6 rounded-lg shadow-md" id="fees">
+<h2 class="text-xl font-semibold mb-4">فیس کا انتظام</h2>
+<div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div>
+<label class="block text-sm font-medium text-gray-700" for="fee-student-select">طالب علم منتخب کریں</label>
+<select class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="fee-student-select">
+<option value="">طالب علم منتخب کریں</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="fee-amount">رقم</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="fee-amount" placeholder="رقم درج کریں" type="number"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700" for="fee-date">تاریخ</label>
+<input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" id="fee-date" type="date" value=""/>
+</div>
+</div>
+<div class="flex justify-end mb-6">
+<button class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded flex items-center" id="add-fee-btn">
+<i class="fas fa-plus mr-2"></i> فیس شامل کریں
                          </button>
-                     </div>
-                     <h3 class="text-lg font-semibold mb-2">فیس کی تاریخ</h3>
-                      <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white">
-                            <thead class="bg-gray-200">
-                                <tr>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">طالب علم ID</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">طالب علم کا نام</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">رقم</th>
-                                    <th class="py-3 px-4 text-right font-semibold text-sm">تاریخ</th>
-                                    <th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fee-table-body" class="text-gray-700">
-                                <tr><td colspan="5" class="text-center py-4">کوئی فیس ریکارڈ نہیں ملا</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-            </div>
-        </main>
-    </div>
-
-    <script>
+</div>
+<h3 class="text-lg font-semibold mb-2">فیس کی تاریخ</h3>
+<div class="overflow-x-auto">
+<table class="min-w-full bg-white">
+<thead class="bg-gray-200">
+<tr>
+<th class="py-3 px-4 text-right font-semibold text-sm">طالب علم ID</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">طالب علم کا نام</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">رقم</th>
+<th class="py-3 px-4 text-right font-semibold text-sm">تاریخ</th>
+<th class="py-3 px-4 text-center font-semibold text-sm">اعمال</th>
+</tr>
+</thead>
+<tbody class="text-gray-700" id="fee-table-body">
+<tr><td class="text-center py-4" colspan="5">کوئی فیس ریکارڈ نہیں ملا</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</main>
+</div>
+<script>
         // --- Constants ---
         const DB_NAME = 'MadrasaDB';
         const DB_VERSION = 1;
@@ -1717,6 +1706,5 @@
         });
 
     </script>
-
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

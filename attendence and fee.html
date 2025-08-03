@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+
+<html dir="rtl" lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فیس اور تنخواہ کا نظام</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>فیس اور تنخواہ کا نظام</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style>
         body {
             font-family: 'Noto Nastaliq Urdu', 'Gill Sans', sans-serif;
             direction: rtl;
@@ -150,171 +151,162 @@
             }
         }
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-
 <div class="container">
-    <h1>فیس اور تنخواہ کا نظام</h1>
-    <nav>
-        <button onclick="showModule('dashboard')" class="active">ڈیش بورڈ</button>
-        <button onclick="showModule('salary')">اسٹاف کی تنخواہ</button>
-        <button onclick="showModule('fee')">طلباء کی فیس</button>
-        <button onclick="showModule('settings')">سیٹنگز اور ٹولز</button>
-    </nav>
-
-    <div id="dashboard" class="module active">
-        <h2>ڈیش بورڈ</h2>
-        <div class="form-grid">
-            <div>
-                <label for="dashStartDate">شروع تاریخ</label>
-                <input type="date" id="dashStartDate">
-            </div>
-            <div>
-                <label for="dashEndDate">اختتامی تاریخ</label>
-                <input type="date" id="dashEndDate">
-            </div>
-            <div>
-                <button onclick="loadDashboard()" style="width: 100%; margin-top: 35px;">رپورٹ دیکھیں</button>
-            </div>
-        </div>
-        <div class="dashboard-grid" style="margin-top: 20px;">
-            <div class="stat-card income">
-                <h4>کل آمدنی (فیس)</h4>
-                <p id="totalIncome">0</p>
-            </div>
-            <div class="stat-card expense">
-                <h4>کل اخراجات (تنخواہ)</h4>
-                <p id="totalExpense">0</p>
-            </div>
-            <div class="stat-card balance">
-                <h4>کل بیلنس</h4>
-                <p id="totalBalance">0</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="salary" class="module">
-        <h2>اسٹاف تنخواہ کا انتظام</h2>
-        <div class="grid-container">
-            <div class="form-panel">
-                <h3>تنخواہ کی ادائیگی</h3>
-                <label for="salaryStaffSelect">اسٹاف منتخب کریں</label>
-                <select id="salaryStaffSelect" onchange="handleStaffChange()"></select>
-
-                <form id="salaryPaymentForm">
-                    <label for="salaryForMonth">مہینہ</label>
-                    <input type="month" id="salaryForMonth" onchange="updateSalaryDetails()" required>
-                    <label for="salaryPaidAmount">ادا شدہ رقم</label>
-                    <input type="number" id="salaryPaidAmount" required>
-                    <label for="salaryBonus">بونس</label>
-                    <input type="number" id="salaryBonus" value="0">
-                    <label for="salaryDeduction">کٹوتی</label>
-                    <input type="number" id="salaryDeduction" value="0">
-                    <label for="salaryDate">تاریخ</label>
-                    <input type="date" id="salaryDate" required>
-                    <label for="salaryRemarks">ریمارکس</label>
-                    <textarea id="salaryRemarks" rows="2"></textarea>
-                    <button type="submit">ادائیگی محفوظ کریں</button>
-                </form>
-            </div>
-            <div class="history-panel">
-                <h3>ادائیگی کی تاریخ</h3>
-                <div id="staffDetails" style="margin-bottom: 15px;"></div>
-                <table id="salaryHistoryTable">
-                    <thead>
-                        <tr>
-                            <th>مہینہ</th>
-                            <th>تاریخ</th>
-                            <th>ادا شدہ رقم</th>
-                            <th>ریمارکس</th>
-                            <th>عمل</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="fee" class="module">
-        <h2>طلباء کی فیس کا انتظام</h2>
-        <div class="grid-container">
-            <div class="form-panel">
-                <h3>فیس وصولی</h3>
-                <div class="form-grid">
-                     <div>
-                        <label for="feeClassFilter">کلاس فلٹر</label>
-                        <select id="feeClassFilter" onchange="loadStudentsForFee()"></select>
-                    </div>
-                    <div>
-                        <label for="feeStudentSelect">طالب علم منتخب کریں</label>
-                        <select id="feeStudentSelect" onchange="handleStudentChange()"></select>
-                    </div>
-                </div>
-                <form id="feeCollectionForm">
-                    <label for="feeForMonth">مہینہ</label>
-                    <input type="month" id="feeForMonth" onchange="updateFeeDetails()" required>
-                    <label for="feePaidAmount">ادا شدہ رقم</label>
-                    <input type="number" id="feePaidAmount" required>
-                    <label for="feeDiscount">رعایت</label>
-                    <input type="number" id="feeDiscount" value="0">
-                    <label for="feeDate">تاریخ</label>
-                    <input type="date" id="feeDate" required>
-                    <label for="feeRemarks">ریمارکس</label>
-                    <textarea id="feeRemarks" rows="2"></textarea>
-                    <button type="submit">فیس وصول کریں</button>
-                </form>
-            </div>
-            <div class="history-panel">
-                <h3>فیس کی تاریخ</h3>
-                <div id="studentDetails" style="margin-bottom: 15px;"></div>
-                <table id="feeHistoryTable">
-                    <thead>
-                        <tr>
-                            <th>مہینہ</th>
-                            <th>تاریخ</th>
-                            <th>واجب الادا</th>
-                            <th>ادا شدہ</th>
-                            <th>بقایا</th>
-                            <th>عمل</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="settings" class="module">
-        <h2>سیٹنگز اور ٹولز</h2>
-        <h3>ادارہ کی معلومات</h3>
-        <div class="form-grid">
-            <div>
-                <label for="instituteName">ادارہ کا نام</label>
-                <input type="text" id="instituteName">
-            </div>
-            <div>
-                <label for="instituteContact">رابطہ نمبر</label>
-                <input type="text" id="instituteContact">
-            </div>
-            <div style="grid-column: 1 / -1;">
-                <label for="instituteAddress">پتہ</label>
-                <input type="text" id="instituteAddress">
-            </div>
-        </div>
-        <button onclick="saveInstituteSettings()">سیٹنگز محفوظ کریں</button>
-
-        <h3 style="margin-top: 30px;">ڈیٹا مینجمنٹ</h3>
-        <p>یہ ٹولز وہی ہیں جو آپ کی مرکزی ایپ میں ہیں اور اسی ڈیٹا پر کام کرتے ہیں۔</p>
-        <button onclick="backupData()">ڈیٹا بیک اپ کریں (JSON)</button>
-        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
-        <button onclick="document.getElementById('importFile').click()">ڈیٹا امپورٹ کریں (JSON)</button>
-    </div>
+<h1>فیس اور تنخواہ کا نظام</h1>
+<nav>
+<button class="active" onclick="showModule('dashboard')">ڈیش بورڈ</button>
+<button onclick="showModule('salary')">اسٹاف کی تنخواہ</button>
+<button onclick="showModule('fee')">طلباء کی فیس</button>
+<button onclick="showModule('settings')">سیٹنگز اور ٹولز</button>
+</nav>
+<div class="module active" id="dashboard">
+<h2>ڈیش بورڈ</h2>
+<div class="form-grid">
+<div>
+<label for="dashStartDate">شروع تاریخ</label>
+<input id="dashStartDate" type="date"/>
 </div>
-
-<div id="salarySlip" class="printable-slip"></div>
-<div id="feeReceipt" class="printable-slip"></div>
-
+<div>
+<label for="dashEndDate">اختتامی تاریخ</label>
+<input id="dashEndDate" type="date"/>
+</div>
+<div>
+<button onclick="loadDashboard()" style="width: 100%; margin-top: 35px;">رپورٹ دیکھیں</button>
+</div>
+</div>
+<div class="dashboard-grid" style="margin-top: 20px;">
+<div class="stat-card income">
+<h4>کل آمدنی (فیس)</h4>
+<p id="totalIncome">0</p>
+</div>
+<div class="stat-card expense">
+<h4>کل اخراجات (تنخواہ)</h4>
+<p id="totalExpense">0</p>
+</div>
+<div class="stat-card balance">
+<h4>کل بیلنس</h4>
+<p id="totalBalance">0</p>
+</div>
+</div>
+</div>
+<div class="module" id="salary">
+<h2>اسٹاف تنخواہ کا انتظام</h2>
+<div class="grid-container">
+<div class="form-panel">
+<h3>تنخواہ کی ادائیگی</h3>
+<label for="salaryStaffSelect">اسٹاف منتخب کریں</label>
+<select id="salaryStaffSelect" onchange="handleStaffChange()"></select>
+<form id="salaryPaymentForm">
+<label for="salaryForMonth">مہینہ</label>
+<input id="salaryForMonth" onchange="updateSalaryDetails()" required="" type="month"/>
+<label for="salaryPaidAmount">ادا شدہ رقم</label>
+<input id="salaryPaidAmount" required="" type="number"/>
+<label for="salaryBonus">بونس</label>
+<input id="salaryBonus" type="number" value="0"/>
+<label for="salaryDeduction">کٹوتی</label>
+<input id="salaryDeduction" type="number" value="0"/>
+<label for="salaryDate">تاریخ</label>
+<input id="salaryDate" required="" type="date"/>
+<label for="salaryRemarks">ریمارکس</label>
+<textarea id="salaryRemarks" rows="2"></textarea>
+<button type="submit">ادائیگی محفوظ کریں</button>
+</form>
+</div>
+<div class="history-panel">
+<h3>ادائیگی کی تاریخ</h3>
+<div id="staffDetails" style="margin-bottom: 15px;"></div>
+<table id="salaryHistoryTable">
+<thead>
+<tr>
+<th>مہینہ</th>
+<th>تاریخ</th>
+<th>ادا شدہ رقم</th>
+<th>ریمارکس</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="module" id="fee">
+<h2>طلباء کی فیس کا انتظام</h2>
+<div class="grid-container">
+<div class="form-panel">
+<h3>فیس وصولی</h3>
+<div class="form-grid">
+<div>
+<label for="feeClassFilter">کلاس فلٹر</label>
+<select id="feeClassFilter" onchange="loadStudentsForFee()"></select>
+</div>
+<div>
+<label for="feeStudentSelect">طالب علم منتخب کریں</label>
+<select id="feeStudentSelect" onchange="handleStudentChange()"></select>
+</div>
+</div>
+<form id="feeCollectionForm">
+<label for="feeForMonth">مہینہ</label>
+<input id="feeForMonth" onchange="updateFeeDetails()" required="" type="month"/>
+<label for="feePaidAmount">ادا شدہ رقم</label>
+<input id="feePaidAmount" required="" type="number"/>
+<label for="feeDiscount">رعایت</label>
+<input id="feeDiscount" type="number" value="0"/>
+<label for="feeDate">تاریخ</label>
+<input id="feeDate" required="" type="date"/>
+<label for="feeRemarks">ریمارکس</label>
+<textarea id="feeRemarks" rows="2"></textarea>
+<button type="submit">فیس وصول کریں</button>
+</form>
+</div>
+<div class="history-panel">
+<h3>فیس کی تاریخ</h3>
+<div id="studentDetails" style="margin-bottom: 15px;"></div>
+<table id="feeHistoryTable">
+<thead>
+<tr>
+<th>مہینہ</th>
+<th>تاریخ</th>
+<th>واجب الادا</th>
+<th>ادا شدہ</th>
+<th>بقایا</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="module" id="settings">
+<h2>سیٹنگز اور ٹولز</h2>
+<h3>ادارہ کی معلومات</h3>
+<div class="form-grid">
+<div>
+<label for="instituteName">ادارہ کا نام</label>
+<input id="instituteName" type="text"/>
+</div>
+<div>
+<label for="instituteContact">رابطہ نمبر</label>
+<input id="instituteContact" type="text"/>
+</div>
+<div style="grid-column: 1 / -1;">
+<label for="instituteAddress">پتہ</label>
+<input id="instituteAddress" type="text"/>
+</div>
+</div>
+<button onclick="saveInstituteSettings()">سیٹنگز محفوظ کریں</button>
+<h3 style="margin-top: 30px;">ڈیٹا مینجمنٹ</h3>
+<p>یہ ٹولز وہی ہیں جو آپ کی مرکزی ایپ میں ہیں اور اسی ڈیٹا پر کام کرتے ہیں۔</p>
+<button onclick="backupData()">ڈیٹا بیک اپ کریں (JSON)</button>
+<input accept=".json" id="importFile" onchange="importData(event)" style="display: none;" type="file"/>
+<button onclick="document.getElementById('importFile').click()">ڈیٹا امپورٹ کریں (JSON)</button>
+</div>
+</div>
+<div class="printable-slip" id="salarySlip"></div>
+<div class="printable-slip" id="feeReceipt"></div>
 <script>
     const DB_NAME = 'SchoolManagementDB';
     let db;
@@ -728,5 +720,5 @@
         }
     });
 </script>
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

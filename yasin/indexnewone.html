@@ -942,7 +942,7 @@
 <script src="qrcode.min.js"></script>
 <script src="jszip.min.js"></script>
 <link href="favicon.svg" rel="icon" type="image/svg+xml"/>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
 <div class="modal" id="combined-message-modal">
 <div class="modal-content" style="max-width: 600px;">
@@ -11707,7 +11707,7 @@
             });
         })(); 
     </script>
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>
 <script>
     function loadScriptsAndInitialize() {

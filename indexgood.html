@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+
+<html dir="rtl" lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدرسہ انتظامی نظام</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مدرسہ انتظامی نظام</title>
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
 
         :root {
@@ -138,231 +139,215 @@
              th, td { padding: 5px; }
         }
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-
-    <div class="container">
-        <h1>مدرسہ انتظامی نظام</h1>
-
-        <div id="madrasahHeaderPrint">
-             <img id="logoPreviewPrint" src="" alt="مدرسہ کا لوگو">
-             <h2 id="headerNamePrint"></h2>
-             <p id="headerAddressPrint"></p>
-             <p id="headerPhonePrint"></p>
-        </div>
-
-        <div class="tabs">
-            <button class="tab-button active" onclick="openTab(event, 'settings')">مدرسہ سیٹنگز</button>
-            <button class="tab-button" onclick="openTab(event, 'students')">طلباء کا اندراج</button>
-            <button class="tab-button" onclick="openTab(event, 'teachers')">اساتذہ کا اندراج</button>
-            <button class="tab-button" onclick="openTab(event, 'classes')">کلاسز و مضامین</button>
-            <button class="tab-button" onclick="openTab(event, 'attendance')">حاضری نظام</button>
-            <button class="tab-button" onclick="openTab(event, 'results')">نتائج کا ریکارڈ</button>
-            <button class="tab-button" onclick="openTab(event, 'fees')">فیس سسٹم</button>
-            <button class="tab-button" onclick="openTab(event, 'finance')">مدرسہ کا مالی ریکارڈ</button>
-            <button class="tab-button" onclick="openTab(event, 'reports')">رپورٹس</button>
-            <button class="tab-button" onclick="openTab(event, 'data')">ڈیٹا مینجمنٹ</button>
-        </div>
-
-        <div id="settings" class="tab-content active">
-            <h2>مدرسہ سیٹنگز</h2>
-            <form id="settingsForm">
-                <div class="form-group">
-                    <label for="madrasahName">مدرسہ کا نام:</label>
-                    <input type="text" id="madrasahName" required>
-                </div>
-                <div class="form-group">
-                    <label for="madrasahAddress">پتہ:</label>
-                    <textarea id="madrasahAddress" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="madrasahPhone">فون نمبر:</label>
-                    <input type="tel" id="madrasahPhone">
-                </div>
-                <div class="form-group">
-                    <label for="madrasahLogo">مہر/لوگو اپ لوڈ:</label>
-                    <input type="file" id="madrasahLogo" accept="image/*">
-                     <img id="logoPreview" src="" alt="لوگو پریویو">
-                </div>
-                <button type="submit" class="primary">سیٹنگز محفوظ کریں</button>
-            </form>
-
-            <h3>ہیڈر پریویو برائے پرنٹ</h3>
-            <div id="madrasahHeaderPreview">
-                 <img id="logoPreviewHeader" src="" alt="">
-                 <h3 id="headerNamePreview" style="border: none; margin-bottom: 5px;"></h3>
-                 <p id="headerAddressPreview" style="margin-bottom: 5px;"></p>
-                 <p id="headerPhonePreview"></p>
-            </div>
-        </div>
-
-        <div id="students" class="tab-content">
-            <h2>طلباء کا اندراج</h2>
-            <form id="studentForm">
-                 <input type="hidden" id="studentId">
-                <div class="form-group"><label for="studentName">نام:</label><input type="text" id="studentName" required></div>
-                <div class="form-group"><label for="fatherName">والد کا نام:</label><input type="text" id="fatherName" required></div>
-                <div class="form-group"><label for="studentClass">کلاس:</label><select id="studentClass" required><option value="">منتخب کریں</option></select></div>
-                <div class="form-group"><label for="admissionNo">داخلہ نمبر:</label><input type="text" id="admissionNo" required></div>
-                <div class="form-group"><label for="admissionDate">داخلہ تاریخ:</label><input type="date" id="admissionDate" required></div>
-                 <h3>پتہ اور رابطہ معلومات</h3>
-                 <div class="form-group"><label for="studentAddress">مکمل پتہ:</label><textarea id="studentAddress"></textarea></div>
-                 <div class="form-group"><label for="studentPhone">رابطہ نمبر:</label><input type="tel" id="studentPhone"></div>
-                <button type="submit" class="primary">طالب علم شامل کریں / اپ ڈیٹ کریں</button>
-                <button type="button" onclick="resetStudentForm()">نیا اندراج</button>
-            </form>
-            <h3>داخل طلباء کی فہرست</h3>
-            <table id="studentsTable"><thead><tr><th>داخلہ نمبر</th><th>نام</th><th>والد کا نام</th><th>کلاس</th><th>داخلہ تاریخ</th><th>عمل</th></tr></thead><tbody></tbody></table>
-        </div>
-
-        <div id="teachers" class="tab-content">
-            <h2>اساتذہ کا اندراج</h2>
-             <form id="teacherForm">
-                 <input type="hidden" id="teacherId">
-                <div class="form-group"><label for="teacherName">نام:</label><input type="text" id="teacherName" required></div>
-                <div class="form-group"><label for="teacherSubjects">مضامین:</label><input type="text" id="teacherSubjects" placeholder="مثال: قرآن، حدیث، فقہ"></div>
-                <div class="form-group"><label for="teacherMobile">موبائل نمبر:</label><input type="tel" id="teacherMobile" required></div>
-                <div class="form-group"><label for="teacherSalary">طے شدہ تنخواہ:</label><input type="number" id="teacherSalary" min="0"></div>
-                <div class="form-group"><label for="appointmentDate">تقرری تاریخ:</label><input type="date" id="appointmentDate" required></div>
-                <button type="submit" class="primary">استاد شامل کریں / اپ ڈیٹ کریں</button>
-                <button type="button" onclick="resetTeacherForm()">نیا اندراج</button>
-            </form>
-            <h3>اساتذہ کی فہرست</h3>
-             <table id="teachersTable"><thead><tr><th>نام</th><th>مضامین</th><th>موبائل نمبر</th><th>طے شدہ تنخواہ</th><th>تقرری تاریخ</th><th>عمل</th></tr></thead><tbody></tbody></table>
-        </div>
-
-        <div id="classes" class="tab-content">
-            <h2>کلاسز اور مضامین</h2>
-             <form id="classForm">
-                  <input type="hidden" id="classId">
-                 <div class="form-group"><label for="className">کلاس کا نام:</label><input type="text" id="className" required></div>
-                 <div class="form-group"><label for="classTeacher">استاد:</label><select id="classTeacher" required><option value="">استاد منتخب کریں</option></select></div>
-                 <div class="form-group"><label for="classSubjects">مضامین:</label><input type="text" id="classSubjects" placeholder="مثال: ناظرہ، حفظ، تجوید"></div>
-                 <button type="submit" class="primary">کلاس شامل کریں / اپ ڈیٹ کریں</button>
-                 <button type="button" onclick="resetClassForm()">نیا اندراج</button>
-             </form>
-             <h3>موجودہ کلاسز</h3>
-             <table id="classesTable"><thead><tr><th>کلاس کا نام</th><th>استاد</th><th>مضامین</th><th>عمل</th></tr></thead><tbody></tbody></table>
-        </div>
-
-        <div id="attendance" class="tab-content">
-            <h2>حاضری نظام</h2>
-             <p>(بنیادی ڈھانچہ موجود، تفصیلی کوڈ درکار)</p>
-            <h3>طلباء کی حاضری</h3>
-             <form id="studentAttendanceForm">
-                <div class="form-group"><label for="attStudentClass">کلاس:</label><select id="attStudentClass" required onchange="loadStudentsForAttendance()"><option value="">کلاس منتخب کریں</option></select></div>
-                <div class="form-group"><label for="attDate">تاریخ:</label><input type="date" id="attDate" required></div>
-                <div id="studentAttendanceList"><p>براہ کرم کلاس منتخب کریں</p></div>
-                <button type="submit" class="primary">حاضری محفوظ کریں</button>
-             </form>
-             <h3>اساتذہ کی حاضری</h3>
-              <form id="teacherAttendanceForm">
-                 <div class="form-group"><label for="attTeacherDate">تاریخ:</label><input type="date" id="attTeacherDate" required></div>
-                 <div id="teacherAttendanceList"><p>اساتذہ لوڈ ہو رہے ہیں...</p></div>
-                 <button type="submit" class="primary">حاضری محفوظ کریں</button>
-             </form>
-             <h3>حاضری رجسٹر (مثال)</h3>
-             <button onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
-             <div id="attendanceRegisterPreview"></div>
-        </div>
-
-        <div id="results" class="tab-content">
-            <h2>نتائج کا ریکارڈ</h2>
-             <p>(بنیادی ڈھانچہ موجود، تفصیلی کوڈ درکار)</p>
-            <form id="resultForm">
-                 <div class="form-group"><label for="resultExamName">امتحان کا نام:</label><input type="text" id="resultExamName" required></div>
-                 <div class="form-group"><label for="resultDate">تاریخ:</label><input type="date" id="resultDate" required></div>
-                 <div class="form-group"><label for="resultStudent">طالب علم:</label><select id="resultStudent" required><option value="">طالب علم منتخب کریں</option></select></div>
-                 <div class="form-group"><label for="resultSubject">مضمون:</label><input type="text" id="resultSubject" required></div>
-                 <div class="form-group"><label for="resultMarks">حاصل کردہ نمبر:</label><input type="number" id="resultMarks" required min="0"></div>
-                 <div class="form-group"><label for="resultTotalMarks">کل نمبر:</label><input type="number" id="resultTotalMarks" required min="0"></div>
-                 <div class="form-group"><label for="resultGrade">گریڈ:</label><input type="text" id="resultGrade"></div>
-                 <button type="submit" class="primary">نتیجہ محفوظ کریں</button>
-            </form>
-             <h3>نتائج دیکھیں</h3>
-             <button onclick="printResultCard()">رزلٹ کارڈ پرنٹ کریں (منتخب طالب علم)</button>
-        </div>
-
-        <div id="fees" class="tab-content">
-            <h2>فیس سسٹم</h2>
-            <form id="feePaymentForm">
-                 <div class="form-group"><label for="feeStudent">طالب علم:</label><select id="feeStudent" required onchange="loadStudentFeeDetails()"><option value="">طالب علم منتخب کریں</option></select></div>
-                 <div class="form-group"><label>موجودہ بیلنس:</label><span id="feeBalance" style="font-weight:bold;">---</span></div>
-                 <div class="form-group"><label for="feeAmountPaid">ادا شدہ رقم:</label><input type="number" id="feeAmountPaid" required min="0"></div>
-                 <div class="form-group"><label for="feeDiscount">رعایت:</label><input type="number" id="feeDiscount" value="0" min="0"></div>
-                 <div class="form-group"><label for="feePaymentDate">ادائیگی کی تاریخ:</label><input type="date" id="feePaymentDate" required></div>
-                 <div class="form-group"><label for="feePaymentMethod">طریقہ ادائیگی:</label><select id="feePaymentMethod"><option value="Cash">کیش</option><option value="Online">آن لائن/بینک</option></select></div>
-                 <div class="form-group"><label for="feeRemarks">نوٹس:</label><input type="text" id="feeRemarks" placeholder="مثلاً: ماہ جنوری کی فیس"></div>
-                 <button type="submit" class="primary">ادائیگی محفوظ کریں</button>
-                 <button type="button" onclick="printFeeReceipt()" id="printReceiptBtn" disabled>آخری رسید پرنٹ کریں</button>
-             </form>
-             <h3>فیس ریکارڈ (منتخب طالب علم)</h3>
-             <table id="studentFeeHistoryTable"><thead><tr><th>تاریخ</th><th>تفصیل/نوٹس</th><th>ادا شدہ رقم</th><th>رعایت</th><th>طریقہ</th><th>عمل</th></tr></thead><tbody><tr><td colspan="6" style="text-align:center;">براہ کرم اوپر سے طالب علم منتخب کریں۔</td></tr></tbody></table>
-        </div>
-
-        <div id="finance" class="tab-content">
-            <h2>مدرسہ کا مالی ریکارڈ</h2>
-            <h3>نئی ٹرانزیکشن</h3>
-             <form id="financeForm">
-                 <div class="form-group"><label for="financeType">قسم:</label><select id="financeType" required onchange="toggleFinanceTeacher()"><option value="Income">آمدن</option><option value="Expense">خرچ</option><option value="Donation">عطیہ</option><option value="Salary">تنخواہ</option></select></div>
-                 <div class="form-group" id="financeTeacherGroup"><label for="financeTeacher">استاد:</label><select id="financeTeacher"><option value="">استاد منتخب کریں</option></select></div>
-                 <div class="form-group"><label for="financeDescription">تفصیل:</label><input type="text" id="financeDescription" required></div>
-                 <div class="form-group"><label for="financeAmount">رقم:</label><input type="number" id="financeAmount" required min="0"></div>
-                 <div class="form-group"><label for="financeDate">تاریخ:</label><input type="date" id="financeDate" required></div>
-                 <button type="submit" class="primary">ریکارڈ محفوظ کریں</button>
-                 <button type="button" onclick="resetFinanceForm()">نیا اندراج</button>
-             </form>
-             <h3>مالی ریکارڈ کی تفصیل</h3>
-             <table id="financialsTable"><thead><tr><th>تاریخ</th><th>قسم</th><th>تفصیل</th><th>استاد</th><th>رقم</th><th>عمل</th></tr></thead><tbody></tbody></table>
-             <button onclick="generateFinancialReport()">مجموعی مالی رپورٹ دیکھیں</button>
-        </div>
-
-        <div id="reports" class="tab-content">
-            <h2>رپورٹس</h2>
-            <div class="report-filters no-print">
-                <label for="reportType">رپورٹ کی قسم:</label>
-                <select id="reportType" onchange="showReportFilters()"><option value="">منتخب کریں</option><option value="students">طلباء</option><option value="teachers">اساتذہ</option><option value="fees">فیس ادائیگی</option><option value="attendance_student">حاضری (طلباء)</option><option value="attendance_teacher">حاضری (اساتذہ)</option><option value="results">نتائج</option><option value="finance_summary">مالیات (خلاصہ)</option><option value="finance_detailed">مالیات (تفصیلی)</option></select>
-                <label for="filterClass" style="display:none;">کلاس:</label><select id="filterClass" style="display:none;"><option value="">تمام</option></select>
-                <label for="filterStudent" style="display:none;">طالب علم:</label><select id="filterStudent" style="display:none;"><option value="">تمام</option></select>
-                <label for="filterTeacher" style="display:none;">استاد:</label><select id="filterTeacher" style="display:none;"><option value="">تمام</option></select>
-                <label for="filterStartDate" style="display:none;">شروع تاریخ:</label><input type="date" id="filterStartDate" style="display:none;">
-                <label for="filterEndDate" style="display:none;">اختتام تاریخ:</label><input type="date" id="filterEndDate" style="display:none;">
-                <button onclick="generateReport()" class="primary">رپورٹ بنائیں</button>
-                <button onclick="printReport()">رپورٹ پرنٹ کریں</button>
-            </div>
-            <div id="reportOutput" class="printable-area"><p>براہ کرم رپورٹ کی قسم منتخب کریں اور فلٹرز کا اطلاق کریں۔</p></div>
-        </div>
-
-        <div id="data" class="tab-content">
-            <h2>ڈیٹا مینجمنٹ</h2>
-            <p>تمام معلومات آپ کے براؤزر میں IndexedDB میں محفوظ ہے۔</p>
-             <div class="data-actions"><button onclick="backupData()">ڈیٹا کا بیک اپ بنائیں (JSON)</button></div>
-             <div class="data-actions"><label for="importFile">بیک اپ فائل امپورٹ کریں (JSON):</label><input type="file" id="importFile" accept=".json" class="no-print"><button onclick="importData()">ڈیٹا امپورٹ کریں</button><p><small>نوٹ: امپورٹ کرنے سے موجودہ ڈیٹا مٹ سکتا ہے۔ پہلے بیک اپ ضرور بنا لیں۔</small></p></div>
-             <div class="data-actions"><button onclick="clearAllData()" style="background-color: #f8d7da; border-color: #f5c6cb;">تمام ڈیٹا صاف کریں (احتیاط!)</button></div>
-        </div>
-    </div>
-
-    <div id="feeReceiptPrint" class="printable-area">
-        <div id="receiptHeader"></div>
-        <h2>فیس رسید</h2>
-        <p id="receiptDate" style="text-align: left; font-size: 0.9em;"></p>
-        <hr>
-        <div class="detail"><span>طالب علم کا نام:</span> <span id="receiptStudentName"></span></div>
-        <div class="detail"><span>والد کا نام:</span> <span id="receiptFatherName"></span></div>
-        <div class="detail"><span>کلاس:</span> <span id="receiptClassName"></span></div>
-        <div class="detail"><span>داخلہ نمبر:</span> <span id="receiptAdmissionNo"></span></div>
-        <hr>
-        <div class="detail"><span>ادائیگی کی تاریخ:</span> <span id="receiptPaymentDate"></span></div>
-        <div class="detail"><span>تفصیل/نوٹس:</span> <span id="receiptRemarks"></span></div>
-        <div class="detail"><span>ادا شدہ رقم:</span> <span id="receiptAmountPaid"></span></div>
-        <div class="detail"><span>رعایت:</span> <span id="receiptDiscount"></span></div>
-        <div class="detail"><span>طریقہ ادائیگی:</span> <span id="receiptMethod"></span></div>
-        <hr>
-        <p style="text-align: left; margin-top: 40px; font-size: 0.9em;">دستخط وصول کنندہ: _______________</p>
-        <p style="font-size: 0.8em; text-align: center; margin-top: 25px;">یہ کمپیوٹر سے تیار کردہ رسید ہے۔</p>
-    </div>
-
-    <script>
+<div class="container">
+<h1>مدرسہ انتظامی نظام</h1>
+<div id="madrasahHeaderPrint">
+<img alt="مدرسہ کا لوگو" id="logoPreviewPrint" src=""/>
+<h2 id="headerNamePrint"></h2>
+<p id="headerAddressPrint"></p>
+<p id="headerPhonePrint"></p>
+</div>
+<div class="tabs">
+<button class="tab-button active" onclick="openTab(event, 'settings')">مدرسہ سیٹنگز</button>
+<button class="tab-button" onclick="openTab(event, 'students')">طلباء کا اندراج</button>
+<button class="tab-button" onclick="openTab(event, 'teachers')">اساتذہ کا اندراج</button>
+<button class="tab-button" onclick="openTab(event, 'classes')">کلاسز و مضامین</button>
+<button class="tab-button" onclick="openTab(event, 'attendance')">حاضری نظام</button>
+<button class="tab-button" onclick="openTab(event, 'results')">نتائج کا ریکارڈ</button>
+<button class="tab-button" onclick="openTab(event, 'fees')">فیس سسٹم</button>
+<button class="tab-button" onclick="openTab(event, 'finance')">مدرسہ کا مالی ریکارڈ</button>
+<button class="tab-button" onclick="openTab(event, 'reports')">رپورٹس</button>
+<button class="tab-button" onclick="openTab(event, 'data')">ڈیٹا مینجمنٹ</button>
+</div>
+<div class="tab-content active" id="settings">
+<h2>مدرسہ سیٹنگز</h2>
+<form id="settingsForm">
+<div class="form-group">
+<label for="madrasahName">مدرسہ کا نام:</label>
+<input id="madrasahName" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="madrasahAddress">پتہ:</label>
+<textarea id="madrasahAddress" required=""></textarea>
+</div>
+<div class="form-group">
+<label for="madrasahPhone">فون نمبر:</label>
+<input id="madrasahPhone" type="tel"/>
+</div>
+<div class="form-group">
+<label for="madrasahLogo">مہر/لوگو اپ لوڈ:</label>
+<input accept="image/*" id="madrasahLogo" type="file"/>
+<img alt="لوگو پریویو" id="logoPreview" src=""/>
+</div>
+<button class="primary" type="submit">سیٹنگز محفوظ کریں</button>
+</form>
+<h3>ہیڈر پریویو برائے پرنٹ</h3>
+<div id="madrasahHeaderPreview">
+<img alt="" id="logoPreviewHeader" src=""/>
+<h3 id="headerNamePreview" style="border: none; margin-bottom: 5px;"></h3>
+<p id="headerAddressPreview" style="margin-bottom: 5px;"></p>
+<p id="headerPhonePreview"></p>
+</div>
+</div>
+<div class="tab-content" id="students">
+<h2>طلباء کا اندراج</h2>
+<form id="studentForm">
+<input id="studentId" type="hidden"/>
+<div class="form-group"><label for="studentName">نام:</label><input id="studentName" required="" type="text"/></div>
+<div class="form-group"><label for="fatherName">والد کا نام:</label><input id="fatherName" required="" type="text"/></div>
+<div class="form-group"><label for="studentClass">کلاس:</label><select id="studentClass" required=""><option value="">منتخب کریں</option></select></div>
+<div class="form-group"><label for="admissionNo">داخلہ نمبر:</label><input id="admissionNo" required="" type="text"/></div>
+<div class="form-group"><label for="admissionDate">داخلہ تاریخ:</label><input id="admissionDate" required="" type="date"/></div>
+<h3>پتہ اور رابطہ معلومات</h3>
+<div class="form-group"><label for="studentAddress">مکمل پتہ:</label><textarea id="studentAddress"></textarea></div>
+<div class="form-group"><label for="studentPhone">رابطہ نمبر:</label><input id="studentPhone" type="tel"/></div>
+<button class="primary" type="submit">طالب علم شامل کریں / اپ ڈیٹ کریں</button>
+<button onclick="resetStudentForm()" type="button">نیا اندراج</button>
+</form>
+<h3>داخل طلباء کی فہرست</h3>
+<table id="studentsTable"><thead><tr><th>داخلہ نمبر</th><th>نام</th><th>والد کا نام</th><th>کلاس</th><th>داخلہ تاریخ</th><th>عمل</th></tr></thead><tbody></tbody></table>
+</div>
+<div class="tab-content" id="teachers">
+<h2>اساتذہ کا اندراج</h2>
+<form id="teacherForm">
+<input id="teacherId" type="hidden"/>
+<div class="form-group"><label for="teacherName">نام:</label><input id="teacherName" required="" type="text"/></div>
+<div class="form-group"><label for="teacherSubjects">مضامین:</label><input id="teacherSubjects" placeholder="مثال: قرآن، حدیث، فقہ" type="text"/></div>
+<div class="form-group"><label for="teacherMobile">موبائل نمبر:</label><input id="teacherMobile" required="" type="tel"/></div>
+<div class="form-group"><label for="teacherSalary">طے شدہ تنخواہ:</label><input id="teacherSalary" min="0" type="number"/></div>
+<div class="form-group"><label for="appointmentDate">تقرری تاریخ:</label><input id="appointmentDate" required="" type="date"/></div>
+<button class="primary" type="submit">استاد شامل کریں / اپ ڈیٹ کریں</button>
+<button onclick="resetTeacherForm()" type="button">نیا اندراج</button>
+</form>
+<h3>اساتذہ کی فہرست</h3>
+<table id="teachersTable"><thead><tr><th>نام</th><th>مضامین</th><th>موبائل نمبر</th><th>طے شدہ تنخواہ</th><th>تقرری تاریخ</th><th>عمل</th></tr></thead><tbody></tbody></table>
+</div>
+<div class="tab-content" id="classes">
+<h2>کلاسز اور مضامین</h2>
+<form id="classForm">
+<input id="classId" type="hidden"/>
+<div class="form-group"><label for="className">کلاس کا نام:</label><input id="className" required="" type="text"/></div>
+<div class="form-group"><label for="classTeacher">استاد:</label><select id="classTeacher" required=""><option value="">استاد منتخب کریں</option></select></div>
+<div class="form-group"><label for="classSubjects">مضامین:</label><input id="classSubjects" placeholder="مثال: ناظرہ، حفظ، تجوید" type="text"/></div>
+<button class="primary" type="submit">کلاس شامل کریں / اپ ڈیٹ کریں</button>
+<button onclick="resetClassForm()" type="button">نیا اندراج</button>
+</form>
+<h3>موجودہ کلاسز</h3>
+<table id="classesTable"><thead><tr><th>کلاس کا نام</th><th>استاد</th><th>مضامین</th><th>عمل</th></tr></thead><tbody></tbody></table>
+</div>
+<div class="tab-content" id="attendance">
+<h2>حاضری نظام</h2>
+<p>(بنیادی ڈھانچہ موجود، تفصیلی کوڈ درکار)</p>
+<h3>طلباء کی حاضری</h3>
+<form id="studentAttendanceForm">
+<div class="form-group"><label for="attStudentClass">کلاس:</label><select id="attStudentClass" onchange="loadStudentsForAttendance()" required=""><option value="">کلاس منتخب کریں</option></select></div>
+<div class="form-group"><label for="attDate">تاریخ:</label><input id="attDate" required="" type="date"/></div>
+<div id="studentAttendanceList"><p>براہ کرم کلاس منتخب کریں</p></div>
+<button class="primary" type="submit">حاضری محفوظ کریں</button>
+</form>
+<h3>اساتذہ کی حاضری</h3>
+<form id="teacherAttendanceForm">
+<div class="form-group"><label for="attTeacherDate">تاریخ:</label><input id="attTeacherDate" required="" type="date"/></div>
+<div id="teacherAttendanceList"><p>اساتذہ لوڈ ہو رہے ہیں...</p></div>
+<button class="primary" type="submit">حاضری محفوظ کریں</button>
+</form>
+<h3>حاضری رجسٹر (مثال)</h3>
+<button onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
+<div id="attendanceRegisterPreview"></div>
+</div>
+<div class="tab-content" id="results">
+<h2>نتائج کا ریکارڈ</h2>
+<p>(بنیادی ڈھانچہ موجود، تفصیلی کوڈ درکار)</p>
+<form id="resultForm">
+<div class="form-group"><label for="resultExamName">امتحان کا نام:</label><input id="resultExamName" required="" type="text"/></div>
+<div class="form-group"><label for="resultDate">تاریخ:</label><input id="resultDate" required="" type="date"/></div>
+<div class="form-group"><label for="resultStudent">طالب علم:</label><select id="resultStudent" required=""><option value="">طالب علم منتخب کریں</option></select></div>
+<div class="form-group"><label for="resultSubject">مضمون:</label><input id="resultSubject" required="" type="text"/></div>
+<div class="form-group"><label for="resultMarks">حاصل کردہ نمبر:</label><input id="resultMarks" min="0" required="" type="number"/></div>
+<div class="form-group"><label for="resultTotalMarks">کل نمبر:</label><input id="resultTotalMarks" min="0" required="" type="number"/></div>
+<div class="form-group"><label for="resultGrade">گریڈ:</label><input id="resultGrade" type="text"/></div>
+<button class="primary" type="submit">نتیجہ محفوظ کریں</button>
+</form>
+<h3>نتائج دیکھیں</h3>
+<button onclick="printResultCard()">رزلٹ کارڈ پرنٹ کریں (منتخب طالب علم)</button>
+</div>
+<div class="tab-content" id="fees">
+<h2>فیس سسٹم</h2>
+<form id="feePaymentForm">
+<div class="form-group"><label for="feeStudent">طالب علم:</label><select id="feeStudent" onchange="loadStudentFeeDetails()" required=""><option value="">طالب علم منتخب کریں</option></select></div>
+<div class="form-group"><label>موجودہ بیلنس:</label><span id="feeBalance" style="font-weight:bold;">---</span></div>
+<div class="form-group"><label for="feeAmountPaid">ادا شدہ رقم:</label><input id="feeAmountPaid" min="0" required="" type="number"/></div>
+<div class="form-group"><label for="feeDiscount">رعایت:</label><input id="feeDiscount" min="0" type="number" value="0"/></div>
+<div class="form-group"><label for="feePaymentDate">ادائیگی کی تاریخ:</label><input id="feePaymentDate" required="" type="date"/></div>
+<div class="form-group"><label for="feePaymentMethod">طریقہ ادائیگی:</label><select id="feePaymentMethod"><option value="Cash">کیش</option><option value="Online">آن لائن/بینک</option></select></div>
+<div class="form-group"><label for="feeRemarks">نوٹس:</label><input id="feeRemarks" placeholder="مثلاً: ماہ جنوری کی فیس" type="text"/></div>
+<button class="primary" type="submit">ادائیگی محفوظ کریں</button>
+<button disabled="" id="printReceiptBtn" onclick="printFeeReceipt()" type="button">آخری رسید پرنٹ کریں</button>
+</form>
+<h3>فیس ریکارڈ (منتخب طالب علم)</h3>
+<table id="studentFeeHistoryTable"><thead><tr><th>تاریخ</th><th>تفصیل/نوٹس</th><th>ادا شدہ رقم</th><th>رعایت</th><th>طریقہ</th><th>عمل</th></tr></thead><tbody><tr><td colspan="6" style="text-align:center;">براہ کرم اوپر سے طالب علم منتخب کریں۔</td></tr></tbody></table>
+</div>
+<div class="tab-content" id="finance">
+<h2>مدرسہ کا مالی ریکارڈ</h2>
+<h3>نئی ٹرانزیکشن</h3>
+<form id="financeForm">
+<div class="form-group"><label for="financeType">قسم:</label><select id="financeType" onchange="toggleFinanceTeacher()" required=""><option value="Income">آمدن</option><option value="Expense">خرچ</option><option value="Donation">عطیہ</option><option value="Salary">تنخواہ</option></select></div>
+<div class="form-group" id="financeTeacherGroup"><label for="financeTeacher">استاد:</label><select id="financeTeacher"><option value="">استاد منتخب کریں</option></select></div>
+<div class="form-group"><label for="financeDescription">تفصیل:</label><input id="financeDescription" required="" type="text"/></div>
+<div class="form-group"><label for="financeAmount">رقم:</label><input id="financeAmount" min="0" required="" type="number"/></div>
+<div class="form-group"><label for="financeDate">تاریخ:</label><input id="financeDate" required="" type="date"/></div>
+<button class="primary" type="submit">ریکارڈ محفوظ کریں</button>
+<button onclick="resetFinanceForm()" type="button">نیا اندراج</button>
+</form>
+<h3>مالی ریکارڈ کی تفصیل</h3>
+<table id="financialsTable"><thead><tr><th>تاریخ</th><th>قسم</th><th>تفصیل</th><th>استاد</th><th>رقم</th><th>عمل</th></tr></thead><tbody></tbody></table>
+<button onclick="generateFinancialReport()">مجموعی مالی رپورٹ دیکھیں</button>
+</div>
+<div class="tab-content" id="reports">
+<h2>رپورٹس</h2>
+<div class="report-filters no-print">
+<label for="reportType">رپورٹ کی قسم:</label>
+<select id="reportType" onchange="showReportFilters()"><option value="">منتخب کریں</option><option value="students">طلباء</option><option value="teachers">اساتذہ</option><option value="fees">فیس ادائیگی</option><option value="attendance_student">حاضری (طلباء)</option><option value="attendance_teacher">حاضری (اساتذہ)</option><option value="results">نتائج</option><option value="finance_summary">مالیات (خلاصہ)</option><option value="finance_detailed">مالیات (تفصیلی)</option></select>
+<label for="filterClass" style="display:none;">کلاس:</label><select id="filterClass" style="display:none;"><option value="">تمام</option></select>
+<label for="filterStudent" style="display:none;">طالب علم:</label><select id="filterStudent" style="display:none;"><option value="">تمام</option></select>
+<label for="filterTeacher" style="display:none;">استاد:</label><select id="filterTeacher" style="display:none;"><option value="">تمام</option></select>
+<label for="filterStartDate" style="display:none;">شروع تاریخ:</label><input id="filterStartDate" style="display:none;" type="date"/>
+<label for="filterEndDate" style="display:none;">اختتام تاریخ:</label><input id="filterEndDate" style="display:none;" type="date"/>
+<button class="primary" onclick="generateReport()">رپورٹ بنائیں</button>
+<button onclick="printReport()">رپورٹ پرنٹ کریں</button>
+</div>
+<div class="printable-area" id="reportOutput"><p>براہ کرم رپورٹ کی قسم منتخب کریں اور فلٹرز کا اطلاق کریں۔</p></div>
+</div>
+<div class="tab-content" id="data">
+<h2>ڈیٹا مینجمنٹ</h2>
+<p>تمام معلومات آپ کے براؤزر میں IndexedDB میں محفوظ ہے۔</p>
+<div class="data-actions"><button onclick="backupData()">ڈیٹا کا بیک اپ بنائیں (JSON)</button></div>
+<div class="data-actions"><label for="importFile">بیک اپ فائل امپورٹ کریں (JSON):</label><input accept=".json" class="no-print" id="importFile" type="file"/><button onclick="importData()">ڈیٹا امپورٹ کریں</button><p><small>نوٹ: امپورٹ کرنے سے موجودہ ڈیٹا مٹ سکتا ہے۔ پہلے بیک اپ ضرور بنا لیں۔</small></p></div>
+<div class="data-actions"><button onclick="clearAllData()" style="background-color: #f8d7da; border-color: #f5c6cb;">تمام ڈیٹا صاف کریں (احتیاط!)</button></div>
+</div>
+</div>
+<div class="printable-area" id="feeReceiptPrint">
+<div id="receiptHeader"></div>
+<h2>فیس رسید</h2>
+<p id="receiptDate" style="text-align: left; font-size: 0.9em;"></p>
+<hr/>
+<div class="detail"><span>طالب علم کا نام:</span> <span id="receiptStudentName"></span></div>
+<div class="detail"><span>والد کا نام:</span> <span id="receiptFatherName"></span></div>
+<div class="detail"><span>کلاس:</span> <span id="receiptClassName"></span></div>
+<div class="detail"><span>داخلہ نمبر:</span> <span id="receiptAdmissionNo"></span></div>
+<hr/>
+<div class="detail"><span>ادائیگی کی تاریخ:</span> <span id="receiptPaymentDate"></span></div>
+<div class="detail"><span>تفصیل/نوٹس:</span> <span id="receiptRemarks"></span></div>
+<div class="detail"><span>ادا شدہ رقم:</span> <span id="receiptAmountPaid"></span></div>
+<div class="detail"><span>رعایت:</span> <span id="receiptDiscount"></span></div>
+<div class="detail"><span>طریقہ ادائیگی:</span> <span id="receiptMethod"></span></div>
+<hr/>
+<p style="text-align: left; margin-top: 40px; font-size: 0.9em;">دستخط وصول کنندہ: _______________</p>
+<p style="font-size: 0.8em; text-align: center; margin-top: 25px;">یہ کمپیوٹر سے تیار کردہ رسید ہے۔</p>
+</div>
+<script>
         let db;
         const DB_NAME = 'MadrasahDB';
         const DB_VERSION = 2; // Keep version 2
@@ -1815,6 +1800,5 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
 </script>
-
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

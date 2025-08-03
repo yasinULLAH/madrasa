@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
 
+<html dir="rtl" lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدرسہ مینجمنٹ سسٹم Yasin's</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مدرسہ مینجمنٹ سسٹم Yasin's</title>
+<style>
         body {
             font-family: 'Noto Nastaliq Urdu', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif !important;
             direction: rtl;
@@ -250,625 +250,622 @@
             padding: 0px 18px;
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</head>
-
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-    <div class="container">
-        <h1>مدرسہ مینجمنٹ سسٹم</h1>
-        <nav>
-            <button onclick="showModule('dashboard')">ڈیش بورڈ</button>
-            <button onclick="showModule('students')">طلباء</button>
-            <button onclick="showModule('teachers')">اساتذہ</button>
-            <button onclick="showModule('classes')">کلاسیں</button>
-            <button onclick="showModule('fees')">فیس</button>
-            <button onclick="showModule('feeStructures')">فیس اسٹرکچر</button>
-            <button onclick="showModule('attendance')">حاضری</button>
-            <button onclick="showModule('results')">نتائج</button>
-            <button onclick="showModule('timetable')">ٹائم ٹیبل / ڈیوٹی روسٹر</button>
-            <button onclick="showModule('expenses')">اخراجات</button>
-            <button onclick="showModule('reports')">رپورٹس</button>
-            <button onclick="showModule('settings')">سیٹنگز</button>
-        </nav>
-        <div id="dashboard" class="module active">
-            <h2>ڈیش بورڈ</h2>
-            <p>سسٹم میں خوش آمدید۔ یہاں آپ اہم اعدادوشمار دیکھ سکیں گے۔</p>
-            <h3>فوری اعدادوشمار (آج)</h3>
-            <div class="form-grid">
-                <div>کل طلباء: <span id="totalStudents">0</span></div>
-                <div>کل اساتذہ: <span id="totalTeachers">0</span></div>
-                <div>کل کلاسیں: <span id="totalClasses">0</span></div>
-                <div>آج کی آمدنی (مع فیس): <span id="todayFees">0</span></div>
-                <div>آج کے اخراجات: <span id="todayExpenses">0</span></div>
-            </div>
-            <hr style="margin: 20px 0;">
-            <h3>تفصیلی رپورٹس</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="dashboardReportType">رپورٹ کی قسم:</label>
-                    <select id="dashboardReportType" onchange="toggleDashboardReportInputs()">
-                        <option value="monthly">ماہانہ خلاصہ</option>
-                        <option value="yearly">سالانہ خلاصہ</option>
-                        <option value="custom_range">مخصوص مدت</option>
-                    </select>
-                </div>
-                <div id="dashboardMonthSelectorDiv">
-                    <label for="dashboardReportMonth">مہینہ:</label>
-                    <select id="dashboardReportMonth" style="width:auto; padding:5px; margin-right:5px;"></select>
-                </div>
-                <div id="dashboardYearSelectorDiv">
-                    <label for="dashboardReportYear">سال:</label>
-                    <input type="number" id="dashboardReportYear" placeholder="YYYY" style="width:100px; padding:5px;">
-                </div>
-                <div id="dashboardDateRangeSelectorDiv" style="display:none; grid-column: span 2;">
-                    <div>
-                        <label for="dashboardReportStartDate">شروع تاریخ:</label>
-                        <input type="date" id="dashboardReportStartDate">
-                    </div>
-                    <div>
-                        <label for="dashboardReportEndDate">اختتامی تاریخ:</label>
-                        <input type="date" id="dashboardReportEndDate">
-                    </div>
-                </div>
-                <div style="grid-column: 1 / -1; text-align:left;">
-                    <button onclick="generateDashboardDetailedReport()">رپورٹ دیکھیں</button>
-                </div>
-            </div>
-            <div id="dashboardDetailedReportOutput"
-                style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
-                <h4 id="dashboardReportTitle">منتخب مدت کے لیے خلاصہ:</h4>
-                <div class="form-grid">
-                    <div>کل آمدنی (مع فیس): <span id="periodTotalFees">0</span></div>
-                    <div>کل اخراجات: <span id="periodTotalExpenses">0</span></div>
-                    <div title="Loss is shown with a red background | نقصان کو سرخ پس منظر کے ساتھ ظاہر کیا جاتا ہے">
+<div class="container">
+<h1>مدرسہ مینجمنٹ سسٹم</h1>
+<nav>
+<button onclick="showModule('dashboard')">ڈیش بورڈ</button>
+<button onclick="showModule('students')">طلباء</button>
+<button onclick="showModule('teachers')">اساتذہ</button>
+<button onclick="showModule('classes')">کلاسیں</button>
+<button onclick="showModule('fees')">فیس</button>
+<button onclick="showModule('feeStructures')">فیس اسٹرکچر</button>
+<button onclick="showModule('attendance')">حاضری</button>
+<button onclick="showModule('results')">نتائج</button>
+<button onclick="showModule('timetable')">ٹائم ٹیبل / ڈیوٹی روسٹر</button>
+<button onclick="showModule('expenses')">اخراجات</button>
+<button onclick="showModule('reports')">رپورٹس</button>
+<button onclick="showModule('settings')">سیٹنگز</button>
+</nav>
+<div class="module active" id="dashboard">
+<h2>ڈیش بورڈ</h2>
+<p>سسٹم میں خوش آمدید۔ یہاں آپ اہم اعدادوشمار دیکھ سکیں گے۔</p>
+<h3>فوری اعدادوشمار (آج)</h3>
+<div class="form-grid">
+<div>کل طلباء: <span id="totalStudents">0</span></div>
+<div>کل اساتذہ: <span id="totalTeachers">0</span></div>
+<div>کل کلاسیں: <span id="totalClasses">0</span></div>
+<div>آج کی آمدنی (مع فیس): <span id="todayFees">0</span></div>
+<div>آج کے اخراجات: <span id="todayExpenses">0</span></div>
+</div>
+<hr style="margin: 20px 0;"/>
+<h3>تفصیلی رپورٹس</h3>
+<div class="form-grid">
+<div>
+<label for="dashboardReportType">رپورٹ کی قسم:</label>
+<select id="dashboardReportType" onchange="toggleDashboardReportInputs()">
+<option value="monthly">ماہانہ خلاصہ</option>
+<option value="yearly">سالانہ خلاصہ</option>
+<option value="custom_range">مخصوص مدت</option>
+</select>
+</div>
+<div id="dashboardMonthSelectorDiv">
+<label for="dashboardReportMonth">مہینہ:</label>
+<select id="dashboardReportMonth" style="width:auto; padding:5px; margin-right:5px;"></select>
+</div>
+<div id="dashboardYearSelectorDiv">
+<label for="dashboardReportYear">سال:</label>
+<input id="dashboardReportYear" placeholder="YYYY" style="width:100px; padding:5px;" type="number"/>
+</div>
+<div id="dashboardDateRangeSelectorDiv" style="display:none; grid-column: span 2;">
+<div>
+<label for="dashboardReportStartDate">شروع تاریخ:</label>
+<input id="dashboardReportStartDate" type="date"/>
+</div>
+<div>
+<label for="dashboardReportEndDate">اختتامی تاریخ:</label>
+<input id="dashboardReportEndDate" type="date"/>
+</div>
+</div>
+<div style="grid-column: 1 / -1; text-align:left;">
+<button onclick="generateDashboardDetailedReport()">رپورٹ دیکھیں</button>
+</div>
+</div>
+<div id="dashboardDetailedReportOutput" style="margin-top:20px; padding:15px; background-color:#e9ecef; border-radius:5px;">
+<h4 id="dashboardReportTitle">منتخب مدت کے لیے خلاصہ:</h4>
+<div class="form-grid">
+<div>کل آمدنی (مع فیس): <span id="periodTotalFees">0</span></div>
+<div>کل اخراجات: <span id="periodTotalExpenses">0</span></div>
+<div title="Loss is shown with a red background | نقصان کو سرخ پس منظر کے ساتھ ظاہر کیا جاتا ہے">
                         نفع/نقصان: <span id="periodNetProfit">0</span></div>
-                    <div>نئے داخلے اس مدت میں: <span id="periodNewAdmissions">0</span></div>
-                </div>
-            </div>
-        </div>
-        <div id="students" class="module">
-            <h2>طلباء کا انتظام</h2>
-            <h3>نیا طالب علم شامل کریں / ترمیم کریں</h3>
-            <form id="studentForm">
-                <input type="hidden" id="studentId">
-                <div class="form-grid">
-                    <div>
-                        <label for="admissionNo">داخلہ نمبر</label>
-                        <input type="text" id="admissionNo" required>
-                    </div>
-                    <div>
-                        <label for="studentName">نام</label>
-                        <input type="text" id="studentName" required>
-                    </div>
-                    <div>
-                        <label for="fatherName">والد کا نام</label>
-                        <input type="text" id="fatherName" required>
-                    </div>
-                    <div>
-                        <label for="studentClass">کلاس</label>
-                        <select id="studentClass" required></select>
-                    </div>
-                    <div>
-                        <label for="admissionDate">داخلہ تاریخ</label>
-                        <input type="date" id="admissionDate" required>
-                    </div>
-                    <div>
-                        <label for="studentContact">رابطہ نمبر</label>
-                        <input type="text" id="studentContact">
-                    </div>
-                    <div>
-                        <label for="studentAddress">پتہ</label>
-                        <input type="text" id="studentAddress">
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetStudentForm()">منسوخ کریں</button>
-            </form>
-            <h3>طلباء کی فہرست</h3>
-            <input type="text" id="studentSearch" placeholder="نام یا داخلہ نمبر سے تلاش کریں..."
-                onkeyup="loadStudents()">
-            <table id="studentsTable">
-                <thead>
-                    <tr>
-                        <th>داخلہ نمبر</th>
-                        <th>نام</th>
-                        <th>والد کا نام</th>
-                        <th>کلاس</th>
-                        <th>داخلہ تاریخ</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="teachers" class="module">
-            <h2>اساتذہ کا انتظام</h2>
-            <h3>نیا استاد شامل کریں / ترمیم کریں</h3>
-            <form id="teacherForm">
-                <input type="hidden" id="teacherId">
-                <div class="form-grid">
-                    <div>
-                        <label for="teacherName">نام</label>
-                        <input type="text" id="teacherName" required>
-                    </div>
-                    <div>
-                        <label for="teacherSubjects">مضامین</label>
-                        <input type="text" id="teacherSubjects" required>
-                    </div>
-                    <div>
-                        <label for="teacherContact">موبائل نمبر</label>
-                        <input type="text" id="teacherContact" required>
-                    </div>
-                    <div>
-                        <label for="teacherSalary">طے شدہ تنخواہ</label>
-                        <input type="number" id="teacherSalary" required>
-                    </div>
-                    <div>
-                        <label for="appointmentDate">تقرری تاریخ</label>
-                        <input type="date" id="appointmentDate" required>
-                    </div>
-                    <div>
-                        <label for="teacherQualification">قابلیت</label>
-                        <input type="text" id="teacherQualification">
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetTeacherForm()">منسوخ کریں</button>
-            </form>
-            <h3>اساتذہ کی فہرست</h3>
-            <table id="teachersTable">
-                <thead>
-                    <tr>
-                        <th>نام</th>
-                        <th>مضامین</th>
-                        <th>موبائل نمبر</th>
-                        <th>تنخواہ</th>
-                        <th>تقرری تاریخ</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="classes" class="module">
-            <h2>کلاسوں کا انتظام</h2>
-            <h3>نئی کلاس شامل کریں / ترمیم کریں</h3>
-            <form id="classForm">
-                <input type="hidden" id="classId">
-                <div class="form-grid">
-                    <div>
-                        <label for="className">کلاس کا نام</label>
-                        <input type="text" id="className" required>
-                    </div>
-                    <div>
-                        <label for="classTeacher">استاد</label>
-                        <select id="classTeacher" required></select>
-                    </div>
-                    <div>
-                        <label for="classSubjects">مضامین (کوما سے الگ کریں)</label>
-                        <input type="text" id="classSubjects" required>
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetClassForm()">منسوخ کریں</button>
-            </form>
-            <h3>کلاسوں کی فہرست</h3>
-            <table id="classesTable">
-                <thead>
-                    <tr>
-                        <th>کلاس کا نام</th>
-                        <th>استاد</th>
-                        <th>مضامین</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="feeStructures" class="module">
-            <h2>فیس اسٹرکچر</h2>
-            <h3>نیا فیس اسٹرکچر شامل کریں / ترمیم کریں</h3>
-            <form id="feeStructureForm">
-                <input type="hidden" id="feeStructureId">
-                <div class="form-grid">
-                    <div>
-                        <label for="feeStructureClass">کلاس</label>
-                        <select id="feeStructureClass" required></select>
-                    </div>
-                    <div>
-                        <label for="feeType">فیس کی قسم</label>
-                        <input type="text" id="feeType" required placeholder="مثال: ٹیوشن فیس, داخلہ فیس">
-                    </div>
-                    <div>
-                        <label for="feeAmount">رقم</label>
-                        <input type="number" id="feeAmount" required>
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetFeeStructureForm()">منسوخ کریں</button>
-            </form>
-            <h3>موجودہ فیس اسٹرکچر</h3>
-            <label for="filterFeeStructureClass">کلاس کے لحاظ سے فلٹر کریں:</label>
-            <select id="filterFeeStructureClass" onchange="loadFeeStructures()">
-                <option value="">تمام کلاسیں</option>
-            </select>
-            <table id="feeStructuresTable">
-                <thead>
-                    <tr>
-                        <th>کلاس</th>
-                        <th>فیس کی قسم</th>
-                        <th>رقم</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="fees" class="module">
-            <h2>فیس کا انتظام</h2>
-            <h3>فیس وصولی</h3>
-            <form id="feeCollectionForm">
-                <div class="form-grid">
-                    <div>
-                        <label for="feeStudentSelect">طالب علم منتخب کریں</label>
-                        <select id="feeStudentSelect" required onchange="loadStudentFeeDetails()">
-                            <option value="">-- طالب علم منتخب کریں --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="feeCollectionDate">تاریخ</label>
-                        <input type="date" id="feeCollectionDate" required>
-                    </div>
-                    <div>
-                        <label for="feeCollectionType">فیس کی قسم (واجب الادا سے)</label>
-                        <select id="feeCollectionType" required>
-                            <option value="">-- پہلے طالب علم منتخب کریں --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="feePaidAmount">ادا شدہ رقم</label>
-                        <input type="number" id="feePaidAmount" required>
-                    </div>
-                    <div>
-                        <label for="feeDiscount">رعایت</label>
-                        <input type="number" id="feeDiscount" value="0">
-                    </div>
-                    <div>
-                        <label for="feePaymentMethod">طریقہ</label>
-                        <select id="feePaymentMethod" required>
-                            <option value="Cash">نقد</option>
-                            <option value="Bank">بینک</option>
-                            <option value="Cheque">چیک</option>
-                        </select>
-                    </div>
-                    <div class="full-width">
-                        <label for="feeNotes">تفصیل/نوٹس</label>
-                        <textarea id="feeNotes" rows="2"></textarea>
-                    </div>
-                </div>
-                <button type="submit">فیس وصول کریں</button>
-                <button type="button" onclick="generateReceipt()">رسید بنائیں</button>
-            </form>
-            <h3>منتخب طالب علم کی فیس کی تفصیلات</h3>
-            <p id="noStudentSelectedMsg">براہ کرم اوپر سے طالب علم منتخب کریں۔</p>
-            <div id="studentFeeDetailsContainer" style="display: none;">
-                <h4>واجب الادا فیس</h4>
-                <ul id="dueFeesList"></ul>
-                <h4>جمع شدہ فیس کی تاریخ</h4>
-                <table id="feeHistoryTable">
-                    <thead>
-                        <tr>
-                            <th>تاریخ</th>
-                            <th>فیس کی قسم</th>
-                            <th>تفصیل/نوٹس</th>
-                            <th>ادا شدہ رقم</th>
-                            <th>رعایت</th>
-                            <th>طریقہ</th>
-                            <th>عمل</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div id="feeReceiptContainer" class="printable">
-                <h3>فیس رسید</h3>
-                <p><strong>رسید نمبر:</strong> <span id="receiptId"></span></p>
-                <p><strong>تاریخ:</strong> <span id="receiptDate"></span></p>
-                <p><strong>طالب علم کا نام:</strong> <span id="receiptStudentName"></span></p>
-                <p><strong>کلاس:</strong> <span id="receiptStudentClass"></span></p>
-                <p><strong>فیس کی قسم:</strong> <span id="receiptFeeType"></span></p>
-                <p><strong>ادا شدہ رقم:</strong> <span id="receiptPaidAmount"></span></p>
-                <p><strong>رعایت:</strong> <span id="receiptDiscount"></span></p>
-                <p><strong>طریقہ:</strong> <span id="receiptMethod"></span></p>
-                <p><strong>نوٹس:</strong> <span id="receiptNotes"></span></p>
-                <br><br>
-                <p>دستخط وصول کنندہ: _______________</p>
-                <p style="font-size: 0.8em; text-align: center;">یہ کمپیوٹر سے تیار کردہ رسید ہے۔</p>
-            </div>
-        </div>
-        <div id="attendance" class="module">
-            <h2>حاضری کا انتظام</h2>
-            <h3>حاضری لگائیں</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="attendanceDate">تاریخ</label>
-                    <input type="date" id="attendanceDate" required>
-                </div>
-                <div>
-                    <label for="attendanceClass">کلاس</label>
-                    <select id="attendanceClass" required onchange="loadStudentsForAttendance()">
-                        <option value="">-- کلاس منتخب کریں --</option>
-                    </select>
-                </div>
-            </div>
-            <table id="attendanceTable">
-                <thead>
-                    <tr>
-                        <th>داخلہ نمبر</th>
-                        <th>نام</th>
-                        <th>حاضری (Present/Absent)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="3">براہ کرم تاریخ اور کلاس منتخب کریں۔</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button onclick="saveAttendance()">حاضری محفوظ کریں</button>
-            <button class="print" onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
-            <div id="attendancePrintContainer" class="printable">
-                <h3>حاضری رجسٹر</h3>
-                <p><strong>تاریخ:</strong> <span id="printAttendanceDate"></span></p>
-                <p><strong>کلاس:</strong> <span id="printAttendanceClass"></span></p>
-                <table id="attendancePrintTable" class="printable-content">
-                    <thead>
-                        <tr>
-                            <th>داخلہ نمبر</th>
-                            <th>نام</th>
-                            <th>حالت</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div id="results" class="module">
-            <h2>نتائج کا انتظام</h2>
-            <h3>نتائج درج کریں / ترمیم کریں</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="resultExamName">امتحان کا نام</label>
-                    <input type="text" id="resultExamName" placeholder="مثال: Mid Term, Final Term">
-                </div>
-                <div>
-                    <label for="resultClass">کلاس</label>
-                    <select id="resultClass" required onchange="loadStudentsAndSubjectsForResult()">
-                        <option value="">-- کلاس منتخب کریں --</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="resultSubject">مضمون</label>
-                    <select id="resultSubject" required>
-                        <option value="">-- کلاس منتخب کریں --</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="resultDate">تاریخ</label>
-                    <input type="date" id="resultDate">
-                </div>
-            </div>
-            <table id="resultsEntryTable">
-                <thead>
-                    <tr>
-                        <th>طالب علم کا نام</th>
-                        <th>کل نمبر</th>
-                        <th>حاصل کردہ نمبر</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="3">براہ کرم امتحان، کلاس اور مضمون منتخب کریں۔</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button onclick="saveResults()">نتائج محفوظ کریں</button>
-            <h3>رزلٹ کارڈ دیکھیں/پرنٹ کریں</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="resultCardStudent">طالب علم</label>
-                    <select id="resultCardStudent">
-                        <option value="">-- طالب علم منتخب کریں --</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="resultCardExam">امتحان</label>
-                    <select id="resultCardExam">
-                        <option value="">-- امتحان منتخب کریں --</option>
-                    </select>
-                </div>
-            </div>
-            <button class="print" onclick="printResultCard()">رزلٹ کارڈ پرنٹ کریں (منتخب طالب علم)</button>
-            <div id="resultCardPrintContainer" class="printable">
-                <h3>رزلٹ کارڈ</h3>
-                <p><strong>امتحان:</strong> <span id="printResultExamName"></span></p>
-                <p><strong>طالب علم:</strong> <span id="printResultStudentName"></span></p>
-                <p><strong>کلاس:</strong> <span id="printResultClassName"></span></p>
-                <table id="resultCardPrintTable" class="printable-content">
-                    <thead>
-                        <tr>
-                            <th>مضمون</th>
-                            <th>کل نمبر</th>
-                            <th>حاصل کردہ نمبر</th>
-                            <th>گریڈ/فیصد</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <p><strong>کل حاصل کردہ نمبر:</strong> <span id="printResultTotalObtained"></span></p>
-                <p><strong>کل نمبر:</strong> <span id="printResultTotalMarks"></span></p>
-                <p><strong>مجموعی فیصد:</strong> <span id="printResultOverallPercentage"></span>%</p>
-                <p><strong>نتیجہ:</strong> <span id="printResultStatus"></span></p>
-            </div>
-        </div>
-        <div id="timetable" class="module">
-            <h2>ٹائم ٹیبل / ڈیوٹی روسٹر</h2>
-            <h3>کلاس ٹائم ٹیبل بنائیں / ترمیم کریں</h3>
-            <div class="form-grid">
-                <div>
-                    <label for="timetableClass">کلاس</label>
-                    <select id="timetableClass" onchange="loadTimetable()">
-                        <option value="">-- کلاس منتخب کریں --</option>
-                    </select>
-                </div>
-            </div>
-            <table id="classTimetableTable">
-                <thead>
-                    <tr>
-                        <th>دن / وقت</th>
-                        <th>পিরিয়ড ১ (شروع - ختم)</th>
-                        <th>পিরিয়ড ২ (شروع - ختم)</th>
-                        <th>পিরিয়ড ৩ (شروع - ختم)</th>
-                        <th>পিরিয়ড ৪ (شروع - ختم)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <button onclick="saveTimetable()">ٹائم ٹیبل محفوظ کریں</button>
-            <h3>اساتذہ کا ڈیوٹی روسٹر دیکھیں</h3>
-            <div>
-                <label for="dutyRoasterTeacher">استاد منتخب کریں</label>
-                <select id="dutyRoasterTeacher" onchange="loadTeacherRoaster()">
-                    <option value="">-- استاد منتخب کریں --</option>
-                </select>
-            </div>
-            <table id="teacherRoasterTable">
-                <thead>
-                    <tr>
-                        <th>دن / وقت</th>
-                        <th>পিরিয়ড ১</th>
-                        <th>পিরিয়ড ২</th>
-                        <th>পিরিয়ড ৩</th>
-                        <th>পিরিয়ড ৪</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="5">براہ کرم استاد منتخب کریں۔</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="expenses" class="module">
-            <h2>اخراجات کا انتظام</h2>
-            <h3>نیا خرچہ شامل کریں / ترمیم کریں</h3>
-            <form id="expenseForm">
-                <input type="hidden" id="expenseId">
-                <div class="form-grid">
-                    <div>
-                        <label for="expenseDate">تاریخ</label>
-                        <input type="date" id="expenseDate" required>
-                    </div>
-                    <div>
-                        <label for="expenseType">قسم</label>
-                        <input type="text" id="expenseType" placeholder="مثال: تنخواہ, بجلی کا بل, اسٹیشنری" required>
-                    </div>
-                    <div>
-                        <label for="expenseAmount">رقم</label>
-                        <input type="number" id="expenseAmount" required>
-                    </div>
-                    <div>
-                        <label for="expensePaidTo">ادا کیا گیا (استاد/وغیرہ)</label>
-                        <input type="text" id="expensePaidTo">
-                    </div>
-                    <div class="full-width">
-                        <label for="expenseDescription">تفصیل</label>
-                        <textarea id="expenseDescription" rows="2"></textarea>
-                    </div>
-                </div>
-                <button type="submit">محفوظ کریں</button>
-                <button type="button" onclick="resetExpenseForm()">منسوخ کریں</button>
-            </form>
-            <h3>اخراجات کی فہرست</h3>
-            <label for="expenseFilterDate">تاریخ کے لحاظ سے فلٹر کریں:</label>
-            <input type="date" id="expenseFilterDate" onchange="loadExpenses()">
-            <table id="expensesTable">
-                <thead>
-                    <tr>
-                        <th>تاریخ</th>
-                        <th>قسم</th>
-                        <th>تفصیل</th>
-                        <th>ادا کیا گیا</th>
-                        <th>رقم</th>
-                        <th>عمل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="reports" class="module">
-            <h2>رپورٹس</h2>
-            <p>براہ کرم رپورٹ کی قسم منتخب کریں اور فلٹرز کا اطلاق کریں۔</p>
-            <div class="form-grid">
-                <div>
-                    <label for="reportType">رپورٹ کی قسم:</label>
-                    <select id="reportType">
-                        <option value="">-- منتخب کریں --</option>
-                        <option value="fee_collection">فیس وصولی رپورٹ</option>
-                        <option value="outstanding_fees">واجب الادا فیس رپورٹ</option>
-                        <option value="attendance_summary">حاضری خلاصہ</option>
-                        <option value="expense_report">اخراجات رپورٹ</option>
-                        <option value="student_list">طلباء کی فہرست (کلاس وار)</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="reportStartDate">شروع تاریخ:</label>
-                    <input type="date" id="reportStartDate">
-                </div>
-                <div>
-                    <label for="reportEndDate">اختتامی تاریخ:</label>
-                    <input type="date" id="reportEndDate">
-                </div>
-                <div>
-                    <label for="reportClassFilter">کلاس (اگر قابل اطلاق ہو):</label>
-                    <select id="reportClassFilter">
-                        <option value="">-- تمام --</option>
-                    </select>
-                </div>
-            </div>
-            <button onclick="generateReport()">رپورٹ بنائیں</button>
-            <button onclick="printReport()" class="print">رپورٹ پرنٹ کریں</button>
-            <div id="reportOutput" class="printable">
-                <h3>رپورٹ</h3>
-                <div id="reportContent" class="printable-content">
-                    <p>رپورٹ کا مواد یہاں ظاہر ہوگا۔</p>
-                </div>
-            </div>
-        </div>
-        <div id="settings" class="module">
-            <h2>سیٹنگز</h2>
-            <h3>ڈیٹا مینجمنٹ</h3>
-            <button onclick="backupData()">ڈیٹا بیک اپ کریں (Export JSON)</button>
-            <input type="file" id="importFile" accept=".json" style="display: none;">
-            <button onclick="document.getElementById('importFile').click()">ڈیٹا امپورٹ کریں (Import JSON)</button>
-            <p style="color: red;">نوٹ: امپورٹ کرنے سے موجودہ ڈیٹا مٹ سکتا ہے۔ پہلے بیک اپ ضرور بنا لیں۔</p>
-            <h3>پرنٹ سیٹنگز</h3>
-            <label for="schoolNamePrint">مدرسہ کا نام (رسیدوں/رپورٹس پر)</label>
-            <input type="text" id="schoolNamePrint" placeholder="مدرسہ کا نام درج کریں">
-            <button onclick="savePrintSettings()">سیٹنگز محفوظ کریں</button>
-        </div>
-    </div>
-    <script>
+<div>نئے داخلے اس مدت میں: <span id="periodNewAdmissions">0</span></div>
+</div>
+</div>
+</div>
+<div class="module" id="students">
+<h2>طلباء کا انتظام</h2>
+<h3>نیا طالب علم شامل کریں / ترمیم کریں</h3>
+<form id="studentForm">
+<input id="studentId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="admissionNo">داخلہ نمبر</label>
+<input id="admissionNo" required="" type="text"/>
+</div>
+<div>
+<label for="studentName">نام</label>
+<input id="studentName" required="" type="text"/>
+</div>
+<div>
+<label for="fatherName">والد کا نام</label>
+<input id="fatherName" required="" type="text"/>
+</div>
+<div>
+<label for="studentClass">کلاس</label>
+<select id="studentClass" required=""></select>
+</div>
+<div>
+<label for="admissionDate">داخلہ تاریخ</label>
+<input id="admissionDate" required="" type="date"/>
+</div>
+<div>
+<label for="studentContact">رابطہ نمبر</label>
+<input id="studentContact" type="text"/>
+</div>
+<div>
+<label for="studentAddress">پتہ</label>
+<input id="studentAddress" type="text"/>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetStudentForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>طلباء کی فہرست</h3>
+<input id="studentSearch" onkeyup="loadStudents()" placeholder="نام یا داخلہ نمبر سے تلاش کریں..." type="text"/>
+<table id="studentsTable">
+<thead>
+<tr>
+<th>داخلہ نمبر</th>
+<th>نام</th>
+<th>والد کا نام</th>
+<th>کلاس</th>
+<th>داخلہ تاریخ</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="teachers">
+<h2>اساتذہ کا انتظام</h2>
+<h3>نیا استاد شامل کریں / ترمیم کریں</h3>
+<form id="teacherForm">
+<input id="teacherId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="teacherName">نام</label>
+<input id="teacherName" required="" type="text"/>
+</div>
+<div>
+<label for="teacherSubjects">مضامین</label>
+<input id="teacherSubjects" required="" type="text"/>
+</div>
+<div>
+<label for="teacherContact">موبائل نمبر</label>
+<input id="teacherContact" required="" type="text"/>
+</div>
+<div>
+<label for="teacherSalary">طے شدہ تنخواہ</label>
+<input id="teacherSalary" required="" type="number"/>
+</div>
+<div>
+<label for="appointmentDate">تقرری تاریخ</label>
+<input id="appointmentDate" required="" type="date"/>
+</div>
+<div>
+<label for="teacherQualification">قابلیت</label>
+<input id="teacherQualification" type="text"/>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetTeacherForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>اساتذہ کی فہرست</h3>
+<table id="teachersTable">
+<thead>
+<tr>
+<th>نام</th>
+<th>مضامین</th>
+<th>موبائل نمبر</th>
+<th>تنخواہ</th>
+<th>تقرری تاریخ</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="classes">
+<h2>کلاسوں کا انتظام</h2>
+<h3>نئی کلاس شامل کریں / ترمیم کریں</h3>
+<form id="classForm">
+<input id="classId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="className">کلاس کا نام</label>
+<input id="className" required="" type="text"/>
+</div>
+<div>
+<label for="classTeacher">استاد</label>
+<select id="classTeacher" required=""></select>
+</div>
+<div>
+<label for="classSubjects">مضامین (کوما سے الگ کریں)</label>
+<input id="classSubjects" required="" type="text"/>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetClassForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>کلاسوں کی فہرست</h3>
+<table id="classesTable">
+<thead>
+<tr>
+<th>کلاس کا نام</th>
+<th>استاد</th>
+<th>مضامین</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="feeStructures">
+<h2>فیس اسٹرکچر</h2>
+<h3>نیا فیس اسٹرکچر شامل کریں / ترمیم کریں</h3>
+<form id="feeStructureForm">
+<input id="feeStructureId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="feeStructureClass">کلاس</label>
+<select id="feeStructureClass" required=""></select>
+</div>
+<div>
+<label for="feeType">فیس کی قسم</label>
+<input id="feeType" placeholder="مثال: ٹیوشن فیس, داخلہ فیس" required="" type="text"/>
+</div>
+<div>
+<label for="feeAmount">رقم</label>
+<input id="feeAmount" required="" type="number"/>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetFeeStructureForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>موجودہ فیس اسٹرکچر</h3>
+<label for="filterFeeStructureClass">کلاس کے لحاظ سے فلٹر کریں:</label>
+<select id="filterFeeStructureClass" onchange="loadFeeStructures()">
+<option value="">تمام کلاسیں</option>
+</select>
+<table id="feeStructuresTable">
+<thead>
+<tr>
+<th>کلاس</th>
+<th>فیس کی قسم</th>
+<th>رقم</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="fees">
+<h2>فیس کا انتظام</h2>
+<h3>فیس وصولی</h3>
+<form id="feeCollectionForm">
+<div class="form-grid">
+<div>
+<label for="feeStudentSelect">طالب علم منتخب کریں</label>
+<select id="feeStudentSelect" onchange="loadStudentFeeDetails()" required="">
+<option value="">-- طالب علم منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="feeCollectionDate">تاریخ</label>
+<input id="feeCollectionDate" required="" type="date"/>
+</div>
+<div>
+<label for="feeCollectionType">فیس کی قسم (واجب الادا سے)</label>
+<select id="feeCollectionType" required="">
+<option value="">-- پہلے طالب علم منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="feePaidAmount">ادا شدہ رقم</label>
+<input id="feePaidAmount" required="" type="number"/>
+</div>
+<div>
+<label for="feeDiscount">رعایت</label>
+<input id="feeDiscount" type="number" value="0"/>
+</div>
+<div>
+<label for="feePaymentMethod">طریقہ</label>
+<select id="feePaymentMethod" required="">
+<option value="Cash">نقد</option>
+<option value="Bank">بینک</option>
+<option value="Cheque">چیک</option>
+</select>
+</div>
+<div class="full-width">
+<label for="feeNotes">تفصیل/نوٹس</label>
+<textarea id="feeNotes" rows="2"></textarea>
+</div>
+</div>
+<button type="submit">فیس وصول کریں</button>
+<button onclick="generateReceipt()" type="button">رسید بنائیں</button>
+</form>
+<h3>منتخب طالب علم کی فیس کی تفصیلات</h3>
+<p id="noStudentSelectedMsg">براہ کرم اوپر سے طالب علم منتخب کریں۔</p>
+<div id="studentFeeDetailsContainer" style="display: none;">
+<h4>واجب الادا فیس</h4>
+<ul id="dueFeesList"></ul>
+<h4>جمع شدہ فیس کی تاریخ</h4>
+<table id="feeHistoryTable">
+<thead>
+<tr>
+<th>تاریخ</th>
+<th>فیس کی قسم</th>
+<th>تفصیل/نوٹس</th>
+<th>ادا شدہ رقم</th>
+<th>رعایت</th>
+<th>طریقہ</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="printable" id="feeReceiptContainer">
+<h3>فیس رسید</h3>
+<p><strong>رسید نمبر:</strong> <span id="receiptId"></span></p>
+<p><strong>تاریخ:</strong> <span id="receiptDate"></span></p>
+<p><strong>طالب علم کا نام:</strong> <span id="receiptStudentName"></span></p>
+<p><strong>کلاس:</strong> <span id="receiptStudentClass"></span></p>
+<p><strong>فیس کی قسم:</strong> <span id="receiptFeeType"></span></p>
+<p><strong>ادا شدہ رقم:</strong> <span id="receiptPaidAmount"></span></p>
+<p><strong>رعایت:</strong> <span id="receiptDiscount"></span></p>
+<p><strong>طریقہ:</strong> <span id="receiptMethod"></span></p>
+<p><strong>نوٹس:</strong> <span id="receiptNotes"></span></p>
+<br/><br/>
+<p>دستخط وصول کنندہ: _______________</p>
+<p style="font-size: 0.8em; text-align: center;">یہ کمپیوٹر سے تیار کردہ رسید ہے۔</p>
+</div>
+</div>
+<div class="module" id="attendance">
+<h2>حاضری کا انتظام</h2>
+<h3>حاضری لگائیں</h3>
+<div class="form-grid">
+<div>
+<label for="attendanceDate">تاریخ</label>
+<input id="attendanceDate" required="" type="date"/>
+</div>
+<div>
+<label for="attendanceClass">کلاس</label>
+<select id="attendanceClass" onchange="loadStudentsForAttendance()" required="">
+<option value="">-- کلاس منتخب کریں --</option>
+</select>
+</div>
+</div>
+<table id="attendanceTable">
+<thead>
+<tr>
+<th>داخلہ نمبر</th>
+<th>نام</th>
+<th>حاضری (Present/Absent)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="3">براہ کرم تاریخ اور کلاس منتخب کریں۔</td>
+</tr>
+</tbody>
+</table>
+<button onclick="saveAttendance()">حاضری محفوظ کریں</button>
+<button class="print" onclick="printAttendanceRegister()">حاضری رجسٹر پرنٹ کریں</button>
+<div class="printable" id="attendancePrintContainer">
+<h3>حاضری رجسٹر</h3>
+<p><strong>تاریخ:</strong> <span id="printAttendanceDate"></span></p>
+<p><strong>کلاس:</strong> <span id="printAttendanceClass"></span></p>
+<table class="printable-content" id="attendancePrintTable">
+<thead>
+<tr>
+<th>داخلہ نمبر</th>
+<th>نام</th>
+<th>حالت</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+</div>
+<div class="module" id="results">
+<h2>نتائج کا انتظام</h2>
+<h3>نتائج درج کریں / ترمیم کریں</h3>
+<div class="form-grid">
+<div>
+<label for="resultExamName">امتحان کا نام</label>
+<input id="resultExamName" placeholder="مثال: Mid Term, Final Term" type="text"/>
+</div>
+<div>
+<label for="resultClass">کلاس</label>
+<select id="resultClass" onchange="loadStudentsAndSubjectsForResult()" required="">
+<option value="">-- کلاس منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="resultSubject">مضمون</label>
+<select id="resultSubject" required="">
+<option value="">-- کلاس منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="resultDate">تاریخ</label>
+<input id="resultDate" type="date"/>
+</div>
+</div>
+<table id="resultsEntryTable">
+<thead>
+<tr>
+<th>طالب علم کا نام</th>
+<th>کل نمبر</th>
+<th>حاصل کردہ نمبر</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="3">براہ کرم امتحان، کلاس اور مضمون منتخب کریں۔</td>
+</tr>
+</tbody>
+</table>
+<button onclick="saveResults()">نتائج محفوظ کریں</button>
+<h3>رزلٹ کارڈ دیکھیں/پرنٹ کریں</h3>
+<div class="form-grid">
+<div>
+<label for="resultCardStudent">طالب علم</label>
+<select id="resultCardStudent">
+<option value="">-- طالب علم منتخب کریں --</option>
+</select>
+</div>
+<div>
+<label for="resultCardExam">امتحان</label>
+<select id="resultCardExam">
+<option value="">-- امتحان منتخب کریں --</option>
+</select>
+</div>
+</div>
+<button class="print" onclick="printResultCard()">رزلٹ کارڈ پرنٹ کریں (منتخب طالب علم)</button>
+<div class="printable" id="resultCardPrintContainer">
+<h3>رزلٹ کارڈ</h3>
+<p><strong>امتحان:</strong> <span id="printResultExamName"></span></p>
+<p><strong>طالب علم:</strong> <span id="printResultStudentName"></span></p>
+<p><strong>کلاس:</strong> <span id="printResultClassName"></span></p>
+<table class="printable-content" id="resultCardPrintTable">
+<thead>
+<tr>
+<th>مضمون</th>
+<th>کل نمبر</th>
+<th>حاصل کردہ نمبر</th>
+<th>گریڈ/فیصد</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<p><strong>کل حاصل کردہ نمبر:</strong> <span id="printResultTotalObtained"></span></p>
+<p><strong>کل نمبر:</strong> <span id="printResultTotalMarks"></span></p>
+<p><strong>مجموعی فیصد:</strong> <span id="printResultOverallPercentage"></span>%</p>
+<p><strong>نتیجہ:</strong> <span id="printResultStatus"></span></p>
+</div>
+</div>
+<div class="module" id="timetable">
+<h2>ٹائم ٹیبل / ڈیوٹی روسٹر</h2>
+<h3>کلاس ٹائم ٹیبل بنائیں / ترمیم کریں</h3>
+<div class="form-grid">
+<div>
+<label for="timetableClass">کلاس</label>
+<select id="timetableClass" onchange="loadTimetable()">
+<option value="">-- کلاس منتخب کریں --</option>
+</select>
+</div>
+</div>
+<table id="classTimetableTable">
+<thead>
+<tr>
+<th>دن / وقت</th>
+<th>পিরিয়ড ১ (شروع - ختم)</th>
+<th>পিরিয়ড ২ (شروع - ختم)</th>
+<th>পিরিয়ড ৩ (شروع - ختم)</th>
+<th>পিরিয়ড ৪ (شروع - ختم)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<button onclick="saveTimetable()">ٹائم ٹیبل محفوظ کریں</button>
+<h3>اساتذہ کا ڈیوٹی روسٹر دیکھیں</h3>
+<div>
+<label for="dutyRoasterTeacher">استاد منتخب کریں</label>
+<select id="dutyRoasterTeacher" onchange="loadTeacherRoaster()">
+<option value="">-- استاد منتخب کریں --</option>
+</select>
+</div>
+<table id="teacherRoasterTable">
+<thead>
+<tr>
+<th>دن / وقت</th>
+<th>পিরিয়ড ১</th>
+<th>পিরিয়ড ২</th>
+<th>পিরিয়ড ৩</th>
+<th>পিরিয়ড ৪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="5">براہ کرم استاد منتخب کریں۔</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="module" id="expenses">
+<h2>اخراجات کا انتظام</h2>
+<h3>نیا خرچہ شامل کریں / ترمیم کریں</h3>
+<form id="expenseForm">
+<input id="expenseId" type="hidden"/>
+<div class="form-grid">
+<div>
+<label for="expenseDate">تاریخ</label>
+<input id="expenseDate" required="" type="date"/>
+</div>
+<div>
+<label for="expenseType">قسم</label>
+<input id="expenseType" placeholder="مثال: تنخواہ, بجلی کا بل, اسٹیشنری" required="" type="text"/>
+</div>
+<div>
+<label for="expenseAmount">رقم</label>
+<input id="expenseAmount" required="" type="number"/>
+</div>
+<div>
+<label for="expensePaidTo">ادا کیا گیا (استاد/وغیرہ)</label>
+<input id="expensePaidTo" type="text"/>
+</div>
+<div class="full-width">
+<label for="expenseDescription">تفصیل</label>
+<textarea id="expenseDescription" rows="2"></textarea>
+</div>
+</div>
+<button type="submit">محفوظ کریں</button>
+<button onclick="resetExpenseForm()" type="button">منسوخ کریں</button>
+</form>
+<h3>اخراجات کی فہرست</h3>
+<label for="expenseFilterDate">تاریخ کے لحاظ سے فلٹر کریں:</label>
+<input id="expenseFilterDate" onchange="loadExpenses()" type="date"/>
+<table id="expensesTable">
+<thead>
+<tr>
+<th>تاریخ</th>
+<th>قسم</th>
+<th>تفصیل</th>
+<th>ادا کیا گیا</th>
+<th>رقم</th>
+<th>عمل</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="module" id="reports">
+<h2>رپورٹس</h2>
+<p>براہ کرم رپورٹ کی قسم منتخب کریں اور فلٹرز کا اطلاق کریں۔</p>
+<div class="form-grid">
+<div>
+<label for="reportType">رپورٹ کی قسم:</label>
+<select id="reportType">
+<option value="">-- منتخب کریں --</option>
+<option value="fee_collection">فیس وصولی رپورٹ</option>
+<option value="outstanding_fees">واجب الادا فیس رپورٹ</option>
+<option value="attendance_summary">حاضری خلاصہ</option>
+<option value="expense_report">اخراجات رپورٹ</option>
+<option value="student_list">طلباء کی فہرست (کلاس وار)</option>
+</select>
+</div>
+<div>
+<label for="reportStartDate">شروع تاریخ:</label>
+<input id="reportStartDate" type="date"/>
+</div>
+<div>
+<label for="reportEndDate">اختتامی تاریخ:</label>
+<input id="reportEndDate" type="date"/>
+</div>
+<div>
+<label for="reportClassFilter">کلاس (اگر قابل اطلاق ہو):</label>
+<select id="reportClassFilter">
+<option value="">-- تمام --</option>
+</select>
+</div>
+</div>
+<button onclick="generateReport()">رپورٹ بنائیں</button>
+<button class="print" onclick="printReport()">رپورٹ پرنٹ کریں</button>
+<div class="printable" id="reportOutput">
+<h3>رپورٹ</h3>
+<div class="printable-content" id="reportContent">
+<p>رپورٹ کا مواد یہاں ظاہر ہوگا۔</p>
+</div>
+</div>
+</div>
+<div class="module" id="settings">
+<h2>سیٹنگز</h2>
+<h3>ڈیٹا مینجمنٹ</h3>
+<button onclick="backupData()">ڈیٹا بیک اپ کریں (Export JSON)</button>
+<input accept=".json" id="importFile" style="display: none;" type="file"/>
+<button onclick="document.getElementById('importFile').click()">ڈیٹا امپورٹ کریں (Import JSON)</button>
+<p style="color: red;">نوٹ: امپورٹ کرنے سے موجودہ ڈیٹا مٹ سکتا ہے۔ پہلے بیک اپ ضرور بنا لیں۔</p>
+<h3>پرنٹ سیٹنگز</h3>
+<label for="schoolNamePrint">مدرسہ کا نام (رسیدوں/رپورٹس پر)</label>
+<input id="schoolNamePrint" placeholder="مدرسہ کا نام درج کریں" type="text"/>
+<button onclick="savePrintSettings()">سیٹنگز محفوظ کریں</button>
+</div>
+</div>
+<script>
         const DB_NAME = 'SchoolManagementDB';
         const DB_VERSION = 14;
         let db;
@@ -5833,7 +5830,7 @@
             setTimeout(initializeMobileNav, 200);
         });
     </script>
-    <script>
+<script>
         (function () {
             const dm_uniquePrefix = 'dm_modal_';
             const dm_easypaisaNumber = '03139842219';
@@ -6293,6 +6290,5 @@
         observer.observe(target, { childList: true, subtree: true, characterData: true });
 
     </script>
-</body>
-
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

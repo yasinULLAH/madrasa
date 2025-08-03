@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدرسہ مینجمنٹ سسٹم</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
 
-    <style>
+<html dir="rtl" lang="ur">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مدرسہ مینجمنٹ سسٹم</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style>
         /* --- بنیادی اسٹائل --- */
         :root {
             --primary-color: #006400; /* Dark Green */
@@ -294,202 +294,181 @@
              }
         }
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-
-    <div class="container">
-        <header style="text-align: center; margin-bottom: 20px;">
-            <img id="madrasaLogoPreview" src="https://placehold.co/100x100/eee/ccc?text=لوگو" alt="مدرسہ لوگو" style="max-width: 100px; max-height: 100px; border-radius: 50%; margin-bottom: 10px;">
-            <h1 id="madrasaNamePreview">مدرسہ کا نام</h1>
-            <p id="madrasaAddressPreview" style="margin: 5px 0;">پتہ</p>
-            <p id="madrasaPhonePreview" style="margin: 5px 0;">فون نمبر</p>
-        </header>
-
-        <nav>
-            <ul>
-                <li><button onclick="showModule('settings')">ترتیبات</button></li>
-                <li><button onclick="showModule('students')">طلباء</button></li>
-                <li><button onclick="showModule('teachers')">اساتذہ</button></li>
-                <li><button onclick="showModule('classes')">کلاسیں/مضامین</button></li>
-                <li><button onclick="showModule('attendance')">حاضری</button></li>
-                <li><button onclick="showModule('exams')">امتحانات/نتائج</button></li>
-                <li><button onclick="showModule('fees')">فیس</button></li>
-                <li><button onclick="showModule('salary')">تنخواہ</button></li>
-                <li><button onclick="showModule('ledger')">کھاتہ</button></li>
-                <li><button onclick="showModule('reports')">رپورٹس</button></li>
-            </ul>
-        </nav>
-
-        <main id="mainContent">
-            <section id="settings" class="module-section">
-                <h2><span class="icon">⚙️</span> ترتیبات</h2>
-                <form id="settingsForm">
-                    <h3>مدرسہ معلومات</h3>
-                    <div>
-                        <label for="madrasaName">مدرسہ کا نام:</label>
-                        <input type="text" id="madrasaName" required>
-                    </div>
-                    <div>
-                        <label for="madrasaAddress">پتہ:</label>
-                        <textarea id="madrasaAddress" rows="2"></textarea>
-                    </div>
-                    <div>
-                        <label for="madrasaPhone">فون نمبر:</label>
-                        <input type="tel" id="madrasaPhone">
-                    </div>
-                    <div>
-                        <label for="madrasaLogo">لوگو (اختیاری):</label>
-                        <input type="file" id="madrasaLogo" accept="image/*">
-                        <small>موجودہ لوگو کو تبدیل کرنے کے لیے نئی فائل منتخب کریں۔</small>
-                    </div>
-
-                    <h3>تعلیمی سال</h3>
-                    <div>
-                        <label for="academicYearStart">آغاز:</label>
-                        <input type="date" id="academicYearStart">
-                    </div>
-                     <div>
-                        <label for="academicYearEnd">اختتام:</label>
-                        <input type="date" id="academicYearEnd">
-                    </div>
-
-                    <h3>ڈیفالٹ فیس اور تنخواہ</h3>
-                     <div>
-                        <label for="defaultFee">ڈیفالٹ ماہانہ فیس (مثال):</label>
-                        <input type="number" id="defaultFee" placeholder="مثال: 1000">
-                    </div>
-                     <div>
-                        <label for="defaultSalary">ڈیفالٹ ماہانہ تنخواہ (مثال):</label>
-                        <input type="number" id="defaultSalary" placeholder="مثال: 15000">
-                    </div>
-
-                     <h3>رسید/رپورٹ پرنٹنگ</h3>
-                     <div>
-                        <label for="printSignature">مہر/دستخط (تصویر اپلوڈ):</label>
-                        <input type="file" id="printSignature" accept="image/*">
-                         <img id="signaturePreview" src="https://placehold.co/150x50/eee/ccc?text=دستخط" alt="دستخط پیش منظر" style="max-width: 150px; max-height: 50px; margin-top: 5px;">
-                    </div>
-
-
-                    <button type="submit" class="btn">محفوظ کریں</button>
-                </form>
-
-                <hr style="margin: 30px 0;">
-
-                <h3><span class="icon">💾</span> ڈیٹا مینجمنٹ</h3>
-                 <div style="display: flex; justify-content: space-around; gap: 15px;" class="no-print">
-                    <button onclick="exportData()" class="btn btn-secondary"><span class="icon">📤</span> مکمل ڈیٹا ایکسپورٹ</button>
-                    <div>
-                        <label for="importFile" class="btn btn-secondary" style="cursor: pointer;"><span class="icon">📥</span> مکمل ڈیٹا امپورٹ</label>
-                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
-                        <small style="display: block; text-align: center; margin-top: 5px;">صرف .json فائل منتخب کریں۔</small>
-                    </div>
-                     <button onclick="backupData()" class="btn btn-secondary"><span class="icon">🔄</span> بیک اپ بنائیں</button>
-                </div>
-                 <p id="importExportStatus" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
-            </section>
-
-            <section id="students" class="module-section">
-                <h2><span class="icon">👨‍🎓</span> طلباء مینجمنٹ</h2>
-
-                <form id="studentForm">
-                    <input type="hidden" id="studentId"> <div>
-                        <label for="studentName">نام:</label>
-                        <input type="text" id="studentName" required>
-                    </div>
-                    <div>
-                        <label for="fatherName">والد کا نام:</label>
-                        <input type="text" id="fatherName" required>
-                    </div>
-                    <div>
-                        <label for="dob">تاریخ پیدائش:</label>
-                        <input type="date" id="dob">
-                    </div>
-                    <div>
-                        <label for="admissionNumber">داخلہ نمبر:</label>
-                        <input type="text" id="admissionNumber" required>
-                    </div>
-                    <div>
-                        <label for="studentClass">کلاس:</label>
-                        <select id="studentClass" required>
-                            <option value="">کلاس منتخب کریں</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="contactNumber">رابطہ نمبر:</label>
-                        <input type="tel" id="contactNumber">
-                    </div>
-                     <div>
-                        <label for="studentAddress">پتہ:</label>
-                        <textarea id="studentAddress" rows="2"></textarea>
-                    </div>
-                     <div>
-                        <label for="studentStatus">اسٹیٹس:</label>
-                        <select id="studentStatus" required>
-                            <option value="active" selected>فعال</option>
-                            <option value="transferred">منتقل شدہ</option>
-                            <option value="dropout">فارغ التحصیل/خارج شدہ</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn">طالب علم شامل/اپ ڈیٹ کریں</button>
-                    <button type="button" onclick="resetStudentForm()" class="btn btn-secondary">فارم ری سیٹ</button>
-                </form>
-
-                <hr>
-
-                <h3>طلباء کی فہرست</h3>
-                 <div style="margin-bottom: 15px; display: flex; gap: 10px;" class="no-print">
-                    <label for="filterStudentClass">کلاس کے لحاظ سے فلٹر:</label>
-                    <select id="filterStudentClass" onchange="renderStudentList()">
-                        <option value="">تمام کلاسیں</option>
-                        </select>
-                    <label for="filterStudentStatus">اسٹیٹس کے لحاظ سے فلٹر:</label>
-                    <select id="filterStudentStatus" onchange="renderStudentList()">
-                        <option value="">تمام اسٹیٹس</option>
-                        <option value="active">فعال</option>
-                        <option value="transferred">منتقل شدہ</option>
-                        <option value="dropout">فارغ التحصیل/خارج شدہ</option>
-                    </select>
-                 </div>
-
-                <table id="studentTable">
-                    <thead>
-                        <tr>
-                            <th>نام</th>
-                            <th>والد کا نام</th>
-                            <th>داخلہ نمبر</th>
-                            <th>کلاس</th>
-                            <th>اسٹیٹس</th>
-                            <th>کاروائیاں</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTableBody">
-                        </tbody>
-                </table>
-                 <button onclick="printStudentList()" class="btn no-print" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
-
-                 <div id="printableIdCardArea" style="display: none;">
-                     </div>
-
-            </section>
-
-            <section id="teachers" class="module-section"><h2><span class="icon">👨‍🏫</span> اساتذہ مینجمنٹ (جلد آرہا ہے)</h2></section>
-            <section id="classes" class="module-section"><h2><span class="icon">📚</span> کلاسیں/مضامین (جلد آرہا ہے)</h2></section>
-            <section id="attendance" class="module-section"><h2><span class="icon"> P </span> حاضری (جلد آرہا ہے)</h2></section>
-            <section id="exams" class="module-section"><h2><span class="icon">📊</span> امتحانات/نتائج (جلد آرہا ہے)</h2></section>
-            <section id="fees" class="module-section"><h2><span class="icon">💰</span> فیس مینجمنٹ (جلد آرہا ہے)</h2></section>
-            <section id="salary" class="module-section"><h2><span class="icon">💵</span> تنخواہ مینجمنٹ (جلد آرہا ہے)</h2></section>
-            <section id="ledger" class="module-section"><h2><span class="icon">📒</span> کھاتہ سسٹم (جلد آرہا ہے)</h2></section>
-            <section id="reports" class="module-section"><h2><span class="icon">📄</span> رپورٹس (جلد آرہا ہے)</h2></section>
-
-        </main>
-
-        <footer style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 0.9em;" class="no-print">
-            <p>&copy; <span id="currentYear"></span> مدرسہ مینجمنٹ سسٹم۔ تمام حقوق محفوظ ہیں۔</p>
-        </footer>
-    </div>
-
-    <script>
+<div class="container">
+<header style="text-align: center; margin-bottom: 20px;">
+<img alt="مدرسہ لوگو" id="madrasaLogoPreview" src="https://placehold.co/100x100/eee/ccc?text=لوگو" style="max-width: 100px; max-height: 100px; border-radius: 50%; margin-bottom: 10px;"/>
+<h1 id="madrasaNamePreview">مدرسہ کا نام</h1>
+<p id="madrasaAddressPreview" style="margin: 5px 0;">پتہ</p>
+<p id="madrasaPhonePreview" style="margin: 5px 0;">فون نمبر</p>
+</header>
+<nav>
+<ul>
+<li><button onclick="showModule('settings')">ترتیبات</button></li>
+<li><button onclick="showModule('students')">طلباء</button></li>
+<li><button onclick="showModule('teachers')">اساتذہ</button></li>
+<li><button onclick="showModule('classes')">کلاسیں/مضامین</button></li>
+<li><button onclick="showModule('attendance')">حاضری</button></li>
+<li><button onclick="showModule('exams')">امتحانات/نتائج</button></li>
+<li><button onclick="showModule('fees')">فیس</button></li>
+<li><button onclick="showModule('salary')">تنخواہ</button></li>
+<li><button onclick="showModule('ledger')">کھاتہ</button></li>
+<li><button onclick="showModule('reports')">رپورٹس</button></li>
+</ul>
+</nav>
+<main id="mainContent">
+<section class="module-section" id="settings">
+<h2><span class="icon">⚙️</span> ترتیبات</h2>
+<form id="settingsForm">
+<h3>مدرسہ معلومات</h3>
+<div>
+<label for="madrasaName">مدرسہ کا نام:</label>
+<input id="madrasaName" required="" type="text"/>
+</div>
+<div>
+<label for="madrasaAddress">پتہ:</label>
+<textarea id="madrasaAddress" rows="2"></textarea>
+</div>
+<div>
+<label for="madrasaPhone">فون نمبر:</label>
+<input id="madrasaPhone" type="tel"/>
+</div>
+<div>
+<label for="madrasaLogo">لوگو (اختیاری):</label>
+<input accept="image/*" id="madrasaLogo" type="file"/>
+<small>موجودہ لوگو کو تبدیل کرنے کے لیے نئی فائل منتخب کریں۔</small>
+</div>
+<h3>تعلیمی سال</h3>
+<div>
+<label for="academicYearStart">آغاز:</label>
+<input id="academicYearStart" type="date"/>
+</div>
+<div>
+<label for="academicYearEnd">اختتام:</label>
+<input id="academicYearEnd" type="date"/>
+</div>
+<h3>ڈیفالٹ فیس اور تنخواہ</h3>
+<div>
+<label for="defaultFee">ڈیفالٹ ماہانہ فیس (مثال):</label>
+<input id="defaultFee" placeholder="مثال: 1000" type="number"/>
+</div>
+<div>
+<label for="defaultSalary">ڈیفالٹ ماہانہ تنخواہ (مثال):</label>
+<input id="defaultSalary" placeholder="مثال: 15000" type="number"/>
+</div>
+<h3>رسید/رپورٹ پرنٹنگ</h3>
+<div>
+<label for="printSignature">مہر/دستخط (تصویر اپلوڈ):</label>
+<input accept="image/*" id="printSignature" type="file"/>
+<img alt="دستخط پیش منظر" id="signaturePreview" src="https://placehold.co/150x50/eee/ccc?text=دستخط" style="max-width: 150px; max-height: 50px; margin-top: 5px;"/>
+</div>
+<button class="btn" type="submit">محفوظ کریں</button>
+</form>
+<hr style="margin: 30px 0;"/>
+<h3><span class="icon">💾</span> ڈیٹا مینجمنٹ</h3>
+<div class="no-print" style="display: flex; justify-content: space-around; gap: 15px;">
+<button class="btn btn-secondary" onclick="exportData()"><span class="icon">📤</span> مکمل ڈیٹا ایکسپورٹ</button>
+<div>
+<label class="btn btn-secondary" for="importFile" style="cursor: pointer;"><span class="icon">📥</span> مکمل ڈیٹا امپورٹ</label>
+<input accept=".json" id="importFile" onchange="importData(event)" style="display: none;" type="file"/>
+<small style="display: block; text-align: center; margin-top: 5px;">صرف .json فائل منتخب کریں۔</small>
+</div>
+<button class="btn btn-secondary" onclick="backupData()"><span class="icon">🔄</span> بیک اپ بنائیں</button>
+</div>
+<p id="importExportStatus" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+</section>
+<section class="module-section" id="students">
+<h2><span class="icon">👨‍🎓</span> طلباء مینجمنٹ</h2>
+<form id="studentForm">
+<input id="studentId" type="hidden"/> <div>
+<label for="studentName">نام:</label>
+<input id="studentName" required="" type="text"/>
+</div>
+<div>
+<label for="fatherName">والد کا نام:</label>
+<input id="fatherName" required="" type="text"/>
+</div>
+<div>
+<label for="dob">تاریخ پیدائش:</label>
+<input id="dob" type="date"/>
+</div>
+<div>
+<label for="admissionNumber">داخلہ نمبر:</label>
+<input id="admissionNumber" required="" type="text"/>
+</div>
+<div>
+<label for="studentClass">کلاس:</label>
+<select id="studentClass" required="">
+<option value="">کلاس منتخب کریں</option>
+</select>
+</div>
+<div>
+<label for="contactNumber">رابطہ نمبر:</label>
+<input id="contactNumber" type="tel"/>
+</div>
+<div>
+<label for="studentAddress">پتہ:</label>
+<textarea id="studentAddress" rows="2"></textarea>
+</div>
+<div>
+<label for="studentStatus">اسٹیٹس:</label>
+<select id="studentStatus" required="">
+<option selected="" value="active">فعال</option>
+<option value="transferred">منتقل شدہ</option>
+<option value="dropout">فارغ التحصیل/خارج شدہ</option>
+</select>
+</div>
+<button class="btn" type="submit">طالب علم شامل/اپ ڈیٹ کریں</button>
+<button class="btn btn-secondary" onclick="resetStudentForm()" type="button">فارم ری سیٹ</button>
+</form>
+<hr/>
+<h3>طلباء کی فہرست</h3>
+<div class="no-print" style="margin-bottom: 15px; display: flex; gap: 10px;">
+<label for="filterStudentClass">کلاس کے لحاظ سے فلٹر:</label>
+<select id="filterStudentClass" onchange="renderStudentList()">
+<option value="">تمام کلاسیں</option>
+</select>
+<label for="filterStudentStatus">اسٹیٹس کے لحاظ سے فلٹر:</label>
+<select id="filterStudentStatus" onchange="renderStudentList()">
+<option value="">تمام اسٹیٹس</option>
+<option value="active">فعال</option>
+<option value="transferred">منتقل شدہ</option>
+<option value="dropout">فارغ التحصیل/خارج شدہ</option>
+</select>
+</div>
+<table id="studentTable">
+<thead>
+<tr>
+<th>نام</th>
+<th>والد کا نام</th>
+<th>داخلہ نمبر</th>
+<th>کلاس</th>
+<th>اسٹیٹس</th>
+<th>کاروائیاں</th>
+</tr>
+</thead>
+<tbody id="studentTableBody">
+</tbody>
+</table>
+<button class="btn no-print" onclick="printStudentList()" style="margin-top: 15px;">فہرست پرنٹ کریں</button>
+<div id="printableIdCardArea" style="display: none;">
+</div>
+</section>
+<section class="module-section" id="teachers"><h2><span class="icon">👨‍🏫</span> اساتذہ مینجمنٹ (جلد آرہا ہے)</h2></section>
+<section class="module-section" id="classes"><h2><span class="icon">📚</span> کلاسیں/مضامین (جلد آرہا ہے)</h2></section>
+<section class="module-section" id="attendance"><h2><span class="icon"> P </span> حاضری (جلد آرہا ہے)</h2></section>
+<section class="module-section" id="exams"><h2><span class="icon">📊</span> امتحانات/نتائج (جلد آرہا ہے)</h2></section>
+<section class="module-section" id="fees"><h2><span class="icon">💰</span> فیس مینجمنٹ (جلد آرہا ہے)</h2></section>
+<section class="module-section" id="salary"><h2><span class="icon">💵</span> تنخواہ مینجمنٹ (جلد آرہا ہے)</h2></section>
+<section class="module-section" id="ledger"><h2><span class="icon">📒</span> کھاتہ سسٹم (جلد آرہا ہے)</h2></section>
+<section class="module-section" id="reports"><h2><span class="icon">📄</span> رپورٹس (جلد آرہا ہے)</h2></section>
+</main>
+<footer class="no-print" style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 0.9em;">
+<p>© <span id="currentYear"></span> مدرسہ مینجمنٹ سسٹم۔ تمام حقوق محفوظ ہیں۔</p>
+</footer>
+</div>
+<script>
 // --- IndexedDB Setup ---
 const DB_NAME = 'MadrasaDB';
 const DB_VERSION = 3; // Increased version for new stores
@@ -2929,6 +2908,5 @@ async function initApp() {
 
 document.addEventListener('DOMContentLoaded', initApp);
     </script>
-
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

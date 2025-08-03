@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Kiosk</title>
-    <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Attendance Kiosk</title>
+<script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+<style>
         :root {
             --bg-dark: #2c3e50; --bg-medium: #34495e; --bg-light: #4a6572;
             --text-light: #ecf0f1; --accent-green: #27ae60; --accent-red: #c0392b;
@@ -47,38 +48,35 @@
         .status-present { background-color: var(--accent-green); }
         .status-absent { background-color: var(--accent-red); }
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-
-    <div class="kiosk-container">
-        <div class="left-panel">
-            <div class="camera-controls">
-                <label for="camera-select">Camera:</label>
-                <select id="camera-select"></select>
-                <!-- --- NEW: Refresh Button --- -->
-                <button id="refresh-cameras-btn" title="Refresh Camera List">🔄</button>
-            </div>
-            <div id="reader-container">
-                <div id="reader"></div>
-                <div class="qr-box-overlay"></div>
-            </div>
-            <div id="last-scan-container">
-                <img id="scan-photo-preview" class="scan-photo" src="logo2.png">
-                <div id="scan-name-preview" class="scan-name">Initializing...</div>
-                <div id="scan-status-preview" class="scan-status">Detecting cameras...</div>
-            </div>
-        </div>
-
-        <div class="right-panel">
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Filter list or search to mark attendance...">
-                <div id="search-results"></div>
-            </div>
-            <div class="list-container" id="student-list-container"></div>
-        </div>
-    </div>
-
-    <script>
+<div class="kiosk-container">
+<div class="left-panel">
+<div class="camera-controls">
+<label for="camera-select">Camera:</label>
+<select id="camera-select"></select>
+<!-- --- NEW: Refresh Button --- -->
+<button id="refresh-cameras-btn" title="Refresh Camera List">🔄</button>
+</div>
+<div id="reader-container">
+<div id="reader"></div>
+<div class="qr-box-overlay"></div>
+</div>
+<div id="last-scan-container">
+<img class="scan-photo" id="scan-photo-preview" src="logo2.png"/>
+<div class="scan-name" id="scan-name-preview">Initializing...</div>
+<div class="scan-status" id="scan-status-preview">Detecting cameras...</div>
+</div>
+</div>
+<div class="right-panel">
+<div class="search-container">
+<input id="search-input" placeholder="Filter list or search to mark attendance..." type="text"/>
+<div id="search-results"></div>
+</div>
+<div class="list-container" id="student-list-container"></div>
+</div>
+</div>
+<script>
         let db;
         const DB_NAME = 'SchoolMadrasaDB';
         const DB_VERSION = 3; // Keep version consistent with main app
@@ -311,6 +309,5 @@
             }
         });
     </script>
-
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>

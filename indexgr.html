@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html dir="rtl" lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدرسہ مینجمنٹ سسٹم</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مدرسہ مینجمنٹ سسٹم</title>
+<style>
         @font-face {
             font-family: 'Nastaleeq';
             src: url('data:font/ttf;base64,/* Add base64 encoded Nastaleeq font here */') format('truetype');
@@ -85,187 +86,176 @@
             }
         }
     </style>
-</head>
+<link href="manifest.json" rel="manifest"/></head>
 <body>
-    <div class="container">
-        <h1>مدرسہ مینجمنٹ سسٹم</h1>
-        <nav class="no-print">
-            <button onclick="showModule('settings')">ترتیبات</button>
-            <button onclick="showModule('students')">طلباء</button>
-            <button onclick="showModule('teachers')">اساتذہ</button>
-            <button onclick="showModule('classes')">کلاسیں</button>
-            <button onclick="showModule('attendance')">حاضری</button>
-            <button onclick="showModule('exams')">امتحانات</button>
-            <button onclick="showModule('fees')">فیس</button>
-            <button onclick="showModule('salaries')">تنخواہ</button>
-            <button onclick="showModule('ledger')">خاتہ</button>
-            <button onclick="showModule('reports')">رپورٹس</button>
-        </nav>
-
-        <!-- Settings Module -->
-        <div id="settings" class="module" style="display: none;">
-            <h2>ترتیبات</h2>
-            <label>مدرسہ کا نام: <input id="madrasaName" type="text"></label><br>
-            <label>پتہ: <textarea id="madrasaAddress"></textarea></label><br>
-            <label>فون نمبر: <input id="madrasaPhone" type="text"></label><br>
-            <label>لوگو: <input id="madrasaLogo" type="file" accept="image/*"></label><br>
-            <label>تعلیمی سال: <input id="academicYear" type="text"></label><br>
-            <label>طے شدہ ماہانہ فیس فی کلاس: <input id="defaultFee" type="number"></label><br>
-            <label>اساتذہ کی طے شدہ تنخواہ: <input id="defaultSalary" type="number"></label><br>
-            <label>سٹیمپ/دستخط: <input id="stampSignature" type="file" accept="image/*"></label><br>
-            <button onclick="saveSettings()">محفوظ کریں</button>
-            <button onclick="exportData()">بیک اپ ایکسپورٹ</button>
-            <button onclick="document.getElementById('importFile').click()">بیک اپ امپورٹ</button>
-            <input id="importFile" type="file" style="display: none;" onchange="importData(event)">
-        </div>
-
-        <!-- Student Management -->
-        <div id="students" class="module" style="display: none;">
-            <h2>طلباء کا انتظام</h2>
-            <label>نام: <input id="studentName" type="text"></label><br>
-            <label>والد کا نام: <input id="studentFatherName" type="text"></label><br>
-            <label>تاریخ پیدائش: <input id="studentDOB" type="date"></label><br>
-            <label>داخلہ نمبر: <input id="studentAdmissionNo" type="text"></label><br>
-            <label>کلاس: <select id="studentClass"></select></label><br>
-            <label>رابطہ: <input id="studentContact" type="text"></label><br>
-            <label>پتہ: <textarea id="studentAddress"></textarea></label><br>
-            <button onclick="addStudent()">طالب علم شامل کریں</button>
-            <button onclick="printStudentID()">شناختی کارڈ پرنٹ کریں</button>
-            <table id="studentTable">
-                <thead><tr><th>نام</th><th>والد کا نام</th><th>کلاس</th><th>رابطہ</th><th>عمل</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <!-- Teacher Management -->
-        <div id="teachers" class="module" style="display: none;">
-            <h2>اساتذہ کا انتظام</h2>
-            <label>نام: <input id="teacherName" type="text"></label><br>
-            <label>مضامین: <input id="teacherSubjects" type="text"></label><br>
-            <label>فون: <input id="teacherPhone" type="text"></label><br>
-            <label>تنخواہ کی قسم: <select id="teacherSalaryType"><option value="fixed">فکسڈ</option><option value="hourly">فی گھنٹہ</option></select></label><br>
-            <label>شمولیت کی تاریخ: <input id="teacherJoiningDate" type="date"></label><br>
-            <button onclick="addTeacher()">استاد شامل کریں</button>
-            <table id="teacherTable">
-                <thead><tr><th>نام</th><th>مضامین</th><th>فون</th><th>عمل</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <!-- Class and Subject Management -->
-        <div id="classes" class="module" style="display: none;">
-            <h2>کلاس اور مضامین</h2>
-            <label>کلاس کا نام: <input id="className" type="text"></label><br>
-            <label>مضامین: <input id="classSubjects" type="text"></label><br>
-            <label>استاد: <select id="classTeacher"></select></label><br>
-            <label>فیس ٹیمپلیٹ: <input id="classFeeTemplate" type="number"></label><br>
-            <button onclick="addClass()">کلاس شامل کریں</button>
-            <table id="classTable">
-                <thead><tr><th>کلاس</th><th>مضامین</th><th>استاد</th><th>عمل</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <!-- Attendance System -->
-        <div id="attendance" class="module" style="display: none;">
-            <h2>حاضری کا نظام</h2>
-            <label>تاریخ: <input id="attendanceDate" type="date"></label><br>
-            <label>کلاس: <select id="attendanceClass" onchange="loadAttendanceStudents()"></select></label><br>
-            <table id="attendanceTable">
-                <thead><tr><th>نام</th><th>حاضری</th></tr></thead>
-                <tbody></tbody>
-            </table>
-            <button onclick="saveAttendance()">حاضری محفوظ کریں</button>
-            <button onclick="printAttendance()">حاضری رجسٹر پرنٹ کریں</button>
-        </div>
-
-        <!-- Exam and Result Management -->
-        <div id="exams" class="module" style="display: none;">
-            <h2>امتحانات اور نتائج</h2>
-            <label>امتحان کا نام: <input id="examName" type="text"></label><br>
-            <label>تاریخ: <input id="examDate" type="date"></label><br>
-            <label>مضامین: <input id="examSubjects" type="text"></label><br>
-            <button onclick="addExam()">امتحان شامل کریں</button>
-            <table id="examTable">
-                <thead><tr><th>امتحان</th><th>تاریخ</th><th>عمل</th></tr></thead>
-                <tbody></tbody>
-            </table>
-            <h3>نتائج درج کریں</h3>
-            <label>طالب علم: <select id="resultStudent"></select></label><br>
-            <label>مضمون: <input id="resultSubject" type="text"></label><br>
-            <label>نمبر: <input id="resultMarks" type="number"></label><br>
-            <button onclick="addResult()">نتیجہ شامل کریں</button>
-            <button onclick="printResultCard()">نتیجہ کارڈ پرنٹ کریں</button>
-        </div>
-
-        <!-- Fee Management -->
-        <div id="fees" class="module" style="display: none;">
-            <h2>فیس کا انتظام</h2>
-            <label>طالب علم: <select id="feeStudent"></select></label><br>
-            <label>ماہ: <input id="feeMonth" type="month"></label><br>
-            <label>رقم: <input id="feeAmount" type="number"></label><br>
-            <label>چھوٹ: <input id="feeDiscount" type="number"></label><br>
-            <label>تاخیری فیس: <input id="feeLate" type="number"></label><br>
-            <button onclick="addFeePayment()">ادائیگی شامل کریں</button>
-            <button onclick="printFeeReceipt()">رسید پرنٹ کریں</button>
-            <table id="feeTable">
-                <thead><tr><th>طالب علم</th><th>ماہ</th><th>رقم</th><th>عمل</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <!-- Teacher Salary Management -->
-        <div id="salaries" class="module" style="display: none;">
-            <h2>اساتذہ کی تنخواہ</h2>
-            <label>استاد: <select id="salaryTeacher"></select></label><br>
-            <label>ماہ: <input id="salaryMonth" type="month"></label><br>
-            <label>رقم: <input id="salaryAmount" type="number"></label><br>
-            <label>بونس: <input id="salaryBonus" type="number"></label><br>
-            <label>کٹوتی: <input id="salaryDeduction" type="number"></label><br>
-            <button onclick="addSalaryPayment()">ادائیگی شامل کریں</button>
-            <button onclick="printSalarySlip()">تنخواہ سلپ پرنٹ کریں</button>
-            <table id="salaryTable">
-                <thead><tr><th>استاد</th><th>ماہ</th><th>رقم</th><th>عمل</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <!-- Khata Ledger System -->
-        <div id="ledger" class="module" style="display: none;">
-            <h2>خاتہ لیجر</h2>
-            <label>قسم: <select id="ledgerType"><option value="student">طالب علم</option><option value="teacher">استاد</option><option value="madrasa">مدرسہ</option></select></label><br>
-            <label>تفصیل: <input id="ledgerDescription" type="text"></label><br>
-            <label>رقم: <input id="ledgerAmount" type="number"></label><br>
-            <label>تاریخ: <input id="ledgerDate" type="date"></label><br>
-            <button onclick="addLedgerEntry()">اندراج شامل کریں</button>
-            <button onclick="printLedger()">لیجر پرنٹ کریں</button>
-            <table id="ledgerTable">
-                <thead><tr><th>قسم</th><th>تفصیل</th><th>رقم</th><th>تاریخ</th><th>عمل</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <!-- Reports and Summaries -->
-        <div id="reports" class="module" style="display: none;">
-            <h2>رپورٹس اور خلاصے</h2>
-            <label>رپورٹ کی قسم: 
+<div class="container">
+<h1>مدرسہ مینجمنٹ سسٹم</h1>
+<nav class="no-print">
+<button onclick="showModule('settings')">ترتیبات</button>
+<button onclick="showModule('students')">طلباء</button>
+<button onclick="showModule('teachers')">اساتذہ</button>
+<button onclick="showModule('classes')">کلاسیں</button>
+<button onclick="showModule('attendance')">حاضری</button>
+<button onclick="showModule('exams')">امتحانات</button>
+<button onclick="showModule('fees')">فیس</button>
+<button onclick="showModule('salaries')">تنخواہ</button>
+<button onclick="showModule('ledger')">خاتہ</button>
+<button onclick="showModule('reports')">رپورٹس</button>
+</nav>
+<!-- Settings Module -->
+<div class="module" id="settings" style="display: none;">
+<h2>ترتیبات</h2>
+<label>مدرسہ کا نام: <input id="madrasaName" type="text"/></label><br/>
+<label>پتہ: <textarea id="madrasaAddress"></textarea></label><br/>
+<label>فون نمبر: <input id="madrasaPhone" type="text"/></label><br/>
+<label>لوگو: <input accept="image/*" id="madrasaLogo" type="file"/></label><br/>
+<label>تعلیمی سال: <input id="academicYear" type="text"/></label><br/>
+<label>طے شدہ ماہانہ فیس فی کلاس: <input id="defaultFee" type="number"/></label><br/>
+<label>اساتذہ کی طے شدہ تنخواہ: <input id="defaultSalary" type="number"/></label><br/>
+<label>سٹیمپ/دستخط: <input accept="image/*" id="stampSignature" type="file"/></label><br/>
+<button onclick="saveSettings()">محفوظ کریں</button>
+<button onclick="exportData()">بیک اپ ایکسپورٹ</button>
+<button onclick="document.getElementById('importFile').click()">بیک اپ امپورٹ</button>
+<input id="importFile" onchange="importData(event)" style="display: none;" type="file"/>
+</div>
+<!-- Student Management -->
+<div class="module" id="students" style="display: none;">
+<h2>طلباء کا انتظام</h2>
+<label>نام: <input id="studentName" type="text"/></label><br/>
+<label>والد کا نام: <input id="studentFatherName" type="text"/></label><br/>
+<label>تاریخ پیدائش: <input id="studentDOB" type="date"/></label><br/>
+<label>داخلہ نمبر: <input id="studentAdmissionNo" type="text"/></label><br/>
+<label>کلاس: <select id="studentClass"></select></label><br/>
+<label>رابطہ: <input id="studentContact" type="text"/></label><br/>
+<label>پتہ: <textarea id="studentAddress"></textarea></label><br/>
+<button onclick="addStudent()">طالب علم شامل کریں</button>
+<button onclick="printStudentID()">شناختی کارڈ پرنٹ کریں</button>
+<table id="studentTable">
+<thead><tr><th>نام</th><th>والد کا نام</th><th>کلاس</th><th>رابطہ</th><th>عمل</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<!-- Teacher Management -->
+<div class="module" id="teachers" style="display: none;">
+<h2>اساتذہ کا انتظام</h2>
+<label>نام: <input id="teacherName" type="text"/></label><br/>
+<label>مضامین: <input id="teacherSubjects" type="text"/></label><br/>
+<label>فون: <input id="teacherPhone" type="text"/></label><br/>
+<label>تنخواہ کی قسم: <select id="teacherSalaryType"><option value="fixed">فکسڈ</option><option value="hourly">فی گھنٹہ</option></select></label><br/>
+<label>شمولیت کی تاریخ: <input id="teacherJoiningDate" type="date"/></label><br/>
+<button onclick="addTeacher()">استاد شامل کریں</button>
+<table id="teacherTable">
+<thead><tr><th>نام</th><th>مضامین</th><th>فون</th><th>عمل</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<!-- Class and Subject Management -->
+<div class="module" id="classes" style="display: none;">
+<h2>کلاس اور مضامین</h2>
+<label>کلاس کا نام: <input id="className" type="text"/></label><br/>
+<label>مضامین: <input id="classSubjects" type="text"/></label><br/>
+<label>استاد: <select id="classTeacher"></select></label><br/>
+<label>فیس ٹیمپلیٹ: <input id="classFeeTemplate" type="number"/></label><br/>
+<button onclick="addClass()">کلاس شامل کریں</button>
+<table id="classTable">
+<thead><tr><th>کلاس</th><th>مضامین</th><th>استاد</th><th>عمل</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<!-- Attendance System -->
+<div class="module" id="attendance" style="display: none;">
+<h2>حاضری کا نظام</h2>
+<label>تاریخ: <input id="attendanceDate" type="date"/></label><br/>
+<label>کلاس: <select id="attendanceClass" onchange="loadAttendanceStudents()"></select></label><br/>
+<table id="attendanceTable">
+<thead><tr><th>نام</th><th>حاضری</th></tr></thead>
+<tbody></tbody>
+</table>
+<button onclick="saveAttendance()">حاضری محفوظ کریں</button>
+<button onclick="printAttendance()">حاضری رجسٹر پرنٹ کریں</button>
+</div>
+<!-- Exam and Result Management -->
+<div class="module" id="exams" style="display: none;">
+<h2>امتحانات اور نتائج</h2>
+<label>امتحان کا نام: <input id="examName" type="text"/></label><br/>
+<label>تاریخ: <input id="examDate" type="date"/></label><br/>
+<label>مضامین: <input id="examSubjects" type="text"/></label><br/>
+<button onclick="addExam()">امتحان شامل کریں</button>
+<table id="examTable">
+<thead><tr><th>امتحان</th><th>تاریخ</th><th>عمل</th></tr></thead>
+<tbody></tbody>
+</table>
+<h3>نتائج درج کریں</h3>
+<label>طالب علم: <select id="resultStudent"></select></label><br/>
+<label>مضمون: <input id="resultSubject" type="text"/></label><br/>
+<label>نمبر: <input id="resultMarks" type="number"/></label><br/>
+<button onclick="addResult()">نتیجہ شامل کریں</button>
+<button onclick="printResultCard()">نتیجہ کارڈ پرنٹ کریں</button>
+</div>
+<!-- Fee Management -->
+<div class="module" id="fees" style="display: none;">
+<h2>فیس کا انتظام</h2>
+<label>طالب علم: <select id="feeStudent"></select></label><br/>
+<label>ماہ: <input id="feeMonth" type="month"/></label><br/>
+<label>رقم: <input id="feeAmount" type="number"/></label><br/>
+<label>چھوٹ: <input id="feeDiscount" type="number"/></label><br/>
+<label>تاخیری فیس: <input id="feeLate" type="number"/></label><br/>
+<button onclick="addFeePayment()">ادائیگی شامل کریں</button>
+<button onclick="printFeeReceipt()">رسید پرنٹ کریں</button>
+<table id="feeTable">
+<thead><tr><th>طالب علم</th><th>ماہ</th><th>رقم</th><th>عمل</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<!-- Teacher Salary Management -->
+<div class="module" id="salaries" style="display: none;">
+<h2>اساتذہ کی تنخواہ</h2>
+<label>استاد: <select id="salaryTeacher"></select></label><br/>
+<label>ماہ: <input id="salaryMonth" type="month"/></label><br/>
+<label>رقم: <input id="salaryAmount" type="number"/></label><br/>
+<label>بونس: <input id="salaryBonus" type="number"/></label><br/>
+<label>کٹوتی: <input id="salaryDeduction" type="number"/></label><br/>
+<button onclick="addSalaryPayment()">ادائیگی شامل کریں</button>
+<button onclick="printSalarySlip()">تنخواہ سلپ پرنٹ کریں</button>
+<table id="salaryTable">
+<thead><tr><th>استاد</th><th>ماہ</th><th>رقم</th><th>عمل</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<!-- Khata Ledger System -->
+<div class="module" id="ledger" style="display: none;">
+<h2>خاتہ لیجر</h2>
+<label>قسم: <select id="ledgerType"><option value="student">طالب علم</option><option value="teacher">استاد</option><option value="madrasa">مدرسہ</option></select></label><br/>
+<label>تفصیل: <input id="ledgerDescription" type="text"/></label><br/>
+<label>رقم: <input id="ledgerAmount" type="number"/></label><br/>
+<label>تاریخ: <input id="ledgerDate" type="date"/></label><br/>
+<button onclick="addLedgerEntry()">اندراج شامل کریں</button>
+<button onclick="printLedger()">لیجر پرنٹ کریں</button>
+<table id="ledgerTable">
+<thead><tr><th>قسم</th><th>تفصیل</th><th>رقم</th><th>تاریخ</th><th>عمل</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<!-- Reports and Summaries -->
+<div class="module" id="reports" style="display: none;">
+<h2>رپورٹس اور خلاصے</h2>
+<label>رپورٹ کی قسم: 
                 <select id="reportType">
-                    <option value="students">طلباء</option>
-                    <option value="fees">فیس وصولی</option>
-                    <option value="salaries">اساتذہ کی تنخواہ</option>
-                    <option value="attendance">حاضری</option>
-                    <option value="exams">امتحانات</option>
-                    <option value="donations">عطیات</option>
-                </select>
-            </label><br>
-            <label>فلٹر: <input id="reportFilter" type="text"></label><br>
-            <button onclick="generateReport()">رپورٹ بنائیں</button>
-            <button onclick="printReport()">رپورٹ پرنٹ کریں</button>
-            <div id="reportOutput"></div>
-        </div>
-    </div>
-
-    <script>
+<option value="students">طلباء</option>
+<option value="fees">فیس وصولی</option>
+<option value="salaries">اساتذہ کی تنخواہ</option>
+<option value="attendance">حاضری</option>
+<option value="exams">امتحانات</option>
+<option value="donations">عطیات</option>
+</select>
+</label><br/>
+<label>فلٹر: <input id="reportFilter" type="text"/></label><br/>
+<button onclick="generateReport()">رپورٹ بنائیں</button>
+<button onclick="printReport()">رپورٹ پرنٹ کریں</button>
+<div id="reportOutput"></div>
+</div>
+</div>
+<script>
         let db;
         const request = indexedDB.open('MadrasaDB', 1);
 
@@ -913,5 +903,5 @@
             printWindow.print();
         }
     </script>
-</body>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
 </html>
