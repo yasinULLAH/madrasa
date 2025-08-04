@@ -1,12 +1,10 @@
-# pwa_builder.py
-
 import os
 import json
 import re
+import hashlib
 from PIL import Image
 from bs4 import BeautifulSoup
 
-# --- ⚙️ CONFIGURATION: UPDATE THESE VALUES ---
 SOURCE_LOGO_PATH = r"C:\Users\Yasin\Downloads\Yasin Soft\logo.png"
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_NAME = "My Web App"
@@ -14,8 +12,18 @@ SHORT_NAME = "WebApp"
 APP_DESCRIPTION = "A description of the web application."
 BACKGROUND_COLOR = "#ffffff"
 THEME_COLOR = "#007bff"
-# --- END OF CONFIGURATION ---
+VERSION = "1.0.8"
 
+def get_file_hash(path):
+    hasher = hashlib.md5()
+    try:
+        with open(path, 'rb') as f:
+            buf = f.read()
+            hasher.update(buf)
+        return hasher.hexdigest()
+    except Exception as e:
+        print(f"   ❌ Could not hash file {os.path.basename(path)}: {e}")
+        return None
 
 def generate_pwa_icons(source_path, output_dir):
     print("--- 1. Generating PWA Icons ---")
@@ -24,6 +32,7 @@ def generate_pwa_icons(source_path, output_dir):
         return []
     icon_sizes = [72, 96, 128, 144, 152, 192, 384, 512]
     generated_icons = []
+    icon_metadata = []
     try:
         with Image.open(source_path) as logo:
             logo = logo.convert("RGBA")
@@ -38,116 +47,108 @@ def generate_pwa_icons(source_path, output_dir):
                 canvas.paste(logo_copy, (left, top))
                 canvas.save(output_path, "PNG")
                 print(f"✅ Created: {filename}")
-                generated_icons.append({"src": filename, "sizes": f"{size}x{size}", "type": "image/png"})
-        return generated_icons
+                file_hash = get_file_hash(output_path)
+                if file_hash:
+                    generated_icons.append({"url": filename, "revision": file_hash})
+                icon_metadata.append({"src": filename, "sizes": f"{size}x{size}", "type": "image/png"})
+        return generated_icons, icon_metadata
     except Exception as e:
         print(f"❌ Error generating icons: {e}")
-        return []
+        return [], []
 
-def discover_assets(project_dir):
-    print(f"\n--- 2. Discovering App Files (Local & External) ---")
-    local_assets = set(['./', 'offline.html']) # Start with root and offline page
-    external_assets = set()
+def discover_assets(project_dir, generated_icons):
+    print(f"\n--- 2. Discovering App Files and Generating Hashes ---")
+    precache_list = generated_icons[:]
+    existing_urls = {entry['url'] for entry in precache_list}
     html_files = []
+    
     for root, _, files in os.walk(project_dir):
-        if any(part.startswith('.') for part in root.split(os.sep)): continue
+        if any(part.startswith('.') for part in root.split(os.sep)):
+            continue
         for file in files:
-            if file.endswith(".html"): html_files.append(os.path.join(root, file))
+            file_path = os.path.join(root, file)
+            relative_path = os.path.relpath(file_path, project_dir).replace("\\", "/")
+            if relative_path in existing_urls:
+                continue
+            if file.endswith(".html"):
+                html_files.append(file_path)
+            file_hash = get_file_hash(file_path)
+            if file_hash:
+                precache_list.append({"url": relative_path, "revision": file_hash})
+                existing_urls.add(relative_path)
     if not html_files:
         print("❌ Error: No HTML files found.")
-        return [], [], []
-    for html_path in html_files:
-        relative_path = os.path.relpath(html_path, project_dir).replace("\\", "/")
-        local_assets.add(relative_path)
-        print(f"🔎 Scanning: {relative_path}")
-        with open(html_path, 'r', encoding='utf-8') as f:
-            soup = BeautifulSoup(f.read(), 'html.parser')
-            for tag in soup.find_all(['link', 'script', 'img', 'source']):
-                attr = 'href' if tag.has_attr('href') else 'src'
-                if tag.has_attr(attr):
-                    path = tag[attr]
-                    if not path or path.startswith(('#', 'mailto:', 'tel:')): continue
-                    
-                    # **FIX:** Differentiate between local and external assets
-                    if path.startswith('http'):
-                        external_assets.add(path)
-                    else:
-                        asset_path = os.path.normpath(os.path.join(os.path.dirname(relative_path), path)).replace("\\", "/")
-                        if os.path.exists(os.path.join(project_dir, asset_path)):
-                            local_assets.add(asset_path)
+        return [], []
+    print(f"✅ Discovered and hashed {len(precache_list)} local files.")
+    return precache_list, html_files
 
-    print(f"✅ Discovered {len(local_assets)} local files and {len(external_assets)} external libraries.")
-    return sorted(list(local_assets)), sorted(list(external_assets)), html_files
-
-def create_manifest(output_dir, icons, html_files):
+def create_manifest(output_dir, icon_metadata, html_files):
     print("\n--- 3. Creating manifest.json ---")
     start_url, app_title_from_html = "index.html", None
-    potential_mains = [f for f in html_files if "madrasa finance.html" in f] or \
-                      [f for f in html_files if "index.html" in f] or html_files
+    potential_mains = [f for f in html_files if "index.html" in f.lower()] or html_files
+    if not potential_mains:
+        print("❌ Error: No suitable start file (like index.html) found.")
+        return
     start_file_path = potential_mains[0]
     start_url = os.path.relpath(start_file_path, output_dir).replace("\\", "/")
     try:
-        with open(start_file_path, 'r', encoding='utf-8') as f:
+        with open(start_file_path, 'r', encoding='utf-8', errors='ignore') as f:
             soup = BeautifulSoup(f.read(), 'html.parser')
             if soup.title and soup.title.string:
                 app_title_from_html = soup.title.string.strip()
                 print(f"✅ Detected App Title: '{app_title_from_html}'")
-    except Exception as e: print(f"⚠️ Could not read title from HTML: {e}")
-    manifest = {"name": app_title_from_html or APP_NAME, "short_name": app_title_from_html or SHORT_NAME,
-                "description": APP_DESCRIPTION, "start_url": start_url, "display": "standalone",
-                "background_color": BACKGROUND_COLOR, "theme_color": THEME_COLOR,
-                "orientation": "portrait-primary", "icons": icons}
+    except Exception as e:
+        print(f"⚠️ Could not read title from HTML: {e}")
+    manifest = {
+        "name": app_title_from_html or APP_NAME,
+        "short_name": app_title_from_html or SHORT_NAME,
+        "description": APP_DESCRIPTION,
+        "start_url": start_url,
+        "display": "standalone",
+        "background_color": BACKGROUND_COLOR,
+        "theme_color": THEME_COLOR,
+        "orientation": "portrait-primary",
+        "icons": icon_metadata
+    }
     with open(os.path.join(output_dir, "manifest.json"), 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=2)
     print(f"✅ Created: manifest.json")
 
-def create_service_worker(output_dir, local_assets, external_assets):
+def create_service_worker(output_dir, precache_list):
     print("\n--- 4. Creating sw.js (Service Worker) ---")
-    cache_version = os.urandom(4).hex()
-    
-    # **FIX:** This new service worker template is much smarter.
-    # It uses different caching strategies for local files and external libraries.
     sw_template = f"""
-// This file is auto-generated by pwa_builder.py. Do not edit.
+// Auto-generated by PWA builder script.
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
-
-const CACHE_NAME_PREFIX = 'pwa-cache';
-const CACHE_VERSION = '{cache_version}';
 
 if (workbox) {{
     console.log(`Workbox is loaded.`);
     
-    // Set up precaching for all our local files.
-    // This makes the app load instantly offline.
-    workbox.precaching.precacheAndRoute({json.dumps(local_assets, indent=4)});
+    // This message listener waits for a command from the web page to activate.
+    self.addEventListener('message', (event) => {{
+      if (event.data && event.data.type === 'SKIP_WAITING') {{
+        console.log('Service Worker received SKIP_WAITING message, activating now.');
+        self.skipWaiting();
+      }}
+    }});
 
-    // Strategy for external CSS, JS libraries (e.g., from a CDN)
-    // StaleWhileRevalidate: Serve from cache first (fast!), then check for updates in the background.
+    workbox.precaching.precacheAndRoute({json.dumps(precache_list, indent=4)});
+
     workbox.routing.registerRoute(
-        ({{request}}) => request.destination === 'script' || request.destination === 'style',
-        new workbox.strategies.StaleWhileRevalidate({{
-            cacheName: `${{CACHE_NAME_PREFIX}}-external-assets-${{CACHE_VERSION}}`,
-        }})
+        ({{request}}) => request.destination === 'style' || request.destination === 'script',
+        new workbox.strategies.StaleWhileRevalidate({{ cacheName: 'asset-cache' }})
     );
-    
-    // Strategy for fonts
-    // CacheFirst: Once a font is downloaded, serve it from the cache forever.
+
     workbox.routing.registerRoute(
-        ({{request}}) => request.destination === 'font',
+        ({{request}}) => request.destination === 'image',
         new workbox.strategies.CacheFirst({{
-            cacheName: `${{CACHE_NAME_PREFIX}}-fonts-${{CACHE_VERSION}}`,
-            plugins: [
-                new workbox.expiration.ExpirationPlugin({{ maxEntries: 20, maxAgeSeconds: 365 * 24 * 60 * 60 }}), // Cache for 1 year
-            ],
+            cacheName: 'image-cache',
+            plugins: [ new workbox.expiration.ExpirationPlugin({{ maxEntries: 60, maxAgeSeconds: 30 * 24 * 60 * 60 }}) ],
         }})
     );
 
-    // Offline fallback for pages.
-    // If you're offline and try to go to a page you've never visited, it shows offline.html
-    const offlineFallback = 'offline.html';
     workbox.routing.setCatchHandler(async ({{event}}) => {{
         if (event.request.destination === 'document') {{
-            return await caches.match(offlineFallback);
+            return await caches.match('offline.html') || Response.error();
         }}
         return Response.error();
     }});
@@ -157,47 +158,68 @@ if (workbox) {{
 }}
 """
     with open(os.path.join(output_dir, "sw.js"), 'w', encoding='utf-8') as f:
-        f.write(sw_template)
+        f.write(sw_template.strip())
     print("✅ Created: sw.js")
 
 def update_html_files(html_files):
     print("\n--- 5. Updating HTML Files ---")
     manifest_link_str = '<link rel="manifest" href="manifest.json">'
-    sw_script_str = """<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script>"""
+    sw_script_str = f"""<script type="module">
+  import {{ Workbox }} from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
+
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
+
+  // This event fires when a new service worker has installed but is waiting to activate.
+  wb.addEventListener('waiting', (event) => {{
+    console.log('A new service worker is waiting to activate.');
+    // This sends a message to the waiting service worker, telling it to activate.
+    wb.messageSW({{ type: 'SKIP_WAITING' }});
+  }});
+
+  // This event fires when the new service worker has taken control.
+  wb.addEventListener('controlling', (event) => {{
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  }});
+
+  // Register the service worker.
+  wb.register();
+</script>"""
     for html_path in html_files:
-        with open(html_path, 'r+', encoding='utf-8') as f:
-            content = f.read()
-            soup = BeautifulSoup(content, 'html.parser')
-            updated = False
-            if soup.head and not soup.find('link', {'rel': 'manifest'}):
-                soup.head.append(BeautifulSoup(manifest_link_str, 'html.parser'))
-                updated = True
-                print(f"   - Added manifest link to {os.path.basename(html_path)}")
-            if soup.body and "navigator.serviceWorker.register" not in content:
+        try:
+            with open(html_path, 'r+', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+                soup = BeautifulSoup(content, 'html.parser')
+                for s in soup.find_all("script"):
+                    if "workbox-window" in s.text or "navigator.serviceWorker" in s.text:
+                        s.decompose()
                 soup.body.append(BeautifulSoup(sw_script_str, 'html.parser'))
-                updated = True
-                print(f"   - Added service worker script to {os.path.basename(html_path)}")
-            if updated:
-                f.seek(0); f.write(str(soup)); f.truncate()
-    print("✅ HTML files are up to date.")
+                if not soup.head.find('link', {'rel': 'manifest'}):
+                    soup.head.append(BeautifulSoup(manifest_link_str, 'html.parser'))
+                f.seek(0)
+                f.write(str(soup))
+                f.truncate()
+                print(f"   - Injected Workbox update script into {os.path.basename(html_path)}")
+        except Exception as e:
+            print(f"   ❌ Could not update {os.path.basename(html_path)}: {e}")
+    print("✅ HTML files updated.")
 
 if __name__ == "__main__":
-    print("🚀 Starting PWA Automation Script...")
-    # Make sure the offline.html file exists
-    if not os.path.exists(os.path.join(PROJECT_DIR, 'offline.html')):
-        with open(os.path.join(PROJECT_DIR, 'offline.html'), 'w', encoding='utf-8') as f:
-            f.write("<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline.</h1><p>Please check your connection.</p></body></html>")
-        print("✅ Created a basic 'offline.html' fallback page.")
+    print(f"🚀 Starting PWA Build Script [v{VERSION}]...")
+    offline_page_path = os.path.join(PROJECT_DIR, 'offline.html')
+    if not os.path.exists(offline_page_path):
+        with open(offline_page_path, 'w', encoding='utf-8') as f:
+            f.write("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Offline</title></head><body><h1>You are offline.</h1></body></html>")
+        print("✅ Created 'offline.html'.")
 
-    generated_icons = generate_pwa_icons(SOURCE_LOGO_PATH, PROJECT_DIR)
-    local_assets, external_assets, html_files = discover_assets(PROJECT_DIR)
+    generated_icons, icon_metadata = generate_pwa_icons(SOURCE_LOGO_PATH, PROJECT_DIR)
+    precache_list, html_files = discover_assets(PROJECT_DIR, generated_icons)
     
-    if not html_files:
-        print("\n❌ Script stopped because no HTML files were found.")
-    else:
-        if generated_icons:
-            local_assets.append(generated_icons[-1]['src'])
-        create_manifest(PROJECT_DIR, generated_icons, html_files)
-        create_service_worker(PROJECT_DIR, local_assets, external_assets)
+    if html_files:
+        create_manifest(PROJECT_DIR, icon_metadata, html_files)
+        create_service_worker(PROJECT_DIR, precache_list)
         update_html_files(html_files)
-        print("\n🎉 PWA setup is complete! Your app is now fully functional offline.")
+        print(f"\n🎉 PWA setup is complete!")
+    else:
+        print("\n❌ Script stopped: No HTML files were found.")

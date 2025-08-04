@@ -3414,5 +3414,26 @@
             });
         }
     </script>
-<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('ServiceWorker registered.')).catch(e => console.log('ServiceWorker registration failed: ', e)); }); }</script></body>
+<script type="module">
+  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
+
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
+
+  // This event fires when a new service worker has installed but is waiting to activate.
+  wb.addEventListener('waiting', (event) => {
+    console.log('A new service worker is waiting to activate.');
+    // This sends a message to the waiting service worker, telling it to activate.
+    wb.messageSW({ type: 'SKIP_WAITING' });
+  });
+
+  // This event fires when the new service worker has taken control.
+  wb.addEventListener('controlling', (event) => {
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  });
+
+  // Register the service worker.
+  wb.register();
+</script></body>
 </html>
