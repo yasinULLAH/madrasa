@@ -4,7 +4,6 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox
 if (workbox) {
     console.log(`Workbox is loaded.`);
     
-    // This message listener waits for a command from the web page to activate.
     self.addEventListener('message', (event) => {
       if (event.data && event.data.type === 'SKIP_WAITING') {
         console.log('Service Worker received SKIP_WAITING message, activating now.');
@@ -46,6 +45,10 @@ if (workbox) {
         "revision": "1a98134a086859d517de611e9e0579bc"
     },
     {
+        "url": "favicon.ico",
+        "revision": "7cbcf8be98d3ce63133537d07504db0f"
+    },
+    {
         "url": ".gitignore",
         "revision": "e242b207e4ab43f11d03f1b73fbd2252"
     },
@@ -75,11 +78,11 @@ if (workbox) {
     },
     {
         "url": "attendance.html",
-        "revision": "23ce97022a5f04d29bcaf01ae0aa1c1b"
+        "revision": "f30061e6401fd5cbff3260f871ef3a5c"
     },
     {
         "url": "attendance2.html",
-        "revision": "b95a5ff7fdac29d63505ba707dc4a08f"
+        "revision": "9baae20bf63fcd4b4ce5dbfdfd97a51d"
     },
     {
         "url": "attendance_app.py",
@@ -95,7 +98,7 @@ if (workbox) {
     },
     {
         "url": "attendence and fee.html",
-        "revision": "cd727573582c32dc4abb13d77fbe3704"
+        "revision": "b1f2510af03ecd3a2b674533c69df8a2"
     },
     {
         "url": "attendencetable-export.pdf",
@@ -124,6 +127,10 @@ if (workbox) {
     {
         "url": "bootstrap.min.css",
         "revision": "1bcf7ee45ab9975f9b9eb016fb96771a"
+    },
+    {
+        "url": "build pwa make html app offline and installable yasin best working re-run this for updates best for html only.py",
+        "revision": "912a9d55d74613b8f4f07180d0df1fd3"
     },
     {
         "url": "build pwa make html app offline and installable yasin best working.py",
@@ -163,31 +170,31 @@ if (workbox) {
     },
     {
         "url": "Copy (2) of index.html",
-        "revision": "90a4e4f6466732b00d6b1cf4ed1d0aae"
+        "revision": "9242178e6e63974bd4953ccc68642deb"
     },
     {
         "url": "Copy (3) of index.html",
-        "revision": "8ea168ed7ca5db03ea792cdddaf2eccd"
+        "revision": "d9b7dc86a23b17eb4bdc3609b8fba024"
     },
     {
         "url": "Copy (4) of index.html",
-        "revision": "34b5ff05eebc9572e8a72dd22b39eb3a"
+        "revision": "f3593c6a160bd7d5e481ceec2c42eb4a"
     },
     {
         "url": "Copy (5) of index.html",
-        "revision": "57c91e2128d6ede1db961849876fb568"
+        "revision": "f28e9ecca8d2391acbc82bca05a998fa"
     },
     {
         "url": "Copy of Copy (5) of index.html",
-        "revision": "5a67f7b08c48a05a416a0597598f1aad"
+        "revision": "c5db6a721ac2113e16aacbabedd9bee1"
     },
     {
         "url": "Copy of index.html",
-        "revision": "a4525a7cc03579d2b09f5bcd47a8af0a"
+        "revision": "43883a2caf26125901e7aea27c6a048f"
     },
     {
         "url": "Copy of indexcl.html",
-        "revision": "125d6bbeb2c01b5a11efd5d0684a7fde"
+        "revision": "76ba8486729540bdcafbf700c833e5bb"
     },
     {
         "url": "Copy of indexcl.txt",
@@ -195,7 +202,7 @@ if (workbox) {
     },
     {
         "url": "Copy of indexnewone.html",
-        "revision": "c32f98d7b98e22c9b4d35b1c3af098d8"
+        "revision": "96bd54735dd3d26265e6a9785f67acfb"
     },
     {
         "url": "Copy of phpmadrasa.txt",
@@ -215,7 +222,7 @@ if (workbox) {
     },
     {
         "url": "deepseek_html4.html",
-        "revision": "d210b49c79d6a31c64afe5c7607f5e15"
+        "revision": "fb2c8d6c64645d59a70f7c60a2116b12"
     },
     {
         "url": "events-table-export.pdf",
@@ -224,10 +231,6 @@ if (workbox) {
     {
         "url": "favicon (1).ico",
         "revision": "f79f8475937b74fbd5ceebe0a998fa34"
-    },
-    {
-        "url": "favicon.ico",
-        "revision": "b42c9076d24f83090f597d004b0d8b16"
     },
     {
         "url": "favicon.svg",
@@ -244,6 +247,10 @@ if (workbox) {
     {
         "url": "gschool app.exe",
         "revision": "299bc6e82d97baf239d7b9de7188a018"
+    },
+    {
+        "url": "id card and certificate.html",
+        "revision": "3754affb096d118e99b7b42ca0a7a7ca"
     },
     {
         "url": "ID-Card-0002-Back.png",
@@ -275,83 +282,83 @@ if (workbox) {
     },
     {
         "url": "index Yasin best till now 26-4-2025.html",
-        "revision": "3a636ccf71ab5a075123688a26288614"
+        "revision": "d5071a1ae535410b7029f767a572107a"
     },
     {
         "url": "index.html",
-        "revision": "7a8571ffff50c774bc1c24a28e1b3dde"
+        "revision": "d004e01afce663178424f414f9c28c3a"
     },
     {
         "url": "index10 bk.html",
-        "revision": "319552833c69baa4d088ee57fd2928d4"
+        "revision": "5fae971f1b3e4369fbe6de19f6fd49ef"
     },
     {
         "url": "index10.html",
-        "revision": "26f67cd7d2c3dd3e611c160b4d765829"
+        "revision": "8a2a22e4f71001470376256bc09f156c"
     },
     {
         "url": "index11.html",
-        "revision": "e5073a970e98251e7fed59e8c2a6e262"
+        "revision": "650bdb17ed334f488e009f1af7e2ff95"
     },
     {
         "url": "index12.html",
-        "revision": "74e90131668bca85f703f00993a2cebc"
+        "revision": "dd8da581d0c96b9d1a15212dd9b01bf5"
     },
     {
         "url": "index14.html",
-        "revision": "c0a3bc02c347dc817f40045a87736eb4"
+        "revision": "32253a6be36af824d5bd097fcfe37197"
     },
     {
         "url": "index15.html",
-        "revision": "986b3bf113b80dfc0ece5f23d7dfc963"
+        "revision": "fcb0775eadd341603e5a86d263141dbc"
     },
     {
         "url": "index2.html",
-        "revision": "b21b4c0f8d194aca2e0e17158ce218c6"
+        "revision": "a84692da95e78af48a5cb5f69c66ff77"
     },
     {
         "url": "index3.html",
-        "revision": "2d9aae8cdd6a93695facbcfae65f8af5"
+        "revision": "fb6ab1cd086983b076b6583ea891261d"
     },
     {
         "url": "index4 copy.html",
-        "revision": "beff6e7233d08933b84eb5619d64ae57"
+        "revision": "6c59dfd74791ac593f085a7d089ca66d"
     },
     {
         "url": "index4.html",
-        "revision": "1a359839756ab69893a29b23bb178a6b"
+        "revision": "ba635737e54bf4112f19956444c5e937"
     },
     {
         "url": "index5.html",
-        "revision": "51143a92260935161c65df5110459312"
+        "revision": "971b2311effeee0edda511e817f1d079"
     },
     {
         "url": "index6.html",
-        "revision": "748793354c2fb6a0455ac9dc1c2a3d06"
+        "revision": "4ee8afc8827c8696781c5bd393ba9979"
     },
     {
         "url": "index7.html",
-        "revision": "0bd98b6ae1db329f29b53435af94ed8c"
+        "revision": "ead891bbb0ac0bd2653c5e6500fef56f"
     },
     {
         "url": "index8.html",
-        "revision": "758a41acef7eb56c768755174bb1b38f"
+        "revision": "7162841efd82977bd099a54a839846d8"
     },
     {
         "url": "index9.html",
-        "revision": "b505ecdb21b217024aea942b4a39fe67"
+        "revision": "d85581475631959005977fb1d627bc2f"
     },
     {
         "url": "indexcl.html",
-        "revision": "be432ace78ef1267b8e7feff538a01f8"
+        "revision": "b5fcadc36da67b63ed69fc5b03a2dee7"
     },
     {
         "url": "indexclnew.html",
-        "revision": "c2a42c3e351a4c8a29486497a15df8ed"
+        "revision": "77c6af050ef6d69d6a27c63b6625d22e"
     },
     {
         "url": "indexg.html",
-        "revision": "68356a6821f0c9c9d59ca90e2ef37fa8"
+        "revision": "9069266c447035845494c9dc4ad9cbef"
     },
     {
         "url": "indexg.txt",
@@ -359,15 +366,15 @@ if (workbox) {
     },
     {
         "url": "indexgood.html",
-        "revision": "ebd522d69283d8b1abc04e42beca7347"
+        "revision": "6a06d92c2334a6a31da3e460a2d9c0b2"
     },
     {
         "url": "indexgr.html",
-        "revision": "74159e38e4303c200c50aee8cc0ee4ff"
+        "revision": "df19cd5a94081dfabe16feedbb94390b"
     },
     {
         "url": "indexnew.html",
-        "revision": "2ef02be7e2623bd53ba9298c0b572617"
+        "revision": "b81369adbd2f69cf991914a158590919"
     },
     {
         "url": "indexnewone readme file guide shortcut keys.pdf",
@@ -383,7 +390,7 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "54f3a513e198d7ff09384feb9708c018"
+        "revision": "c4806f8eb78d0bc58aa5c04771cf3c65"
     },
     {
         "url": "indexnewonemakeacopy.py",
@@ -391,7 +398,7 @@ if (workbox) {
     },
     {
         "url": "index_gt.html",
-        "revision": "69a7db02fa09a1e77163a43a8bc71794"
+        "revision": "b3f20b9e58b6f1023c2132af25366cb6"
     },
     {
         "url": "js code for adding sample data to my madrasa index.html.txt",
@@ -423,7 +430,7 @@ if (workbox) {
     },
     {
         "url": "Madrasa3.html",
-        "revision": "2766c1d278b26d8bbbf0d3744e83caec"
+        "revision": "55b6963128b8f9c1f08f6be6011ce3cf"
     },
     {
         "url": "Madrasa3_complete.js",
@@ -431,15 +438,15 @@ if (workbox) {
     },
     {
         "url": "madrasacln.html",
-        "revision": "98f6f2ded0faf708e8accfc4587c9efa"
+        "revision": "65997b4bd85150747cf21e400f8b401c"
     },
     {
         "url": "madrasalates.html",
-        "revision": "730dcd5990ba2e221374b81d9936d870"
+        "revision": "e18460bd3fc2f3a1744fec53a146016e"
     },
     {
         "url": "madrasa_system_offline_copy.html",
-        "revision": "40b99384497b12c1f6fa5b66c7009c46"
+        "revision": "08a9629c59b407156da9713f304f0ca6"
     },
     {
         "url": "makeitoffline.py",
@@ -463,7 +470,7 @@ if (workbox) {
     },
     {
         "url": "offline.html",
-        "revision": "1643846a0ed63e3b2194830484787cb7"
+        "revision": "dcb4ae9378c333645cfa9c88842bb200"
     },
     {
         "url": "phpmadrasa.php",
@@ -535,7 +542,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "17207491fd0563528a54497ea9e51138"
+        "revision": "e1dbafde4d7577e814796324f626a713"
     },
     {
         "url": "table-export attendence.pdf",
@@ -603,7 +610,7 @@ if (workbox) {
     },
     {
         "url": "app_backup/index.html",
-        "revision": "7516126daa9c028c0f8607dfb36c5458"
+        "revision": "28bdf6a520d4ad43fcb31e8212904cf3"
     },
     {
         "url": "app_backup/logo2.png",
@@ -1151,7 +1158,7 @@ if (workbox) {
     },
     {
         "url": "yasin/indexnewone.html",
-        "revision": "0daf8319deaee4167cea4a3b7a4e1f6a"
+        "revision": "fa939e4ea56a87a15f78a6db8c3f42de"
     },
     {
         "url": "yasin/jszip.min.js",

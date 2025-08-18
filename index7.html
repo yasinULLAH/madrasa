@@ -37,7 +37,7 @@
         .ml1 { margin-left: 0.5rem; }
         .mrA { margin-right: auto; }
     </style>
-<link href="manifest.json" rel="manifest"/></head>
+<link href="manifest.json" rel="manifest"/><link href="favicon.ico" rel="icon" type="image/x-icon"/></head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark no-print">
 <div class="container-fluid">
@@ -1665,20 +1665,16 @@ document.head.appendChild(style);
   const swUrl = './sw.js';
   const wb = new Workbox(swUrl);
 
-  // This event fires when a new service worker has installed but is waiting to activate.
-  wb.addEventListener('waiting', (event) => {
+  wb.addEventListener('waiting', () => {
     console.log('A new service worker is waiting to activate.');
-    // This sends a message to the waiting service worker, telling it to activate.
     wb.messageSW({ type: 'SKIP_WAITING' });
   });
 
-  // This event fires when the new service worker has taken control.
-  wb.addEventListener('controlling', (event) => {
+  wb.addEventListener('controlling', () => {
     console.log('The new service worker is now in control. Reloading page for updates...');
     window.location.reload();
   });
 
-  // Register the service worker.
   wb.register();
 </script></body>
 </html>
