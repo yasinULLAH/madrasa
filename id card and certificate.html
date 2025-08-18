@@ -1607,8 +1607,6 @@
         const generateNewCertId = () => {
             const currentYear = new Date().getFullYear();
             let maxNumber = 0;
-
-            // Find the highest certificate number for the current year
             appData.records.forEach(rec => {
                 if (rec.type === 'cert' && rec.certId && rec.certId.startsWith(`CERT-${currentYear}-`)) {
                     const number = parseInt(rec.certId.split('-')[2], 10);
@@ -1617,7 +1615,6 @@
                     }
                 }
             });
-
             const newNumber = String(maxNumber + 1).padStart(4, '0');
             return `CERT-${currentYear}-${newNumber}`;
         };
@@ -1637,7 +1634,6 @@
             const saved = localStorage.getItem(DB_KEY);
             if (saved) {
                 appData = JSON.parse(saved);
-                // Ensure all records have the new image data fields
                 appData.records.forEach(rec => {
                     if (rec.type === 'id') {
                         rec.logoData = rec.logoData || null;
@@ -1653,6 +1649,8 @@
                 appData.records = [
                     { type: 'id', id: 'id_' + Date.now(), name: 'Fatima Zahra', role: 'Senior Developer', dept: 'Technology Department', idNumber: 'TECH-0123', issueDate: '2025-08-15', validUntil: '2026-08-15', qrContent: '', color1: '#4f46e5', color2: '#10b981', bgColor: '#111827', address: '123 Pine St, Lahore, Pakistan', emergencyContact: 'Aliya Zahra, 03001234567, Sister', barcodeContent: 'TECH-0123', terms: 'This card remains the property of the issuer.', logoData: null, photoData: null, signatureLineData: null },
                     { type: 'cert', id: 'cert_' + Date.now(), name: 'Ali Raza', title: 'Certificate of Completion', reason: 'For successfully completing the Full-Stack Development Bootcamp.', date: '2025-07-20', certId: 'FSD-2025-088', qrContent: '', color1: '#d97706', color2: '#0ea5e9', bgColor: '#ffffff', logoData: null, sig1Data: null, sig2Data: null },
+                    { type: 'id', id: 'id_002', name: 'Ahmed Khan', role: 'Project Manager', dept: 'Operations', idNumber: 'OP-4567', issueDate: '2025-01-01', validUntil: '2026-01-01', qrContent: 'https://example.com/ahmedkhan', color1: '#059669', color2: '#60a5fa', bgColor: '#f0f9ff', address: '456 Oak Ave, Islamabad, Pakistan', emergencyContact: 'Sara Khan, 03217654321, Wife', barcodeContent: 'OP-4567', terms: 'Property of Operations Dept.', logoData: null, photoData: null, signatureLineData: null },
+                    { type: 'cert', id: 'cert_002', name: 'Ayesha Siddiqui', title: 'Award of Excellence', reason: 'For outstanding contributions to community development projects.', date: '2025-06-10', certId: 'AWARD-2025-001', qrContent: 'https://example.com/ayeshaaward', color1: '#dc2626', color2: '#14b8a6', bgColor: '#fef2f2', logoData: null, sig1Data: null, sig2Data: null },
                 ];
                 appData.idCardView = 'front';
                 saveState();
@@ -1694,8 +1692,8 @@
             if (!record) return;
 
             appData.activeRecordId = id;
-            localImages = {}; // Clear temp images
-            $$('input[type="file"]').forEach(el => el.value = ''); // Reset file inputs
+            localImages = {};
+            $$('input[type="file"]').forEach(el => el.value = '');
 
             if (record.type === 'id') {
                 $('#id_name').value = record.name || '';
@@ -1714,14 +1712,14 @@
                 $('#id_terms').value = record.terms || '';
                 $('#id-editor-status').textContent = `Editing: ${record.name}`;
 
-                await Promise.all([
-                    (async () => { if (record.logoData) localImages.id_logo = await loadImage(record.logoData) })(),
-                    (async () => { if (record.photoData) localImages.id_photo = await loadImage(record.photoData) })(),
-                    (async () => { if (record.signatureLineData) localImages.id_signature_line = await loadImage(record.signatureLineData) })()
-                ]);
+                if (record.logoData) localImages.id_logo = await loadImage(record.logoData);
+                if (record.photoData) localImages.id_photo = await loadImage(record.photoData);
+                if (record.signatureLineData) localImages.id_signature_line = await loadImage(record.signatureLineData);
 
                 showTab('id');
-                renderIdWithContext();
+                $('input[name="id_view"][value="' + appData.idCardView + '"]').checked = true;
+                toggleIDViewInputs(appData.idCardView);
+                await renderIdWithContext();
             } else if (record.type === 'cert') {
                 $('#c_name').value = record.name || '';
                 $('#c_title').value = record.title || '';
@@ -1734,14 +1732,12 @@
                 $('#c_bg').value = record.bgColor || '#ffffff';
                 $('#cert-editor-status').textContent = `Editing: ${record.name}`;
 
-                await Promise.all([
-                    (async () => { if (record.logoData) localImages.c_logo = await loadImage(record.logoData) })(),
-                    (async () => { if (record.sig1Data) localImages.c_sig1 = await loadImage(record.sig1Data) })(),
-                    (async () => { if (record.sig2Data) localImages.c_sig2 = await loadImage(record.sig2Data) })()
-                ]);
+                if (record.logoData) localImages.c_logo = await loadImage(record.logoData);
+                if (record.sig1Data) localImages.c_sig1 = await loadImage(record.sig1Data);
+                if (record.sig2Data) localImages.c_sig2 = await loadImage(record.sig2Data);
 
                 showTab('cert');
-                renderCertWithContext();
+                await renderCertWithContext();
             }
             saveState();
         };
@@ -1752,10 +1748,11 @@
                 const activeRecord = appData.records.find(r => r.id === appData.activeRecordId);
                 if (!activeRecord) {
                     alert("Load a record before adding images.");
+                    e.target.value = '';
                     return;
                 }
 
-                if (!file) { // Handle file de-selection
+                if (!file) {
                     localImages[localKey] = null;
                     activeRecord[recordKey] = null;
                 } else {
@@ -1837,70 +1834,128 @@
             renderIdWithContext();
             renderCertWithContext();
         };
-        const generateQR = (text) => {
+        const generateQR = async (text, size = 256) => {
             const container = $('#qr-container');
             container.innerHTML = '';
             if (!text) return null;
             try {
                 new QRCode(container, {
                     text: text,
-                    width: 256,
-                    height: 256,
+                    width: size,
+                    height: size,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.ErrorCorrectLevel.H
                 });
-                return container.querySelector('canvas');
+                const qrCanvas = container.querySelector('canvas');
+                if (qrCanvas) {
+                    return await loadImage(qrCanvas.toDataURL());
+                }
+                return null;
             } catch (e) {
                 console.error("QR Code generation failed: ", e);
                 return null;
             }
         };
-        const generateBarcode = (text, width, height, scale = 1) => {
-            const canvas = $('#barcode-canvas');
+        const generateBarcode = (text, height, scale = 1) => {
+            const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = height;
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, width, height);
-            ctx.fillStyle = '#000000';
-            const barWidth = 2 * scale;
-            const spaceWidth = 1 * scale;
+            const originalBarcodeHeight = 100; // Reference height for barcode bars
+            const originalTextHeight = 14; // Reference height for barcode text
+            const barHeight = height;
+
+            // Measure text width to dynamically set canvas width
+            ctx.font = `${originalTextHeight * scale}px 'Inter', sans-serif`;
+            const textWidth = ctx.measureText(text).width;
+
             const thinBar = 1 * scale;
             const wideBar = 3 * scale;
-            let x = 0;
-            const characters = text.split('');
-            for (let i = 0; i < characters.length; i++) {
-                const char = characters[i].toUpperCase();
-                const pattern = {
-                    '0': 'nwnwnwbw', '1': 'bwnwnwbn', '2': 'nwbnwnwn', '3': 'bwbnnwnw', '4': 'nwnwbwbn',
-                    '5': 'bwnwbwbn', '6': 'nwbwbwbn', '7': 'nwnnbwbn', '8': 'bwnnbwbn', '9': 'nwbnbwbn',
-                    'A': 'bwnwbnwn', 'B': 'nwbnnbwn', 'C': 'bwbnnbwn', 'D': 'nwnwbnnb', 'E': 'bwnwbnnb',
-                    'F': 'nwbwbnnb', 'G': 'nwnnbwwn', 'H': 'bwnnbwwn', 'I': 'nwbnnbwn', 'J': 'nwnnwbwn',
-                    'K': 'bwnwwnbn', 'L': 'nwbnwwnb', 'M': 'bwbwwnbn', 'N': 'nwnbwwnb', 'O': 'bwnbwwnb',
-                    'P': 'nwbwwnnb', 'Q': 'nwnwnnwb', 'R': 'bwnwnnwb', 'S': 'nwbwnnwb', 'T': 'nwnnwnwb',
-                    'U': 'bwnnwnwb', 'V': 'nwbnwnwb', 'W': 'nwbwwnnw', 'X': 'bwnwnwnb', 'Y': 'nwnwbnwb',
-                    'Z': 'bwnwbnwb', '-': 'nwnnbwbn', '.': 'bwnwbwnn', ' ': 'nwbwnwnn', '*': 'nwnbwnw'
-                }[char] || 'nwnwnwnw';
-                for (let k = 0; k < pattern.length; k++) {
-                    if (pattern[k] === 'b') {
-                        ctx.fillRect(x, 0, barWidth, height);
-                    } else if (pattern[k] === 'n') {
-                    } else if (pattern[k] === 'w') {
-                        ctx.fillRect(x, 0, wideBar, height);
-                        x += wideBar;
-                        continue;
-                    }
-                    x += barWidth;
+            const interCharGap = 1 * scale;
+            const startStopPattern = 'nwnbwnw'; // Simplified for common use (e.g., Code 39 *)
+            const charPatterns = {
+                '0': 'nwnwnwbw', '1': 'bwnwnwbn', '2': 'nwbnwnwn', '3': 'bwbnnwnw', '4': 'nwnwbwbn',
+                '5': 'bwnwbwbn', '6': 'nwbwbwbn', '7': 'nwnnbwbn', '8': 'bwnnbwbn', '9': 'nwbnbwbn',
+                'A': 'bwnwbnwn', 'B': 'nwbnnbwn', 'C': 'bwbnnbwn', 'D': 'nwnwbnnb', 'E': 'bwnwbnnb',
+                'F': 'nwbwbnnb', 'G': 'nwnnbwwn', 'H': 'bwnnbwwn', 'I': 'nwbnnbwn', 'J': 'nwnnwbwn',
+                'K': 'bwnwwnbn', 'L': 'nwbnwwnb', 'M': 'bwbwwnbn', 'N': 'nwnbwwnb', 'O': 'bwnbwwnb',
+                'P': 'nwbwwnnb', 'Q': 'nwnwnnwb', 'R': 'bwnwnnwb', 'S': 'nwbwnnwb', 'T': 'nwnnwnwb',
+                'U': 'bwnnwnwb', 'V': 'nwbnwnwb', 'W': 'nwbwwnnw', 'X': 'bwnwnwnb', 'Y': 'nwnwbnwb',
+                'Z': 'bwnwbnwb', '-': 'nwnnbwbn', '.': 'bwnwbwnn', ' ': 'nwbwnwnn', '*': 'nwnbwnw'
+            };
+
+            let totalBarWidth = 0;
+            const calculatePatternWidth = (pattern) => {
+                let width = 0;
+                for (let i = 0; i < pattern.length; i++) {
+                    width += (pattern[i] === 'b' || pattern[i] === 'w') ? wideBar : thinBar;
                 }
-                x += spaceWidth * 2;
+                return width;
+            };
+
+            totalBarWidth += calculatePatternWidth(startStopPattern);
+            for (let i = 0; i < text.length; i++) {
+                totalBarWidth += interCharGap;
+                totalBarWidth += calculatePatternWidth(charPatterns[text[i].toUpperCase()] || charPatterns[' ']);
             }
+            totalBarWidth += interCharGap;
+            totalBarWidth += calculatePatternWidth(startStopPattern);
+
+            canvas.width = Math.max(totalBarWidth + (20 * scale), textWidth + (20 * scale));
+            canvas.height = barHeight + (originalTextHeight * scale); // Space for barcode and text
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#000000';
-            ctx.font = `${14 * scale}px 'Inter', sans-serif`;
+
+            let xPosition = (canvas.width - totalBarWidth) / 2; // Center the barcode
+
+            // Draw start character
+            for (let i = 0; i < startStopPattern.length; i++) {
+                const isBar = i % 2 === 0;
+                const segmentWidth = (startStopPattern[i] === 'b' || startStopPattern[i] === 'w') ? wideBar : thinBar;
+                if (isBar) {
+                    ctx.fillRect(xPosition, 0, segmentWidth, barHeight);
+                }
+                xPosition += segmentWidth;
+            }
+
+            // Draw data characters
+            for (let i = 0; i < text.length; i++) {
+                xPosition += interCharGap;
+                const pattern = charPatterns[text[i].toUpperCase()] || charPatterns[' '];
+                for (let k = 0; k < pattern.length; k++) {
+                    const isBar = k % 2 === 0;
+                    const segmentWidth = (pattern[k] === 'b' || pattern[k] === 'w') ? wideBar : thinBar;
+                    if (isBar) {
+                        ctx.fillRect(xPosition, 0, segmentWidth, barHeight);
+                    }
+                    xPosition += segmentWidth;
+                }
+            }
+
+            // Draw stop character
+            xPosition += interCharGap;
+            for (let i = 0; i < startStopPattern.length; i++) {
+                const isBar = i % 2 === 0;
+                const segmentWidth = (startStopPattern[i] === 'b' || startStopPattern[i] === 'w') ? wideBar : thinBar;
+                if (isBar) {
+                    ctx.fillRect(xPosition, 0, segmentWidth, barHeight);
+                }
+                xPosition += segmentWidth;
+            }
+
+            ctx.fillStyle = '#000000';
+            ctx.font = `${originalTextHeight * scale}px 'Inter', sans-serif`;
             ctx.textAlign = 'center';
-            ctx.fillText(text, width / 2, height + 20);
+            ctx.fillText(text, canvas.width / 2, barHeight + (originalTextHeight * scale));
             return canvas;
         };
+
+        const ID_CARD_ORIGINAL_WIDTH = 1012;
+        const ID_CARD_ORIGINAL_HEIGHT = 638;
+        const CERT_ORIGINAL_WIDTH = 3508;
+        const CERT_ORIGINAL_HEIGHT = 2480;
+
         async function renderID(c, ctx) {
             if (appData.idCardView === 'front') {
                 await renderIDFront(c, ctx);
@@ -1908,9 +1963,12 @@
                 await renderIDBack(c, ctx);
             }
         }
-        async function renderIDFront(c, ctx) {
 
+        async function renderIDFront(c, ctx) {
             const W = c.width, H = c.height;
+            const xScale = W / ID_CARD_ORIGINAL_WIDTH;
+            const yScale = H / ID_CARD_ORIGINAL_HEIGHT;
+
             const data = {
                 name: $('#id_name').value.trim(), role: $('#id_role').value.trim(), dept: $('#id_dept').value.trim(),
                 num: $('#id_number').value.trim(), issue: $('#id_issue').value, valid: $('#id_valid').value,
@@ -1918,44 +1976,59 @@
                 qrText: $('#id_qr').value.trim() || $('#id_number').value.trim() || 'ID Card',
                 logo: localImages.id_logo, photo: localImages.id_photo,
             };
+
             ctx.clearRect(0, 0, W, H);
             ctx.fillStyle = data.bg; ctx.fillRect(0, 0, W, H);
-            ctx.fillStyle = data.primary; ctx.fillRect(0, 0, W, 110);
-            ctx.fillStyle = data.accent; ctx.fillRect(0, H - 24, W, 24);
+            ctx.fillStyle = data.primary; ctx.fillRect(0, 0, W, 110 * yScale);
+            ctx.fillStyle = data.accent; ctx.fillRect(0, H - 24 * yScale, W, 24 * yScale);
+
             if (data.logo) {
-                const s = 90, x = 24, y = 10;
+                const s = 90 * Math.min(xScale, yScale);
+                const x = 24 * xScale;
+                const y = 10 * yScale;
                 ctx.save();
                 ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s / 2, 0, Math.PI * 2); ctx.clip();
                 ctx.fillStyle = '#fff'; ctx.fillRect(x, y, s, s);
                 ctx.drawImage(data.logo, x, y, s, s);
                 ctx.restore();
             }
+
             ctx.fillStyle = '#ffffff';
-            ctx.font = `700 40px 'Inter'`; ctx.fillText(data.name, 130, 70);
-            ctx.font = `600 22px 'Inter'`; ctx.fillText(data.role, 130, 102);
-            ctx.fillStyle = data.primary; ctx.font = `800 32px 'Inter'`; ctx.fillText(data.dept, 24, 162);
-            const phW = 230, phH = 300, phX = W - 24 - phW, phY = 120;
+            ctx.font = `700 ${40 * yScale}px 'Inter'`; ctx.fillText(data.name, 130 * xScale, 70 * yScale);
+            ctx.font = `600 ${22 * yScale}px 'Inter'`; ctx.fillText(data.role, 130 * xScale, 102 * yScale);
+
+            ctx.fillStyle = data.primary; ctx.font = `800 ${32 * yScale}px 'Inter'`; ctx.fillText(data.dept, 24 * xScale, 162 * yScale);
+
+            const phW = 230 * xScale, phH = 300 * yScale, phX = W - 24 * xScale - phW, phY = 120 * yScale;
             ctx.save();
-            const r = 22; ctx.beginPath();
+            const r = 22 * Math.min(xScale, yScale); ctx.beginPath();
             ctx.moveTo(phX + r, phY); ctx.arcTo(phX + phW, phY, phX + phW, phY + phH, r);
             ctx.arcTo(phX + phW, phY + phH, phX, phY + phH, r); ctx.arcTo(phX, phY + phH, phX, phY, r);
             ctx.arcTo(phX, phY, phX + phW, phY, r); ctx.closePath(); ctx.clip();
             if (data.photo) { ctx.drawImage(data.photo, phX, phY, phW, phH); } else { ctx.fillStyle = '#111827'; ctx.fillRect(phX, phY, phW, phH); }
             ctx.restore();
-            ctx.fillStyle = '#93c5fd'; ctx.font = `700 20px 'Inter'`; ctx.fillText('ID Number', 40, 220);
-            ctx.fillStyle = '#e5e7eb'; ctx.font = `600 24px 'Inter'`; ctx.fillText(data.num, 40, 250);
-            ctx.fillStyle = '#86efac'; ctx.font = `700 20px 'Inter'`; ctx.fillText('Issue Date', 40, 300);
-            ctx.fillStyle = '#e5e7eb'; ctx.font = `600 20px 'Inter'`; ctx.fillText(data.issue, 40, 325);
-            ctx.fillStyle = '#fcd34d'; ctx.font = `700 20px 'Inter'`; ctx.fillText('Valid Until', 250, 300);
-            ctx.fillStyle = '#e5e7eb'; ctx.font = `600 20px 'Inter'`; ctx.fillText(data.valid, 250, 325);
-            const qrCanvas = generateQR(data.qrText);
-            if (qrCanvas) ctx.drawImage(qrCanvas, 40, H - 40 - 180, 180, 180);
-            ctx.fillStyle = data.accent; ctx.font = `600 16px 'Inter'`;
-            ctx.fillText('Scan QR Code to Verify Identity', 230, H - 52);
-        }
-        async function renderIDBack(c, ctx) {
 
+            ctx.fillStyle = '#93c5fd'; ctx.font = `700 ${20 * yScale}px 'Inter'`; ctx.fillText('ID Number', 40 * xScale, 220 * yScale);
+            ctx.fillStyle = '#e5e7eb'; ctx.font = `600 ${24 * yScale}px 'Inter'`; ctx.fillText(data.num, 40 * xScale, 250 * yScale);
+            ctx.fillStyle = '#86efac'; ctx.font = `700 ${20 * yScale}px 'Inter'`; ctx.fillText('Issue Date', 40 * xScale, 300 * yScale);
+            ctx.fillStyle = '#e5e7eb'; ctx.font = `600 ${20 * yScale}px 'Inter'`; ctx.fillText(data.issue, 40 * xScale, 325 * yScale); // Adjusted X for issue date
+            ctx.fillStyle = '#fcd34d'; ctx.font = `700 ${20 * yScale}px 'Inter'`; ctx.fillText('Valid Until', 250 * xScale, 300 * yScale); // Adjusted X for valid until
+            ctx.fillStyle = '#e5e7eb'; ctx.font = `600 ${20 * yScale}px 'Inter'`; ctx.fillText(data.valid, 250 * xScale, 325 * yScale); // Adjusted X for valid until
+
+
+            const qrCodeSize = 180 * Math.min(xScale, yScale);
+            const qrImage = await generateQR(data.qrText, qrCodeSize);
+            if (qrImage) ctx.drawImage(qrImage, 40 * xScale, H - (40 * yScale) - qrCodeSize, qrCodeSize, qrCodeSize);
+
+            ctx.fillStyle = data.accent; ctx.font = `600 ${16 * yScale}px 'Inter'`;
+            ctx.fillText('Scan QR Code to Verify Identity', 230 * xScale, H - (52 * yScale));
+        }
+
+        async function renderIDBack(c, ctx) {
             const W = c.width, H = c.height;
+            const xScale = W / ID_CARD_ORIGINAL_WIDTH;
+            const yScale = H / ID_CARD_ORIGINAL_HEIGHT;
+
             const data = {
                 primary: $('#id_color').value, accent: $('#id_color2').value, bg: $('#id_bg').value,
                 address: $('#id_address').value.trim(),
@@ -1966,50 +2039,61 @@
             };
             ctx.clearRect(0, 0, W, H);
             ctx.fillStyle = data.bg; ctx.fillRect(0, 0, W, H);
-            ctx.fillStyle = data.primary; ctx.fillRect(0, 0, W, 24);
-            ctx.fillStyle = data.accent; ctx.fillRect(0, H - 24, W, 24);
+            ctx.fillStyle = data.primary; ctx.fillRect(0, 0, W, 24 * yScale);
+            ctx.fillStyle = data.accent; ctx.fillRect(0, H - 24 * yScale, W, 24 * yScale);
             ctx.fillStyle = '#e2e8f0';
             ctx.textAlign = 'left';
-            let yOffset = 50;
-            ctx.font = `700 22px 'Inter'`;
-            ctx.fillText('Address:', 40, yOffset);
-            ctx.font = `400 20px 'Inter'`;
-            yOffset = wrapText(ctx, data.address, 40, yOffset + 30, W - 80, 24);
-            yOffset += 40;
-            ctx.font = `700 22px 'Inter'`;
-            ctx.fillText('Emergency Contact:', 40, yOffset);
-            ctx.font = `400 20px 'Inter'`;
-            yOffset = wrapText(ctx, data.emergencyContact, 40, yOffset + 30, W - 80, 24);
+            let yOffset = 50 * yScale;
+
+            ctx.font = `700 ${22 * yScale}px 'Inter'`;
+            ctx.fillText('Address:', 40 * xScale, yOffset);
+            ctx.font = `400 ${20 * yScale}px 'Inter'`;
+            yOffset = wrapText(ctx, data.address, 40 * xScale, yOffset + (30 * yScale), W - (80 * xScale), 24 * yScale);
+            yOffset += 40 * yScale;
+
+            ctx.font = `700 ${22 * yScale}px 'Inter'`;
+            ctx.fillText('Emergency Contact:', 40 * xScale, yOffset);
+            ctx.font = `400 ${20 * yScale}px 'Inter'`;
+            yOffset = wrapText(ctx, data.emergencyContact, 40 * xScale, yOffset + (30 * yScale), W - (80 * xScale), 24 * yScale);
+
             if (data.barcodeContent) {
-                const barcodeCanvas = generateBarcode(data.barcodeContent, 600, 100, 2);
+                const barcodeCanvas = generateBarcode(data.barcodeContent, 100 * yScale, xScale);
                 if (barcodeCanvas) {
                     const barcodeX = (W - barcodeCanvas.width) / 2;
-                    const barcodeY = H - 250;
-                    ctx.drawImage(barcodeCanvas, barcodeX, barcodeY);
+                    const barcodeY = H - (250 * yScale) - (barcodeCanvas.height / 2);
+                    ctx.drawImage(barcodeCanvas, barcodeX, barcodeY, barcodeCanvas.width, barcodeCanvas.height);
                 }
             }
+
             ctx.fillStyle = '#e2e8f0';
-            ctx.font = `500 18px 'Inter'`;
+            ctx.font = `500 ${18 * yScale}px 'Inter'`;
             ctx.textAlign = 'center';
-            wrapText(ctx, data.terms, W / 2, H - 100, W - 100, 20);
+            wrapText(ctx, data.terms, W / 2, H - (100 * yScale), W - (100 * xScale), 20 * yScale);
+
             if (data.signatureLine) {
-                const sigWidth = 400;
-                const sigHeight = 100;
-                ctx.drawImage(data.signatureLine, (W - sigWidth) / 2, H - 400, sigWidth, sigHeight);
+                const sigWidth = 400 * xScale;
+                const sigHeight = 100 * yScale;
+                ctx.drawImage(data.signatureLine, (W - sigWidth) / 2, H - (400 * yScale), sigWidth, sigHeight);
             }
+
             ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 2 * Math.min(xScale, yScale);
             ctx.beginPath();
-            ctx.moveTo(W / 2 - 200, H - 300);
-            ctx.lineTo(W / 2 + 200, H - 300);
+            ctx.moveTo(W / 2 - 200 * xScale, H - 340 * yScale);
+            ctx.lineTo(W / 2 + 200 * xScale, H - 340 * yScale);
             ctx.stroke();
+
             ctx.fillStyle = '#94a3b8';
-            ctx.font = `500 16px 'Inter'`;
-            ctx.fillText('Authorized Signature', W / 2, H - 280);
+            ctx.font = `500 ${16 * yScale}px 'Inter'`;
+            ctx.fillText('Authorized Signature', W / 2, H - 350 * yScale);
             ctx.textAlign = 'left';
         }
+
         async function renderCert(c, ctx) {
             const W = c.width, H = c.height;
+            const xScale = W / CERT_ORIGINAL_WIDTH;
+            const yScale = H / CERT_ORIGINAL_HEIGHT;
+
             const data = {
                 name: $('#c_name').value.trim(), title: $('#c_title').value.trim(), reason: $('#c_reason').value.trim(),
                 date: $('#c_date').value, cid: $('#c_id').value.trim(),
@@ -2019,64 +2103,79 @@
             };
             ctx.clearRect(0, 0, W, H);
             ctx.fillStyle = data.bg; ctx.fillRect(0, 0, W, H);
-            ctx.strokeStyle = data.primary; ctx.lineWidth = 18; ctx.strokeRect(60, 60, W - 120, H - 120);
-            ctx.strokeStyle = data.accent; ctx.lineWidth = 6; ctx.strokeRect(90, 90, W - 180, H - 180);
+
+            ctx.strokeStyle = data.primary; ctx.lineWidth = 18 * Math.min(xScale, yScale); ctx.strokeRect(60 * xScale, 60 * yScale, W - 120 * xScale, H - 120 * yScale);
+            ctx.strokeStyle = data.accent; ctx.lineWidth = 6 * Math.min(xScale, yScale); ctx.strokeRect(90 * xScale, 90 * yScale, W - 180 * xScale, H - 180 * yScale);
+
             if (data.logo) {
-                const s = 280;
+                const s = 280 * Math.min(xScale, yScale);
                 try {
-                    ctx.drawImage(data.logo, W / 2 - s / 2, 140, s, s);
+                    ctx.drawImage(data.logo, W / 2 - s / 2, 140 * yScale, s, s);
                 } catch (e) {
                     console.error("Failed to draw logo:", e);
                 }
             }
+
             ctx.textAlign = 'center';
-            ctx.fillStyle = data.primary; ctx.font = `900 120px 'Merriweather', serif`;
-            ctx.fillText(data.title, W / 2, 540);
-            ctx.fillStyle = '#374151'; ctx.font = `500 48px 'Inter'`;
-            ctx.fillText('This certificate is proudly presented to', W / 2, 680);
-            ctx.fillStyle = '#111827'; ctx.font = `800 150px 'Inter'`;
-            ctx.fillText(data.name, W / 2, 880);
-            ctx.fillStyle = '#374151'; ctx.font = `500 44px 'Inter'`;
-            wrapText(ctx, data.reason, W / 2, 980, W - 800, 60);
-            ctx.textAlign = 'left'; ctx.fillStyle = '#111827'; ctx.font = `700 40px 'Inter'`;
-            ctx.fillText('Date:', 240, H - 400); ctx.font = `600 40px 'Inter'`; ctx.fillText(data.date, 360, H - 400);
-            ctx.font = `700 40px 'Inter'`; ctx.fillText('Certificate ID:', 240, H - 340);
-            ctx.font = `600 40px 'Inter'`; ctx.fillText(data.cid, 520, H - 340);
-            const sigY = H - 440, sigW = 520, sigH = 150;
+            ctx.fillStyle = data.primary; ctx.font = `900 ${120 * yScale}px 'Merriweather', serif`;
+            ctx.fillText(data.title, W / 2, 540 * yScale);
+
+            ctx.fillStyle = '#374151'; ctx.font = `500 ${48 * yScale}px 'Inter'`;
+            ctx.fillText('This certificate is proudly presented to', W / 2, 680 * yScale);
+
+            ctx.fillStyle = '#111827'; ctx.font = `800 ${150 * yScale}px 'Inter'`;
+            ctx.fillText(data.name, W / 2, 880 * yScale);
+
+            ctx.fillStyle = '#374151'; ctx.font = `500 ${44 * yScale}px 'Inter'`;
+            wrapText(ctx, data.reason, W / 2, 980 * yScale, W - (800 * xScale), 60 * yScale);
+
+            ctx.textAlign = 'left'; ctx.fillStyle = '#111827'; ctx.font = `700 ${40 * yScale}px 'Inter'`;
+            ctx.fillText('Date:', 240 * xScale, H - 400 * yScale); ctx.font = `600 ${40 * yScale}px 'Inter'`; ctx.fillText(data.date, 360 * xScale, H - 400 * yScale);
+
+            ctx.font = `700 ${40 * yScale}px 'Inter'`; ctx.fillText('Certificate ID:', 240 * xScale, H - 340 * yScale);
+            ctx.font = `600 ${40 * yScale}px 'Inter'`; ctx.fillText(data.cid, 520 * xScale, H - 340 * yScale);
+
+            const sigY = H - 440 * yScale, sigW = 520 * xScale, sigH = 150 * yScale;
             if (data.sig1) {
                 try {
-                    ctx.drawImage(data.sig1, W / 2 - 700, sigY, sigW, sigH);
+                    ctx.drawImage(data.sig1, W / 2 - 700 * xScale, sigY, sigW, sigH);
                 } catch (e) {
                     console.error("Failed to draw signature 1:", e);
                 }
             }
             if (data.sig2) {
                 try {
-                    ctx.drawImage(data.sig2, W / 2 + 180, sigY, sigW, sigH);
+                    ctx.drawImage(data.sig2, W / 2 + 180 * xScale, sigY, sigW, sigH);
                 } catch (e) {
                     console.error("Failed to draw signature 2:", e);
                 }
             }
-            ctx.strokeStyle = '#6b7280'; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.moveTo(W / 2 - 700, sigY + sigH + 20); ctx.lineTo(W / 2 - 200, sigY + sigH + 20); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(W / 2 + 180, sigY + sigH + 20); ctx.lineTo(W / 2 + 680, sigY + sigH + 20); ctx.stroke();
-            ctx.textAlign = 'center'; ctx.fillStyle = '#374151'; ctx.font = `400 30px 'Inter'`;
-            ctx.fillText('Authorized Signatory 1', W / 2 - 450, sigY + sigH + 60);
-            ctx.fillText('Authorized Signatory 2', W / 2 + 450, sigY + sigH + 60);
-            const qrCanvas = generateQR(data.qrText);
-            if (qrCanvas) {
+            ctx.strokeStyle = '#6b7280'; ctx.lineWidth = 3 * Math.min(xScale, yScale);
+            ctx.beginPath(); ctx.moveTo(W / 2 - 700 * xScale, sigY + sigH + 20 * yScale); ctx.lineTo(W / 2 - 200 * xScale, sigY + sigH + 20 * yScale); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(W / 2 + 180 * xScale, sigY + sigH + 20 * yScale); ctx.lineTo(W / 2 + 680 * xScale, sigY + sigH + 20 * yScale); ctx.stroke();
+
+            ctx.textAlign = 'center'; ctx.fillStyle = '#374151'; ctx.font = `400 ${30 * yScale}px 'Inter'`;
+            ctx.fillText('Authorized Signatory 1', W / 2 - 450 * xScale, sigY + sigH + 60 * yScale);
+            ctx.fillText('Authorized Signatory 2', W / 2 + 450 * xScale, sigY + sigH + 60 * yScale);
+
+            const qrCodeSize = 380 * Math.min(xScale, yScale);
+            const qrImage = await generateQR(data.qrText, qrCodeSize);
+            if (qrImage) {
                 try {
-                    ctx.drawImage(qrCanvas, W - 480, H - 520, 380, 380);
+                    ctx.drawImage(qrImage, W - 480 * xScale, H - 520 * yScale, qrCodeSize, qrCodeSize);
                 } catch (e) {
                     console.error("Failed to draw QR code:", e);
                 }
             }
-            ctx.textAlign = 'center'; ctx.fillStyle = '#374151'; ctx.font = `600 34px 'Inter'`;
-            ctx.fillText('Scan to verify', W - 290, H - 120);
-            ctx.fillStyle = data.primary; ctx.fillRect(0, 0, W, 20);
-            ctx.fillStyle = data.accent; ctx.fillRect(0, H - 20, W, 20);
+
+            ctx.textAlign = 'center'; ctx.fillStyle = '#374151'; ctx.font = `600 ${34 * yScale}px 'Inter'`;
+            ctx.fillText('Scan to verify', W - 290 * xScale, H - 120 * yScale);
+
+            ctx.fillStyle = data.primary; ctx.fillRect(0, 0, W, 20 * yScale);
+            ctx.fillStyle = data.accent; ctx.fillRect(0, H - 20 * yScale, W, 20 * yScale);
             ctx.textAlign = 'left';
         }
+
         function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
             const words = text.split(' ');
             let line = '';
@@ -2111,7 +2210,7 @@
             radio.addEventListener('change', (e) => {
                 appData.idCardView = e.target.value;
                 toggleIDViewInputs(appData.idCardView);
-                renderID();
+                renderIdWithContext();
             });
         });
         const toggleIDViewInputs = (view) => {
@@ -2125,25 +2224,27 @@
         };
         $('#btn_add_id').addEventListener('click', () => addRecord('id'));
         $('#btn_update_id').addEventListener('click', updateActiveRecord);
-        $('#btn_render_id').addEventListener('click', () => { const c = $('#canvas_id'); renderID(c, c.getContext('2d')); });
-        $('#btn_print_id').addEventListener('click', () => { renderID(); const data = $('#canvas_id').toDataURL(); const w = window.open(''); w.document.write(`<img src="${data}" style="max-width:100%;" onload="window.print();window.close();">`); });
+        $('#btn_render_id').addEventListener('click', async () => { const c = $('#canvas_id'); await renderID(c, c.getContext('2d')); });
+        $('#btn_print_id').addEventListener('click', async () => { const c = $('#canvas_id'); await renderID(c, c.getContext('2d')); const data = c.toDataURL(); const w = window.open(''); w.document.write(`<img src="${data}" style="max-width:100%;" onload="window.print();window.close();">`); });
         $('#btn_add_cert').addEventListener('click', () => addRecord('cert'));
         $('#btn_update_cert').addEventListener('click', updateActiveRecord);
-        $('#btn_render_cert').addEventListener('click', () => { const c = $('#canvas_cert'); renderCert(c, c.getContext('2d')); });
+
         $('#btn_export_id_png').addEventListener('click', async () => {
             const canvas = $('#canvas_id');
             const ctx = canvas.getContext('2d');
-            const { width: originalWidth, height: originalHeight } = canvas;
-            const scaleFactor = 3;
+            const originalWidth = ID_CARD_ORIGINAL_WIDTH;
+            const originalHeight = ID_CARD_ORIGINAL_HEIGHT;
+            const scaleFactor = 3; // Export at 3x resolution
 
+            // Temporarily resize canvas for high-res rendering
             canvas.width = originalWidth * scaleFactor;
             canvas.height = originalHeight * scaleFactor;
-            ctx.scale(scaleFactor, scaleFactor);
 
+            // Render content at new scale
             await renderID(canvas, ctx);
-            saveCanvasAsPNG(canvas, $('#id_name').value + '_' + appData.idCardView || 'id-card');
+            saveCanvasAsPNG(canvas, ($('#id_name').value || 'id-card') + '_' + appData.idCardView);
 
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            // Revert canvas to original display size and re-render for preview
             canvas.width = originalWidth;
             canvas.height = originalHeight;
             await renderID(canvas, ctx);
@@ -2152,22 +2253,26 @@
         $('#btn_export_cert_png').addEventListener('click', async () => {
             const canvas = $('#canvas_cert');
             const ctx = canvas.getContext('2d');
-            const { width: originalWidth, height: originalHeight } = canvas;
-            const scaleFactor = 3;
+            const originalWidth = CERT_ORIGINAL_WIDTH;
+            const originalHeight = CERT_ORIGINAL_HEIGHT;
+            const scaleFactor = 3; // Export at 3x resolution
 
+            // Temporarily resize canvas for high-res rendering
             canvas.width = originalWidth * scaleFactor;
             canvas.height = originalHeight * scaleFactor;
-            ctx.scale(scaleFactor, scaleFactor);
 
+            // Render content at new scale
             await renderCert(canvas, ctx);
             saveCanvasAsPNG(canvas, $('#c_name').value || 'certificate');
 
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            // Revert canvas to original display size and re-render for preview
             canvas.width = originalWidth;
             canvas.height = originalHeight;
             await renderCert(canvas, ctx);
         });
-        $('#btn_print_cert').addEventListener('click', () => { renderCert(); const data = $('#canvas_cert').toDataURL(); const w = window.open(''); w.document.write(`<img src="${data}" style="max-width:100%;" onload="window.print();window.close();">`); });
+
+        $('#btn_render_cert').addEventListener('click', async () => { const c = $('#canvas_cert'); await renderCert(c, c.getContext('2d')); });
+        $('#btn_print_cert').addEventListener('click', async () => { const c = $('#canvas_cert'); await renderCert(c, c.getContext('2d')); const data = c.toDataURL(); const w = window.open(''); w.document.write(`<img src="${data}" style="max-width:100%;" onload="window.print();window.close();">`); });
         $('#btn_export_json').addEventListener('click', () => {
             const dataStr = JSON.stringify(appData.records, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
@@ -2181,7 +2286,7 @@
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 try {
                     const importedRecords = JSON.parse(event.target.result);
                     if (Array.isArray(importedRecords) && confirm(`This will replace all current records (${appData.records.length}) with ${importedRecords.length} new records. Continue?`)) {
@@ -2191,11 +2296,28 @@
                         saveState();
                         renderRecordsTable();
                         alert('Data restored successfully!');
+                        // Re-load images for all restored records
+                        for (const record of appData.records) {
+                            if (record.type === 'id') {
+                                if (record.logoData) record.logoData = (await loadImage(record.logoData)).src;
+                                if (record.photoData) record.photoData = (await loadImage(record.photoData)).src;
+                                if (record.signatureLineData) record.signatureLineData = (await loadImage(record.signatureLineData)).src;
+                            } else if (record.type === 'cert') {
+                                if (record.logoData) record.logoData = (await loadImage(record.logoData)).src;
+                                if (record.sig1Data) record.sig1Data = (await loadImage(record.sig1Data)).src;
+                                if (record.sig2Data) record.sig2Data = (await loadImage(record.sig2Data)).src;
+                            }
+                        }
+                        // Load the first record if available
+                        if (appData.records.length > 0) {
+                            await loadRecord(appData.records[0].id);
+                        }
                     } else {
                         alert('Import cancelled or invalid file format.');
                     }
                 } catch (err) {
                     alert('Error parsing JSON file.');
+                    console.error("JSON import error:", err);
                 } finally {
                     e.target.value = '';
                 }
@@ -2213,8 +2335,8 @@
             }
         });
 
-        const renderIdWithContext = () => { const c = $('#canvas_id'); renderID(c, c.getContext('2d')); };
-        const renderCertWithContext = () => { const c = $('#canvas_cert'); renderCert(c, c.getContext('2d')); };
+        const renderIdWithContext = async () => { const c = $('#canvas_id'); await renderID(c, c.getContext('2d')); };
+        const renderCertWithContext = async () => { const c = $('#canvas_cert'); await renderCert(c, c.getContext('2d')); };
 
         setupImageLoader('#id_logo', 'logoData', 'id_logo', renderIdWithContext);
         setupImageLoader('#id_photo', 'photoData', 'id_photo', renderIdWithContext);
