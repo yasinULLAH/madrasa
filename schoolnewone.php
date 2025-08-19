@@ -1762,6 +1762,137 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+if (isset($_GET['page']) && $_GET['page'] == 'ajax_data') {
+    header('Content-Type: text/html');
+    $type = $_GET['type'] ?? '';
+    switch ($type) {
+        case 'students_by_class':
+            $class_id = $_GET['class_id'] ?? 0;
+            if ($class_id) {
+                $stmt = $pdo->prepare("SELECT id, name FROM students WHERE class_id = ? ORDER BY name");
+                $stmt->execute([$class_id]);
+                $students = $stmt->fetchAll();
+                $options = ''; // Removed default 'Select Student' as it might be 'All Students' in some contexts
+                foreach ($students as $student) {
+                    $options .= '<option value="' . $student['id'] . '">' . htmlspecialchars($student['name']) . '</option>';
+                }
+                echo $options;
+            } else {
+                echo '';
+            }
+            break;
+
+        case 'subjects_by_class':
+            $class_id = $_GET['class_id'] ?? 0;
+            if ($class_id) {
+                $stmt = $pdo->prepare("SELECT s.id, s.name FROM class_subjects cs JOIN subjects s ON cs.subject_id = s.id WHERE cs.class_id = ? ORDER BY s.name");
+                $stmt->execute([$class_id]);
+                $subjects = $stmt->fetchAll();
+                $options = '<option value="">' . $t['select_subject'] . '</option>';
+                foreach ($subjects as $subject) {
+                    $options .= '<option value="' . $subject['id'] . '">' . htmlspecialchars($subject['name']) . '</option>';
+                }
+                echo $options;
+            } else {
+                echo '<option value="">' . $t['select_class'] . ' first</option>';
+            }
+            break;
+
+        case 'attendance_students':
+            $class_id = $_GET['class_id'] ?? 0;
+            $attendance_date = $_GET['attendance_date'] ?? date('Y-m-d');
+            $subject_id = $_GET['subject_id'] ?? null;
+
+            if ($class_id) {
+                // Fetch students in the class
+                $stmt_students = $pdo->prepare("SELECT id, name FROM students WHERE class_id = ? ORDER BY name");
+                $stmt_students->execute([$class_id]);
+                $students_in_class = $stmt_students->fetchAll();
+
+                // Fetch existing attendance for the specific date, class, and subject (if any)
+                $stmt_existing_attendance = $pdo->prepare("
+                    SELECT student_id, status 
+                    FROM attendance 
+                    WHERE class_id = ? AND attendance_date = ? AND (subject_id = ? OR (subject_id IS NULL AND ? IS NULL))
+                ");
+                $stmt_existing_attendance->execute([$class_id, $attendance_date, $subject_id, $subject_id]);
+                $existing_attendance = $stmt_existing_attendance->fetchAll(PDO::FETCH_KEY_PAIR); // Fetch as [student_id => status]
+
+                echo '<div class="table-responsive">';
+                echo '<table class="table table-bordered table-striped">';
+                echo '<thead><tr><th>' . $t['student_name'] . '</th><th>' . $t['status'] . '</th></tr></thead>';
+                echo '<tbody>';
+                if ($students_in_class) {
+                    foreach ($students_in_class as $student) {
+                        $current_status = $existing_attendance[$student['id']] ?? 'Present'; // Default to Present if no record
+                        echo '<tr>';
+                        echo '<td>' . htmlspecialchars($student['name']) . '</td>';
+                        echo '<td>';
+                        echo '<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="attendance[' . $student['id'] . ']" value="Present" ' . (($current_status == 'Present') ? 'checked' : '') . '> <label class="form-check-label">' . $t['present'] . '</label></div>';
+                        echo '<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="attendance[' . $student['id'] . ']" value="Absent" ' . (($current_status == 'Absent') ? 'checked' : '') . '> <label class="form-check-label">' . $t['absent'] . '</label></div>';
+                        echo '<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="attendance[' . $student['id'] . ']" value="Late" ' . (($current_status == 'Late') ? 'checked' : '') . '> <label class="form-check-label">' . $t['late'] . '</label></div>';
+                        echo '</td>';
+                        echo '</tr>';
+                    }
+                } else {
+                    echo '<tr><td colspan="2" class="text-center">' . $t['no_records'] . '</td></tr>';
+                }
+                echo '</tbody></table>';
+                echo '</div>';
+            } else {
+                echo '<p>Select a class to load students for attendance.</p>';
+            }
+            break;
+
+        case 'marks_students':
+            $exam_id = $_GET['exam_id'] ?? 0;
+            if ($exam_id) {
+                $stmt_exam = $pdo->prepare("SELECT class_id, max_marks FROM exams WHERE id = ?");
+                $stmt_exam->execute([$exam_id]);
+                $exam_info = $stmt_exam->fetch();
+                $class_id = $exam_info['class_id'] ?? 0;
+                $max_marks = $exam_info['max_marks'] ?? 0;
+
+                if ($class_id) {
+                    $stmt = $pdo->prepare("
+                        SELECT s.id, s.name, 
+                               (SELECT marks_obtained FROM marks WHERE student_id = s.id AND exam_id = ?) AS marks_obtained 
+                        FROM students s 
+                        WHERE s.class_id = ? ORDER BY s.name
+                    ");
+                    $stmt->execute([$exam_id, $class_id]);
+                    $students = $stmt->fetchAll();
+
+                    echo '<div class="table-responsive">';
+                    echo '<table class="table table-bordered table-striped">';
+                    echo '<thead><tr><th>' . $t['student_name'] . '</th><th>' . $t['marks_obtained'] . ' (' . $t['max_marks'] . ': ' . $max_marks . ')</th></tr></thead>';
+                    echo '<tbody>';
+                    if ($students) {
+                        foreach ($students as $student) {
+                            echo '<tr>';
+                            echo '<td>' . htmlspecialchars($student['name']) . '</td>';
+                            echo '<td><input type="number" class="form-control" name="marks[' . $student['id'] . ']" min="0" max="' . $max_marks . '" value="' . htmlspecialchars($student['marks_obtained'] ?? '') . '"></td>';
+                            echo '</tr>';
+                        }
+                    } else {
+                        echo '<tr><td colspan="2" class="text-center">' . $t['no_records'] . '</td></tr>';
+                    }
+                    echo '</tbody></table>';
+                    echo '</div>';
+                } else {
+                    echo '<p>Select an exam to load students for marks entry.</p>';
+                }
+            } else {
+                echo '<p>Select an exam to load students for marks entry.</p>';
+            }
+            break;
+
+        default:
+            echo '';
+            break;
+    }
+    exit;
+}
 
 // Handle logout
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
@@ -5073,136 +5204,4 @@ function displayParentPanel($pdo, $t, $lang)
     }
 }
 
-
-if (isset($_GET['page']) && $_GET['page'] == 'ajax_data') {
-    header('Content-Type: text/html');
-    $type = $_GET['type'] ?? '';
-    switch ($type) {
-        case 'students_by_class':
-            $class_id = $_GET['class_id'] ?? 0;
-            if ($class_id) {
-                $stmt = $pdo->prepare("SELECT id, name FROM students WHERE class_id = ? ORDER BY name");
-                $stmt->execute([$class_id]);
-                $students = $stmt->fetchAll();
-                $options = ''; // Removed default 'Select Student' as it might be 'All Students' in some contexts
-                foreach ($students as $student) {
-                    $options .= '<option value="' . $student['id'] . '">' . htmlspecialchars($student['name']) . '</option>';
-                }
-                echo $options;
-            } else {
-                echo '';
-            }
-            break;
-
-        case 'subjects_by_class':
-            $class_id = $_GET['class_id'] ?? 0;
-            if ($class_id) {
-                $stmt = $pdo->prepare("SELECT s.id, s.name FROM class_subjects cs JOIN subjects s ON cs.subject_id = s.id WHERE cs.class_id = ? ORDER BY s.name");
-                $stmt->execute([$class_id]);
-                $subjects = $stmt->fetchAll();
-                $options = '<option value="">' . $t['select_subject'] . '</option>';
-                foreach ($subjects as $subject) {
-                    $options .= '<option value="' . $subject['id'] . '">' . htmlspecialchars($subject['name']) . '</option>';
-                }
-                echo $options;
-            } else {
-                echo '<option value="">' . $t['select_class'] . ' first</option>';
-            }
-            break;
-
-        case 'attendance_students':
-            $class_id = $_GET['class_id'] ?? 0;
-            $attendance_date = $_GET['attendance_date'] ?? date('Y-m-d');
-            $subject_id = $_GET['subject_id'] ?? null;
-
-            if ($class_id) {
-                // Fetch students in the class
-                $stmt_students = $pdo->prepare("SELECT id, name FROM students WHERE class_id = ? ORDER BY name");
-                $stmt_students->execute([$class_id]);
-                $students_in_class = $stmt_students->fetchAll();
-
-                // Fetch existing attendance for the specific date, class, and subject (if any)
-                $stmt_existing_attendance = $pdo->prepare("
-                    SELECT student_id, status 
-                    FROM attendance 
-                    WHERE class_id = ? AND attendance_date = ? AND (subject_id = ? OR (subject_id IS NULL AND ? IS NULL))
-                ");
-                $stmt_existing_attendance->execute([$class_id, $attendance_date, $subject_id, $subject_id]);
-                $existing_attendance = $stmt_existing_attendance->fetchAll(PDO::FETCH_KEY_PAIR); // Fetch as [student_id => status]
-
-                echo '<div class="table-responsive">';
-                echo '<table class="table table-bordered table-striped">';
-                echo '<thead><tr><th>' . $t['student_name'] . '</th><th>' . $t['status'] . '</th></tr></thead>';
-                echo '<tbody>';
-                if ($students_in_class) {
-                    foreach ($students_in_class as $student) {
-                        $current_status = $existing_attendance[$student['id']] ?? 'Present'; // Default to Present if no record
-                        echo '<tr>';
-                        echo '<td>' . htmlspecialchars($student['name']) . '</td>';
-                        echo '<td>';
-                        echo '<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="attendance[' . $student['id'] . ']" value="Present" ' . (($current_status == 'Present') ? 'checked' : '') . '> <label class="form-check-label">' . $t['present'] . '</label></div>';
-                        echo '<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="attendance[' . $student['id'] . ']" value="Absent" ' . (($current_status == 'Absent') ? 'checked' : '') . '> <label class="form-check-label">' . $t['absent'] . '</label></div>';
-                        echo '<div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="attendance[' . $student['id'] . ']" value="Late" ' . (($current_status == 'Late') ? 'checked' : '') . '> <label class="form-check-label">' . $t['late'] . '</label></div>';
-                        echo '</td>';
-                        echo '</tr>';
-                    }
-                } else {
-                    echo '<tr><td colspan="2" class="text-center">' . $t['no_records'] . '</td></tr>';
-                }
-                echo '</tbody></table>';
-                echo '</div>';
-            } else {
-                echo '<p>Select a class to load students for attendance.</p>';
-            }
-            break;
-
-        case 'marks_students':
-            $exam_id = $_GET['exam_id'] ?? 0;
-            if ($exam_id) {
-                $stmt_exam = $pdo->prepare("SELECT class_id, max_marks FROM exams WHERE id = ?");
-                $stmt_exam->execute([$exam_id]);
-                $exam_info = $stmt_exam->fetch();
-                $class_id = $exam_info['class_id'] ?? 0;
-                $max_marks = $exam_info['max_marks'] ?? 0;
-
-                if ($class_id) {
-                    $stmt = $pdo->prepare("
-                        SELECT s.id, s.name, 
-                               (SELECT marks_obtained FROM marks WHERE student_id = s.id AND exam_id = ?) AS marks_obtained 
-                        FROM students s 
-                        WHERE s.class_id = ? ORDER BY s.name
-                    ");
-                    $stmt->execute([$exam_id, $class_id]);
-                    $students = $stmt->fetchAll();
-
-                    echo '<div class="table-responsive">';
-                    echo '<table class="table table-bordered table-striped">';
-                    echo '<thead><tr><th>' . $t['student_name'] . '</th><th>' . $t['marks_obtained'] . ' (' . $t['max_marks'] . ': ' . $max_marks . ')</th></tr></thead>';
-                    echo '<tbody>';
-                    if ($students) {
-                        foreach ($students as $student) {
-                            echo '<tr>';
-                            echo '<td>' . htmlspecialchars($student['name']) . '</td>';
-                            echo '<td><input type="number" class="form-control" name="marks[' . $student['id'] . ']" min="0" max="' . $max_marks . '" value="' . htmlspecialchars($student['marks_obtained'] ?? '') . '"></td>';
-                            echo '</tr>';
-                        }
-                    } else {
-                        echo '<tr><td colspan="2" class="text-center">' . $t['no_records'] . '</td></tr>';
-                    }
-                    echo '</tbody></table>';
-                    echo '</div>';
-                } else {
-                    echo '<p>Select an exam to load students for marks entry.</p>';
-                }
-            } else {
-                echo '<p>Select an exam to load students for marks entry.</p>';
-            }
-            break;
-
-        default:
-            echo '';
-            break;
-    }
-    exit;
-}
 ?>
