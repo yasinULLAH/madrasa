@@ -341,7 +341,9 @@ if (!is_dir('uploads/assignments')) {
 if (!is_dir('uploads/student_assignments')) {
     mkdir('uploads/student_assignments', 0777, true);
 }
-
+if (!is_dir('uploads/announcements')) {
+    mkdir('uploads/announcements', 0777, true);
+}
 // Localization phrases
 $lang = isset($_GET['lang']) && $_GET['lang'] == 'ur' ? 'ur' : 'en';
 
@@ -1463,8 +1465,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isAdmin()) {
                     $title = trim($_POST['title']);
                     $content = trim($_POST['content']);
-                    $stmt = $pdo->prepare("INSERT INTO announcements (title, content) VALUES (?, ?)");
-                    $stmt->execute([$title, $content]);
+                    $file_path = null;
+                    if (isset($_FILES['announcement_file']) && $_FILES['announcement_file']['error'] == UPLOAD_ERR_OK) {
+                        $upload_dir = 'uploads/announcements/';
+                        $file_name = uniqid() . '_' . basename($_FILES['announcement_file']['name']);
+                        $target_file = $upload_dir . $file_name;
+                        if (move_uploaded_file($_FILES['announcement_file']['tmp_name'], $target_file)) {
+                            $file_path = $target_file;
+                        }
+                    }
+                    $stmt = $pdo->prepare("INSERT INTO announcements (title, content, file_path) VALUES (?, ?, ?)");
+                    $stmt->execute([$title, $content, $file_path]);
                     $_SESSION['message'] = "Announcement added successfully!";
                     header("Location: ?page=dashboard&section=announcements&lang=$lang");
                     exit;
@@ -1476,8 +1487,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $id = $_POST['id'];
                     $title = trim($_POST['title']);
                     $content = trim($_POST['content']);
-                    $stmt = $pdo->prepare("UPDATE announcements SET title = ?, content = ? WHERE id = ?");
-                    $stmt->execute([$title, $content, $id]);
+                    $file_path_old = $_POST['file_path_old'] ?? null;
+                    $file_path = $file_path_old;
+
+                    if (isset($_FILES['announcement_file']) && $_FILES['announcement_file']['error'] == UPLOAD_ERR_OK) {
+                        $upload_dir = 'uploads/announcements/';
+                        $file_name = uniqid() . '_' . basename($_FILES['announcement_file']['name']);
+                        $target_file = $upload_dir . $file_name;
+                        if (move_uploaded_file($_FILES['announcement_file']['tmp_name'], $target_file)) {
+                            if ($file_path_old && file_exists($file_path_old)) {
+                                unlink($file_path_old);
+                            }
+                            $file_path = $target_file;
+                        }
+                    }
+                    $stmt = $pdo->prepare("UPDATE announcements SET title = ?, content = ?, file_path = ? WHERE id = ?");
+                    $stmt->execute([$title, $content, $file_path, $id]);
                     $_SESSION['message'] = "Announcement updated successfully!";
                     header("Location: ?page=dashboard&section=announcements&lang=$lang");
                     exit;
@@ -1487,6 +1512,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             case 'delete_announcement':
                 if (isAdmin()) {
                     $id = $_POST['id'];
+                    $stmt_select = $pdo->prepare("SELECT file_path FROM announcements WHERE id = ?");
+                    $stmt_select->execute([$id]);
+                    $announcement = $stmt_select->fetch();
+                    if ($announcement && $announcement['file_path'] && file_exists($announcement['file_path'])) {
+                        unlink($announcement['file_path']);
+                    }
                     $stmt = $pdo->prepare("DELETE FROM announcements WHERE id = ?");
                     $stmt->execute([$id]);
                     $_SESSION['message'] = "Announcement deleted successfully!";
@@ -1837,7 +1868,7 @@ if (isset($_SESSION['error'])) {
         }
 
         .hero-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://via.placeholder.com/1920x600/28a745/ffffff?text=School+Building') no-repeat center center/cover;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('school.png') no-repeat center center/cover;
             color: white;
             padding: 100px 0;
             text-align: center;
@@ -1897,7 +1928,63 @@ if (isset($_SESSION['error'])) {
         .modal-footer .btn {
             margin-top: 0;
         }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+            list-style: none;
+        }
+
+        .timeline:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 18px;
+            /* For LTR */
+            height: 100%;
+            width: 4px;
+            background: #e9ecef;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 25px;
+            /* For LTR */
+        }
+
+        .timeline-item:after {
+            content: '';
+            position: absolute;
+            left: 10px;
+            /* For LTR */
+            top: 43%;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #28a745;
+            /* Theme color */
+            z-index: 1;
+        }
+
+        /* RTL support for Urdu */
+        [dir="rtl"] .timeline:before {
+            left: auto;
+            right: 18px;
+        }
+
+        [dir="rtl"] .timeline-item {
+            padding-left: 0;
+            padding-right: 25px;
+        }
+
+        [dir="rtl"] .timeline-item:after {
+            left: auto;
+            right: 10px;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
 </head>
 
 <body>
@@ -2066,55 +2153,77 @@ if (isset($_SESSION['error'])) {
             ?>
                 <section class="py-5">
                     <div class="container">
-                        <h2 class="mb-4"><?php echo $t['news_announcements_heading']; ?></h2>
+                        <h2 class="mb-5 text-center"><?php echo $t['news_announcements_heading']; ?></h2>
                         <?php
                         $stmt = $pdo->query("SELECT * FROM announcements ORDER BY published_date DESC");
                         $announcements = $stmt->fetchAll();
                         if ($announcements) {
+                            echo '<ul class="timeline">';
                             foreach ($announcements as $announcement) {
-                                echo '<div class="card mb-3">';
-                                echo '<div class="card-body">';
-                                echo '<h5 class="card-title">' . htmlspecialchars($announcement['title']) . '</h5>';
-                                echo '<p class="card-text">' . nl2br(htmlspecialchars($announcement['content'])) . '</p>';
-                                echo '<p class="card-text"><small class="text-muted">Published on: ' . date("F j, Y", strtotime($announcement['published_date'])) . '</small></p>';
-                                echo '</div>';
-                                echo '</div>';
+                                echo '<li class="timeline-item">';
+                                echo '  <div class="card shadow-sm">';
+                                echo '    <div class="card-body">';
+                                echo '      <h5 class="card-title">' . htmlspecialchars($announcement['title']) . '</h5>';
+                                echo '      <p class="card-text text-muted mb-2"><small><i class="fas fa-calendar-alt me-2"></i>Published on: ' . date("F j, Y", strtotime($announcement['published_date'])) . '</small></p>';
+                                echo '      <p class="card-text">' . nl2br(htmlspecialchars($announcement['content'])) . '</p>';
+                                if (!empty($announcement['file_path'])) {
+                                    echo '<p class="card-text mt-2"><a href="' . htmlspecialchars($announcement['file_path']) . '" class="btn btn-sm btn-outline-success" download>Download Attachment</a></p>';
+                                }
+                                echo '    </div>';
+                                echo '  </div>';
+                                echo '</li>';
                             }
+                            echo '</ul>';
                         } else {
-                            echo '<p>' . $t['no_records'] . '</p>';
+                            echo '<p class="text-center">' . $t['no_records'] . '</p>';
                         }
                         ?>
                     </div>
                 </section>
             <?php
                 break;
-
             case 'events':
             ?>
                 <section class="py-5">
                     <div class="container">
-                        <h2 class="mb-4"><?php echo $t['events_calendar_heading']; ?></h2>
+                        <h2 class="mb-5 text-center"><?php echo $t['events_calendar_heading']; ?></h2>
                         <?php
                         $stmt = $pdo->query("SELECT * FROM events ORDER BY event_date ASC");
                         $events = $stmt->fetchAll();
                         if ($events) {
+                            echo '<ul class="timeline">';
                             foreach ($events as $event) {
-                                echo '<div class="card mb-3">';
-                                echo '<div class="card-body">';
-                                echo '<h5 class="card-title">' . htmlspecialchars($event['title']) . '</h5>';
-                                echo '<p class="card-text">' . nl2br(htmlspecialchars($event['description'])) . '</p>';
-                                echo '<p class="card-text"><small class="text-muted">Date: ' . date("F j, Y", strtotime($event['event_date'])) . '</small></p>';
+                                echo '<li class="timeline-item">';
+                                echo '  <div class="card shadow-sm">';
+                                echo '    <div class="card-body">';
+                                echo '      <div class="d-flex align-items-start">';
+                                echo '        <div class="text-center me-4">';
+                                echo '          <div class="bg-success text-white rounded px-3 py-2 shadow-sm">';
+                                echo '            <span class="d-block fs-4 fw-bold">' . date("d", strtotime($event['event_date'])) . '</span>';
+                                echo '            <small class="d-block">' . date("M", strtotime($event['event_date'])) . '</small>';
+                                echo '            <small class="d-block" style="font-size: 0.75em;">' . date("Y", strtotime($event['event_date'])) . '</small>';
+                                echo '          </div>';
+                                echo '        </div>';
+                                echo '        <div>';
+                                echo '          <h5 class="card-title mb-1">' . htmlspecialchars($event['title']) . '</h5>';
+                                echo '          <p class="card-text mb-2">' . nl2br(htmlspecialchars($event['description'])) . '</p>';
+                                echo '          <ul class="list-unstyled text-muted small">';
                                 if ($event['event_time']) {
-                                    echo '<p class="card-text"><small class="text-muted">Time: ' . date("h:i A", strtotime($event['event_time'])) . '</small></p>';
+                                    echo '<li class="mb-1"><i class="fas fa-clock fa-fw me-2"></i>' . date("h:i A", strtotime($event['event_time'])) . '</li>';
                                 }
                                 if ($event['location']) {
-                                    echo '<p class="card-text"><small class="text-muted">Location: ' . htmlspecialchars($event['location']) . '</small></p>';
+                                    echo '<li><i class="fas fa-map-marker-alt fa-fw me-2"></i>' . htmlspecialchars($event['location']) . '</li>';
                                 }
-                                echo '</div>';
-                                echo '</div>';
+                                echo '          </ul>';
+                                echo '        </div>';
+                                echo '      </div>';
+                                echo '    </div>';
+                                echo '  </div>';
+                                echo '</li>';
                             }
+                            echo '</ul>';
                         } else {
-                            echo '<p>' . $t['no_records'] . '</p>';
+                            echo '<p class="text-center">' . $t['no_records'] . '</p>';
                         }
                         ?>
                     </div>
@@ -2201,6 +2310,38 @@ if (isset($_SESSION['error'])) {
                             </div>
                             <button type="submit" class="btn btn-success"><?php echo $t['send_message']; ?></button>
                         </form>
+                        <div class="row mt-5 pt-5 border-top">
+                            <div class="col-lg-5 mb-4 mb-lg-0">
+                                <h3 class="mb-3">Contact Information</h3>
+                                <p>We are here to help. Please don't hesitate to get in touch with us using the details below.</p>
+                                <ul class="list-unstyled" style="font-size: 1.1rem;">
+                                    <li class="mb-3 d-flex align-items-center">
+                                        <i class="fas fa-phone fa-fw me-3 text-success"></i>
+                                        <a href="tel:+923001234567">+92 300 1234567</a>
+                                    </li>
+                                    <li class="mb-3 d-flex align-items-center">
+                                        <i class="fas fa-envelope fa-fw me-3 text-success"></i>
+                                        <a href="mailto:info@futureleaders.edu.pk">info@futureleaders.edu.pk</a>
+                                    </li>
+                                    <li class="mb-3 d-flex align-items-center">
+                                        <i class="fab fa-whatsapp fa-fw me-3 text-success"></i>
+                                        <a href="https://wa.me/923001234567" target="_blank">Chat on WhatsApp</a>
+                                    </li>
+                                </ul>
+                                <h4 class="mt-4 mb-3">Follow Our Socials</h4>
+                                <div>
+                                    <a href="#" class="btn btn-outline-primary m-1" title="Facebook" style="width: 40px; height: 40px; line-height: 1;"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="#" class="btn btn-outline-info m-1" title="Twitter" style="width: 40px; height: 40px; line-height: 1;"><i class="fab fa-twitter"></i></a>
+                                    <a href="#" class="btn btn-outline-danger m-1" title="Instagram" style="width: 40px; height: 40px; line-height: 1;"><i class="fab fa-instagram"></i></a>
+                                </div>
+                            </div>
+                            <div class="col-lg-7">
+                                <h3 class="mb-3">Our Location in Bannu</h3>
+                                <div class="ratio ratio-16x9 rounded overflow-hidden">
+                                    <iframe src="https://maps.google.com/maps?q=Bannu%2C%20Khyber%20Pakhtunkhwa%2CPakistan&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
             <?php
@@ -2218,12 +2359,14 @@ if (isset($_SESSION['error'])) {
                             if ($images) {
                                 foreach ($images as $image) {
                                     echo '<div class="col">';
-                                    echo '<div class="card h-100">';
-                                    echo '<img src="' . htmlspecialchars($image['image_path']) . '" class="card-img-top" alt="' . htmlspecialchars($image['title']) . '" style="height: 200px; object-fit: cover;">';
-                                    echo '<div class="card-body">';
-                                    echo '<h5 class="card-title">' . htmlspecialchars($image['title']) . '</h5>';
-                                    echo '</div>';
-                                    echo '</div>';
+                                    echo '  <a href="' . htmlspecialchars($image['image_path']) . '" class="glightbox" data-gallery="school-gallery" title="' . htmlspecialchars($image['title']) . '">';
+                                    echo '    <div class="card h-100 text-decoration-none">';
+                                    echo '      <img src="' . htmlspecialchars($image['image_path']) . '" class="card-img-top" alt="' . htmlspecialchars($image['title']) . '" style="height: 200px; object-fit: cover;">';
+                                    echo '      <div class="card-body">';
+                                    echo '        <h5 class="card-title text-dark">' . htmlspecialchars($image['title']) . '</h5>';
+                                    echo '      </div>';
+                                    echo '    </div>';
+                                    echo '  </a>';
                                     echo '</div>';
                                 }
                             } else {
@@ -2414,7 +2557,11 @@ if (isset($_SESSION['error'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
     <script>
+        const lightbox = GLightbox({
+            selector: '.glightbox'
+        });
         $(document).ready(function() {
             function updateModalSelectOptions(modalId, selectId, dataUrl, initialValue) {
                 var currentClassId = $('#' + modalId + ' #class_id').val();
@@ -2491,7 +2638,9 @@ if (isset($_SESSION['error'])) {
 
                 $(modalId + ' #action').val('edit_' + type);
                 $(modalId + ' #id').val(data.id);
-
+                if (data.file_path) {
+                    $(modalId + ' #file_path_old').val(data.file_path);
+                }
                 if (type === 'assignment' && data.file_path) {
                     $(modalId + ' #file_path_old').val(data.file_path);
                 }
@@ -4016,7 +4165,7 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addAnnouncementModal">' . $t['add_news'] . '</button>';
             echo '<div class="table-responsive">';
             echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>' . $t['title'] . '</th><th>Content</th><th>' . $t['published_date'] . '</th><th>' . $t['actions'] . '</th></tr></thead>';
+            echo '<thead><tr><th>ID</th><th>' . $t['title'] . '</th><th>Content</th><th>File</th><th>' . $t['published_date'] . '</th><th>' . $t['actions'] . '</th></tr></thead>';
             echo '<tbody>';
             $stmt = $pdo->query("SELECT * FROM announcements ORDER BY published_date DESC");
             $announcements = $stmt->fetchAll();
@@ -4026,6 +4175,13 @@ function displayAdminPanel($pdo, $t, $lang)
                     echo '<td>' . htmlspecialchars($announcement['id']) . '</td>';
                     echo '<td>' . htmlspecialchars($announcement['title']) . '</td>';
                     echo '<td>' . substr(htmlspecialchars($announcement['content']), 0, 100) . '...</td>';
+                    echo '<td>';
+                    if (!empty($announcement['file_path'])) {
+                        echo '<a href="' . htmlspecialchars($announcement['file_path']) . '" download>Download</a>';
+                    } else {
+                        echo 'N/A';
+                    }
+                    echo '</td>';
                     echo '<td>' . date("Y-m-d", strtotime($announcement['published_date'])) . '</td>';
                     echo '<td>';
                     echo '<button type="button" class="btn btn-sm btn-info edit-btn me-1" data-bs-toggle="modal" data-bs-target="#editAnnouncementModal" data-json=\'' . json_encode($announcement) . '\' data-form-id="editAnnouncementForm" data-type="announcement"><i class="fas fa-edit"></i> ' . $t['edit'] . '</button>';
@@ -4043,7 +4199,7 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal fade" id="addAnnouncementModal" tabindex="-1" aria-labelledby="addAnnouncementModalLabel" aria-hidden="true">';
             echo '<div class="modal-dialog">';
             echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="addAnnouncementForm">';
+            echo '<form action="" method="POST" id="addAnnouncementForm" enctype="multipart/form-data">';
             echo '<div class="modal-header">';
             echo '<h5 class="modal-title" id="addAnnouncementModalLabel">' . $t['add_news'] . '</h5>';
             echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
@@ -4052,6 +4208,7 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<input type="hidden" name="action" value="add_announcement">';
             echo '<div class="mb-3"><label for="add_announcement_title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="add_announcement_title" name="title" required></div>';
             echo '<div class="mb-3"><label for="add_announcement_content" class="form-label">Content</label><textarea class="form-control" id="add_announcement_content" name="content" rows="5" required></textarea></div>';
+            echo '<div class="mb-3"><label for="add_announcement_file" class="form-label">Attachment File</label><input type="file" class="form-control" id="add_announcement_file" name="announcement_file"></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -4066,7 +4223,7 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal fade" id="editAnnouncementModal" tabindex="-1" aria-labelledby="editAnnouncementModalLabel" aria-hidden="true">';
             echo '<div class="modal-dialog">';
             echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="editAnnouncementForm">';
+            echo '<form action="" method="POST" id="editAnnouncementForm" enctype="multipart/form-data">';
             echo '<div class="modal-header">';
             echo '<h5 class="modal-title" id="editAnnouncementModalLabel">' . $t['edit_news'] . '</h5>';
             echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
@@ -4076,6 +4233,8 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<input type="hidden" name="id" id="id">';
             echo '<div class="mb-3"><label for="title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="title" name="title" required></div>';
             echo '<div class="mb-3"><label for="content" class="form-label">Content</label><textarea class="form-control" id="content" name="content" rows="5" required></textarea></div>';
+            echo '<input type="hidden" name="file_path_old" id="file_path_old">';
+            echo '<div class="mb-3"><label for="announcement_file" class="form-label">New Attachment (optional)</label><input type="file" class="form-control" id="announcement_file" name="announcement_file"></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -4180,13 +4339,15 @@ function displayAdminPanel($pdo, $t, $lang)
             if ($images) {
                 foreach ($images as $image) {
                     echo '<div class="col">';
-                    echo '<div class="card h-100">';
-                    echo '<img src="' . htmlspecialchars($image['image_path']) . '" class="card-img-top" alt="' . htmlspecialchars($image['title']) . '" style="height: 200px; object-fit: cover;">';
-                    echo '<div class="card-body">';
-                    echo '<h5 class="card-title">' . htmlspecialchars($image['title']) . '</h5>';
-                    echo '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $image['id'] . '" data-type="gallery_image"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
-                    echo '</div>';
-                    echo '</div>';
+                    echo '  <div class="card h-100">';
+                    echo '    <a href="' . htmlspecialchars($image['image_path']) . '" class="glightbox" data-gallery="admin-gallery" title="' . htmlspecialchars($image['title']) . '">';
+                    echo '      <img src="' . htmlspecialchars($image['image_path']) . '" class="card-img-top" alt="' . htmlspecialchars($image['title']) . '" style="height: 200px; object-fit: cover;">';
+                    echo '    </a>';
+                    echo '    <div class="card-body">';
+                    echo '      <h5 class="card-title">' . htmlspecialchars($image['title']) . '</h5>';
+                    echo '      <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $image['id'] . '" data-type="gallery_image"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
+                    echo '    </div>';
+                    echo '  </div>';
                     echo '</div>';
                 }
             } else {
