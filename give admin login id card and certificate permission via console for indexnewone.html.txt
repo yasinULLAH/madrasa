@@ -1,0 +1,35 @@
+// This code connects to your database, finds the 'admin' role,
+// sets the 'id-cards' permission to true, and saves it.
+
+const request = indexedDB.open('SchoolMadrasaDB');
+
+request.onerror = (event) => {
+  console.error("Database error:", event.target.errorCode);
+};
+
+request.onsuccess = (event) => {
+  const db = event.target.result;
+  const transaction = db.transaction(['roles'], 'readwrite');
+  const objectStore = transaction.objectStore('roles');
+
+  const getAllRequest = objectStore.getAll();
+
+  getAllRequest.onsuccess = () => {
+    const roles = getAllRequest.result;
+    const adminRole = roles.find(role => role.name === 'admin');
+
+    if (adminRole) {
+      adminRole.permissions['id-cards'] = true; // The change happens here
+      const updateRequest = objectStore.put(adminRole);
+
+      updateRequest.onsuccess = () => {
+        console.log("✅ Admin role updated successfully! Please refresh the page.");
+      };
+      updateRequest.onerror = () => {
+        console.error("Error updating the admin role.");
+      };
+    } else {
+      console.log("Admin role not found.");
+    }
+  };
+};

@@ -1,24 +1,17 @@
 <!DOCTYPE html>
 
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <title>ID Card &amp; Certificate Generator | Production-Ready Tool</title>
-    <meta
-        content="A powerful, offline-first, single-file HTML application to generate professional ID cards and certificates with QR codes and high-resolution PNG export."
-        name="description" />
-    <meta
-        content="ID card generator, certificate maker, QR code, PNG export, offline tool, web app, Yasin Ullah, Pakistan, print design"
-        name="keywords" />
-    <meta content="Yasin Ullah, Pakistan" name="author" />
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Merriweather:wght@700;900&amp;display=swap"
-        rel="stylesheet" />
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>ID Card &amp; Certificate Generator | Production-Ready Tool</title>
+<meta content="A powerful, offline-first, single-file HTML application to generate professional ID cards and certificates with QR codes and high-resolution PNG export." name="description"/>
+<meta content="ID card generator, certificate maker, QR code, PNG export, offline tool, web app, Yasin Ullah, Pakistan, print design" name="keywords"/>
+<meta content="Yasin Ullah, Pakistan" name="author"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Merriweather:wght@700;900&amp;display=swap" rel="stylesheet"/>
+<style>
         :root {
             --bg: #0f172a;
             --card: #1e293b;
@@ -332,203 +325,194 @@
             }
         }
     </style>
-    <link href="manifest.json" rel="manifest" />
-    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+<link href="manifest.json" rel="manifest"/>
+<link href="favicon.ico" rel="icon" type="image/x-icon"/>
 </head>
-
 <body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1 style="margin:0;font-size:22px;font-weight:800;">ID &amp; Certificate Generator</h1>
-                <div class="kpis">
-                    <span class="pill"
-                        style="background:#0ea5e933;border-color:#0ea5e977;color:#dbeafe">Offline-Ready</span>
-                    <span class="pill" style="background:#f59e0b33;border-color:#f59e0b77;color:#fffbeb">JSON
+<div class="container">
+<div class="header">
+<div>
+<h1 style="margin:0;font-size:22px;font-weight:800;">ID &amp; Certificate Generator</h1>
+<div class="kpis">
+<span class="pill" style="background:#0ea5e933;border-color:#0ea5e977;color:#dbeafe">Offline-Ready</span>
+<span class="pill" style="background:#f59e0b33;border-color:#f59e0b77;color:#fffbeb">JSON
                         Backup</span>
-                    <span class="pill" style="background:#ef444433;border-color:#ef444477;color:#fee2e2">High-Res
+<span class="pill" style="background:#ef444433;border-color:#ef444477;color:#fee2e2">High-Res
                         Export</span>
-                </div>
-            </div>
-            <div class="badge">By Yasin Ullah</div>
-        </div>
-        <div class="tabs" id="tabs">
-            <div class="tab active" data-tab="id">ID Card Editor</div>
-            <div class="tab" data-tab="cert">Certificate Editor</div>
-            <div class="tab" data-tab="data">Data Management &amp; Settings</div>
-        </div>
-        <div class="panel" id="panel-id">
-            <div class="grid">
-                <div class="card">
-                    <h3>ID Card Inputs <span id="id-editor-status"
-                            style="font-size:12px; color:var(--accent); float:right;"></span></h3>
-                    <div class="radio-group">
-                        <label>
-                            <input checked="" name="id_view" type="radio" value="front" /> Front
+</div>
+</div>
+<div class="badge">By Yasin Ullah</div>
+</div>
+<div class="tabs" id="tabs">
+<div class="tab active" data-tab="id">ID Card Editor</div>
+<div class="tab" data-tab="cert">Certificate Editor</div>
+<div class="tab" data-tab="data">Data Management &amp; Settings</div>
+</div>
+<div class="panel" id="panel-id">
+<div class="grid">
+<div class="card">
+<h3>ID Card Inputs <span id="id-editor-status" style="font-size:12px; color:var(--accent); float:right;"></span></h3>
+<div class="radio-group">
+<label>
+<input checked="" name="id_view" type="radio" value="front"/> Front
                         </label>
-                        <label>
-                            <input name="id_view" type="radio" value="back" /> Back
+<label>
+<input name="id_view" type="radio" value="back"/> Back
                         </label>
-                    </div>
-                    <div id="id-front-inputs">
-                        <div class="form-section-title">Personal Details (Front)</div>
-                        <div class="row"><input id="id_name" placeholder="Full Name" type="text" /></div>
-                        <div class="row"><input id="id_role" placeholder="Role / Title" type="text" /></div>
-                        <div class="row"><input id="id_dept" placeholder="Department / Org" type="text" /></div>
-                        <div class="row"><input id="id_number" placeholder="ID Number" type="text" /></div>
-                        <div class="form-section-title">Dates &amp; QR (Front)</div>
-                        <div class="row">
-                            <div><label>Issue Date</label><input id="id_issue" type="date" /></div>
-                            <div><label>Valid Until</label><input id="id_valid" type="date" /></div>
-                        </div>
-                        <div class="row"><label>QR Content (defaults to ID Number)</label><input id="id_qr"
-                                placeholder="Leave blank for auto" type="text" /></div>
-                        <div class="form-section-title">Design &amp; Media (Front)</div>
-                        <div class="row">
-                            <div><label>Primary</label><input id="id_color" type="color" /></div>
-                            <div><label>Accent</label><input id="id_color2" type="color" /></div>
-                            <div><label>BG</label><input id="id_bg" type="color" /></div>
-                        </div>
-                        <div class="row">
-                            <div><label>Logo (PNG/JPG)</label><input accept="image/*" id="id_logo" type="file" /></div>
-                        </div>
-                        <div class="row">
-                            <div><label>Photo (PNG/JPG)</label><input accept="image/*" id="id_photo" type="file" />
-                            </div>
-                        </div>
-                    </div>
-                    <div id="id-back-inputs" style="display:none;">
-                        <div class="form-section-title">Details (Back)</div>
-                        <div class="row">
-                            <label>Address</label>
-                            <textarea id="id_address" placeholder="Street, City, Country" rows="3"></textarea>
-                        </div>
-                        <div class="row">
-                            <label>Emergency Contact</label>
-                            <input id="id_emergency_contact" placeholder="Name, Phone, Relation" type="text" />
-                        </div>
-                        <div class="row">
-                            <label>Barcode Content</label>
-                            <input id="id_barcode_content" placeholder="e.g., ID-0000" type="text" />
-                        </div>
-                        <div class="row">
-                            <label>Terms &amp; Conditions</label>
-                            <textarea id="id_terms" placeholder="Any terms or conditions for the ID card holder."
-                                rows="4"></textarea>
-                        </div>
-                        <div class="form-section-title">Design &amp; Media (Back)</div>
-                        <div class="row">
-                            <div><label>Signature Line</label><input accept="image/png" id="id_signature_line"
-                                    type="file" /></div>
-                        </div>
-                    </div>
-                    <div class="hr"></div>
-                    <div class="row">
-                        <button class="btn" id="btn_update_id">Update Record</button>
-                        <button class="btn primary" id="btn_render_id">Render Preview</button>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <button class="btn" id="btn_export_id_png">Export PNG</button>
-                        <button class="btn" id="btn_print_id">Print</button>
-                    </div>
-                    <div class="help">CR80 size @ 300dpi. Render after changes.</div>
-                </div>
-                <div class="card">
-                    <h3>Preview</h3>
-                    <div class="preview-wrap"><canvas height="638" id="canvas_id" width="1012"></canvas></div>
-                </div>
-            </div>
-        </div>
-        <div class="panel" id="panel-cert" style="display:none;">
-            <div class="grid">
-                <div class="card">
-                    <h3>Certificate Inputs <span id="cert-editor-status"
-                            style="font-size:12px; color:var(--accent); float:right;"></span></h3>
-                    <div class="form-section-title">Content</div>
-                    <div class="row"><input id="c_name" placeholder="Recipient Name" type="text" /></div>
-                    <div class="row"><input id="c_title" placeholder="Certificate Title" type="text" /></div>
-                    <div class="row"><input id="c_reason" placeholder="Reason / Course Details" type="text" /></div>
-                    <div class="row">
-                        <div><label>Issue Date</label><input id="c_date" type="date" /></div>
-                        <div><label>Certificate ID</label><input id="c_id" placeholder="e.g. CERT-2025-001"
-                                type="text" /></div>
-                    </div>
-                    <div class="row"><label>QR Content (defaults to Certificate ID)</label><input id="c_qr"
-                            placeholder="Leave blank for auto" type="text" /></div>
-                    <div class="form-section-title">Design &amp; Media</div>
-                    <div class="row">
-                        <div><label>Primary</label><input id="c_color" type="color" /></div>
-                        <div><label>Accent</label><input id="c_color2" type="color" /></div>
-                        <div><label>BG</label><input id="c_bg" type="color" /></div>
-                    </div>
-                    <div class="row">
-                        <div><label>Logo</label><input accept="image/*" id="c_logo" type="file" /></div>
-                    </div>
-                    <div class="row">
-                        <div><label>Signature Left</label><input accept="image/png" id="c_sig1" type="file" /></div>
-                        <div><label>Signature Right</label><input accept="image/png" id="c_sig2" type="file" /></div>
-                    </div>
-                    <div class="hr"></div>
-                    <div class="row">
-                        <button class="btn" id="btn_update_cert">Update Record</button>
-                        <button class="btn primary" id="btn_render_cert">Render Preview</button>
-                    </div>
-                    <div class="row" style="margin-top:10px;">
-                        <button class="btn" id="btn_export_cert_png">Export PNG</button>
-                        <button class="btn" id="btn_print_cert">Print</button>
-                    </div>
-                    <div class="help">A4 Landscape @ 300dpi. Use transparent PNGs for signatures.</div>
-                </div>
-                <div class="card">
-                    <h3>Preview</h3>
-                    <div class="preview-wrap"><canvas height="2480" id="canvas_cert" width="3508"></canvas></div>
-                </div>
-            </div>
-        </div>
-        <div class="panel" id="panel-data" style="display:none;">
-            <div class="grid" style="grid-template-columns:1fr 1fr;">
-                <div class="card">
-                    <h3>All Records</h3>
-                    <div class="row">
-                        <button class="btn" id="btn_add_id">New ID Card</button>
-                        <button class="btn" id="btn_add_cert">New Certificate</button>
-                    </div>
-                    <div style="max-height: 400px; overflow-y: auto; margin-top:16px;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Name / Title</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="records-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Backup &amp; Restore</h3>
-                    <p class="help" style="text-align:left; margin:0 0 10px 0;">Save all your records to a JSON file for
+</div>
+<div id="id-front-inputs">
+<div class="form-section-title">Personal Details (Front)</div>
+<div class="row"><input id="id_name" placeholder="Full Name" type="text"/></div>
+<div class="row"><input id="id_role" placeholder="Role / Title" type="text"/></div>
+<div class="row"><input id="id_dept" placeholder="Department / Org" type="text"/></div>
+<div class="row"><input id="id_number" placeholder="ID Number" type="text"/></div>
+<div class="form-section-title">Dates &amp; QR (Front)</div>
+<div class="row">
+<div><label>Issue Date</label><input id="id_issue" type="date"/></div>
+<div><label>Valid Until</label><input id="id_valid" type="date"/></div>
+</div>
+<div class="row"><label>QR Content (defaults to ID Number)</label><input id="id_qr" placeholder="Leave blank for auto" type="text"/></div>
+<div class="form-section-title">Design &amp; Media (Front)</div>
+<div class="row">
+<div><label>Primary</label><input id="id_color" type="color"/></div>
+<div><label>Accent</label><input id="id_color2" type="color"/></div>
+<div><label>BG</label><input id="id_bg" type="color"/></div>
+</div>
+<div class="row">
+<div><label>Logo (PNG/JPG)</label><input accept="image/*" id="id_logo" type="file"/></div>
+</div>
+<div class="row">
+<div><label>Photo (PNG/JPG)</label><input accept="image/*" id="id_photo" type="file"/>
+</div>
+</div>
+</div>
+<div id="id-back-inputs" style="display:none;">
+<div class="form-section-title">Details (Back)</div>
+<div class="row">
+<label>Address</label>
+<textarea id="id_address" placeholder="Street, City, Country" rows="3"></textarea>
+</div>
+<div class="row">
+<label>Emergency Contact</label>
+<input id="id_emergency_contact" placeholder="Name, Phone, Relation" type="text"/>
+</div>
+<div class="row">
+<label>Barcode Content</label>
+<input id="id_barcode_content" placeholder="e.g., ID-0000" type="text"/>
+</div>
+<div class="row">
+<label>Terms &amp; Conditions</label>
+<textarea id="id_terms" placeholder="Any terms or conditions for the ID card holder." rows="4"></textarea>
+</div>
+<div class="form-section-title">Design &amp; Media (Back)</div>
+<div class="row">
+<div><label>Signature Line</label><input accept="image/png" id="id_signature_line" type="file"/></div>
+</div>
+</div>
+<div class="hr"></div>
+<div class="row">
+<button class="btn" id="btn_update_id">Update Record</button>
+<button class="btn primary" id="btn_render_id">Render Preview</button>
+</div>
+<div class="row" style="margin-top:10px;">
+<button class="btn" id="btn_export_id_png">Export PNG</button>
+<button class="btn" id="btn_print_id">Print</button>
+</div>
+<div class="help">CR80 size @ 300dpi. Render after changes.</div>
+</div>
+<div class="card">
+<h3>Preview</h3>
+<div class="preview-wrap"><canvas height="638" id="canvas_id" width="1012"></canvas></div>
+</div>
+</div>
+</div>
+<div class="panel" id="panel-cert" style="display:none;">
+<div class="grid">
+<div class="card">
+<h3>Certificate Inputs <span id="cert-editor-status" style="font-size:12px; color:var(--accent); float:right;"></span></h3>
+<div class="form-section-title">Content</div>
+<div class="row"><input id="c_name" placeholder="Recipient Name" type="text"/></div>
+<div class="row"><input id="c_title" placeholder="Certificate Title" type="text"/></div>
+<div class="row"><input id="c_reason" placeholder="Reason / Course Details" type="text"/></div>
+<div class="row">
+<div><label>Issue Date</label><input id="c_date" type="date"/></div>
+<div><label>Certificate ID</label><input id="c_id" placeholder="e.g. CERT-2025-001" type="text"/></div>
+</div>
+<div class="row"><label>QR Content (defaults to Certificate ID)</label><input id="c_qr" placeholder="Leave blank for auto" type="text"/></div>
+<div class="form-section-title">Design &amp; Media</div>
+<div class="row">
+<div><label>Primary</label><input id="c_color" type="color"/></div>
+<div><label>Accent</label><input id="c_color2" type="color"/></div>
+<div><label>BG</label><input id="c_bg" type="color"/></div>
+</div>
+<div class="row">
+<div><label>Logo</label><input accept="image/*" id="c_logo" type="file"/></div>
+</div>
+<div class="row">
+<div><label>Signature Left</label><input accept="image/png" id="c_sig1" type="file"/></div>
+<div><label>Signature Right</label><input accept="image/png" id="c_sig2" type="file"/></div>
+</div>
+<div class="hr"></div>
+<div class="row">
+<button class="btn" id="btn_update_cert">Update Record</button>
+<button class="btn primary" id="btn_render_cert">Render Preview</button>
+</div>
+<div class="row" style="margin-top:10px;">
+<button class="btn" id="btn_export_cert_png">Export PNG</button>
+<button class="btn" id="btn_print_cert">Print</button>
+</div>
+<div class="help">A4 Landscape @ 300dpi. Use transparent PNGs for signatures.</div>
+</div>
+<div class="card">
+<h3>Preview</h3>
+<div class="preview-wrap"><canvas height="2480" id="canvas_cert" width="3508"></canvas></div>
+</div>
+</div>
+</div>
+<div class="panel" id="panel-data" style="display:none;">
+<div class="grid" style="grid-template-columns:1fr 1fr;">
+<div class="card">
+<h3>All Records</h3>
+<div class="row">
+<button class="btn" id="btn_add_id">New ID Card</button>
+<button class="btn" id="btn_add_cert">New Certificate</button>
+</div>
+<div style="max-height: 400px; overflow-y: auto; margin-top:16px;">
+<table class="data-table">
+<thead>
+<tr>
+<th>Type</th>
+<th>Name / Title</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="records-table"></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<h3>Backup &amp; Restore</h3>
+<p class="help" style="text-align:left; margin:0 0 10px 0;">Save all your records to a JSON file for
                         backup, or restore from a previously saved file. Your data is also auto-saved in the browser.
                     </p>
-                    <div class="row">
-                        <button class="btn warn" id="btn_export_json">Export to JSON</button>
-                        <button class="btn" id="btn_import_json_proxy">Import from JSON</button>
-                        <input accept=".json" id="json-importer" style="display:none;" type="file" />
-                    </div>
-                    <div class="hr"></div>
-                    <h3>Danger Zone</h3>
-                    <p class="help" style="text-align:left; margin:0 0 10px 0;">Permanently delete all records from the
+<div class="row">
+<button class="btn warn" id="btn_export_json">Export to JSON</button>
+<button class="btn" id="btn_import_json_proxy">Import from JSON</button>
+<input accept=".json" id="json-importer" style="display:none;" type="file"/>
+</div>
+<div class="hr"></div>
+<h3>Danger Zone</h3>
+<p class="help" style="text-align:left; margin:0 0 10px 0;">Permanently delete all records from the
                         application. This action cannot be undone.</p>
-                    <button class="btn danger" id="btn_clear_all">Clear All Data</button>
-                </div>
-            </div>
-        </div>
-        <div class="disclaimer">© 2025 Designed by Yasin Ullah for the Pakistani market. All rights reserved.</div>
-        <div id="qr-container"></div>
-        <canvas id="barcode-canvas" style="display:none;"></canvas>
-    </div>
-    <script>
+<button class="btn danger" id="btn_clear_all">Clear All Data</button>
+</div>
+</div>
+</div>
+<div class="disclaimer">© 2025 Designed by Yasin Ullah for the Pakistani market. All rights reserved.</div>
+<div id="qr-container"></div>
+<canvas id="barcode-canvas" style="display:none;"></canvas>
+</div>
+<script>
         /**
          * @fileoverview
          * QRCode.js
@@ -1579,7 +1563,7 @@
             };
         })();
     </script>
-    <script>
+<script>
         const $ = sel => document.querySelector(sel);
         const $$ = sel => document.querySelectorAll(sel);
         const readFileAsDataURL = (file) => new Promise((res, rej) => {
@@ -2278,24 +2262,23 @@
             toggleIDViewInputs(appData.idCardView);
         });
     </script>
-    <script type="module">
-        import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
-        const swUrl = './sw.js';
-        const wb = new Workbox(swUrl);
+<script type="module">
+  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
-        wb.addEventListener('waiting', () => {
-            console.log('A new service worker is waiting to activate.');
-            wb.messageSW({ type: 'SKIP_WAITING' });
-        });
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
 
-        wb.addEventListener('controlling', () => {
-            console.log('The new service worker is now in control. Reloading page for updates...');
-            window.location.reload();
-        });
+  wb.addEventListener('waiting', () => {
+    console.log('A new service worker is waiting to activate.');
+    wb.messageSW({ type: 'SKIP_WAITING' });
+  });
 
-        wb.register();
-    </script>
-</body>
+  wb.addEventListener('controlling', () => {
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  });
 
+  wb.register();
+</script></body>
 </html>
