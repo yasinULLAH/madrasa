@@ -454,18 +454,17 @@ function handle_add_update_data($mysqli)
         $data['weeklyHoliday'] = json_encode($data['weeklyHoliday']);
     }
 
-    $excluded_fields = ['id', 'createdAt', 'updatedAt', 'employeeName', 'className', 'sectionName', 'subjectName', 'teacherName', 'bookName', 'memberName']; // Fields not in DB schema
+    $excluded_fields = ['id', 'createdAt', 'updatedAt', 'employeeName', 'className', 'sectionName', 'subjectName', 'teacherName', 'bookName', 'memberName'];
+
     if ($id && $_POST['action'] === 'update_data') {
-        // --- START REPLACEMENT ---
         if ($storeName === 'settings') {
-            // Special "upsert" logic for settings table
             $data['id'] = $id;
             $fields = [];
             $update_fields = [];
             $params = [];
             $types = "";
             foreach ($data as $key => $value) {
-                if (!in_array($key, $excluded_fields)) {
+                if ((!in_array($key, $excluded_fields)) || ($key === 'id' && $storeName === 'settings')) {
                     $fields[] = "`{$key}`";
                     $params[] = $value;
                     $types .= get_param_type($value);
@@ -477,8 +476,19 @@ function handle_add_update_data($mysqli)
             $placeholders = implode(', ', array_fill(0, count($fields), '?'));
             $sql = "INSERT INTO `settings` (" . implode(', ', $fields) . ") VALUES (" . $placeholders . ") ON DUPLICATE KEY UPDATE " . implode(', ', $update_fields);
             $stmt = $mysqli->prepare($sql);
+            if ($stmt === false) {
+                echo json_encode(['status' => 'error', 'message' => 'Prepare failed: ' . $mysqli->error]);
+                return;
+            }
+            $stmt->bind_param($types, ...$params);
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Settings saved successfully', 'id' => $id]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Execute failed: ' . $stmt->error]);
+            }
+            $stmt->close();
         } else {
-            // Original update logic for all other tables
+            // Standard update logic for all other tables
             $update_fields = [];
             $params = [];
             $types = "";
@@ -494,39 +504,32 @@ function handle_add_update_data($mysqli)
                 return;
             }
             $params[] = $id;
-            $types .= "i"; // All other tables use integer IDs
+            $types .= "i";
             $sql = "UPDATE `{$storeName}` SET " . implode(', ', $update_fields) . " WHERE `id` = ?";
             $stmt = $mysqli->prepare($sql);
+            if ($stmt === false) {
+                echo json_encode(['status' => 'error', 'message' => 'Prepare failed: ' . $mysqli->error]);
+                return;
+            }
+            $stmt->bind_param($types, ...$params);
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Data updated successfully', 'id' => $id]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Execute failed: ' . $stmt->error]);
+            }
+            $stmt->close();
         }
-
-        if ($stmt === false) {
-            echo json_encode(['status' => 'error', 'message' => 'Prepare failed: ' . $mysqli->error]);
-            return;
-        }
-
-        $stmt->bind_param($types, ...$params);
-        if ($stmt->execute()) {
-            $message = $storeName === 'settings' ? 'Settings saved successfully' : 'Data updated successfully';
-            echo json_encode(['status' => 'success', 'message' => $message, 'id' => $id]);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Execute failed: ' . $stmt->error]);
-        }
-        $stmt->close();
-        // --- END REPLACEMENT ---
-    } else { // add_data
+    } else { // add_data logic
         $fields = [];
         $placeholders = [];
         $params = [];
         $types = "";
-
-        // Handle auto-incremented rollNumber for students
         if ($storeName === 'students' && !isset($data['rollNumber'])) {
             $result = $mysqli->query("SELECT MAX(CAST(rollNumber AS UNSIGNED)) as max_roll FROM students");
             $row = $result->fetch_assoc();
             $nextRoll = ($row['max_roll'] ?? 0) + 1;
             $data['rollNumber'] = str_pad($nextRoll, 4, '0', STR_PAD_LEFT);
         }
-        // Handle auto-incremented employeeId for teachers/staff
         if (($storeName === 'teachers' || $storeName === 'staff') && !isset($data['employeeId'])) {
             $prefix = ($storeName === 'teachers') ? 'T' : 'S';
             $result = $mysqli->query("SELECT COUNT(*) as count FROM `{$storeName}`");
@@ -534,14 +537,12 @@ function handle_add_update_data($mysqli)
             $nextId = ($row['count'] ?? 0) + 1;
             $data['employeeId'] = $prefix . str_pad($nextId, 3, '0', STR_PAD_LEFT);
         }
-        // Handle receipt/voucher numbers
         if ($storeName === 'fees' && !isset($data['receiptNumber'])) {
             $data['receiptNumber'] = 'FEE' . substr(time(), -6);
         }
         if ($storeName === 'salary' && !isset($data['voucherNumber'])) {
             $data['voucherNumber'] = 'SAL' . substr(time(), -6);
         }
-
         foreach ($data as $key => $value) {
             if (!in_array($key, $excluded_fields)) {
                 $fields[] = "`{$key}`";
@@ -550,7 +551,6 @@ function handle_add_update_data($mysqli)
                 $types .= get_param_type($value);
             }
         }
-
         $sql = "INSERT INTO `{$storeName}` (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
         $stmt = $mysqli->prepare($sql);
         if ($stmt === false) {
@@ -559,7 +559,18 @@ function handle_add_update_data($mysqli)
         }
         $stmt->bind_param($types, ...$params);
         if ($stmt->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Data added successfully', 'id' => $mysqli->insert_id]);
+            // Add a special check to debug the initial settings creation
+            if ($storeName === 'settings') {
+                $affected = $stmt->affected_rows;
+                // On a successful INSERT, affected_rows should be 1.
+                if ($affected > 0) {
+                    echo json_encode(['status' => 'success', 'message' => 'Default settings created successfully. Please reload.']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => "Settings INSERT ran but affected 0 rows. Check DB permissions."]);
+                }
+            } else {
+                echo json_encode(['status' => 'success', 'message' => 'Data added successfully', 'id' => $mysqli->insert_id]);
+            }
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Execute failed: ' . $stmt->error]);
         }
@@ -751,9 +762,29 @@ function handle_login($mysqli)
         $user = $result->fetch_assoc();
         echo json_encode(['status' => 'success', 'user' => $user]);
     } else {
+        $stmt->close(); // Close user statement
+        $sql_student = "SELECT id, name, rollNumber FROM students WHERE name = ?";
+        $stmt_student = $mysqli->prepare($sql_student);
+        if ($stmt_student) {
+            $stmt_student->bind_param("s", $username);
+            $stmt_student->execute();
+            $result_student = $stmt_student->get_result();
+            if ($result_student->num_rows > 0) {
+                while ($student = $result_student->fetch_assoc()) {
+                    $expected_password = $student['name'] . '_' . $student['rollNumber'];
+                    if ($password === $expected_password) {
+                        $student_user = ['id' => $student['id'], 'name' => $student['name'], 'username' => $student['name'], 'role' => 'student'];
+                        echo json_encode(['status' => 'success', 'user' => $student_user]);
+                        $stmt_student->close();
+                        return;
+                    }
+                }
+            }
+            $stmt_student->close();
+        }
+        // If both logins fail
         echo json_encode(['status' => 'error', 'message' => 'Invalid username or password.']);
     }
-    $stmt->close();
 }
 
 function handle_fetch_settings($mysqli)
@@ -814,138 +845,218 @@ function handle_fetch_fee_structure_for_student($mysqli)
 
 function handle_create_backup_php($mysqli)
 {
-    $backupType = $_POST['backupType'];
-    $backupFormat = $_POST['backupFormat']; // Should be 'json'
-    $isAutomatic = $_POST['isAutomatic'] === 'true' ? 1 : 0;
+    $isAutomatic = isset($_POST['isAutomatic']) && $_POST['isAutomatic'] === 'true';
 
-    $backup_data = [];
-    $table_names = [];
-
-    if ($backupType === 'full') {
-        $result = $mysqli->query("SHOW TABLES");
-        while ($row = $result->fetch_row()) {
-            $table_names[] = $row[0];
-        }
-    } else {
-        $table_names[] = $backupType;
-    }
-
-    foreach ($table_names as $table_name) {
-        $query = "SELECT * FROM `{$table_name}`";
-        $result = $mysqli->query($query);
-        if ($result) {
-            $backup_data[$table_name] = [];
-            while ($row = $result->fetch_assoc()) {
-                // Decode JSON columns if they exist
-                if (isset($row['permissions'])) $row['permissions'] = json_decode($row['permissions']);
-                if (isset($row['subjects'])) $row['subjects'] = json_decode($row['subjects']);
-                if (isset($row['classes'])) $row['classes'] = json_decode($row['classes']);
-                if (isset($row['weeklyHoliday'])) $row['weeklyHoliday'] = json_decode($row['weeklyHoliday']);
-                $backup_data[$table_name][] = $row;
-            }
-        }
-    }
-
-    $json_data = json_encode($backup_data, JSON_PRETTY_PRINT);
-    $filename = "school_madrasa_backup_{$backupType}_" . date('Y-m-d_H-i-s') . ".json";
-    $filepath = __DIR__ . "/backups/{$filename}"; // Save to a 'backups' directory
-
-    // Ensure the backups directory exists
     if (!is_dir(__DIR__ . '/backups')) {
         mkdir(__DIR__ . '/backups', 0777, true);
     }
 
-    if (file_put_contents($filepath, $json_data)) {
-        // Record backup in database
-        $stmt = $mysqli->prepare("INSERT INTO backups (type, format, date, size, filename, isAutomatic) VALUES (?, ?, NOW(), ?, ?, ?)");
-        $size = filesize($filepath);
-        $stmt->bind_param("ssisi", $backupType, $backupFormat, $size, $filename, $isAutomatic);
-        $stmt->execute();
-        $stmt->close();
-        echo json_encode(['status' => 'success', 'message' => 'Backup created successfully.', 'filename' => $filename]);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Failed to write backup file.']);
+    // --- Automatic Dual Backup Logic ---
+    if ($isAutomatic) {
+        $date_string = date('Y-m-d_H-i-s');
+        $sql_success = false;
+        $json_success = false;
+
+        // 1. Create SQL Backup
+        $sql_filename = "school_madrasa_backup_full_" . $date_string . ".sql";
+        $sql_filepath = __DIR__ . "/backups/{$sql_filename}";
+        $command = sprintf(
+            'mysqldump --user=%s --password=%s --host=%s %s > %s',
+            escapeshellarg(DB_USERNAME),
+            escapeshellarg(DB_PASSWORD),
+            escapeshellarg(DB_SERVER),
+            escapeshellarg(DB_NAME),
+            escapeshellarg($sql_filepath)
+        );
+        exec($command, $output, $return_var);
+        if ($return_var === 0) {
+            $stmt_sql = $mysqli->prepare("INSERT INTO backups (type, format, date, size, filename, isAutomatic) VALUES (?, ?, NOW(), ?, ?, ?)");
+            $size = filesize($sql_filepath);
+            $type = 'full';
+            $format = 'sql';
+            $isAutomaticFlag = 1;
+            $stmt_sql->bind_param("ssisi", $type, $format, $size, $sql_filename, $isAutomaticFlag);
+            $stmt_sql->execute();
+            $stmt_sql->close();
+            $sql_success = true;
+        }
+
+        // 2. Create JSON Backup
+        $backup_data = [];
+        $result = $mysqli->query("SHOW TABLES");
+        while ($row = $result->fetch_row()) {
+            $table_name = $row[0];
+            $table_result = $mysqli->query("SELECT * FROM `{$table_name}`");
+            if ($table_result) {
+                $backup_data[$table_name] = [];
+                while ($record = $table_result->fetch_assoc()) {
+                    if (isset($record['permissions'])) $record['permissions'] = json_decode($record['permissions']);
+                    if (isset($record['subjects'])) $record['subjects'] = json_decode($record['subjects']);
+                    if (isset($record['classes'])) $record['classes'] = json_decode($record['classes']);
+                    if (isset($record['weeklyHoliday'])) $record['weeklyHoliday'] = json_decode($record['weeklyHoliday']);
+                    $backup_data[$table_name][] = $record;
+                }
+            }
+        }
+        $json_data = json_encode($backup_data, JSON_PRETTY_PRINT);
+        $json_filename = "school_madrasa_backup_full_" . $date_string . ".json";
+        $json_filepath = __DIR__ . "/backups/{$json_filename}";
+        if (file_put_contents($json_filepath, $json_data)) {
+            $stmt_json = $mysqli->prepare("INSERT INTO backups (type, format, date, size, filename, isAutomatic) VALUES (?, ?, NOW(), ?, ?, ?)");
+            $size = filesize($json_filepath);
+            $type = 'full';
+            $format = 'json';
+            $isAutomaticFlag = 1;
+            $stmt_json->bind_param("ssisi", $type, $format, $size, $json_filename, $isAutomaticFlag);
+            $stmt_json->execute();
+            $stmt_json->close();
+            $json_success = true;
+        }
+
+        // 3. Respond
+        if ($sql_success && $json_success) {
+            echo json_encode(['status' => 'success', 'message' => 'Automatic SQL and JSON backups created successfully.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Automatic backup failed. SQL success: ' . ($sql_success ? 'Yes' : 'No') . ', JSON success: ' . ($json_success ? 'Yes' : 'No')]);
+        }
+        return;
     }
+
+    // --- Manual Backup Logic (Unchanged) ---
+    $backupType = $_POST['backupType'];
+    $backupFormat = $_POST['backupFormat'];
+
+    if ($backupFormat === 'sql') {
+        if ($backupType !== 'full') {
+            echo json_encode(['status' => 'error', 'message' => 'SQL backups must be of type "Full Backup".']);
+            return;
+        }
+        $filename = "school_madrasa_backup_full_" . date('Y-m-d_H-i-s') . ".sql";
+        $filepath = __DIR__ . "/backups/{$filename}";
+        $command = sprintf(
+            'mysqldump --user=%s --password=%s --host=%s %s > %s',
+            escapeshellarg(DB_USERNAME),
+            escapeshellarg(DB_PASSWORD),
+            escapeshellarg(DB_SERVER),
+            escapeshellarg(DB_NAME),
+            escapeshellarg($filepath)
+        );
+        exec($command, $output, $return_var);
+        if ($return_var !== 0) {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to create SQL backup.', 'details' => implode("\n", $output)]);
+            return;
+        }
+    } else { // JSON backup
+        $backup_data = [];
+        $table_names = [];
+        if ($backupType === 'full') {
+            $result = $mysqli->query("SHOW TABLES");
+            while ($row = $result->fetch_row()) {
+                $table_names[] = $row[0];
+            }
+        } else {
+            $table_names[] = $backupType;
+        }
+        foreach ($table_names as $table_name) {
+            $result = $mysqli->query("SELECT * FROM `{$table_name}`");
+            if ($result) {
+                $backup_data[$table_name] = [];
+                while ($row = $result->fetch_assoc()) {
+                    if (isset($row['permissions'])) $row['permissions'] = json_decode($row['permissions']);
+                    if (isset($row['subjects'])) $row['subjects'] = json_decode($row['subjects']);
+                    if (isset($row['classes'])) $row['classes'] = json_decode($row['classes']);
+                    if (isset($row['weeklyHoliday'])) $row['weeklyHoliday'] = json_decode($row['weeklyHoliday']);
+                    $backup_data[$table_name][] = $row;
+                }
+            }
+        }
+        $json_data = json_encode($backup_data, JSON_PRETTY_PRINT);
+        $filename = "school_madrasa_backup_{$backupType}_" . date('Y-m-d_H-i-s') . ".json";
+        $filepath = __DIR__ . "/backups/{$filename}";
+        if (!file_put_contents($filepath, $json_data)) {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to write JSON backup file.']);
+            return;
+        }
+    }
+
+    // Record manual backup in DB
+    $isAutomaticFlag = 0;
+    $stmt = $mysqli->prepare("INSERT INTO backups (type, format, date, size, filename, isAutomatic) VALUES (?, ?, NOW(), ?, ?, ?)");
+    $size = filesize($filepath);
+    $stmt->bind_param("ssisi", $backupType, $backupFormat, $size, $filename, $isAutomaticFlag);
+    $stmt->execute();
+    $stmt->close();
+    echo json_encode(['status' => 'success', 'message' => 'Manual backup created successfully.', 'filename' => $filename]);
 }
 
 function handle_restore_backup_php($mysqli)
 {
-    $fileContent = $_POST['fileContent'];
-    $data = json_decode($fileContent, true);
-
-    if (json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid JSON backup file.']);
+    if (!isset($_FILES['restoreFile']) || $_FILES['restoreFile']['error'] !== UPLOAD_ERR_OK) {
+        echo json_encode(['status' => 'error', 'message' => 'File upload failed or no file selected.']);
         return;
     }
 
-    // Disable foreign key checks temporarily
-    $mysqli->query("SET FOREIGN_KEY_CHECKS = 0;");
+    $fileName = $_FILES['restoreFile']['name'];
+    $tmpFilePath = $_FILES['restoreFile']['tmp_name'];
+    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-    foreach ($data as $table_name => $records) {
-        if (!is_array($records)) {
-            error_log("Skipping invalid record set for table: {$table_name}");
-            continue;
+    if ($fileExtension === 'sql') {
+        $command = sprintf(
+            'mysql --user=%s --password=%s --host=%s %s < %s',
+            escapeshellarg(DB_USERNAME),
+            escapeshellarg(DB_PASSWORD),
+            escapeshellarg(DB_SERVER),
+            escapeshellarg(DB_NAME),
+            escapeshellarg($tmpFilePath)
+        );
+        exec($command, $output, $return_var);
+        if ($return_var === 0) {
+            echo json_encode(['status' => 'success', 'message' => 'Database restored successfully from SQL file.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to restore from SQL file.', 'details' => implode("\n", $output)]);
+        }
+    } elseif ($fileExtension === 'json') {
+        $fileContent = file_get_contents($tmpFilePath);
+        $data = json_decode($fileContent, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid JSON backup file.']);
+            return;
         }
 
-        // Clear existing data from the table
-        if (!$mysqli->query("TRUNCATE TABLE `{$table_name}`")) {
-            error_log("Failed to truncate table `{$table_name}`: " . $mysqli->error);
-            continue;
-        }
+        $mysqli->query("SET FOREIGN_KEY_CHECKS = 0;");
+        foreach ($data as $table_name => $records) {
+            if (!is_array($records)) continue;
+            $mysqli->query("TRUNCATE TABLE `{$table_name}`");
+            if (empty($records)) continue;
 
-        if (empty($records)) {
-            continue; // No records to insert
-        }
+            $columns = array_keys($records[0]);
+            $placeholders = implode(', ', array_fill(0, count($columns), '?'));
+            $column_names = implode(', ', array_map(fn($col) => "`{$col}`", $columns));
+            $sql_insert = "INSERT INTO `{$table_name}` ({$column_names}) VALUES ({$placeholders})";
+            $stmt = $mysqli->prepare($sql_insert);
+            if ($stmt === false) continue;
 
-        // Get column names from the first record
-        $columns = array_keys($records[0]);
-        $placeholders = implode(', ', array_fill(0, count($columns), '?'));
-        $column_names = implode(', ', array_map(function ($col) {
-            return "`{$col}`";
-        }, $columns));
-
-        $sql_insert = "INSERT INTO `{$table_name}` ({$column_names}) VALUES ({$placeholders})";
-        $stmt = $mysqli->prepare($sql_insert);
-
-        if ($stmt === false) {
-            error_log("Failed to prepare statement for `{$table_name}`: " . $mysqli->error);
-            continue;
-        }
-
-        foreach ($records as $record) {
-            $params = [];
-            $types = "";
-
-            foreach ($columns as $col) {
-                $value = $record[$col] ?? null; // Use null if column doesn't exist in record
-
-                // Re-encode JSON columns
-                if (in_array($col, ['permissions', 'subjects', 'classes', 'weeklyHoliday'])) {
-                    $value = json_encode($value);
+            foreach ($records as $record) {
+                $params = [];
+                $types = "";
+                foreach ($columns as $col) {
+                    $value = $record[$col] ?? null;
+                    if (in_array($col, ['permissions', 'subjects', 'classes', 'weeklyHoliday']) && is_array($value)) {
+                        $value = json_encode($value);
+                    }
+                    $params[] = $value;
+                    $types .= get_param_type($value);
                 }
-
-                $params[] = $value;
-                $types .= get_param_type($value);
+                $stmt->bind_param($types, ...$params);
+                $stmt->execute();
             }
-
-            // Bind parameters and execute
-            $bind_result = $stmt->bind_param($types, ...$params);
-            if ($bind_result === false) {
-                error_log("Failed to bind parameters for `{$table_name}`: " . $stmt->error);
-                continue;
-            }
-
-            if (!$stmt->execute()) {
-                error_log("Failed to insert record into `{$table_name}`: " . $stmt->error);
-            }
+            $stmt->close();
         }
-        $stmt->close();
+        $mysqli->query("SET FOREIGN_KEY_CHECKS = 1;");
+        echo json_encode(['status' => 'success', 'message' => 'Data restored successfully from JSON file.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Unsupported backup file format. Please use .sql or .json.']);
     }
-
-    // Re-enable foreign key checks
-    $mysqli->query("SET FOREIGN_KEY_CHECKS = 1;");
-
-    echo json_encode(['status' => 'success', 'message' => 'Data restored successfully.']);
 }
 
 function handle_get_filtered_students($mysqli)
@@ -2256,6 +2367,7 @@ function get_param_type($var)
             <li data-view="staff"><i class="fas fa-user-tie">👨‍💼</i> Staff</li>
             <li data-view="classes"><i class="fas fa-chalkboard">🏫</i> Classes</li>
             <li data-view="subjects"><i class="fas fa-book">📚</i> Subjects</li>
+            <li data-view="student-profile" style="display: none;"><i class="fas fa-user-circle">👤</i> My Profile</li>
             <li data-view="attendance"><i class="fas fa-clipboard-check">📋</i> Attendance</li>
             <li data-view="exams"><i class="fas fa-file-alt">📝</i> Exams</li>
             <li data-view="fees"><i class="fas fa-money-bill-wave">💰</i> Fees</li>
@@ -4148,7 +4260,8 @@ function get_param_type($var)
                     <div class="form-group">
                         <label class="form-label">Backup Format</label>
                         <select class="form-control" id="backup-format">
-                            <option value="json">JSON</option>
+                            <option value="json">JSON (Data Only)</option>
+                            <option value="sql">SQL (Full Database)</option>
                         </select>
                     </div>
                     <div class="form-group" style="align-self: flex-end;">
@@ -4690,7 +4803,13 @@ function get_param_type($var)
                     style="background: #e9ecef; padding: 20px; display:flex; justify-content: center;"></div>
             </div>
         </div>
+        <div class="section-view" id="student-profile-view">
+            <h2>My Profile</h2>
+            <div id="student-profile-content">
+            </div>
+        </div>
     </div>
+
     <script>
         let appSettings = {};
         const STORES = {
@@ -4820,6 +4939,36 @@ function get_param_type($var)
                 day: 'numeric'
             });
         }
+        async function loadStudentProfileView(studentId) {
+            showLoading();
+            const contentArea = document.getElementById('student-profile-content');
+            contentArea.innerHTML = '';
+            try {
+                const student = await getFromStore(STORES.STUDENTS, studentId);
+                if (!student) {
+                    contentArea.innerHTML = '<p>Could not load your profile details.</p>';
+                    return;
+                }
+                const profileHTML = await generateProfileSectionHTML(student);
+                const feeHTML = await generateFeeSectionHTML(student);
+                const attendanceHTML = await generateAttendanceSectionHTML(studentId);
+                const examHTML = await generateExamSectionHTML(studentId);
+
+                const cleanHTML = (htmlString) => {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = htmlString;
+                    tempDiv.querySelectorAll('.no-print, button').forEach(el => el.remove());
+                    return tempDiv.innerHTML;
+                };
+
+                contentArea.innerHTML = cleanHTML(profileHTML) + cleanHTML(feeHTML) + cleanHTML(attendanceHTML) + cleanHTML(examHTML);
+            } catch (error) {
+                console.error('Error loading student profile view:', error);
+                contentArea.innerHTML = '<p>An error occurred while loading your profile.</p>';
+            } finally {
+                hideLoading();
+            }
+        }
 
         function formatDateTime(dateTimeString) {
             if (!dateTimeString) return '-';
@@ -4947,7 +5096,8 @@ function get_param_type($var)
             }
             throw new Error(data.message);
         }
-        async function createElementJS(tag, attributes = {}, textContent = null) {
+
+        function createElementJS(tag, attributes = {}, textContent = null) {
             const element = document.createElement(tag);
             let hasInnerHTML = false;
             for (const key in attributes) {
@@ -5742,16 +5892,18 @@ function get_param_type($var)
                 console.error("Reports view container 'reports-view' not found.");
                 return;
             }
-            const existingH2 = reportsViewDiv.querySelector('h2');
-            reportsViewDiv.innerHTML = '';
-            if (existingH2) reportsViewDiv.appendChild(existingH2);
+            // Clear the view and create a stable structure from scratch
+            reportsViewDiv.innerHTML = '<h2>Reports</h2>';
+
             const formContainer = createElementJS('div', {
                 class: 'form-container'
             });
             reportsViewDiv.appendChild(formContainer);
+
             formContainer.appendChild(createElementJS('div', {
                 class: 'form-title'
             }, 'Select Report'));
+
             const reportTypeRow = createElementJS('div', {
                 class: 'form-row'
             });
@@ -5761,10 +5913,12 @@ function get_param_type($var)
                     flexBasis: '100%'
                 }
             });
+
             reportTypeGroup.appendChild(createElementJS('label', {
                 class: 'form-label',
                 for: 'js-report-type-select'
             }, 'Report Type'));
+
             const reportTypeSelect = createElementJS('select', {
                 class: 'form-control',
                 id: 'js-report-type-select'
@@ -5772,11 +5926,9 @@ function get_param_type($var)
             reportTypeSelect.appendChild(createElementJS('option', {
                 value: ''
             }, '--- Select ---'));
+
             for (const categoryKey in REPORT_CONFIG) {
                 let categoryLabel = categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1);
-                if (categoryKey === 'students') categoryLabel = 'Students';
-                if (categoryKey === 'attendance') categoryLabel = 'Attendance';
-                if (categoryKey === 'fees') categoryLabel = 'Fees';
                 const optgroup = createElementJS('optgroup', {
                     label: categoryLabel
                 });
@@ -5787,10 +5939,12 @@ function get_param_type($var)
                 });
                 reportTypeSelect.appendChild(optgroup);
             }
+
             reportTypeGroup.appendChild(reportTypeSelect);
             reportTypeRow.appendChild(reportTypeGroup);
             formContainer.appendChild(reportTypeRow);
-            const filtersArea = createElementJS('div', {
+
+            formContainer.appendChild(createElementJS('div', {
                 id: 'js-report-filters-area',
                 class: 'form-row',
                 style: {
@@ -5799,30 +5953,30 @@ function get_param_type($var)
                     flexWrap: 'wrap',
                     gap: '15px'
                 }
-            });
-            formContainer.appendChild(filtersArea);
+            }));
+
             const generateBtnRow = createElementJS('div', {
                 class: 'form-row',
                 style: {
                     marginTop: '15px'
                 }
             });
-            const generateBtn = createElementJS('button', {
+            generateBtnRow.appendChild(createElementJS('button', {
                 class: 'btn btn-primary',
                 id: 'js-generate-report-btn'
-            }, 'Generate Report');
-            generateBtnRow.appendChild(generateBtn);
+            }, 'Generate Report'));
             formContainer.appendChild(generateBtnRow);
-            const reportOutputDiv = createElementJS('div', {
+
+            reportsViewDiv.appendChild(createElementJS('div', {
                 id: 'js-report-output-area',
                 style: {
                     marginTop: '20px'
                 }
-            });
-            reportsViewDiv.appendChild(reportOutputDiv);
-            reportTypeSelect.addEventListener('change', handleReportTypeChangeJS);
-            generateBtn.addEventListener('click', generateSelectedReportJS);
-            handleReportTypeChangeJS();
+            }));
+
+            // Re-attach event listeners
+            document.getElementById('js-report-type-select').addEventListener('change', handleReportTypeChangeJS);
+            document.getElementById('js-generate-report-btn').addEventListener('click', generateSelectedReportJS);
         }
         async function createCollapsibleFilterUI(targetListDivId, filterContainerId, filterTitleTextContent, createFilterRowsFn, populateDropdownsFn, applyFiltersFn, resetFiltersFn, specificDropdownChangeHandlers = []) {
             const listDiv = document.getElementById(targetListDivId);
@@ -8013,7 +8167,10 @@ function get_param_type($var)
                         autoBackupTime: '02:00',
                         createdAt: new Date().toISOString().slice(0, 19).replace('T', ' ')
                     };
-                    await addToStore(STORES.SETTINGS, defaultSettings, 'general');
+                    await addToStore(STORES.SETTINGS, {
+                        ...defaultSettings,
+                        id: 'general'
+                    });
                     console.log('Default settings created');
                 } else {
                     console.log('Settings loaded successfully');
@@ -8193,6 +8350,14 @@ function get_param_type($var)
             checkLoginStatus();
         }
         async function applyRolePermissions() {
+            if (currentUser.role === 'student') {
+                document.querySelectorAll('.sidebar-menu li').forEach(item => {
+                    const view = item.getAttribute('data-view');
+                    const isLogout = item.onclick && item.onclick.toString().includes('logout');
+                    item.style.display = (view === 'student-profile' || isLogout) ? 'block' : 'none';
+                });
+                return;
+            }
             if (!currentUser) {
                 console.warn('No current user to apply permissions for.');
                 return;
@@ -8232,23 +8397,27 @@ function get_param_type($var)
             });
         }
         async function initializeMainAppContent() {
+            // First, apply permissions and set up the correct view while the page is hidden.
+            await applyRolePermissions();
+            await loadDropdownData();
+            setupEventListeners();
+            setupStudentFeeDisplay();
+
+            // Load the specific view's data. Only load the dashboard if the user is not a student.
+            if (currentUser.role === 'student') {
+                showView('student-profile');
+            } else {
+                await loadDashboardData();
+                showView('dashboard');
+            }
+
+            // Now that everything is ready, make the UI visible all at once.
             document.getElementById('mainContainer').style.display = 'block';
             document.getElementById('sidebar').style.display = 'block';
             document.getElementById('menuToggle').style.display = 'flex';
             document.querySelector('.header').style.display = 'block';
-            await loadDashboardData();
-            await loadDropdownData();
-            setupEventListeners();
-            setupStudentFeeDisplay();
-            try {
-                document.getElementById('attendance-class').addEventListener('change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
-                document.getElementById('view-attendance-class').addEventListener('change', () => populateAttendanceSections('view-attendance-class', 'view-attendance-section'));
-                document.getElementById('report-attendance-class').addEventListener('change', () => populateAttendanceSections('report-attendance-class', 'report-attendance-section'));
-            } catch (e) {
-                console.error('FAILED TO ATTACH ATTENDANCE LISTENERS:', e);
-            }
-            await applyRolePermissions();
-            showView('dashboard');
+
+            await runAutomaticBackupCheck();
         }
         async function initializeApp() {
             console.log('Initializing application...');
@@ -8260,22 +8429,22 @@ function get_param_type($var)
             document.querySelector('.header').style.display = 'none';
             await checkAndLoadSampleData();
             await checkLoginStatus();
-            console.log('Application initialized successfully');
-            await loadDashboardData();
-            await loadDropdownData();
-            setupEventListeners();
-            try {
-                document.getElementById('attendance-class').addEventListener('change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
-                document.getElementById('view-attendance-class').addEventListener('change', () => populateAttendanceSections('view-attendance-class', 'view-attendance-section'));
-                document.getElementById('report-attendance-class').addEventListener('change', () => populateAttendanceSections('report-attendance-class', 'report-attendance-section'));
-                console.log('Attendance dropdown listeners attached successfully.');
-            } catch (e) {
-                console.error('FAILED TO ATTACH ATTENDANCE LISTENERS:', e);
-            }
-            setupStudentFeeDisplay();
-            showView('dashboard');
-            await runAutomaticBackupCheck();
-            console.log('Application initialized successfully');
+            /*             console.log('Application initialized successfully');
+                        await loadDashboardData();
+                        await loadDropdownData();
+                        setupEventListeners();
+                        try {
+                            document.getElementById('attendance-class').addEventListener('change', () => populateAttendanceSections('attendance-class', 'attendance-section'));
+                            document.getElementById('view-attendance-class').addEventListener('change', () => populateAttendanceSections('view-attendance-class', 'view-attendance-section'));
+                            document.getElementById('report-attendance-class').addEventListener('change', () => populateAttendanceSections('report-attendance-class', 'report-attendance-section'));
+                            console.log('Attendance dropdown listeners attached successfully.');
+                        } catch (e) {
+                            console.error('FAILED TO ATTACH ATTENDANCE LISTENERS:', e);
+                        }
+                        setupStudentFeeDisplay();
+                        showView('dashboard');
+                        await runAutomaticBackupCheck();
+                        console.log('Application initialized successfully'); */
         }
 
         function renderBarChart(canvasId, chartTitle, labels, dataValues) {
@@ -8417,6 +8586,11 @@ function get_param_type($var)
                 switch (viewName) {
                     case 'dashboard':
                         loadDashboardData();
+                        break;
+                    case 'student-profile':
+                        if (currentUser && currentUser.role === 'student') {
+                            loadStudentProfileView(currentUser.id);
+                        }
                         break;
                     case 'students':
                         loadStudentsTable();
@@ -11462,52 +11636,41 @@ function get_param_type($var)
             }
         }
         async function restoreBackup() {
+            const fileInput = document.getElementById('restore-file');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showNotification('Please select a backup file.', 'error');
+                return;
+            }
+            const file = fileInput.files[0];
+            if (!file.name.endsWith('.sql') && !file.name.endsWith('.json')) {
+                showNotification('Invalid file type. Only .sql or .json are supported.', 'error');
+                return;
+            }
+            const confirmation = confirm(`Restoring from "${file.name}" will ERASE all current data. Are you sure?`);
+            if (!confirmation) return;
+
+            showLoading();
             try {
-                showLoading();
-                const fileInput = document.getElementById('restore-file');
-                if (!fileInput.files || fileInput.files.length === 0) {
-                    showNotification('Please select a backup file.', 'error');
-                    return;
+                const formData = new FormData();
+                formData.append('action', 'restore_backup_php');
+                formData.append('restoreFile', file);
+
+                const response = await fetch('indexnewonexact.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    showNotification('Data restored successfully. Reloading page...', 'success');
+                    setTimeout(() => window.location.reload(), 2000);
+                } else {
+                    showNotification(result.message || 'Failed to restore backup.', 'error');
+                    console.error('Restore error details:', result.details);
                 }
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    try {
-                        const fileContent = e.target.result;
-                        const confirmation = confirm('Restoring the database will erase existing data. Are you sure you want to proceed?');
-                        if (!confirmation) {
-                            hideLoading();
-                            return;
-                        }
-                        const formData = new FormData();
-                        formData.append('action', 'restore_backup_php');
-                        formData.append('fileContent', fileContent);
-
-                        const response = await fetch('indexnewonexact.php', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        const result = await response.json();
-
-                        if (result.status === 'success') {
-                            showNotification('Data restored successfully. Reloading page...', 'success');
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 2000);
-                        } else {
-                            showNotification(result.message, 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error parsing or restoring backup:', error);
-                        showNotification('Failed to restore backup.', 'error');
-                    } finally {
-                        hideLoading();
-                    }
-                };
-                reader.readAsText(file);
             } catch (error) {
-                console.error('Error restoring backup:', error);
-                showNotification('Failed to restore backup.', 'error');
+                console.error('Error during restore process:', error);
+                showNotification('A critical error occurred during restore.', 'error');
             } finally {
                 hideLoading();
             }
@@ -15383,7 +15546,6 @@ function get_param_type($var)
                 const formData = new FormData();
                 formData.append('action', 'create_backup_php');
                 formData.append('backupType', 'full');
-                formData.append('backupFormat', 'json');
                 formData.append('isAutomatic', 'true');
 
                 const response = await fetch('indexnewonexact.php', {
