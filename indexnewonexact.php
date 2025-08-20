@@ -437,7 +437,36 @@ function handle_add_update_data($mysqli)
     $storeName = $_POST['store'];
     $data = json_decode($_POST['data'], true);
     $id = $_POST['id'] ?? null;
+    $upload_dir = 'client_pics/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
 
+    $image_fields = ['photo', 'image']; // Covers all tables with images
+    foreach ($image_fields as $field) {
+        // Check if the field exists and is a new base64 image upload
+        if (isset($data[$field]) && strpos($data[$field], 'data:image') === 0) {
+
+            // Decode base64 string
+            list($type, $img_data) = explode(';', $data[$field]);
+            list(, $img_data)      = explode(',', $img_data);
+            $img_data = base64_decode($img_data);
+
+            // Get file extension
+            preg_match('/\/([a-zA-Z]+)/', $type, $matches);
+            $extension = $matches[1] ?? 'png';
+
+            // Create a unique filename and save the file
+            $filename = uniqid($storeName . '_', true) . '.' . $extension;
+            if (file_put_contents($upload_dir . $filename, $img_data)) {
+                // Replace the base64 string in data with the new file path
+                $data[$field] = $upload_dir . $filename;
+            } else {
+                // If saving fails, don't save the field to DB
+                unset($data[$field]);
+            }
+        }
+    }
     if ($storeName === 'roles' && isset($data['permissions'])) {
         $data['permissions'] = json_encode($data['permissions']);
     }
@@ -2328,7 +2357,7 @@ function get_param_type($var)
         </div>
     </div>
     <div class="modal" id="student-details-modal">
-        <div class="modal-content" style="max-width: 900px !important; overflow-y: auto;">
+        <div class="modal-content" style="max-width: 1100px !important; overflow-y: auto;">
             <span class="close" id="modal-close-btn">×</span>
             <div id="modal-content-area">
             </div>
