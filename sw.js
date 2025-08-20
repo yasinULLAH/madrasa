@@ -145,6 +145,10 @@ if (workbox) {
         "revision": "ac53e24444d5895bf27ba4c363c93610"
     },
     {
+        "url": "Certificate-0094.png",
+        "revision": "02ae241908699decb18f1c23ba096934"
+    },
+    {
         "url": "Certificate-0289 (1).png",
         "revision": "0f83e810a7dcf36366a8fc97e71eb7d0"
     },
@@ -221,10 +225,6 @@ if (workbox) {
         "revision": "be291f33dcce75e9f3049cb03680ec19"
     },
     {
-        "url": "deepseek_html4.html",
-        "revision": "1d6ab867e15402aa65325faeb05e5921"
-    },
-    {
         "url": "events-table-export.pdf",
         "revision": "237fa991ad431fac196ef67b0f7bf9e1"
     },
@@ -253,8 +253,12 @@ if (workbox) {
         "revision": "299bc6e82d97baf239d7b9de7188a018"
     },
     {
+        "url": "html14.html",
+        "revision": "93be1b6027a89d6129d4f7b07c6a0466"
+    },
+    {
         "url": "id card and certificate.html",
-        "revision": "82e5d58bcfefba434b8add02ebc3d663"
+        "revision": "6ad5d5f6c492aa1acc33c7bd607f5872"
     },
     {
         "url": "ID-Card-0002-Back.png",
@@ -394,11 +398,15 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "37d13cec3e518657d987fa44306ce39b"
+        "revision": "f7f2a6ad6ebaf7cb1c6fa1b45fb25b85"
     },
     {
         "url": "indexnewonemakeacopy.py",
         "revision": "e707e140f7a8d76b8f52a7cf8a3924ec"
+    },
+    {
+        "url": "indexnewonexact.php",
+        "revision": "f8d63bdea0c054fb0e85c81a0effa43f"
     },
     {
         "url": "index_gt.html",
@@ -485,6 +493,10 @@ if (workbox) {
         "revision": "a7eb8ca8793c9d19cb7948b3f45670fb"
     },
     {
+        "url": "SalarySlip-T001-January.png",
+        "revision": "17ac1e810951e6ab5a37d821537c944e"
+    },
+    {
         "url": "SalarySlip_\u0627\u0633\u0627\u0645\u06c1_\u0628\u0646_\u06cc\u0627\u0633\u0631_2025-06-29 (1).png",
         "revision": "5c576a662a2ca06864f2d922f5b73583"
     },
@@ -497,12 +509,20 @@ if (workbox) {
         "revision": "915bcbca41e7443b36aabad4222d3a3e"
     },
     {
+        "url": "school app yasin best.html",
+        "revision": "0f82f900f8068b584ae3a133662c1e15"
+    },
+    {
         "url": "school app.ahk",
         "revision": "24fe5c86a37e3a66a17e844b74ca73c7"
     },
     {
         "url": "school app.exe",
         "revision": "ee543c7a507f129c069ca65f3c7cf95c"
+    },
+    {
+        "url": "school.png",
+        "revision": "db98c13fbc2d0e38dd1eaa664a37c8c2"
     },
     {
         "url": "school.py",
@@ -513,6 +533,10 @@ if (workbox) {
         "revision": "90ccab0f3fe677da8df23928994d32a8"
     },
     {
+        "url": "schoolnewone.php",
+        "revision": "9bbbfed7e182241a5b7a051b5b010e22"
+    },
+    {
         "url": "school_madrasa.db",
         "revision": "257281cf740349ec0bfb63ff105112ad"
     },
@@ -521,12 +545,28 @@ if (workbox) {
         "revision": "98da4e437bc3b0b60e09fa5ba102d0fe"
     },
     {
+        "url": "school_madrasa_backup_full_2025-08-20_10-25-01.sql",
+        "revision": "aa280946bb9027120f750cc44d50b53f"
+    },
+    {
+        "url": "school_madrasa_dba-db_2025-08-20 db backup for indexnewoneexact.php.sql",
+        "revision": "a100333dc3abef72742dcbf85d0804fd"
+    },
+    {
         "url": "school_management.db",
         "revision": "68580baa5c607176c458709fad9fe671"
     },
     {
+        "url": "school_management_db-db_2025-08-19 for schoolnewone.php.sql",
+        "revision": "9d8f67a938e7cb7cacd1a78d2f0d565f"
+    },
+    {
         "url": "script for inexnewone.html for disabling inspect and other things for security.txt",
         "revision": "15543ca48968f33980656e7031d8acf3"
+    },
+    {
+        "url": "sign.png",
+        "revision": "942385e276d966653100af1abf9dd728"
     },
     {
         "url": "sqlite.php",
@@ -546,7 +586,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "50a8e6505e454e4c2599d089cac5dd18"
+        "revision": "63039dd57d62da2d4dd494409cbfcb42"
     },
     {
         "url": "table-export attendence.pdf",
@@ -639,6 +679,14 @@ if (workbox) {
     {
         "url": "app_backup/fonts.googleapis.com/css2",
         "revision": "3cd6b6b471ac0f52c05df1c640cb6cdd"
+    },
+    {
+        "url": "backups/school_madrasa_backup_full_2025-08-20_10-25-01.sql",
+        "revision": "aa280946bb9027120f750cc44d50b53f"
+    },
+    {
+        "url": "client_pics/students_68a5ac16cc2d17.21712132.jpeg",
+        "revision": "1cc33aef68353599cfd5281f6ad28164"
     },
     {
         "url": "Generated_ID_Cards_2025-06-27/0001_Rabia_Ansari_Back.png",
@@ -937,6 +985,130 @@ if (workbox) {
         "revision": "35eeb2e287bf19812fd58f388fe8c0bb"
     },
     {
+        "url": "ms word receipt gen/barcode_generator.py",
+        "revision": "a91720a1530479f5653592dce7db66e2"
+    },
+    {
+        "url": "ms word receipt gen/items_catalog.xlsx",
+        "revision": "9e772a2992c94ff13267d5b311553932"
+    },
+    {
+        "url": "ms word receipt gen/qr_generator.py",
+        "revision": "899285bf94fbd1205eb570715b0155e7"
+    },
+    {
+        "url": "ms word receipt gen/ribbon.xml",
+        "revision": "550c2110956a5e43343e70321952a9d5"
+    },
+    {
+        "url": "ms word receipt gen/sample_logo.png",
+        "revision": "93f96ae927129f59ce6320abdd76c82f"
+    },
+    {
+        "url": "ms word receipt gen/settings.json",
+        "revision": "a86285cb05096cc88d98e91a9ec5a820"
+    },
+    {
+        "url": "ms word receipt gen/Untitled-1.md",
+        "revision": "2c3820cc18ea52f7a72b0467ec26b412"
+    },
+    {
+        "url": "ms word receipt gen/word receipt generator.py",
+        "revision": "d17f720de7222557ca350e204ee3a552"
+    },
+    {
+        "url": "ms word receipt gen/modules/clsCatalogItem.cls",
+        "revision": "bc81404ea0ed3aae7214a5e05b52e32e"
+    },
+    {
+        "url": "ms word receipt gen/modules/clsLineItem.cls",
+        "revision": "76687215d88dd9035bf0144e0e7e7b89"
+    },
+    {
+        "url": "ms word receipt gen/modules/clsReceipt.cls",
+        "revision": "46b44d46040200015a22d6f2853d4810"
+    },
+    {
+        "url": "ms word receipt gen/modules/clsSettings.cls",
+        "revision": "935060b469bdfc3645777b487a9cb254"
+    },
+    {
+        "url": "ms word receipt gen/modules/frmCatalog.frm",
+        "revision": "44c61d0fee99c45b96e5ef27bbc456e8"
+    },
+    {
+        "url": "ms word receipt gen/modules/frmCatalog.log",
+        "revision": "523ae358671ad9aee3516002dba95045"
+    },
+    {
+        "url": "ms word receipt gen/modules/frmFind.frm",
+        "revision": "21ba70b41209d9c916e6389d08b8def8"
+    },
+    {
+        "url": "ms word receipt gen/modules/frmFind.log",
+        "revision": "d0604ca59f373f461c52e69a6432f657"
+    },
+    {
+        "url": "ms word receipt gen/modules/frmNewReceipt.frm",
+        "revision": "55d8854524bea5a5f4c31f8c082ae91b"
+    },
+    {
+        "url": "ms word receipt gen/modules/frmNewReceipt.log",
+        "revision": "c88057778eabea085ab110651d84558c"
+    },
+    {
+        "url": "ms word receipt gen/modules/frmSettings.frm",
+        "revision": "a2eae31526e154a755a67e565f91f282"
+    },
+    {
+        "url": "ms word receipt gen/modules/frmSettings.log",
+        "revision": "beed6fed98ba62b64236d871753483f5"
+    },
+    {
+        "url": "ms word receipt gen/modules/modCatalog.bas",
+        "revision": "1c7d1a2d0fee9a4a6e2309cf8f7ef93a"
+    },
+    {
+        "url": "ms word receipt gen/modules/modLocalization.bas",
+        "revision": "35af636eb746b548277ffeae46a058b8"
+    },
+    {
+        "url": "ms word receipt gen/modules/modMath.bas",
+        "revision": "fb4586ddfb94957da19467f4a33df053"
+    },
+    {
+        "url": "ms word receipt gen/modules/modPDFPrint.bas",
+        "revision": "1ec4266822b3eff12c0980cd891b5b5a"
+    },
+    {
+        "url": "ms word receipt gen/modules/modQRBarcode.bas",
+        "revision": "cb45f698764457394895c81693cd550e"
+    },
+    {
+        "url": "ms word receipt gen/modules/modReceipt.bas",
+        "revision": "dc72ce6f84bbe57fd5b1a08bc92aa4c3"
+    },
+    {
+        "url": "ms word receipt gen/modules/modStartup.bas",
+        "revision": "5e78a3b1e9760fa79094211b1f046466"
+    },
+    {
+        "url": "ms word receipt gen/modules/modStorage.bas",
+        "revision": "ae7517ada93de2c74074e550780b8458"
+    },
+    {
+        "url": "ms word receipt gen/modules/modUI.bas",
+        "revision": "c85884c56965760d4027c6d62dc99abd"
+    },
+    {
+        "url": "ms word receipt gen/modules/modUtils.bas",
+        "revision": "c2bdcfa5e60470bdec5a9d2fa1b49fc7"
+    },
+    {
+        "url": "ms word receipt gen/ReceiptGenerator/ReceiptGenerator.docm",
+        "revision": "a53511631ab670a26dfece224fb3e714"
+    },
+    {
         "url": "photos/logo_20250630171757.png",
         "revision": "d9c1a142d15554d4de4c82d5ef7ee647"
     },
@@ -1151,6 +1323,30 @@ if (workbox) {
     {
         "url": "student_photos/ADM0541101.png",
         "revision": "2499e0fda40d2282524ddcade1625c8a"
+    },
+    {
+        "url": "uploads/announcements/68a4526758aba_maulana muhammad ilyas db.pdf",
+        "revision": "5409379254464459fd05c02d02746e2c"
+    },
+    {
+        "url": "uploads/gallery/68a449a03eb42_7_Tips_to_Prepare_for_the_First_Day_of_School.png",
+        "revision": "676bd95451a928a94419eb621258bb08"
+    },
+    {
+        "url": "uploads/gallery/68a44a632d325_16424433938_f69a62d687_o.jpg",
+        "revision": "8ab62ca12f28b56f8b51634f421e1238"
+    },
+    {
+        "url": "uploads/gallery/68a44a71821b0_Pakistani-children-in-schools.jpg",
+        "revision": "5e4c805010985a0fb0e7d8ad3dc80ccf"
+    },
+    {
+        "url": "uploads/gallery/68a44ab693382_484620342_1048746340607867_4018364831364722985_n.jpg",
+        "revision": "2e687c7274ca233c36c3903c96279026"
+    },
+    {
+        "url": "uploads/gallery/68a44af61e4fe_493937000_1249364323858819_992749151734762105_n.jpg",
+        "revision": "11c323e462081167e352542cf9ddd64e"
     },
     {
         "url": "yasin/chart.js",
