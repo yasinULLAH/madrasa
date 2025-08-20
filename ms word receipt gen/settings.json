@@ -1,0 +1,19 @@
+{
+  "CompanyName": "Yasin Ullah Tech Solutions",
+  "CompanyAddress": "Office 7, IT Tower, Blue Area, Islamabad",
+  "CompanyNTN": "1234567-8",
+  "CompanyLogoPath": "C:\\\\phpserver\\\\www\\\\madrasa\\\\ms word receipt gen\\\\sample_logo.png",
+  "CompanyNameUrdu": "یاسین اللہ ٹیک سلوشنز",
+  "CompanyAddressUrdu": "آفس 7، آئی ٹی ٹاور، بلیو ایریا، اسلام آباد",
+  "CurrencySymbol": "PKR ",
+  "CurrencyPosition": "Before",
+  "DecimalPlaces": 2,
+  "DefaultTaxRate": 16.0,
+  "DefaultServiceCharge": 2.0,
+  "NextReceiptCounter": 1,
+  "ReceiptIdPrefix": "INV",
+  "UrduMode": false,
+  "EnglishFont": "Calibri",
+  "UrduFont": "Noto Nastaliq Urdu",
+  "DefaultTemplate": "A4"
+}

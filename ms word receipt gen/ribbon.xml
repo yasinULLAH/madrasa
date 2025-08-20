@@ -1,0 +1,67 @@
+
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+  <ribbon>
+    <tabs>
+      <tab id="tabReceipts" label="Receipts">
+        <group id="grpNewSave" label="New &amp; Save">
+          <button id="btnNewReceipt" label="New Receipt" imageMso="FileNew"
+                  size="large" onAction="modUI.NewReceipt_Click"
+                  screentip="Start a new receipt"
+                  supertip="Opens a form to enter customer and item details for a new receipt."/>
+          <button id="btnSaveReceipt" label="Save Receipt" imageMso="FileSave"
+                  size="large" onAction="modUI.SaveReceipt_Click"
+                  screentip="Save current receipt"
+                  supertip="Saves the currently displayed receipt data to a local database and Custom XML Part."/>
+        </group>
+        <group id="grpItemsCatalog" label="Items &amp; Catalog">
+          <button id="btnAddItem" label="Add Item (Form)" imageMso="GridAddItem"
+                  size="normal" onAction="modUI.AddItem_Click" enabled="false"
+                  screentip="Add item to current receipt form"
+                  supertip="Adds a new empty row to the items list in the New Receipt form. (Disabled as adding done via form)"/>
+          <button id="btnRemoveItem" label="Remove Item (Form)" imageMso="GridDeleteRow"
+                  size="normal" onAction="modUI.RemoveItem_Click" enabled="false"
+                  screentip="Remove item from current receipt form"
+                  supertip="Removes the selected item row from the items list in the New Receipt form. (Disabled as removing done via form)"/>
+          <button id="btnLoadCatalog" label="Catalog Manager" imageMso="DatabaseToolsShowRelationships"
+                  size="large" onAction="modUI.LoadCatalog_Click"
+                  screentip="Manage Item Catalog"
+                  supertip="Opens the Catalog Manager to add, edit, or delete items from the items_catalog.xlsx."/>
+        </group>
+        <group id="grpTotalsTaxes" label="Totals &amp; Taxes">
+          <button id="btnApplyDiscount" label="Apply Discount" imageMso="PercentStyle"
+                  size="normal" onAction="modUI.ApplyDiscount_Click"
+                  screentip="Apply overall discount"
+                  supertip="Applies a percentage discount to all line items in the current receipt."/>
+          <button id="btnTaxes" label="Taxes Info" imageMso="ListTax"
+                  size="normal" onAction="modUI.Taxes_Click"
+                  screentip="View Tax Info"
+                  supertip="Shows information about tax rates and service charges."/>
+        </group>
+        <group id="grpExportPrint" label="Export &amp; Print">
+          <button id="btnExportPDF" label="Export PDF" imageMso="FileSaveAsPdfOrXps"
+                  size="large" onAction="modUI.ExportPDF_Click"
+                  screentip="Export receipt as PDF"
+                  supertip="Exports the currently displayed receipt as a PDF file to the Receipts folder."/>
+          <button id="btnPrintReceipt" label="Print" imageMso="PrintArea"
+                  size="large" onAction="modUI.PrintReceipt_Click"
+                  screentip="Print receipt"
+                  supertip="Sends the current receipt to the default printer."/>
+          <button id="btnToggleTemplate" label="Toggle Template" imageMso="WordOpenLayout"
+                  size="normal" onAction="modUI.ToggleTemplate_Click"
+                  screentip="Switch between A4 and Thermal layout"
+                  supertip="Toggles the receipt layout between A4 and Thermal 80mm."/>
+        </group>
+        <group id="grpTools" label="Tools">
+          <button id="btnFindReceipts" label="Find Receipts" imageMso="Find"
+                  size="large" onAction="modUI.FindReceipts_Click"
+                  screentip="Search and load past receipts"
+                  supertip="Opens a form to search for previously saved receipts."/>
+          <button id="btnSettings" label="Settings" imageMso="Options"
+                  size="large" onAction="modUI.Settings_Click"
+                  screentip="Configure application settings"
+                  supertip="Adjust company info, currency, taxes, numbering, and localization settings."/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>

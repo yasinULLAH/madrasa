@@ -1,0 +1,15 @@
+Line 10: Class MSForms.TextBox of control txtUrduName was not a loaded control class.
+Line 17: Class MSForms.TextBox of control txtTaxClass was not a loaded control class.
+Line 24: Class MSForms.TextBox of control txtPrice was not a loaded control class.
+Line 31: Class MSForms.TextBox of control txtName was not a loaded control class.
+Line 38: Class MSForms.TextBox of control txtSKU was not a loaded control class.
+Line 45: Class MSForms.CommandButton of control cmdDelete was not a loaded control class.
+Line 53: Class MSForms.CommandButton of control cmdSaveItem was not a loaded control class.
+Line 61: Class MSForms.ListBox of control lstCatalog was not a loaded control class.
+Line 68: Class MSForms.CommandButton of control cmdClose was not a loaded control class.
+Line 76: Class MSForms.CommandButton of control cmdSaveAll was not a loaded control class.
+Line 84: Class MSForms.Label of control Label5 was not a loaded control class.
+Line 92: Class MSForms.Label of control Label4 was not a loaded control class.
+Line 100: Class MSForms.Label of control Label3 was not a loaded control class.
+Line 108: Class MSForms.Label of control Label2 was not a loaded control class.
+Line 116: Class MSForms.Label of control Label1 was not a loaded control class.
