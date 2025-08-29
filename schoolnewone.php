@@ -2031,18 +2031,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: ?page=login&lang=$lang");
                 exit;
                 break;
-            case 'send_internal_message':
-                if (isAuthenticated()) {
-                    $sender_id = $_SESSION['id'];
-                    $receiver_id = $_POST['receiver_id'];
-                    $subject = trim($_POST['subject']);
-                    $message_content = trim($_POST['message_content']);
-                    $stmt = $pdo->prepare("INSERT INTO messages (sender_id, receiver_id, subject, message) VALUES (?, ?, ?, ?)");
-                    $stmt->execute([$sender_id, $receiver_id, $subject, $message_content]);
-                    $_SESSION['message'] = $t['message_sent'];
-                    header("Location: ?page=dashboard&section=messages&lang=$lang");
-                    exit;
+            case 'mark_message_read':
+                if (isAuthenticated() && isset($_POST['message_id'])) {
+                    $message_id = $_POST['message_id'];
+                    $current_user_id = $_SESSION['id'];
+                    // Ensure the user can only mark their own messages as read
+                    $stmt = $pdo->prepare("UPDATE messages SET read_status = TRUE WHERE id = ? AND receiver_id = ?");
+                    $stmt->execute([$message_id, $current_user_id]);
                 }
+                exit; // Stop the script here for the AJAX request
                 break;
             case 'add_teacher_note':
                 if (isTeacher()) {
@@ -3758,14 +3755,12 @@ generate_csrf_token();
                 $('#messageModalTimestamp').text(new Date(data.sent_at).toLocaleString());
                 $('#messageModalBody').html(data.message.replace(/\n/g, '<br>'));
                 // Mark as read
+                // Mark as read
                 if (!data.read_status) {
                     $.post('?page=dashboard&section=messages&lang=<?php echo $lang; ?>', {
                         action: 'mark_message_read',
                         message_id: data.id,
                         csrf_token: $('input[name="csrf_token"]').val()
-                    }, function(response) {
-                        // Optionally update UI for read status
-                        location.reload();
                     });
                 }
                 $('#messageModal').modal('show');
@@ -5725,7 +5720,18 @@ function displayAdminPanel($pdo, $t, $lang)
                                 echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
                                 echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
                                 echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                                echo '<td>' . ($message_data['read_status'] ? 'Read' : 'Unread') . '</td>';
+                                // Check if the message has been read by the receiver
+                                if ($message_data['read_status']) {
+                                    // If it has been read, show a green "Read" badge
+                                    echo '<td><span class="badge bg-success">Read</span></td>';
+
+                                    // Also, update the database to notify the sender that they have seen the receipt
+                                    $stmt_update_receipt = $pdo->prepare("UPDATE messages SET sender_read_receipt = TRUE WHERE id = ? AND sender_id = ?");
+                                    $stmt_update_receipt->execute([$message_data['id'], $_SESSION['id']]);
+                                } else {
+                                    // If not read, show a gray "Unread" badge
+                                    echo '<td><span class="badge bg-secondary">Unread</span></td>';
+                                }
                                 echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['view'] . '</button></td>';
                                 echo '</tr>';
                             }
@@ -6562,7 +6568,18 @@ function displayAdminPanel($pdo, $t, $lang)
                                 echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
                                 echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
                                 echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                                echo '<td>' . ($message_data['read_status'] ? 'Read' : 'Unread') . '</td>';
+                                // Check if the message has been read by the receiver
+                                if ($message_data['read_status']) {
+                                    // If it has been read, show a green "Read" badge
+                                    echo '<td><span class="badge bg-success">Read</span></td>';
+
+                                    // Also, update the database to notify the sender that they have seen the receipt
+                                    $stmt_update_receipt = $pdo->prepare("UPDATE messages SET sender_read_receipt = TRUE WHERE id = ? AND sender_id = ?");
+                                    $stmt_update_receipt->execute([$message_data['id'], $_SESSION['id']]);
+                                } else {
+                                    // If not read, show a gray "Unread" badge
+                                    echo '<td><span class="badge bg-secondary">Unread</span></td>';
+                                }
                                 echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['view'] . '</button></td>';
                                 echo '</tr>';
                             }
@@ -6913,7 +6930,18 @@ function displayAdminPanel($pdo, $t, $lang)
                                 echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
                                 echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
                                 echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                                echo '<td>' . ($message_data['read_status'] ? 'Read' : 'Unread') . '</td>';
+                                // Check if the message has been read by the receiver
+                                if ($message_data['read_status']) {
+                                    // If it has been read, show a green "Read" badge
+                                    echo '<td><span class="badge bg-success">Read</span></td>';
+
+                                    // Also, update the database to notify the sender that they have seen the receipt
+                                    $stmt_update_receipt = $pdo->prepare("UPDATE messages SET sender_read_receipt = TRUE WHERE id = ? AND sender_id = ?");
+                                    $stmt_update_receipt->execute([$message_data['id'], $_SESSION['id']]);
+                                } else {
+                                    // If not read, show a gray "Unread" badge
+                                    echo '<td><span class="badge bg-secondary">Unread</span></td>';
+                                }
                                 echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['view'] . '</button></td>';
                                 echo '</tr>';
                             }
@@ -7150,7 +7178,18 @@ function displayAdminPanel($pdo, $t, $lang)
                                 echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
                                 echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
                                 echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                                echo '<td>' . ($message_data['read_status'] ? 'Read' : 'Unread') . '</td>';
+                                // Check if the message has been read by the receiver
+                                if ($message_data['read_status']) {
+                                    // If it has been read, show a green "Read" badge
+                                    echo '<td><span class="badge bg-success">Read</span></td>';
+
+                                    // Also, update the database to notify the sender that they have seen the receipt
+                                    $stmt_update_receipt = $pdo->prepare("UPDATE messages SET sender_read_receipt = TRUE WHERE id = ? AND sender_id = ?");
+                                    $stmt_update_receipt->execute([$message_data['id'], $_SESSION['id']]);
+                                } else {
+                                    // If not read, show a gray "Unread" badge
+                                    echo '<td><span class="badge bg-secondary">Unread</span></td>';
+                                }
                                 echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['view'] . '</button></td>';
                                 echo '</tr>';
                             }
