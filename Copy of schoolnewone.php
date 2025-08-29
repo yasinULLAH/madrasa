@@ -6,30 +6,12 @@ session_start();
 define('DB_SERVER', 'localhost');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', 'root');
-define('DB_NAME', 'school_management_dbV2');
+define('DB_NAME', 'school_management_db');
 try {
     $pdo = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME, DB_USERNAME, DB_PASSWORD);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("ERROR: Could not connect. " . $e->getMessage());
-}
-function generate_csrf_token()
-{
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_token'];
-}
-function validate_csrf_token($token)
-{
-    if (empty($_SESSION['csrf_token']) || $token !== $_SESSION['csrf_token']) {
-        return false;
-    }
-    return true;
-}
-function hashPassword($password)
-{
-    return password_hash($password, PASSWORD_BCRYPT);
 }
 /*
 CREATE DATABASE IF NOT EXISTS school_management_db;
@@ -41,12 +23,6 @@ CREATE TABLE IF NOT EXISTS users (
     role ENUM('admin', 'teacher', 'student', 'parent') NOT NULL,
     email VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-CREATE TABLE IF NOT EXISTS password_resets (
-    email VARCHAR(100) NOT NULL,
-    token VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NOT NULL
 );
 CREATE TABLE IF NOT EXISTS teachers (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,7 +36,7 @@ CREATE TABLE IF NOT EXISTS teachers (
 CREATE TABLE IF NOT EXISTS classes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
-    teacher_id INT, -- Class Teacher
+    teacher_id INT,
     FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS subjects (
@@ -84,14 +60,9 @@ CREATE TABLE IF NOT EXISTS students (
     dob DATE,
     address VARCHAR(255),
     phone VARCHAR(20),
-    parent_id INT, -- user_id of parent
-    medical_history TEXT,
-    emergency_contact_name VARCHAR(100),
-    emergency_contact_phone VARCHAR(20),
-    document_path VARCHAR(255), -- e.g., birth certificate scan
+    parent_id INT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (parent_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE SET NULL
+    FOREIGN KEY (parent_id) REFERENCES users(id) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS timetables (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -122,12 +93,10 @@ CREATE TABLE IF NOT EXISTS exams (
     name VARCHAR(100) NOT NULL,
     class_id INT NOT NULL,
     subject_id INT NOT NULL,
-    teacher_id INT, -- teacher who created/manages the exam
     exam_date DATE NOT NULL,
     max_marks INT NOT NULL,
     FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
-    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
-    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE SET NULL
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS marks (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -138,42 +107,20 @@ CREATE TABLE IF NOT EXISTS marks (
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
     UNIQUE(exam_id, student_id)
 );
-CREATE TABLE IF NOT EXISTS fee_structures (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    type ENUM('Tuition', 'Transport', 'Lab', 'Exam', 'Other') NOT NULL DEFAULT 'Tuition',
-    class_id INT,
-    description TEXT,
-    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
-);
 CREATE TABLE IF NOT EXISTS fees (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
-    fee_structure_id INT, -- Link to fee structure if applicable
     amount DECIMAL(10, 2) NOT NULL,
     due_date DATE NOT NULL,
     paid_date DATE,
     status ENUM('Paid', 'Unpaid', 'Partially Paid') NOT NULL,
     description VARCHAR(255),
-    concession DECIMAL(10, 2) DEFAULT 0.00,
-    fine DECIMAL(10, 2) DEFAULT 0.00,
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-    FOREIGN KEY (fee_structure_id) REFERENCES fee_structures(id) ON DELETE SET NULL
-);
-CREATE TABLE IF NOT EXISTS fee_transactions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    fee_id INT NOT NULL,
-    amount_paid DECIMAL(10, 2) NOT NULL,
-    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    payment_method VARCHAR(50),
-    FOREIGN KEY (fee_id) REFERENCES fees(id) ON DELETE CASCADE
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS announcements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    file_path VARCHAR(255), -- Added missing column
     published_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS events (
@@ -222,19 +169,6 @@ CREATE TABLE IF NOT EXISTS assignments (
     FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
     FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
 );
-CREATE TABLE IF NOT EXISTS study_materials (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    teacher_id INT NOT NULL,
-    class_id INT NOT NULL,
-    subject_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    file_path VARCHAR(255) NOT NULL,
-    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE,
-    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
-    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
-);
 CREATE TABLE IF NOT EXISTS gallery (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -251,35 +185,14 @@ CREATE TABLE IF NOT EXISTS student_assignments (
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
     UNIQUE(assignment_id, student_id)
 );
-CREATE TABLE IF NOT EXISTS messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    sender_id INT NOT NULL,
-    receiver_id INT NOT NULL,
-    subject VARCHAR(255),
-    message TEXT NOT NULL,
-    read_status BOOLEAN DEFAULT FALSE,
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
-);
-CREATE TABLE IF NOT EXISTS teacher_notes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    teacher_id INT NOT NULL,
-    student_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    note TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
-);
 -- Dummy Data Insertion
 INSERT IGNORE INTO users (username, password, role, email) VALUES
-('admin', '$2y$10$tJ9fF2vL1xW5B0f8M1G2O.u.n.y.V.S.h.A.N.i.N', 'admin', 'admin@example.com'), -- adminpass
-('teacher1', '$2y$10$wKzN1eJ0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'teacher', 'teacher1@example.com'), -- teacherpass
-('student1', '$2y$10$oKjN2eY0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'student', 'student1@example.com'), -- studentpass
-('parent1', '$2y$10$lJ9fF2vL1xW5B0f8M1G2O.u.n.y.V.S.h.A.N.i.N', 'parent', 'parent1@example.com'), -- parentpass
-('student2', '$2y$10$qKzN3eZ0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'student', 'student2@example.com'), -- studentpass
-('parent2', '$2y$10$pKjN4eA0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'parent', 'parent2@example.com'); -- parentpass
+('admin', '$2y$10$wKzN1eJ0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'admin', 'admin@example.com'), -- password is 'adminpass'
+('teacher1', '$2y$10$wKzN1eJ0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'teacher', 'teacher1@example.com'), -- password is 'teacherpass'
+('student1', '$2y$10$wKzN1eJ0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'student', 'studentpass'), -- password is 'studentpass'
+('parent1', '$2y$10$wKzN1eJ0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'parent', 'parent1@example.com'), -- password is 'parentpass'
+('student2', '$2y$10$wKzN1eJ0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'student', 'student2@example.com'), -- password is 'studentpass'
+('parent2', '$2y$10$wKzN1eJ0Xz2eW0F1G2X3u.b/RzW9PjC1P.u.n.y.V.S.', 'parent', 'parent2@example.com'); -- password is 'parentpass'
 INSERT IGNORE INTO teachers (user_id, name, subject_specialty, phone, email) VALUES
 ((SELECT id FROM users WHERE username = 'teacher1'), 'Mr. Ali Ahmed', 'Mathematics', '03001234567', 'teacher1@example.com');
 INSERT IGNORE INTO classes (name, teacher_id) VALUES
@@ -292,9 +205,9 @@ INSERT IGNORE INTO class_subjects (class_id, subject_id) VALUES
 ((SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Physics')),
 ((SELECT id FROM classes WHERE name = 'Class 9B'), (SELECT id FROM subjects WHERE name = 'English')),
 ((SELECT id FROM classes WHERE name = 'Class 9B'), (SELECT id FROM subjects WHERE name = 'Urdu'));
-INSERT IGNORE INTO students (user_id, name, class_id, roll_no, dob, address, phone, parent_id, medical_history, emergency_contact_name, emergency_contact_phone, document_path) VALUES
-((SELECT id FROM users WHERE username = 'student1'), 'Fatima Khan', (SELECT id FROM classes WHERE name = 'Class 10A'), '10A-001', '2008-05-15', 'House 1, Street 2, Lahore', '03219876543', (SELECT id FROM users WHERE username = 'parent1'), 'Allergy to peanuts', 'Mr. Asif Khan', '03211234567', 'uploads/documents/birth_cert_fatima.pdf'),
-((SELECT id FROM users WHERE username = 'student2'), 'Ahmed Raza', (SELECT id FROM classes WHERE name = 'Class 10A'), '10A-002', '2008-06-20', 'Flat 5, Block B, Islamabad', '03331234567', (SELECT id FROM users WHERE username = 'parent1'), NULL, 'Ms. Zara Raza', '03337654321', 'uploads/documents/birth_cert_ahmed.pdf');
+INSERT IGNORE INTO students (user_id, name, class_id, roll_no, dob, address, phone, parent_id) VALUES
+((SELECT id FROM users WHERE username = 'student1'), 'Fatima Khan', (SELECT id FROM classes WHERE name = 'Class 10A'), '10A-001', '2008-05-15', 'House 1, Street 2, Lahore', '03219876543', (SELECT id FROM users WHERE username = 'parent1')),
+((SELECT id FROM users WHERE username = 'student2'), 'Ahmed Raza', (SELECT id FROM classes WHERE name = 'Class 10A'), '10A-002', '2008-06-20', 'Flat 5, Block B, Islamabad', '03331234567', (SELECT id FROM users WHERE username = 'parent1'));
 INSERT IGNORE INTO timetables (class_id, subject_id, teacher_id, day_of_week, start_time, end_time) VALUES
 ((SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Mathematics'), (SELECT id FROM teachers WHERE name = 'Mr. Ali Ahmed'), 'Monday', '09:00:00', '10:00:00'),
 ((SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Physics'), (SELECT id FROM teachers WHERE name = 'Mr. Ali Ahmed'), 'Tuesday', '10:00:00', '11:00:00'),
@@ -309,24 +222,18 @@ INSERT IGNORE INTO events (title, description, event_date, event_time, location)
 ('Parent-Teacher Meeting', 'Discuss student progress with teachers. All parents are encouraged to attend.', '2023-10-20', '14:00:00', 'School Auditorium'),
 ('Debate Competition', 'Inter-house debate competition for senior students.', '2023-12-01', '10:00:00', 'School Hall'),
 ('Art Exhibition', 'Showcasing student artworks from various classes.', '2024-01-25', '11:00:00', 'Art Room');
-INSERT IGNORE INTO fee_structures (name, amount, type, class_id, description) VALUES
-('Monthly Tuition Fee', 5000.00, 'Tuition', (SELECT id FROM classes WHERE name = 'Class 10A'), 'Standard monthly tuition'),
-('Monthly Tuition Fee', 4500.00, 'Tuition', (SELECT id FROM classes WHERE name = 'Class 9B'), 'Standard monthly tuition');
-INSERT IGNORE INTO fees (student_id, fee_structure_id, amount, due_date, status, description) VALUES
-((SELECT id FROM students WHERE name = 'Fatima Khan'), (SELECT id FROM fee_structures WHERE name = 'Monthly Tuition Fee' AND class_id = (SELECT id FROM classes WHERE name = 'Class 10A')), 5000.00, '2023-10-01', 'Unpaid', 'Tuition Fee - October'),
-((SELECT id FROM students WHERE name = 'Ahmed Raza'), (SELECT id FROM fee_structures WHERE name = 'Monthly Tuition Fee' AND class_id = (SELECT id FROM classes WHERE name = 'Class 10A')), 5000.00, '2023-10-01', 'Paid', 'Tuition Fee - October');
-INSERT IGNORE INTO exams (name, class_id, subject_id, teacher_id, exam_date, max_marks) VALUES
-('Mid-Term Exam', (SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Mathematics'), (SELECT id FROM teachers WHERE name = 'Mr. Ali Ahmed'), '2023-11-15', 100),
-('Mid-Term Exam', (SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Physics'), (SELECT id FROM teachers WHERE name = 'Mr. Ali Ahmed'), '2023-11-16', 100);
+INSERT IGNORE INTO fees (student_id, amount, due_date, status, description) VALUES
+((SELECT id FROM students WHERE name = 'Fatima Khan'), 5000.00, '2023-10-01', 'Unpaid', 'Tuition Fee - October'),
+((SELECT id FROM students WHERE name = 'Ahmed Raza'), 5000.00, '2023-10-01', 'Paid', 'Tuition Fee - October');
+INSERT IGNORE INTO exams (name, class_id, subject_id, exam_date, max_marks) VALUES
+('Mid-Term Exam', (SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Mathematics'), '2023-11-15', 100),
+('Mid-Term Exam', (SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Physics'), '2023-11-16', 100);
 INSERT IGNORE INTO marks (exam_id, student_id, marks_obtained) VALUES
 ((SELECT id FROM exams WHERE name = 'Mid-Term Exam' AND class_id = (SELECT id FROM classes WHERE name = 'Class 10A') AND subject_id = (SELECT id FROM subjects WHERE name = 'Mathematics')), (SELECT id FROM students WHERE name = 'Fatima Khan'), 85),
 ((SELECT id FROM exams WHERE name = 'Mid-Term Exam' AND class_id = (SELECT id FROM classes WHERE name = 'Class 10A') AND subject_id = (SELECT id FROM subjects WHERE name = 'Mathematics')), (SELECT id FROM students WHERE name = 'Ahmed Raza'), 78);
 INSERT IGNORE INTO assignments (teacher_id, class_id, subject_id, title, description, due_date) VALUES
 ((SELECT id FROM teachers WHERE name = 'Mr. Ali Ahmed'), (SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Mathematics'), 'Algebra Homework', 'Complete exercises on quadratic equations.', '2023-10-25'),
 ((SELECT id FROM teachers WHERE name = 'Mr. Ali Ahmed'), (SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Physics'), 'Newton Laws Worksheet', 'Solve problems related to Newton\'s Laws of Motion.', '2023-11-01');
-INSERT IGNORE INTO study_materials (teacher_id, class_id, subject_id, title, description, file_path) VALUES
-((SELECT id FROM teachers WHERE name = 'Mr. Ali Ahmed'), (SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Mathematics'), 'Algebra Formulas', 'Key formulas for algebra.', 'uploads/study_materials/algebra_formulas.pdf'),
-((SELECT id FROM teachers WHERE name = 'Mr. Ali Ahmed'), (SELECT id FROM classes WHERE name = 'Class 10A'), (SELECT id FROM subjects WHERE name = 'Physics'), 'Physics Concepts', 'Basic concepts of mechanics.', 'uploads/study_materials/physics_concepts.pdf');
 INSERT IGNORE INTO gallery (title, image_path) VALUES
 ('Annual Sports Day 2022', 'uploads/gallery/sports_day_2022.jpg'),
 ('Science Fair 2023', 'uploads/gallery/science_fair_2023.jpg'),
@@ -365,26 +272,9 @@ function isAuthenticated()
 {
     return isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 }
-function upload_file_securely($file_input_name, $upload_dir, $allowed_extensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif'], $max_size = 5 * 1024 * 1024)
+function hashPassword($password)
 {
-    if (!isset($_FILES[$file_input_name]) || $_FILES[$file_input_name]['error'] !== UPLOAD_ERR_OK) {
-        return ['success' => false, 'message' => 'No file uploaded or upload error.'];
-    }
-    $file = $_FILES[$file_input_name];
-    if ($file['size'] > $max_size) {
-        return ['success' => false, 'message' => 'File size exceeds limit. Max 5MB allowed.'];
-    }
-    $file_extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($file_extension, $allowed_extensions)) {
-        return ['success' => false, 'message' => 'Invalid file type. Allowed: ' . implode(', ', $allowed_extensions)];
-    }
-    $new_file_name = uniqid() . '.' . $file_extension;
-    $target_file = $upload_dir . $new_file_name;
-    if (move_uploaded_file($file['tmp_name'], $target_file)) {
-        return ['success' => true, 'path' => $target_file];
-    } else {
-        return ['success' => false, 'message' => 'Failed to move uploaded file.'];
-    }
+    return password_hash($password, PASSWORD_BCRYPT);
 }
 if (!is_dir('uploads/gallery')) {
     mkdir('uploads/gallery', 0777, true);
@@ -397,12 +287,6 @@ if (!is_dir('uploads/student_assignments')) {
 }
 if (!is_dir('uploads/announcements')) {
     mkdir('uploads/announcements', 0777, true);
-}
-if (!is_dir('uploads/study_materials')) {
-    mkdir('uploads/study_materials', 0777, true);
-}
-if (!is_dir('uploads/documents')) {
-    mkdir('uploads/documents', 0777, true);
 }
 $lang = isset($_GET['lang']) && $_GET['lang'] == 'ur' ? 'ur' : 'en';
 $phrases = [
@@ -494,7 +378,7 @@ $phrases = [
         'role' => 'Role',
         'confirm_password' => 'Confirm Password',
         'take_class_attendance' => 'Take Class Attendance',
-        'upload_assignments' => 'Upload Assignments',
+        'upload_assignments' => 'Upload Assignments & Study Material',
         'enter_exam_marks' => 'Enter Exam Marks',
         'view_timetable' => 'View Timetable',
         'download_assignments' => 'Download Assignments',
@@ -530,7 +414,7 @@ $phrases = [
         'subject_specialty' => 'Subject Specialty',
         'add_class' => 'Add Class',
         'edit_class_details' => 'Edit Class Details',
-        'assigned_teacher' => 'Assigned Class Teacher',
+        'assigned_teacher' => 'Assigned Teacher',
         'add_subject' => 'Add Subject',
         'edit_subject_details' => 'Edit Subject Details',
         'add_timetable_entry' => 'Add Timetable Entry',
@@ -614,59 +498,6 @@ $phrases = [
         'invalid_reset_link' => 'Invalid or expired password reset link.',
         'password_updated_success' => 'Your password has been updated successfully. Please log in.',
         'password_mismatch' => 'New password and confirm password do not match.',
-        'teacher_classes' => 'My Classes',
-        'teacher_students' => 'My Students',
-        'teacher_notes' => 'Teacher Notes',
-        'send_message' => 'Send Message',
-        'internal_messaging' => 'Internal Messaging',
-        'my_messages' => 'My Messages',
-        'compose_message' => 'Compose Message',
-        'receiver' => 'Receiver',
-        'unread_messages' => 'Unread Messages',
-        'read_message' => 'Read Message',
-        'sent_messages' => 'Sent Messages',
-        'compose_new_message' => 'Compose New Message',
-        'select_receiver' => 'Select Receiver',
-        'send' => 'Send',
-        'add_note' => 'Add Note for Student',
-        'manage_fees_structures' => 'Manage Fee Structures',
-        'add_fee_structure' => 'Add Fee Structure',
-        'fee_structure_name' => 'Fee Name',
-        'fee_type' => 'Fee Type',
-        'concession' => 'Concession',
-        'fine' => 'Fine',
-        'view_all_students_in_class' => 'View All Students in Class',
-        'upload_study_materials' => 'Upload Study Materials',
-        'study_materials_list' => 'Study Materials List',
-        'add_study_material' => 'Add Study Material',
-        'promote_students' => 'Promote Students',
-        'promote_class' => 'Promote Class',
-        'to_class' => 'To Class',
-        'promote' => 'Promote',
-        'next_academic_year' => 'Next Academic Year',
-        'medical_history' => 'Medical History',
-        'emergency_contact' => 'Emergency Contact',
-        'document_upload' => 'Document Upload',
-        'current_file' => 'Current File',
-        'guardian_name' => 'Guardian Name',
-        'guardian_phone' => 'Guardian Phone',
-        'select_fee_structure' => 'Select Fee Structure',
-        'fee_structure_description' => 'Fee Description',
-        'fee_structure_details' => 'Fee Structure Details',
-        'student_document' => 'Student Document',
-        'note_title' => 'Note Title',
-        'note_content' => 'Note Content',
-        'student_performance_overview' => 'Student Performance Overview',
-        'view_report_card' => 'View Report Card',
-        'all_subjects' => 'All Subjects',
-        'academic_year' => 'Academic Year',
-        'current_status' => 'Current Status',
-        'class_teacher_duties' => 'Class Teacher Duties',
-        'manage_class_students' => 'Manage Class Students',
-        'class_announcements' => 'Class Announcements',
-        'send_parent_notes' => 'Send Parent Notes',
-        'add_exam_for_my_class' => 'Add Exam for My Class',
-        'manage_my_exams' => 'Manage My Exams',
     ],
     'ur' => [
         'school_name' => 'فیوچر لیڈرز سکول',
@@ -756,7 +587,7 @@ $phrases = [
         'role' => 'کردار',
         'confirm_password' => 'پاس ورڈ کی تصدیق کریں',
         'take_class_attendance' => 'کلاس کی حاضری لگائیں',
-        'upload_assignments' => 'اسائنمنٹس اپ لوڈ کریں',
+        'upload_assignments' => 'اسائنمنٹس اور مطالعہ کا مواد اپ لوڈ کریں',
         'enter_exam_marks' => 'امتحانی نمبر درج کریں',
         'view_timetable' => 'ٹائم ٹیبل دیکھیں',
         'download_assignments' => 'اسائنمنٹس ڈاؤن لوڈ کریں',
@@ -792,7 +623,7 @@ $phrases = [
         'subject_specialty' => 'موضوع کی مہارت',
         'add_class' => 'کلاس شامل کریں',
         'edit_class_details' => 'کلاس کی تفصیلات میں ترمیم کریں',
-        'assigned_teacher' => 'مقرر کردہ کلاس استاد',
+        'assigned_teacher' => 'مقرر کردہ استاد',
         'add_subject' => 'مضمون شامل کریں',
         'edit_subject_details' => 'مضمون کی تفصیلات میں ترمیم کریں',
         'add_timetable_entry' => 'ٹائم ٹیبل اندراج شامل کریں',
@@ -876,70 +707,10 @@ $phrases = [
         'invalid_reset_link' => 'غلط یا میعاد ختم شدہ پاس ورڈ ری سیٹ لنک۔',
         'password_updated_success' => 'آپ کا پاس ورڈ کامیابی سے اپ ڈیٹ ہو گیا ہے۔ براہ کرم لاگ ان کریں۔',
         'password_mismatch' => 'نیا پاس ورڈ اور تصدیقی پاس ورڈ مماثل نہیں ہیں۔',
-        'teacher_classes' => 'میری کلاسز',
-        'teacher_students' => 'میرے طلباء',
-        'teacher_notes' => 'استاد کے نوٹس',
-        'send_message' => 'پیغام بھیجیں',
-        'internal_messaging' => 'اندرونی پیغام رسانی',
-        'my_messages' => 'میرے پیغامات',
-        'compose_message' => 'پیغام لکھیں',
-        'receiver' => 'وصول کنندہ',
-        'unread_messages' => 'نہ پڑھے گئے پیغامات',
-        'read_message' => 'پیغام پڑھیں',
-        'sent_messages' => 'بھیجے گئے پیغامات',
-        'compose_new_message' => 'نیا پیغام لکھیں',
-        'select_receiver' => 'وصول کنندہ منتخب کریں',
-        'send' => 'بھیجیں',
-        'add_note' => 'طالب علم کے لیے نوٹ شامل کریں',
-        'manage_fees_structures' => 'فیس کے ڈھانچے کا انتظام کریں',
-        'add_fee_structure' => 'فیس کا ڈھانچہ شامل کریں',
-        'fee_structure_name' => 'فیس کا نام',
-        'fee_type' => 'فیس کی قسم',
-        'concession' => 'رعایت',
-        'fine' => 'جرمانہ',
-        'view_all_students_in_class' => 'کلاس کے تمام طلباء دیکھیں',
-        'upload_study_materials' => 'مطالعہ کا مواد اپ لوڈ کریں',
-        'study_materials_list' => 'مطالعہ کا مواد کی فہرست',
-        'add_study_material' => 'مطالعہ کا مواد شامل کریں',
-        'promote_students' => 'طلباء کو پروموٹ کریں',
-        'promote_class' => 'کلاس پروموٹ کریں',
-        'to_class' => 'کلاس تک',
-        'promote' => 'پروموٹ کریں',
-        'next_academic_year' => 'اگلا تعلیمی سال',
-        'medical_history' => 'طبی تاریخ',
-        'emergency_contact' => 'ہنگامی رابطہ',
-        'document_upload' => 'دستاویز اپ لوڈ',
-        'current_file' => 'موجودہ فائل',
-        'guardian_name' => 'سرپرست کا نام',
-        'guardian_phone' => 'سرپرست کا فون',
-        'select_fee_structure' => 'فیس کا ڈھانچہ منتخب کریں',
-        'fee_structure_description' => 'فیس کی تفصیل',
-        'fee_structure_details' => 'فیس کے ڈھانچے کی تفصیلات',
-        'student_document' => 'طالب علم کی دستاویز',
-        'note_title' => 'نوٹ کا عنوان',
-        'note_content' => 'نوٹ کا مواد',
-        'student_performance_overview' => 'طالب علم کی کارکردگی کا جائزہ',
-        'view_report_card' => 'رپورٹ کارڈ دیکھیں',
-        'all_subjects' => 'تمام مضامین',
-        'academic_year' => 'تعلیمی سال',
-        'current_status' => 'موجودہ حیثیت',
-        'class_teacher_duties' => 'کلاس ٹیچر کے فرائض',
-        'manage_class_students' => 'کلاس کے طلباء کا انتظام کریں',
-        'class_announcements' => 'کلاس اعلانات',
-        'send_parent_notes' => 'والدین کو نوٹس بھیجیں',
-        'add_exam_for_my_class' => 'میری کلاس کے لیے امتحان شامل کریں',
-        'manage_my_exams' => 'میرے امتحانات کا انتظام کریں',
     ]
 ];
 $t = $phrases[$lang];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!isset($_POST['csrf_token']) || !validate_csrf_token($_POST['csrf_token'])) {
-        $_SESSION['error'] = 'CSRF token validation failed. Please try again.';
-        header("Location: " . $_SERVER['REQUEST_URI']);
-        exit;
-    }
-    unset($_SESSION['csrf_token']);
-    generate_csrf_token();
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'login':
@@ -998,27 +769,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $address = trim($_POST['address']);
                     $phone = trim($_POST['phone']);
                     $parent_id = !empty($_POST['parent_id']) ? $_POST['parent_id'] : null;
-                    $medical_history = trim($_POST['medical_history']);
-                    $emergency_contact_name = trim($_POST['emergency_contact_name']);
-                    $emergency_contact_phone = trim($_POST['emergency_contact_phone']);
-                    $document_path = null;
-                    if (isset($_FILES['student_document']) && $_FILES['student_document']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('student_document', 'uploads/documents/', ['pdf', 'jpg', 'jpeg', 'png']);
-                        if ($upload_result['success']) {
-                            $document_path = $upload_result['path'];
-                        } else {
-                            $_SESSION['error'] = "Document upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=students&lang=$lang");
-                            exit;
-                        }
-                    }
                     $pdo->beginTransaction();
                     try {
                         $stmt = $pdo->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, 'student')");
                         $stmt->execute([$username, $password]);
                         $user_id = $pdo->lastInsertId();
-                        $stmt = $pdo->prepare("INSERT INTO students (user_id, name, class_id, roll_no, dob, address, phone, parent_id, medical_history, emergency_contact_name, emergency_contact_phone, document_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->execute([$user_id, $name, $class_id, $roll_no, $dob, $address, $phone, $parent_id, $medical_history, $emergency_contact_name, $emergency_contact_phone, $document_path]);
+                        $stmt = $pdo->prepare("INSERT INTO students (user_id, name, class_id, roll_no, dob, address, phone, parent_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->execute([$user_id, $name, $class_id, $roll_no, $dob, $address, $phone, $parent_id]);
                         $pdo->commit();
                         $_SESSION['message'] = "Student added successfully!";
                     } catch (PDOException $e) {
@@ -1039,25 +796,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $address = trim($_POST['address']);
                     $phone = trim($_POST['phone']);
                     $parent_id = !empty($_POST['parent_id']) ? $_POST['parent_id'] : null;
-                    $medical_history = trim($_POST['medical_history']);
-                    $emergency_contact_name = trim($_POST['emergency_contact_name']);
-                    $emergency_contact_phone = trim($_POST['emergency_contact_phone']);
-                    $document_path = $_POST['current_document_path'] ?? null;
-                    if (isset($_FILES['student_document']) && $_FILES['student_document']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('student_document', 'uploads/documents/', ['pdf', 'jpg', 'jpeg', 'png']);
-                        if ($upload_result['success']) {
-                            if ($document_path && file_exists($document_path)) {
-                                unlink($document_path);
-                            }
-                            $document_path = $upload_result['path'];
-                        } else {
-                            $_SESSION['error'] = "Document upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=students&lang=$lang");
-                            exit;
-                        }
-                    }
-                    $stmt = $pdo->prepare("UPDATE students SET name = ?, class_id = ?, roll_no = ?, dob = ?, address = ?, phone = ?, parent_id = ?, medical_history = ?, emergency_contact_name = ?, emergency_contact_phone = ?, document_path = ? WHERE id = ?");
-                    $stmt->execute([$name, $class_id, $roll_no, $dob, $address, $phone, $parent_id, $medical_history, $emergency_contact_name, $emergency_contact_phone, $document_path, $id]);
+                    $stmt = $pdo->prepare("UPDATE students SET name = ?, class_id = ?, roll_no = ?, dob = ?, address = ?, phone = ?, parent_id = ? WHERE id = ?");
+                    $stmt->execute([$name, $class_id, $roll_no, $dob, $address, $phone, $parent_id, $id]);
                     $_SESSION['message'] = "Student updated successfully!";
                     header("Location: ?page=dashboard&section=students&lang=$lang");
                     exit;
@@ -1066,15 +806,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             case 'delete_student':
                 if (isAdmin()) {
                     $id = $_POST['id'];
-                    $stmt = $pdo->prepare("SELECT user_id, document_path FROM students WHERE id = ?");
+                    $stmt = $pdo->prepare("SELECT user_id FROM students WHERE id = ?");
                     $stmt->execute([$id]);
                     $student = $stmt->fetch();
                     if ($student) {
                         $pdo->beginTransaction();
                         try {
-                            if ($student['document_path'] && file_exists($student['document_path'])) {
-                                unlink($student['document_path']);
-                            }
                             $stmt = $pdo->prepare("DELETE FROM students WHERE id = ?");
                             $stmt->execute([$id]);
                             $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
@@ -1308,11 +1045,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $name = trim($_POST['name']);
                     $class_id = trim($_POST['class_id']);
                     $subject_id = trim($_POST['subject_id']);
-                    $teacher_id = trim($_POST['teacher_id']) ?? null;
                     $exam_date = trim($_POST['exam_date']);
                     $max_marks = trim($_POST['max_marks']);
-                    $stmt = $pdo->prepare("INSERT INTO exams (name, class_id, subject_id, teacher_id, exam_date, max_marks) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$name, $class_id, $subject_id, $teacher_id, $exam_date, $max_marks]);
+                    $stmt = $pdo->prepare("INSERT INTO exams (name, class_id, subject_id, exam_date, max_marks) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->execute([$name, $class_id, $subject_id, $exam_date, $max_marks]);
                     $_SESSION['message'] = "Exam added successfully!";
                     header("Location: ?page=dashboard&section=exams_marks&lang=$lang");
                     exit;
@@ -1324,11 +1060,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $name = trim($_POST['name']);
                     $class_id = trim($_POST['class_id']);
                     $subject_id = trim($_POST['subject_id']);
-                    $teacher_id = trim($_POST['teacher_id']) ?? null;
                     $exam_date = trim($_POST['exam_date']);
                     $max_marks = trim($_POST['max_marks']);
-                    $stmt = $pdo->prepare("UPDATE exams SET name = ?, class_id = ?, subject_id = ?, teacher_id = ?, exam_date = ?, max_marks = ? WHERE id = ?");
-                    $stmt->execute([$name, $class_id, $subject_id, $teacher_id, $exam_date, $max_marks, $id]);
+                    $stmt = $pdo->prepare("UPDATE exams SET name = ?, class_id = ?, subject_id = ?, exam_date = ?, max_marks = ? WHERE id = ?");
+                    $stmt->execute([$name, $class_id, $subject_id, $exam_date, $max_marks, $id]);
                     $_SESSION['message'] = "Exam updated successfully!";
                     header("Location: ?page=dashboard&section=exams_marks&lang=$lang");
                     exit;
@@ -1339,54 +1074,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $id = $_POST['id'];
                     $stmt = $pdo->prepare("DELETE FROM exams WHERE id = ?");
                     $stmt->execute([$id]);
-                    $_SESSION['message'] = "Exam deleted successfully!";
-                    header("Location: ?page=dashboard&section=exams_marks&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'teacher_add_exam':
-                if (isTeacher()) {
-                    $name = trim($_POST['name']);
-                    $class_id = trim($_POST['class_id']);
-                    $subject_id = trim($_POST['subject_id']);
-                    $teacher_db_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_db_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_db_id = $teacher_db_id_stmt->fetchColumn();
-                    $exam_date = trim($_POST['exam_date']);
-                    $max_marks = trim($_POST['max_marks']);
-                    $stmt = $pdo->prepare("INSERT INTO exams (name, class_id, subject_id, teacher_id, exam_date, max_marks) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$name, $class_id, $subject_id, $teacher_db_id, $exam_date, $max_marks]);
-                    $_SESSION['message'] = "Exam added successfully!";
-                    header("Location: ?page=dashboard&section=exams_marks&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'teacher_edit_exam':
-                if (isTeacher()) {
-                    $id = $_POST['id'];
-                    $name = trim($_POST['name']);
-                    $class_id = trim($_POST['class_id']);
-                    $subject_id = trim($_POST['subject_id']);
-                    $exam_date = trim($_POST['exam_date']);
-                    $max_marks = trim($_POST['max_marks']);
-                    $teacher_db_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_db_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_db_id = $teacher_db_id_stmt->fetchColumn();
-                    $stmt = $pdo->prepare("UPDATE exams SET name = ?, class_id = ?, subject_id = ?, exam_date = ?, max_marks = ? WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$name, $class_id, $subject_id, $exam_date, $max_marks, $id, $teacher_db_id]);
-                    $_SESSION['message'] = "Exam updated successfully!";
-                    header("Location: ?page=dashboard&section=exams_marks&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'teacher_delete_exam':
-                if (isTeacher()) {
-                    $id = $_POST['id'];
-                    $teacher_db_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_db_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_db_id = $teacher_db_id_stmt->fetchColumn();
-                    $stmt = $pdo->prepare("DELETE FROM exams WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$id, $teacher_db_id]);
                     $_SESSION['message'] = "Exam deleted successfully!";
                     header("Location: ?page=dashboard&section=exams_marks&lang=$lang");
                     exit;
@@ -1407,58 +1094,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     exit;
                 }
                 break;
-            case 'add_fee_structure':
-                if (isAdmin()) {
-                    $name = trim($_POST['name']);
-                    $amount = trim($_POST['amount']);
-                    $type = trim($_POST['type']);
-                    $class_id = !empty($_POST['class_id']) ? $_POST['class_id'] : null;
-                    $description = trim($_POST['description']);
-                    $stmt = $pdo->prepare("INSERT INTO fee_structures (name, amount, type, class_id, description) VALUES (?, ?, ?, ?, ?)");
-                    $stmt->execute([$name, $amount, $type, $class_id, $description]);
-                    $_SESSION['message'] = "Fee structure added successfully!";
-                    header("Location: ?page=dashboard&section=fees_structures&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'edit_fee_structure':
-                if (isAdmin()) {
-                    $id = $_POST['id'];
-                    $name = trim($_POST['name']);
-                    $amount = trim($_POST['amount']);
-                    $type = trim($_POST['type']);
-                    $class_id = !empty($_POST['class_id']) ? $_POST['class_id'] : null;
-                    $description = trim($_POST['description']);
-                    $stmt = $pdo->prepare("UPDATE fee_structures SET name = ?, amount = ?, type = ?, class_id = ?, description = ? WHERE id = ?");
-                    $stmt->execute([$name, $amount, $type, $class_id, $description, $id]);
-                    $_SESSION['message'] = "Fee structure updated successfully!";
-                    header("Location: ?page=dashboard&section=fees_structures&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'delete_fee_structure':
-                if (isAdmin()) {
-                    $id = $_POST['id'];
-                    $stmt = $pdo->prepare("DELETE FROM fee_structures WHERE id = ?");
-                    $stmt->execute([$id]);
-                    $_SESSION['message'] = "Fee structure deleted successfully!";
-                    header("Location: ?page=dashboard&section=fees_structures&lang=$lang");
-                    exit;
-                }
-                break;
             case 'add_fee_invoice':
                 if (isAdmin()) {
                     $student_id = trim($_POST['student_id']);
-                    $fee_structure_id = !empty($_POST['fee_structure_id']) ? $_POST['fee_structure_id'] : null;
                     $amount = trim($_POST['amount']);
                     $due_date = trim($_POST['due_date']);
                     $status = trim($_POST['status']);
                     $description = trim($_POST['description']);
-                    $concession = trim($_POST['concession']) ?? 0.00;
-                    $fine = trim($_POST['fine']) ?? 0.00;
                     $paid_date = ($status == 'Paid') ? date('Y-m-d') : null;
-                    $stmt = $pdo->prepare("INSERT INTO fees (student_id, fee_structure_id, amount, due_date, paid_date, status, description, concession, fine) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$student_id, $fee_structure_id, $amount, $due_date, $paid_date, $status, $description, $concession, $fine]);
+                    $stmt = $pdo->prepare("INSERT INTO fees (student_id, amount, due_date, paid_date, status, description) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$student_id, $amount, $due_date, $paid_date, $status, $description]);
                     $_SESSION['message'] = "Fee invoice added successfully!";
                     header("Location: ?page=dashboard&section=fees&lang=$lang");
                     exit;
@@ -1468,16 +1113,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (isAdmin()) {
                     $id = $_POST['id'];
                     $student_id = trim($_POST['student_id']);
-                    $fee_structure_id = !empty($_POST['fee_structure_id']) ? $_POST['fee_structure_id'] : null;
                     $amount = trim($_POST['amount']);
                     $due_date = trim($_POST['due_date']);
                     $status = trim($_POST['status']);
                     $description = trim($_POST['description']);
-                    $concession = trim($_POST['concession']) ?? 0.00;
-                    $fine = trim($_POST['fine']) ?? 0.00;
                     $paid_date = ($status == 'Paid') ? (isset($_POST['paid_date']) && !empty($_POST['paid_date']) ? $_POST['paid_date'] : date('Y-m-d')) : null;
-                    $stmt = $pdo->prepare("UPDATE fees SET student_id = ?, fee_structure_id = ?, amount = ?, due_date = ?, paid_date = ?, status = ?, description = ?, concession = ?, fine = ? WHERE id = ?");
-                    $stmt->execute([$student_id, $fee_structure_id, $amount, $due_date, $paid_date, $status, $description, $concession, $fine, $id]);
+                    $stmt = $pdo->prepare("UPDATE fees SET student_id = ?, amount = ?, due_date = ?, paid_date = ?, status = ?, description = ? WHERE id = ?");
+                    $stmt->execute([$student_id, $amount, $due_date, $paid_date, $status, $description, $id]);
                     $_SESSION['message'] = "Fee invoice updated successfully!";
                     header("Location: ?page=dashboard&section=fees&lang=$lang");
                     exit;
@@ -1493,75 +1135,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     exit;
                 }
                 break;
-            case 'bulk_add_fee_invoice':
-                if (isAdmin()) {
-                    $class_id = $_POST['class_id'];
-                    $fee_structure_id = !empty($_POST['fee_structure_id']) ? $_POST['fee_structure_id'] : null;
-                    $amount = trim($_POST['amount']);
-                    $due_date = trim($_POST['due_date']);
-                    $status = 'Unpaid';
-                    $description = trim($_POST['description']);
-
-                    $stmt_students = $pdo->prepare("SELECT id FROM students WHERE class_id = ?");
-                    $stmt_students->execute([$class_id]);
-                    $student_ids = $stmt_students->fetchAll(PDO::FETCH_COLUMN);
-
-                    if (!empty($student_ids)) {
-                        $pdo->beginTransaction();
-                        try {
-                            $stmt_insert = $pdo->prepare("INSERT INTO fees (student_id, fee_structure_id, amount, due_date, status, description) VALUES (?, ?, ?, ?, ?, ?)");
-                            foreach ($student_ids as $student_id) {
-                                $stmt_insert->execute([$student_id, $fee_structure_id, $amount, $due_date, $status, $description]);
-                            }
-                            $pdo->commit();
-                            $_SESSION['message'] = "Bulk fee invoices created successfully for " . count($student_ids) . " students.";
-                        } catch (PDOException $e) {
-                            $pdo->rollBack();
-                            $_SESSION['error'] = "Error creating bulk invoices: " . $e->getMessage();
-                        }
-                    } else {
-                        $_SESSION['error'] = "No students found in the selected class.";
-                    }
-                    header("Location: ?page=dashboard&section=fees&lang=$lang");
-                    exit;
-                }
-                break;
             case 'mark_fee_paid':
                 if (isAdmin()) {
                     $id = $_POST['id'];
-                    $paid_amount = floatval($_POST['paid_amount']);
-                    $fee_stmt = $pdo->prepare("SELECT amount, paid_date, status FROM fees WHERE id = ?");
-                    $fee_stmt->execute([$id]);
-                    $fee_record = $fee_stmt->fetch(PDO::FETCH_ASSOC);
-                    if ($fee_record) {
-                        $current_paid_amount_sum_stmt = $pdo->prepare("SELECT SUM(amount_paid) FROM fee_transactions WHERE fee_id = ?");
-                        $current_paid_amount_sum_stmt->execute([$id]);
-                        $current_paid_amount_sum = $current_paid_amount_sum_stmt->fetchColumn() ?: 0;
-                        $remaining_amount = $fee_record['amount'] - $current_paid_amount_sum;
-                        if ($paid_amount > $remaining_amount) {
-                            $_SESSION['error'] = "Paid amount cannot exceed remaining amount.";
-                        } else {
-                            $pdo->beginTransaction();
-                            try {
-                                $stmt_transaction = $pdo->prepare("INSERT INTO fee_transactions (fee_id, amount_paid, payment_method) VALUES (?, ?, 'Cash')");
-                                $stmt_transaction->execute([$id, $paid_amount]);
-                                $new_total_paid = $current_paid_amount_sum + $paid_amount;
-                                $new_status = 'Unpaid';
-                                if ($new_total_paid >= $fee_record['amount']) {
-                                    $new_status = 'Paid';
-                                } elseif ($new_total_paid > 0) {
-                                    $new_status = 'Partially Paid';
-                                }
-                                $stmt_update_fee = $pdo->prepare("UPDATE fees SET status = ?, paid_date = ? WHERE id = ?");
-                                $stmt_update_fee->execute([$new_status, ($new_status == 'Paid' ? date('Y-m-d') : $fee_record['paid_date']), $id]);
-                                $pdo->commit();
-                                $_SESSION['message'] = "Fee marked as Paid (partial/full)! Transaction recorded.";
-                            } catch (PDOException $e) {
-                                $pdo->rollBack();
-                                $_SESSION['error'] = "Error marking fee as paid: " . $e->getMessage();
-                            }
-                        }
-                    }
+                    $stmt = $pdo->prepare("UPDATE fees SET status = 'Paid', paid_date = CURDATE() WHERE id = ?");
+                    $stmt->execute([$id]);
+                    $_SESSION['message'] = "Fee marked as Paid!";
                     header("Location: ?page=dashboard&section=fees&lang=$lang");
                     exit;
                 }
@@ -1628,9 +1207,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 break;
             case 'add_assignment':
                 if (isTeacher()) {
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
+                    $teacher_id = $_SESSION['id'];
                     $class_id = $_POST['class_id'];
                     $subject_id = $_POST['subject_id'];
                     $title = trim($_POST['title']);
@@ -1638,13 +1215,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $due_date = trim($_POST['due_date']);
                     $file_path = null;
                     if (isset($_FILES['assignment_file']) && $_FILES['assignment_file']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('assignment_file', 'uploads/assignments/');
-                        if ($upload_result['success']) {
-                            $file_path = $upload_result['path'];
+                        $upload_dir = 'uploads/assignments/';
+                        $file_name = uniqid() . '_' . basename($_FILES['assignment_file']['name']);
+                        $target_file = $upload_dir . $file_name;
+                        if (move_uploaded_file($_FILES['assignment_file']['tmp_name'], $target_file)) {
+                            $file_path = $target_file;
                         } else {
-                            $_SESSION['error'] = "File upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=assignments&lang=$lang");
-                            exit;
+                            $_SESSION['error'] = "Error uploading file.";
                         }
                     }
                     $stmt = $pdo->prepare("INSERT INTO assignments (teacher_id, class_id, subject_id, title, description, due_date, file_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -1662,25 +1239,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $title = trim($_POST['title']);
                     $description = trim($_POST['description']);
                     $due_date = trim($_POST['due_date']);
-                    $file_path = $_POST['file_path_old'] ?? null;
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
+                    $file_path_old = $_POST['file_path_old'] ?? null;
+                    $file_path = $file_path_old;
                     if (isset($_FILES['assignment_file']) && $_FILES['assignment_file']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('assignment_file', 'uploads/assignments/');
-                        if ($upload_result['success']) {
-                            if ($file_path && file_exists($file_path)) {
-                                unlink($file_path);
+                        $upload_dir = 'uploads/assignments/';
+                        $file_name = uniqid() . '_' . basename($_FILES['assignment_file']['name']);
+                        $target_file = $upload_dir . $file_name;
+                        if (move_uploaded_file($_FILES['assignment_file']['tmp_name'], $target_file)) {
+                            if ($file_path_old && file_exists($file_path_old)) {
+                                unlink($file_path_old);
                             }
-                            $file_path = $upload_result['path'];
+                            $file_path = $target_file;
                         } else {
-                            $_SESSION['error'] = "File upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=assignments&lang=$lang");
-                            exit;
+                            $_SESSION['error'] = "Error uploading new file.";
                         }
                     }
                     $stmt = $pdo->prepare("UPDATE assignments SET class_id = ?, subject_id = ?, title = ?, description = ?, due_date = ?, file_path = ? WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$class_id, $subject_id, $title, $description, $due_date, $file_path, $id, $teacher_id]);
+                    $stmt->execute([$class_id, $subject_id, $title, $description, $due_date, $file_path, $id, $_SESSION['id']]);
                     $_SESSION['message'] = "Assignment updated successfully!";
                     header("Location: ?page=dashboard&section=assignments&lang=$lang");
                     exit;
@@ -1689,100 +1264,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             case 'delete_assignment':
                 if (isTeacher()) {
                     $id = $_POST['id'];
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
                     $stmt = $pdo->prepare("SELECT file_path FROM assignments WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$id, $teacher_id]);
+                    $stmt->execute([$id, $_SESSION['id']]);
                     $assignment = $stmt->fetch();
                     if ($assignment && $assignment['file_path'] && file_exists($assignment['file_path'])) {
                         unlink($assignment['file_path']);
                     }
                     $stmt = $pdo->prepare("DELETE FROM assignments WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$id, $teacher_id]);
+                    $stmt->execute([$id, $_SESSION['id']]);
                     $_SESSION['message'] = "Assignment deleted successfully!";
                     header("Location: ?page=dashboard&section=assignments&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'add_study_material':
-                if (isTeacher()) {
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
-                    $class_id = $_POST['class_id'];
-                    $subject_id = $_POST['subject_id'];
-                    $title = trim($_POST['title']);
-                    $description = trim($_POST['description']);
-                    $file_path = null;
-                    if (isset($_FILES['material_file']) && $_FILES['material_file']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('material_file', 'uploads/study_materials/');
-                        if ($upload_result['success']) {
-                            $file_path = $upload_result['path'];
-                        } else {
-                            $_SESSION['error'] = "File upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=study_materials&lang=$lang");
-                            exit;
-                        }
-                    } else {
-                        $_SESSION['error'] = "No file uploaded or upload error.";
-                        header("Location: ?page=dashboard&section=study_materials&lang=$lang");
-                        exit;
-                    }
-                    $stmt = $pdo->prepare("INSERT INTO study_materials (teacher_id, class_id, subject_id, title, description, file_path) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$teacher_id, $class_id, $subject_id, $title, $description, $file_path]);
-                    $_SESSION['message'] = "Study material added successfully!";
-                    header("Location: ?page=dashboard&section=study_materials&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'edit_study_material':
-                if (isTeacher()) {
-                    $id = $_POST['id'];
-                    $class_id = $_POST['class_id'];
-                    $subject_id = $_POST['subject_id'];
-                    $title = trim($_POST['title']);
-                    $description = trim($_POST['description']);
-                    $file_path = $_POST['current_material_path'] ?? null;
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
-                    if (isset($_FILES['material_file']) && $_FILES['material_file']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('material_file', 'uploads/study_materials/');
-                        if ($upload_result['success']) {
-                            if ($file_path && file_exists($file_path)) {
-                                unlink($file_path);
-                            }
-                            $file_path = $upload_result['path'];
-                        } else {
-                            $_SESSION['error'] = "File upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=study_materials&lang=$lang");
-                            exit;
-                        }
-                    }
-                    $stmt = $pdo->prepare("UPDATE study_materials SET class_id = ?, subject_id = ?, title = ?, description = ?, file_path = ? WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$class_id, $subject_id, $title, $description, $file_path, $id, $teacher_id]);
-                    $_SESSION['message'] = "Study material updated successfully!";
-                    header("Location: ?page=dashboard&section=study_materials&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'delete_study_material':
-                if (isTeacher()) {
-                    $id = $_POST['id'];
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
-                    $stmt = $pdo->prepare("SELECT file_path FROM study_materials WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$id, $teacher_id]);
-                    $material = $stmt->fetch();
-                    if ($material && $material['file_path'] && file_exists($material['file_path'])) {
-                        unlink($material['file_path']);
-                    }
-                    $stmt = $pdo->prepare("DELETE FROM study_materials WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$id, $teacher_id]);
-                    $_SESSION['message'] = "Study material deleted successfully!";
-                    header("Location: ?page=dashboard&section=study_materials&lang=$lang");
                     exit;
                 }
                 break;
@@ -1791,11 +1282,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $title = trim($_POST['title']);
                     $image_path = null;
                     if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('image_file', 'uploads/gallery/', ['jpg', 'jpeg', 'png', 'gif']);
-                        if ($upload_result['success']) {
-                            $image_path = $upload_result['path'];
+                        $upload_dir = 'uploads/gallery/';
+                        $file_name = uniqid() . '_' . basename($_FILES['image_file']['name']);
+                        $target_file = $upload_dir . $file_name;
+                        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+                        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+                        if (!in_array($imageFileType, $allowed_types)) {
+                            $_SESSION['error'] = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+                            header("Location: ?page=dashboard&section=gallery&lang=$lang");
+                            exit;
+                        }
+                        if (move_uploaded_file($_FILES['image_file']['tmp_name'], $target_file)) {
+                            $image_path = $target_file;
                         } else {
-                            $_SESSION['error'] = "Image upload failed: " . $upload_result['message'];
+                            $_SESSION['error'] = "Sorry, there was an error uploading your file.";
                             header("Location: ?page=dashboard&section=gallery&lang=$lang");
                             exit;
                         }
@@ -1835,13 +1335,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $content = trim($_POST['content']);
                     $file_path = null;
                     if (isset($_FILES['announcement_file']) && $_FILES['announcement_file']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('announcement_file', 'uploads/announcements/');
-                        if ($upload_result['success']) {
-                            $file_path = $upload_result['path'];
-                        } else {
-                            $_SESSION['error'] = "File upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=announcements&lang=$lang");
-                            exit;
+                        $upload_dir = 'uploads/announcements/';
+                        $file_name = uniqid() . '_' . basename($_FILES['announcement_file']['name']);
+                        $target_file = $upload_dir . $file_name;
+                        if (move_uploaded_file($_FILES['announcement_file']['tmp_name'], $target_file)) {
+                            $file_path = $target_file;
                         }
                     }
                     $stmt = $pdo->prepare("INSERT INTO announcements (title, content, file_path) VALUES (?, ?, ?)");
@@ -1856,18 +1354,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $id = $_POST['id'];
                     $title = trim($_POST['title']);
                     $content = trim($_POST['content']);
-                    $file_path = $_POST['file_path_old'] ?? null;
+                    $file_path_old = $_POST['file_path_old'] ?? null;
+                    $file_path = $file_path_old;
                     if (isset($_FILES['announcement_file']) && $_FILES['announcement_file']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('announcement_file', 'uploads/announcements/');
-                        if ($upload_result['success']) {
-                            if ($file_path && file_exists($file_path)) {
-                                unlink($file_path);
+                        $upload_dir = 'uploads/announcements/';
+                        $file_name = uniqid() . '_' . basename($_FILES['announcement_file']['name']);
+                        $target_file = $upload_dir . $file_name;
+                        if (move_uploaded_file($_FILES['announcement_file']['tmp_name'], $target_file)) {
+                            if ($file_path_old && file_exists($file_path_old)) {
+                                unlink($file_path_old);
                             }
-                            $file_path = $upload_result['path'];
-                        } else {
-                            $_SESSION['error'] = "File upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=announcements&lang=$lang");
-                            exit;
+                            $file_path = $target_file;
                         }
                     }
                     $stmt = $pdo->prepare("UPDATE announcements SET title = ?, content = ?, file_path = ? WHERE id = ?");
@@ -1903,7 +1400,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt = $pdo->prepare("INSERT INTO events (title, description, event_date, event_time, location) VALUES (?, ?, ?, ?, ?)");
                     $stmt->execute([$title, $description, $event_date, $event_time, $location]);
                     $_SESSION['message'] = "Event added successfully!";
-                    header("Location: ?page=dashboard&section=events_admin&lang=$lang");
+                    header("Location: ?page=dashboard&section=events&lang=$lang");
                     exit;
                 }
                 break;
@@ -1918,7 +1415,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt = $pdo->prepare("UPDATE events SET title = ?, description = ?, event_date = ?, event_time = ?, location = ? WHERE id = ?");
                     $stmt->execute([$title, $description, $event_date, $event_time, $location, $id]);
                     $_SESSION['message'] = "Event updated successfully!";
-                    header("Location: ?page=dashboard&section=events_admin&lang=$lang");
+                    header("Location: ?page=dashboard&section=events&lang=$lang");
                     exit;
                 }
                 break;
@@ -1928,7 +1425,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt = $pdo->prepare("DELETE FROM events WHERE id = ?");
                     $stmt->execute([$id]);
                     $_SESSION['message'] = "Event deleted successfully!";
-                    header("Location: ?page=dashboard&section=events_admin&lang=$lang");
+                    header("Location: ?page=dashboard&section=events&lang=$lang");
                     exit;
                 }
                 break;
@@ -1960,13 +1457,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $assignment_id = $_POST['assignment_id'];
                     $file_path = null;
                     if (isset($_FILES['submission_file']) && $_FILES['submission_file']['error'] == UPLOAD_ERR_OK) {
-                        $upload_result = upload_file_securely('submission_file', 'uploads/student_assignments/');
-                        if ($upload_result['success']) {
-                            $file_path = $upload_result['path'];
+                        $upload_dir = 'uploads/student_assignments/';
+                        $file_name = uniqid() . '_' . basename($_FILES['submission_file']['name']);
+                        $target_file = $upload_dir . $file_name;
+                        if (move_uploaded_file($_FILES['submission_file']['tmp_name'], $target_file)) {
+                            $file_path = $target_file;
                         } else {
-                            $_SESSION['error'] = "File upload failed: " . $upload_result['message'];
-                            header("Location: ?page=dashboard&section=assignments&lang=$lang");
-                            exit;
+                            $_SESSION['error'] = "Error uploading file.";
                         }
                     } else {
                         $_SESSION['error'] = "No file uploaded or upload error.";
@@ -1987,9 +1484,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $user = $stmt->fetch();
                 if ($user) {
                     $token = bin2hex(random_bytes(32));
-                    $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour'));
-                    $stmt_insert_token = $pdo->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)");
-                    $stmt_insert_token->execute([$email, $token, $expires_at]);
                     $reset_link = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "?page=reset_password&token=$token&email=" . urlencode($email);
                     send_email($email, "Password Reset for " . $t['school_name'], "Click here to reset your password: $reset_link\n\nThis link is valid for 1 hour.");
                 }
@@ -2002,114 +1496,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $new_password = $_POST['new_password'];
                 $confirm_new_password = $_POST['confirm_new_password'];
                 $token = $_POST['token'];
-                $stmt_check_token = $pdo->prepare("SELECT * FROM password_resets WHERE email = ? AND token = ? AND expires_at > NOW()");
-                $stmt_check_token->execute([$email, $token]);
-                $reset_entry = $stmt_check_token->fetch();
-                if (!$reset_entry) {
-                    $_SESSION['error'] = $t['invalid_reset_link'];
-                    header("Location: ?page=login&lang=$lang");
-                    exit;
-                }
                 if ($new_password !== $confirm_new_password) {
                     $_SESSION['error'] = $t['password_mismatch'];
                     header("Location: ?page=reset_password&token=$token&email=" . urlencode($email) . "&lang=$lang");
                     exit;
                 }
                 $hashed_password = hashPassword($new_password);
-                $pdo->beginTransaction();
-                try {
-                    $stmt_update_password = $pdo->prepare("UPDATE users SET password = ? WHERE email = ?");
-                    $stmt_update_password->execute([$hashed_password, $email]);
-                    $stmt_delete_token = $pdo->prepare("DELETE FROM password_resets WHERE email = ?");
-                    $stmt_delete_token->execute([$email]);
-                    $pdo->commit();
-                    $_SESSION['message'] = $t['password_updated_success'];
-                } catch (PDOException $e) {
-                    $pdo->rollBack();
-                    $_SESSION['error'] = "Error resetting password: " . $e->getMessage();
-                }
+                $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE email = ?");
+                $stmt->execute([$hashed_password, $email]);
+                $_SESSION['message'] = $t['password_updated_success'];
                 header("Location: ?page=login&lang=$lang");
                 exit;
-                break;
-            case 'send_internal_message':
-                if (isAuthenticated()) {
-                    $sender_id = $_SESSION['id'];
-                    $receiver_id = $_POST['receiver_id'];
-                    $subject = trim($_POST['subject']);
-                    $message_content = trim($_POST['message_content']);
-                    $stmt = $pdo->prepare("INSERT INTO messages (sender_id, receiver_id, subject, message) VALUES (?, ?, ?, ?)");
-                    $stmt->execute([$sender_id, $receiver_id, $subject, $message_content]);
-                    $_SESSION['message'] = $t['message_sent'];
-                    header("Location: ?page=dashboard&section=messages&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'add_teacher_note':
-                if (isTeacher()) {
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
-                    $student_id = $_POST['student_id'];
-                    $note_title = trim($_POST['note_title']);
-                    $note_content = trim($_POST['note_content']);
-                    $stmt = $pdo->prepare("INSERT INTO teacher_notes (teacher_id, student_id, title, note) VALUES (?, ?, ?, ?)");
-                    $stmt->execute([$teacher_id, $student_id, $note_title, $note_content]);
-                    $_SESSION['message'] = "Note added successfully!";
-                    header("Location: ?page=dashboard&section=teacher_notes&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'edit_teacher_note':
-                if (isTeacher()) {
-                    $id = $_POST['id'];
-                    $note_title = trim($_POST['note_title']);
-                    $note_content = trim($_POST['note_content']);
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
-                    $stmt = $pdo->prepare("UPDATE teacher_notes SET title = ?, note = ? WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$note_title, $note_content, $id, $teacher_id]);
-                    $_SESSION['message'] = "Note updated successfully!";
-                    header("Location: ?page=dashboard&section=teacher_notes&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'delete_teacher_note':
-                if (isTeacher()) {
-                    $id = $_POST['id'];
-                    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-                    $teacher_id_stmt->execute([$_SESSION['id']]);
-                    $teacher_id = $teacher_id_stmt->fetchColumn();
-                    $stmt = $pdo->prepare("DELETE FROM teacher_notes WHERE id = ? AND teacher_id = ?");
-                    $stmt->execute([$id, $teacher_id]);
-                    $_SESSION['message'] = "Note deleted successfully!";
-                    header("Location: ?page=dashboard&section=teacher_notes&lang=$lang");
-                    exit;
-                }
-                break;
-            case 'promote_students':
-                if (isAdmin()) {
-                    $current_class_id = $_POST['current_class_id'];
-                    $next_class_id = $_POST['next_class_id'];
-                    $pdo->beginTransaction();
-                    try {
-                        $stmt = $pdo->prepare("UPDATE students SET class_id = ? WHERE class_id = ?");
-                        $stmt->execute([$next_class_id, $current_class_id]);
-                        $pdo->commit();
-                        $_SESSION['message'] = "Students promoted successfully from " . $_POST['current_class_name'] . " to " . $_POST['next_class_name'] . "!";
-                    } catch (PDOException $e) {
-                        $pdo->rollBack();
-                        $_SESSION['error'] = "Error promoting students: " . $e->getMessage();
-                    }
-                    header("Location: ?page=dashboard&section=students&lang=$lang");
-                    exit;
-                }
                 break;
             case 'export_data':
                 if (isAdmin()) {
                     $tables = [
                         'users',
-                        'password_resets',
                         'students',
                         'teachers',
                         'classes',
@@ -2119,19 +1521,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         'attendance',
                         'exams',
                         'marks',
-                        'fee_structures',
                         'fees',
-                        'fee_transactions',
                         'announcements',
                         'events',
                         'admissions',
                         'contacts',
                         'assignments',
-                        'study_materials',
                         'gallery',
-                        'student_assignments',
-                        'messages',
-                        'teacher_notes'
+                        'student_assignments'
                     ];
                     $export_data = [];
                     foreach ($tables as $table) {
@@ -2158,19 +1555,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
                         $tables_ordered = [
                             'users',
-                            'password_resets',
                             'teachers',
                             'classes',
                             'subjects',
-                            'fee_structures',
                             'students',
                             'class_subjects',
                             'timetables',
                             'exams',
                             'assignments',
-                            'study_materials',
                             'fees',
-                            'fee_transactions',
                             'announcements',
                             'events',
                             'admissions',
@@ -2178,9 +1571,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             'gallery',
                             'attendance',
                             'marks',
-                            'student_assignments',
-                            'messages',
-                            'teacher_notes'
+                            'student_assignments'
                         ];
                         foreach (array_reverse($tables_ordered) as $table) {
                             $pdo->exec("TRUNCATE TABLE $table;");
@@ -2325,137 +1716,6 @@ if (isset($_GET['page']) && $_GET['page'] == 'ajax_data') {
                 echo '<p>Select an exam to load students for marks entry.</p>';
             }
             break;
-        case 'fee_structure_details':
-            $fee_structure_id = $_GET['fee_structure_id'] ?? 0;
-            if ($fee_structure_id) {
-                $stmt = $pdo->prepare("SELECT amount, description FROM fee_structures WHERE id = ?");
-                $stmt->execute([$fee_structure_id]);
-                $structure = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($structure) {
-                    echo json_encode(['amount' => $structure['amount'], 'description' => $structure['description']]);
-                } else {
-                    echo json_encode(['amount' => 0, 'description' => '']);
-                }
-            } else {
-                echo json_encode(['amount' => 0, 'description' => '']);
-            }
-            exit;
-        case 'student_full_details':
-            if (!isAdmin()) exit;
-            $student_id = $_GET['student_id'] ?? 0;
-            if (!$student_id) exit('<p>Invalid student ID.</p>');
-
-            // Personal Details
-            $stmt_personal = $pdo->prepare("SELECT s.*, c.name AS class_name, p.username AS parent_username FROM students s LEFT JOIN classes c ON s.class_id = c.id LEFT JOIN users p ON s.parent_id = p.id WHERE s.id = ?");
-            $stmt_personal->execute([$student_id]);
-            $personal = $stmt_personal->fetch(PDO::FETCH_ASSOC);
-            if (!$personal) exit('<p>Student not found.</p>');
-
-            echo '<h4>Personal Details: ' . htmlspecialchars($personal['name']) . '</h4>';
-            echo '<table class="table table-sm table-bordered"><tbody>';
-            echo '<tr><th>Roll No</th><td>' . htmlspecialchars($personal['roll_no']) . '</td><th>Class</th><td>' . htmlspecialchars($personal['class_name']) . '</td></tr>';
-            echo '<tr><th>Date of Birth</th><td>' . htmlspecialchars($personal['dob']) . '</td><th>Phone</th><td>' . htmlspecialchars($personal['phone']) . '</td></tr>';
-            echo '<tr><th>Address</th><td colspan="3">' . htmlspecialchars($personal['address']) . '</td></tr>';
-            echo '<tr><th>Parent</th><td>' . htmlspecialchars($personal['parent_username'] ?? 'N/A') . '</td><th>Emergency Contact</th><td>' . htmlspecialchars($personal['emergency_contact_name']) . ' (' . htmlspecialchars($personal['emergency_contact_phone']) . ')</td></tr>';
-            echo '<tr><th>Medical History</th><td colspan="3">' . nl2br(htmlspecialchars($personal['medical_history'] ?? 'None')) . '</td></tr>';
-            echo '</tbody></table>';
-
-            // Fee Details
-            $stmt_fees = $pdo->prepare("SELECT SUM(f.amount - f.concession + f.fine) as total_due, SUM((SELECT SUM(amount_paid) FROM fee_transactions WHERE fee_id = f.id)) as total_paid FROM fees f WHERE f.student_id = ?");
-            $stmt_fees->execute([$student_id]);
-            $fee_summary = $stmt_fees->fetch(PDO::FETCH_ASSOC);
-            echo '<h4 class="mt-4">Fee Summary</h4>';
-            echo '<table class="table table-sm table-bordered"><tbody>';
-            echo '<tr><th>Total Due</th><td>' . number_format($fee_summary['total_due'] ?? 0, 2) . '</td></tr>';
-            echo '<tr><th>Total Paid</th><td>' . number_format($fee_summary['total_paid'] ?? 0, 2) . '</td></tr>';
-            echo '<tr><th>Balance</th><td class="fw-bold">' . number_format(($fee_summary['total_due'] ?? 0) - ($fee_summary['total_paid'] ?? 0), 2) . '</td></tr>';
-            echo '</tbody></table>';
-
-            // Attendance Summary
-            $stmt_att = $pdo->prepare("SELECT status, COUNT(*) as count FROM attendance WHERE student_id = ? GROUP BY status");
-            $stmt_att->execute([$student_id]);
-            $att_summary_raw = $stmt_att->fetchAll(PDO::FETCH_KEY_PAIR);
-            $total_days = array_sum($att_summary_raw);
-            echo '<h4 class="mt-4">Attendance Summary</h4>';
-            echo '<table class="table table-sm table-bordered"><tbody>';
-            echo '<tr><th>Present</th><td>' . ($att_summary_raw['Present'] ?? 0) . ' (' . ($total_days > 0 ? round((($att_summary_raw['Present'] ?? 0) / $total_days) * 100) : 0) . '%)</td></tr>';
-            echo '<tr><th>Absent</th><td>' . ($att_summary_raw['Absent'] ?? 0) . ' (' . ($total_days > 0 ? round((($att_summary_raw['Absent'] ?? 0) / $total_days) * 100) : 0) . '%)</td></tr>';
-            echo '<tr><th>Late</th><td>' . ($att_summary_raw['Late'] ?? 0) . ' (' . ($total_days > 0 ? round((($att_summary_raw['Late'] ?? 0) / $total_days) * 100) : 0) . '%)</td></tr>';
-            echo '</tbody></table>';
-
-            // Exam Results
-            echo '<h4 class="mt-4">Recent Exam Results</h4>';
-            $stmt_exams = $pdo->prepare("SELECT e.name AS exam_name, e.max_marks, s.name AS subject_name, m.marks_obtained FROM marks m JOIN exams e ON m.exam_id = e.id JOIN subjects s ON e.subject_id = s.id WHERE m.student_id = ? ORDER BY e.exam_date DESC LIMIT 10");
-            $stmt_exams->execute([$student_id]);
-            $exam_results = $stmt_exams->fetchAll(PDO::FETCH_ASSOC);
-            if ($exam_results) {
-                echo '<div class="table-responsive" style="max-height: 200px; overflow-y: auto;"><table class="table table-sm table-bordered"><thead><tr><th>Exam</th><th>Subject</th><th>Marks</th><th>Max Marks</th></tr></thead><tbody>';
-                foreach ($exam_results as $result) {
-                    echo '<tr><td>' . htmlspecialchars($result['exam_name']) . '</td><td>' . htmlspecialchars($result['subject_name']) . '</td><td>' . htmlspecialchars($result['marks_obtained'] ?? 'N/A') . '</td><td>' . htmlspecialchars($result['max_marks']) . '</td></tr>';
-                }
-                echo '</tbody></table></div>';
-            } else {
-                echo '<p>No exam records found.</p>';
-            }
-            exit;
-            break;
-        case 'student_full_report_card':
-            $student_id = $_GET['student_id'] ?? 0;
-            $academic_year = $_GET['academic_year'] ?? date('Y');
-            if ($student_id) {
-                $stmt_student = $pdo->prepare("SELECT s.name as student_name, c.name as class_name, s.roll_no FROM students s LEFT JOIN classes c ON s.class_id = c.id WHERE s.id = ?");
-                $stmt_student->execute([$student_id]);
-                $student_data = $stmt_student->fetch(PDO::FETCH_ASSOC);
-                if (!$student_data) {
-                    echo '<p>Student not found.</p>';
-                    break;
-                }
-                echo '<h5>Report Card for ' . htmlspecialchars($student_data['student_name']) . ' (Roll No: ' . htmlspecialchars($student_data['roll_no']) . ') - Class: ' . htmlspecialchars($student_data['class_name'] ?? 'N/A') . ' - Academic Year: ' . htmlspecialchars($academic_year) . '</h5>';
-                $stmt_exams = $pdo->prepare("
-                    SELECT e.id AS exam_id, e.name AS exam_name, e.exam_date, e.max_marks, s.name AS subject_name, m.marks_obtained
-                    FROM exams e
-                    JOIN subjects s ON e.subject_id = s.id
-                    LEFT JOIN marks m ON e.id = m.exam_id AND m.student_id = ?
-                    WHERE e.class_id = (SELECT class_id FROM students WHERE id = ?) AND YEAR(e.exam_date) = ?
-                    ORDER BY e.exam_date ASC, s.name ASC
-                ");
-                $stmt_exams->execute([$student_id, $student_id, $academic_year]);
-                $exam_results = $stmt_exams->fetchAll(PDO::FETCH_ASSOC);
-                $grouped_results = [];
-                foreach ($exam_results as $row) {
-                    $grouped_results[$row['exam_name'] . ' (' . $row['exam_date'] . ')'][] = $row;
-                }
-                if ($grouped_results) {
-                    foreach ($grouped_results as $exam_label => $results) {
-                        echo '<h6 class="mt-3">' . htmlspecialchars($exam_label) . '</h6>';
-                        echo '<div class="table-responsive">';
-                        echo '<table class="table table-bordered table-sm">';
-                        echo '<thead><tr><th>Subject</th><th>Marks Obtained</th><th>Max Marks</th><th>Percentage</th></tr></thead>';
-                        echo '<tbody>';
-                        $total_obtained = 0;
-                        $total_max = 0;
-                        foreach ($results as $result) {
-                            $percentage = ($result['max_marks'] > 0) ? round(($result['marks_obtained'] / $result['max_marks']) * 100, 2) : 0;
-                            echo '<tr>';
-                            echo '<td>' . htmlspecialchars($result['subject_name']) . '</td>';
-                            echo '<td>' . htmlspecialchars($result['marks_obtained'] ?? 'N/A') . '</td>';
-                            echo '<td>' . htmlspecialchars($result['max_marks']) . '</td>';
-                            echo '<td>' . htmlspecialchars($percentage) . '%</td>';
-                            echo '</tr>';
-                            $total_obtained += $result['marks_obtained'] ?? 0;
-                            $total_max += $result['max_marks'];
-                        }
-                        echo '<tr><td colspan="2" class="text-end"><strong>Total:</strong></td><td><strong>' . $total_max . '</strong></td><td><strong>' . ($total_max > 0 ? round(($total_obtained / $total_max) * 100, 2) : 0) . '%</strong></td></tr>';
-                        echo '</tbody></table>';
-                        echo '</div>';
-                    }
-                } else {
-                    echo '<p>' . $t['no_records'] . '</p>';
-                }
-            } else {
-                echo '<p>Select a student to view report card.</p>';
-            }
-            break;
         default:
             echo '';
             break;
@@ -2479,7 +1739,6 @@ if (isset($_SESSION['error'])) {
     $error = $_SESSION['error'];
     unset($_SESSION['error']);
 }
-generate_csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>" dir="<?php echo ($lang == 'ur' ? 'rtl' : 'ltr'); ?>">
@@ -2680,44 +1939,6 @@ generate_csrf_token();
             margin-left: 10px;
             margin-right: 7px;
         }
-
-        .py-5.bg-light .col-md-6 {
-            background: #fff;
-            padding: 35px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-            text-align: center;
-        }
-
-        .py-5.bg-light .col-md-6:hover {
-            transform: translateY(-8px);
-        }
-
-        .py-5.bg-light .col-md-6 h2::before {
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            font-size: 2.5rem;
-            color: #28a745;
-            display: block;
-            margin-bottom: 1rem;
-        }
-
-        .py-5.bg-light .row .col-md-6:first-child h2::before {
-            content: '\f140';
-            /* Mission icon */
-        }
-
-        .py-5.bg-light .row .col-md-6:last-child h2::before {
-            content: '\f06e';
-            /* Vision icon */
-        }
-
-        @media (max-width: 767px) {
-            .py-5.bg-light .col-md-6:first-child {
-                margin-bottom: 2rem;
-            }
-        }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
 </head>
@@ -2792,101 +2013,12 @@ generate_csrf_token();
         <?php
         switch ($page) {
             case 'home':
-                // --- START: New Statistics Code ---
-                try {
-                    $total_students = $pdo->query("SELECT COUNT(*) FROM students")->fetchColumn();
-                    $total_teachers = $pdo->query("SELECT COUNT(*) FROM teachers")->fetchColumn();
-                    $total_classes = $pdo->query("SELECT COUNT(*) FROM classes")->fetchColumn();
-                    $upcoming_events_count = $pdo->query("SELECT COUNT(*) FROM events WHERE event_date >= CURDATE()")->fetchColumn();
-                } catch (PDOException $e) {
-                    // Silently fail or log error, so the public page doesn't break
-                    $total_students = 0;
-                    $total_teachers = 0;
-                    $total_classes = 0;
-                    $upcoming_events_count = 0;
-                }
-                // --- END: New Statistics Code ---
-                // --- START: New Leaderboard Code ---
-                $classes = $pdo->query("SELECT id, name FROM classes ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
-
-                // Get filter values from URL, with defaults
-                $filter_class_id = $_GET['filter_class_id'] ?? '';
-                $filter_year = $_GET['filter_year'] ?? date('Y');
-                $filter_month = $_GET['filter_month'] ?? date('m');
-
-                // --- Top Attendance Logic ---
-                $top_attendance_sql = "
-    SELECT s.roll_no, c.name as class_name, COUNT(a.id) as present_days
-    FROM attendance a
-    JOIN students s ON a.student_id = s.id
-    JOIN classes c ON s.class_id = c.id
-    WHERE a.status = 'Present' AND YEAR(a.attendance_date) = :year AND MONTH(a.attendance_date) = :month
-";
-                $attendance_params = [':year' => $filter_year, ':month' => $filter_month];
-                if (!empty($filter_class_id)) {
-                    $top_attendance_sql .= " AND s.class_id = :class_id";
-                    $attendance_params[':class_id'] = $filter_class_id;
-                }
-                $top_attendance_sql .= " GROUP BY s.id ORDER BY present_days DESC LIMIT 5";
-                $stmt_att = $pdo->prepare($top_attendance_sql);
-                $stmt_att->execute($attendance_params);
-                $top_attendance = $stmt_att->fetchAll(PDO::FETCH_ASSOC);
-
-                // --- Top Exam Performers Logic ---
-                $top_performers_sql = "
-    SELECT s.roll_no, c.name as class_name, AVG((m.marks_obtained / e.max_marks) * 100) as avg_percentage
-    FROM marks m
-    JOIN students s ON m.student_id = s.id
-    JOIN exams e ON m.exam_id = e.id
-    JOIN classes c ON s.class_id = c.id
-    WHERE e.max_marks > 0 AND YEAR(e.exam_date) = :year AND MONTH(e.exam_date) = :month
-";
-                $performers_params = [':year' => $filter_year, ':month' => $filter_month];
-                if (!empty($filter_class_id)) {
-                    $top_performers_sql .= " AND s.class_id = :class_id";
-                    $performers_params[':class_id'] = $filter_class_id;
-                }
-                $top_performers_sql .= " GROUP BY s.id ORDER BY avg_percentage DESC LIMIT 5";
-                $stmt_perf = $pdo->prepare($top_performers_sql);
-                $stmt_perf->execute($performers_params);
-                $top_performers = $stmt_perf->fetchAll(PDO::FETCH_ASSOC);
-                // --- END: New Leaderboard Code ---
         ?>
                 <section class="hero-section">
                     <div class="container">
                         <h1><?php echo $t['school_name']; ?></h1>
                         <p class="lead"><?php echo $t['mission_text']; ?></p>
                         <a href="?page=admissions&lang=<?php echo $lang; ?>" class="btn btn-lg btn-success"><?php echo $t['apply_now']; ?></a>
-                    </div>
-                </section>
-                <section class="py-5 bg-light text-center">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-3 col-6 mb-4">
-                                <div class="card shadow-sm h-100 justify-content-center p-3">
-                                    <h2 class="display-4 text-success fw-bold"><?php echo htmlspecialchars($total_students); ?>+</h2>
-                                    <p class="text-muted mb-0">Enrolled Students</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6 mb-4">
-                                <div class="card shadow-sm h-100 justify-content-center p-3">
-                                    <h2 class="display-4 text-success fw-bold"><?php echo htmlspecialchars($total_teachers); ?>+</h2>
-                                    <p class="text-muted mb-0">Qualified Teachers</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6 mb-4">
-                                <div class="card shadow-sm h-100 justify-content-center p-3">
-                                    <h2 class="display-4 text-success fw-bold"><?php echo htmlspecialchars($total_classes); ?>+</h2>
-                                    <p class="text-muted mb-0">Total Classes</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6 mb-4">
-                                <div class="card shadow-sm h-100 justify-content-center p-3">
-                                    <h2 class="display-4 text-success fw-bold"><?php echo htmlspecialchars($upcoming_events_count); ?>+</h2>
-                                    <p class="text-muted mb-0">Upcoming Events</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </section>
                 <section class="py-5 bg-light">
@@ -2958,121 +2090,6 @@ generate_csrf_token();
                                 echo '<p class="text-center">' . $t['no_records'] . '</p>';
                             }
                             ?>
-                        </div>
-                    </div>
-                </section>
-                <section class="py-5">
-                    <div class="container">
-                        <h2 class="text-center mb-4">Student Leaderboard</h2>
-
-                        <form action="?page=home&lang=<?php echo $lang; ?>#leaderboard" method="GET" class="card p-3 mb-5 shadow-sm">
-                            <input type="hidden" name="page" value="home">
-                            <input type="hidden" name="lang" value="<?php echo $lang; ?>">
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-4">
-                                    <label for="filter_class_id" class="form-label">Filter by Class</label>
-                                    <select name="filter_class_id" id="filter_class_id" class="form-select">
-                                        <option value="">All Classes</option>
-                                        <?php foreach ($classes as $class): ?>
-                                            <option value="<?php echo $class['id']; ?>" <?php echo ($filter_class_id == $class['id'] ? 'selected' : ''); ?>>
-                                                <?php echo htmlspecialchars($class['name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="filter_month" class="form-label">Month</label>
-                                    <select name="filter_month" id="filter_month" class="form-select">
-                                        <?php for ($m = 1; $m <= 12; $m++): ?>
-                                            <option value="<?php echo str_pad($m, 2, '0', STR_PAD_LEFT); ?>" <?php echo ($filter_month == $m ? 'selected' : ''); ?>>
-                                                <?php echo date('F', mktime(0, 0, 0, $m, 10)); ?>
-                                            </option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="filter_year" class="form-label">Year</label>
-                                    <input type="number" name="filter_year" id="filter_year" class="form-control" value="<?php echo htmlspecialchars($filter_year); ?>" min="2020" max="<?php echo date('Y') + 1; ?>">
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-success w-100">Apply Filter</button>
-                                </div>
-                            </div>
-                        </form>
-
-                        <a id="leaderboard"></a>
-                        <div class="row">
-                            <div class="col-lg-6 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-header bg-dark text-white">
-                                        <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Top Attendance</h5>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Rank</th>
-                                                    <th scope="col">Roll No.</th>
-                                                    <th scope="col">Class</th>
-                                                    <th scope="col">Days Present</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (empty($top_attendance)): ?>
-                                                    <tr>
-                                                        <td colspan="4" class="text-center text-muted">No data available for this period.</td>
-                                                    </tr>
-                                                <?php else: ?>
-                                                    <?php foreach ($top_attendance as $index => $student): ?>
-                                                        <tr>
-                                                            <td><strong>#<?php echo $index + 1; ?></strong></td>
-                                                            <td><?php echo htmlspecialchars($student['roll_no']); ?></td>
-                                                            <td><?php echo htmlspecialchars($student['class_name']); ?></td>
-                                                            <td><?php echo htmlspecialchars($student['present_days']); ?></td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-header bg-dark text-white">
-                                        <h5 class="mb-0"><i class="fas fa-award me-2"></i>Top Exam Performers</h5>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Rank</th>
-                                                    <th scope="col">Roll No.</th>
-                                                    <th scope="col">Class</th>
-                                                    <th scope="col">Average Score</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (empty($top_performers)): ?>
-                                                    <tr>
-                                                        <td colspan="4" class="text-center text-muted">No data available for this period.</td>
-                                                    </tr>
-                                                <?php else: ?>
-                                                    <?php foreach ($top_performers as $index => $student): ?>
-                                                        <tr>
-                                                            <td><strong>#<?php echo $index + 1; ?></strong></td>
-                                                            <td><?php echo htmlspecialchars($student['roll_no']); ?></td>
-                                                            <td><?php echo htmlspecialchars($student['class_name']); ?></td>
-                                                            <td><?php echo round($student['avg_percentage'], 2); ?>%</td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
@@ -3166,7 +2183,6 @@ generate_csrf_token();
                         <h2 class="mb-4"><?php echo $t['admission_form']; ?></h2>
                         <form action="" method="POST">
                             <input type="hidden" name="action" value="submit_admission">
-                            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                             <div class="mb-3">
                                 <label for="student_name" class="form-label"><?php echo $t['student_name']; ?></label>
                                 <input type="text" class="form-control" id="student_name" name="student_name" required>
@@ -3220,7 +2236,6 @@ generate_csrf_token();
                         <h2 class="mb-4"><?php echo $t['get_in_touch']; ?></h2>
                         <form action="" method="POST">
                             <input type="hidden" name="action" value="submit_contact">
-                            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                             <div class="mb-3">
                                 <label for="name" class="form-label"><?php echo $t['full_name']; ?></label>
                                 <input type="text" class="form-control" id="name" name="name" required>
@@ -3267,7 +2282,7 @@ generate_csrf_token();
                             <div class="col-lg-7">
                                 <h3 class="mb-3">Our Location in Bannu</h3>
                                 <div class="ratio ratio-16x9 rounded overflow-hidden">
-                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13543.149265275817!2d70.58980874999999!3d32.96417725!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391f132e0110e5e9%3A0x6b4f7a77e7d9b01!2sBannu%2C%20Khyber%20Pakhtunkhwa%2C%20Pakistan!5e0!3m2!1sen!2sus!4v1701234567890!5m2!1sen!2sus" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                    <iframe src="https://maps.google.com/maps?q=Bannu%2C%20Khyber%20Pakhtunkhwa%2CPakistan&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
                                 </div>
                             </div>
                         </div>
@@ -3319,7 +2334,6 @@ generate_csrf_token();
                                     <div class="card-body">
                                         <form action="" method="POST">
                                             <input type="hidden" name="action" value="login">
-                                            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="mb-3">
                                                 <label for="username" class="form-label"><?php echo $t['username']; ?></label>
                                                 <input type="text" class="form-control" id="username" name="username" required>
@@ -3357,7 +2371,6 @@ generate_csrf_token();
                                     <div class="card-body">
                                         <form action="" method="POST">
                                             <input type="hidden" name="action" value="request_password_reset">
-                                            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="mb-3">
                                                 <label for="email" class="form-label"><?php echo $t['email_address']; ?></label>
                                                 <input type="email" class="form-control" id="email" name="email" required>
@@ -3375,13 +2388,6 @@ generate_csrf_token();
             case 'reset_password':
                 $email = $_GET['email'] ?? '';
                 $token = $_GET['token'] ?? '';
-                $stmt_check_token = $pdo->prepare("SELECT * FROM password_resets WHERE email = ? AND token = ? AND expires_at > NOW()");
-                $stmt_check_token->execute([$email, $token]);
-                $reset_entry_valid = $stmt_check_token->fetch();
-                if (!$reset_entry_valid) {
-                    echo '<section class="py-5"><div class="container"><div class="alert alert-danger text-center">' . $t['invalid_reset_link'] . '</div></div></section>';
-                    break;
-                }
             ?>
                 <section class="py-5">
                     <div class="container">
@@ -3394,7 +2400,6 @@ generate_csrf_token();
                                     <div class="card-body">
                                         <form action="" method="POST">
                                             <input type="hidden" name="action" value="reset_password">
-                                            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
                                             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                                             <div class="mb-3">
@@ -3432,7 +2437,6 @@ generate_csrf_token();
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'timetables' ? 'active' : ''); ?>" href="?page=dashboard&section=timetables&lang=<?php echo $lang; ?>"><i class="fas fa-calendar-alt"></i> <?php echo $t['manage_timetables']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'attendance' ? 'active' : ''); ?>" href="?page=dashboard&section=attendance&lang=<?php echo $lang; ?>"><i class="fas fa-check-circle"></i> <?php echo $t['manage_attendance']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'exams_marks' ? 'active' : ''); ?>" href="?page=dashboard&section=exams_marks&lang=<?php echo $lang; ?>"><i class="fas fa-clipboard-list"></i> <?php echo $t['manage_exams_marks']; ?></a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'fees_structures' ? 'active' : ''); ?>" href="?page=dashboard&section=fees_structures&lang=<?php echo $lang; ?>"><i class="fas fa-money-check"></i> <?php echo $t['manage_fees_structures']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'fees' ? 'active' : ''); ?>" href="?page=dashboard&section=fees&lang=<?php echo $lang; ?>"><i class="fas fa-money-bill-wave"></i> <?php echo $t['manage_fees']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'reports' ? 'active' : ''); ?>" href="?page=dashboard&section=reports&lang=<?php echo $lang; ?>"><i class="fas fa-chart-line"></i> <?php echo $t['reports']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'user_management' ? 'active' : ''); ?>" href="?page=dashboard&section=user_management&lang=<?php echo $lang; ?>"><i class="fas fa-users-cog"></i> <?php echo $t['user_management']; ?></a></li>
@@ -3441,32 +2445,23 @@ generate_csrf_token();
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'announcements' ? 'active' : ''); ?>" href="?page=dashboard&section=announcements&lang=<?php echo $lang; ?>"><i class="fas fa-bullhorn"></i> Manage Announcements</a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'events_admin' ? 'active' : ''); ?>" href="?page=dashboard&section=events_admin&lang=<?php echo $lang; ?>"><i class="fas fa-calendar-check"></i> Manage Events</a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'gallery' ? 'active' : ''); ?>" href="?page=dashboard&section=gallery&lang=<?php echo $lang; ?>"><i class="fas fa-images"></i> Gallery Management</a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'messages' ? 'active' : ''); ?>" href="?page=dashboard&section=messages&lang=<?php echo $lang; ?>"><i class="fas fa-comments"></i> <?php echo $t['internal_messaging']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'backup_restore' ? 'active' : ''); ?>" href="?page=dashboard&section=backup_restore&lang=<?php echo $lang; ?>"><i class="fas fa-database"></i> <?php echo $t['backup_restore']; ?></a></li>
                             <?php endif; ?>
                             <?php if (isTeacher()) : ?>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'teacher_classes' ? 'active' : ''); ?>" href="?page=dashboard&section=teacher_classes&lang=<?php echo $lang; ?>"><i class="fas fa-school"></i> <?php echo $t['teacher_classes']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'attendance' ? 'active' : ''); ?>" href="?page=dashboard&section=attendance&lang=<?php echo $lang; ?>"><i class="fas fa-check-circle"></i> <?php echo $t['take_class_attendance']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'assignments' ? 'active' : ''); ?>" href="?page=dashboard&section=assignments&lang=<?php echo $lang; ?>"><i class="fas fa-book"></i> <?php echo $t['upload_assignments']; ?></a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'study_materials' ? 'active' : ''); ?>" href="?page=dashboard&section=study_materials&lang=<?php echo $lang; ?>"><i class="fas fa-book-reader"></i> <?php echo $t['upload_study_materials']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'exams_marks' ? 'active' : ''); ?>" href="?page=dashboard&section=exams_marks&lang=<?php echo $lang; ?>"><i class="fas fa-clipboard-list"></i> <?php echo $t['enter_exam_marks']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'timetable' ? 'active' : ''); ?>" href="?page=dashboard&section=timetable&lang=<?php echo $lang; ?>"><i class="fas fa-calendar-alt"></i> <?php echo $t['view_timetable']; ?></a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'teacher_notes' ? 'active' : ''); ?>" href="?page=dashboard&section=teacher_notes&lang=<?php echo $lang; ?>"><i class="fas fa-comment-dots"></i> <?php echo $t['teacher_notes']; ?></a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'messages' ? 'active' : ''); ?>" href="?page=dashboard&section=messages&lang=<?php echo $lang; ?>"><i class="fas fa-comments"></i> <?php echo $t['internal_messaging']; ?></a></li>
                             <?php endif; ?>
                             <?php if (isStudent()) : ?>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'attendance' ? 'active' : ''); ?>" href="?page=dashboard&section=attendance&lang=<?php echo $lang; ?>"><i class="fas fa-check-circle"></i> <?php echo $t['view_attendance']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'timetable' ? 'active' : ''); ?>" href="?page=dashboard&section=timetable&lang=<?php echo $lang; ?>"><i class="fas fa-calendar-alt"></i> <?php echo $t['view_timetable']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'marks' ? 'active' : ''); ?>" href="?page=dashboard&section=marks&lang=<?php echo $lang; ?>"><i class="fas fa-chart-bar"></i> <?php echo $t['view_marks']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'assignments' ? 'active' : ''); ?>" href="?page=dashboard&section=assignments&lang=<?php echo $lang; ?>"><i class="fas fa-download"></i> <?php echo $t['download_assignments']; ?></a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'study_materials' ? 'active' : ''); ?>" href="?page=dashboard&section=study_materials&lang=<?php echo $lang; ?>"><i class="fas fa-book-open"></i> Study Materials</a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'messages' ? 'active' : ''); ?>" href="?page=dashboard&section=messages&lang=<?php echo $lang; ?>"><i class="fas fa-comments"></i> <?php echo $t['internal_messaging']; ?></a></li>
                             <?php endif; ?>
                             <?php if (isParent()) : ?>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'performance' ? 'active' : ''); ?>" href="?page=dashboard&section=performance&lang=<?php echo $lang; ?>"><i class="fas fa-chart-pie"></i> <?php echo $t['view_performance']; ?></a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'fees' ? 'active' : ''); ?>" href="?page=dashboard&section=fees&lang=<?php echo $lang; ?>"><i class="fas fa-receipt"></i> <?php echo $t['view_student_fees']; ?></a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'messages' ? 'active' : ''); ?>" href="?page=dashboard&section=messages&lang=<?php echo $lang; ?>"><i class="fas fa-comments"></i> <?php echo $t['internal_messaging']; ?></a></li>
-                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'teacher_notes' ? 'active' : ''); ?>" href="?page=dashboard&section=teacher_notes&lang=<?php echo $lang; ?>"><i class="fas fa-clipboard"></i> View Teacher Notes</a></li>
                             <?php endif; ?>
                         </ul>
                     </div>
@@ -3529,55 +2524,17 @@ generate_csrf_token();
             $('#editAssignmentModal #class_id').on('change', function(e, subjectId) {
                 updateModalSelectOptions('editAssignmentModal', 'subject_id', '?page=ajax_data&type=subjects_by_class&lang=<?php echo $lang; ?>', subjectId);
             });
-            $('#addAssignmentModal #add_assignment_class_id').on('change', function(e, subjectId) {
-                updateModalSelectOptions('addAssignmentModal', 'add_assignment_subject_id', '?page=ajax_data&type=subjects_by_class&lang=<?php echo $lang; ?>', subjectId);
-            });
-            $('#editStudyMaterialModal #class_id').on('change', function(e, subjectId) {
-                updateModalSelectOptions('editStudyMaterialModal', 'subject_id', '?page=ajax_data&type=subjects_by_class&lang=<?php echo $lang; ?>', subjectId);
-            });
-            $('#addStudyMaterialModal #add_study_material_class_id').on('change', function(e, subjectId) {
-                updateModalSelectOptions('addStudyMaterialModal', 'add_study_material_subject_id', '?page=ajax_data&type=subjects_by_class&lang=<?php echo $lang; ?>', subjectId);
-            });
-            $('#addExamModal #add_exam_class_id').on('change', function(e, subjectId) {
-                updateModalSelectOptions('addExamModal', 'add_exam_subject_id', '?page=ajax_data&type=subjects_by_class&lang=<?php echo $lang; ?>', subjectId);
-            });
-            $('#addTeacherExamModal #add_teacher_exam_class_id').on('change', function(e, subjectId) {
-                updateModalSelectOptions('addTeacherExamModal', 'add_teacher_exam_subject_id', '?page=ajax_data&type=subjects_by_class&lang=<?php echo $lang; ?>', subjectId);
-            });
-            $('#editTeacherExamModal #class_id').on('change', function(e, subjectId) {
-                updateModalSelectOptions('editTeacherExamModal', 'subject_id', '?page=ajax_data&type=subjects_by_class&lang=<?php echo $lang; ?>', subjectId);
-            });
-            $('#addFeeInvoiceModal #fee_structure_id').on('change', function() {
-                var feeStructureId = $(this).val();
-                if (feeStructureId) {
-                    $.ajax({
-                        url: '?page=ajax_data&type=fee_structure_details&lang=<?php echo $lang; ?>',
-                        type: 'GET',
-                        data: {
-                            fee_structure_id: feeStructureId
-                        },
-                        success: function(response) {
-                            var data = JSON.parse(response);
-                            $('#addFeeInvoiceModal #add_fee_amount').val(data.amount);
-                            $('#addFeeInvoiceModal #add_fee_description').val(data.description);
-                        }
-                    });
-                } else {
-                    $('#addFeeInvoiceModal #add_fee_amount').val('');
-                    $('#addFeeInvoiceModal #add_fee_description').val('');
-                }
-            });
             $(document).on('click', '.mark-paid-btn', function(e) {
                 e.preventDefault();
                 var feeId = $(this).data('id');
-                var totalAmount = parseFloat($(this).data('amount'));
-                var currentPaid = parseFloat($(this).data('paid-amount'));
-                var remainingAmount = totalAmount - currentPaid;
-                $('#markFeePaidModal #fee_id').val(feeId);
-                $('#markFeePaidModal #remaining_amount_display').text(remainingAmount.toFixed(2));
-                $('#markFeePaidModal #paid_amount').attr('max', remainingAmount.toFixed(2));
-                $('#markFeePaidModal #paid_amount').val(remainingAmount.toFixed(2));
-                $('#markFeePaidModal').modal('show');
+                if (confirm('Are you sure you want to mark this invoice as Paid?')) {
+                    var form = $('<form action="" method="post">' +
+                        '<input type="hidden" name="action" value="mark_fee_paid">' +
+                        '<input type="hidden" name="id" value="' + feeId + '">' +
+                        '</form>');
+                    $('body').append(form);
+                    form.submit();
+                }
             });
             $(document).on('click', '.edit-btn', function() {
                 var data = $(this).data('json');
@@ -3591,30 +2548,24 @@ generate_csrf_token();
                             input.prop('checked', value == 1);
                         } else if (input.is(':radio')) {
                             input.filter('[value="' + value + '"]').prop('checked', true);
-                        } else if (input.is('select') && (key === 'subject_id' || key === 'class_id' || key === 'teacher_id' || key === 'parent_id' || key === 'fee_structure_id')) {
+                        } else if (input.is('select') && (key === 'subject_id' || key === 'class_id' || key === 'teacher_id' || key === 'parent_id')) {
                             input.val(value);
-                            if (key === 'class_id' && (type === 'timetable_entry' || type === 'exam' || type === 'assignment' || type === 'study_material')) {
-                                input.trigger('change', [data.subject_id]);
-                            }
                         } else {
                             input.val(value);
                         }
                     }
                 });
-                if (type === 'assignment' && data.file_path) {
-                    $(modalId + ' #file_path_old').val(data.file_path);
-                }
-                if (type === 'study_material' && data.file_path) {
-                    $(modalId + ' #current_material_path').val(data.file_path);
-                }
-                if (type === 'student' && data.document_path) {
-                    $(modalId + ' #current_document_path').val(data.document_path);
-                    $(modalId + ' #current_document_link').attr('href', data.document_path).removeClass('d-none');
-                } else if (type === 'student') {
-                    $(modalId + ' #current_document_link').addClass('d-none');
+                if (type === 'timetable_entry' || type === 'exam' || type === 'assignment') {
+                    $(modalId + ' #class_id').val(data.class_id).trigger('change', [data.subject_id]);
                 }
                 $(modalId + ' #action').val('edit_' + type);
                 $(modalId + ' #id').val(data.id);
+                if (data.file_path) {
+                    $(modalId + ' #file_path_old').val(data.file_path);
+                }
+                if (type === 'assignment' && data.file_path) {
+                    $(modalId + ' #file_path_old').val(data.file_path);
+                }
                 $(modalId).modal('show');
             });
             $(document).on('click', '.delete-btn', function(e) {
@@ -3622,17 +2573,15 @@ generate_csrf_token();
                 if (confirm('Are you sure you want to delete this record?')) {
                     var id = $(this).data('id');
                     var type = $(this).data('type');
-                    var csrfToken = $('input[name="csrf_token"]').val();
                     var form = $('<form action="" method="post">' +
                         '<input type="hidden" name="action" value="delete_' + type + '">' +
                         '<input type="hidden" name="id" value="' + id + '">' +
-                        '<input type="hidden" name="csrf_token" value="' + csrfToken + '">' +
                         '</form>');
                     $('body').append(form);
                     form.submit();
                 }
             });
-            $('#timetable_class_id, #add_assignment_class_id, #add_exam_class_id, #add_study_material_class_id, #add_teacher_exam_class_id').change(function() {
+            $('#timetable_class_id, #add_assignment_class_id, #add_exam_class_id').change(function() {
                 var classId = $(this).val();
                 var targetSelectId = $(this).attr('id').replace('_class_id', '_subject_id');
                 if (classId) {
@@ -3732,91 +2681,6 @@ generate_csrf_token();
                 }
                 return true;
             });
-            $(document).on('click', '.view-message-btn', function() {
-                var data = $(this).data('json');
-                $('#messageModalLabel').text(data.subject);
-                $('#messageModalSender').text(data.sender_username + ' (' + data.sender_role + ')');
-                $('#messageModalReceiver').text(data.receiver_username + ' (' + data.receiver_role + ')');
-                $('#messageModalTimestamp').text(new Date(data.sent_at).toLocaleString());
-                $('#messageModalBody').html(data.message.replace(/\n/g, '<br>'));
-                // Mark as read
-                if (!data.read_status) {
-                    $.post('?page=dashboard&section=messages&lang=<?php echo $lang; ?>', {
-                        action: 'mark_message_read',
-                        message_id: data.id,
-                        csrf_token: $('input[name="csrf_token"]').val()
-                    }, function(response) {
-                        // Optionally update UI for read status
-                        location.reload();
-                    });
-                }
-                $('#messageModal').modal('show');
-            });
-            $(document).on('click', '.reply-message-btn', function() {
-                var senderId = $(this).data('sender-id');
-                var subject = $(this).data('subject');
-                $('#composeMessageModal #receiver_id').val(senderId);
-                $('#composeMessageModal #message_subject').val('RE: ' + subject);
-                $('#composeMessageModal').modal('show');
-            });
-            $(document).on('click', '.view-note-btn', function() {
-                var data = $(this).data('json');
-                $('#teacherNoteModalLabel').text(data.title);
-                $('#teacherNoteModalStudent').text(data.student_name);
-                $('#teacherNoteModalTeacher').text(data.teacher_name);
-                $('#teacherNoteModalDate').text(new Date(data.created_at).toLocaleDateString());
-                $('#teacherNoteModalContent').html(data.note.replace(/\n/g, '<br>'));
-                $('#teacherNoteModal').modal('show');
-            });
-            $('#promote_current_class_id').change(function() {
-                var selectedClass = $(this).find('option:selected');
-                $('#promote_current_class_name').val(selectedClass.text());
-            });
-            $('#promote_next_class_id').change(function() {
-                var selectedClass = $(this).find('option:selected');
-                $('#promote_next_class_name').val(selectedClass.text());
-            });
-            $('#report_card_student_id, #report_card_academic_year').change(function() {
-                var studentId = $('#report_card_student_id').val();
-                var academicYear = $('#report_card_academic_year').val();
-                if (studentId && academicYear) {
-                    $.ajax({
-                        url: '?page=ajax_data&type=student_full_report_card&lang=<?php echo $lang; ?>',
-                        type: 'GET',
-                        data: {
-                            student_id: studentId,
-                            academic_year: academicYear
-                        },
-                        success: function(response) {
-                            $('#report_card_display_area').html(response);
-                        },
-                        error: function() {
-                            $('#report_card_display_area').html('<p>Error loading report card.</p>');
-                        }
-                    });
-                } else {
-                    $('#report_card_display_area').html('<p>Select a student and academic year.</p>');
-                }
-            }).trigger('change');
-        });
-        $(document).on('click', '.view-details-btn', function() {
-            var studentId = $(this).data('student-id');
-            var modalContent = $('#studentDetailsContent');
-            modalContent.html('<p class="text-center">Loading...</p>');
-            $.ajax({
-                url: '?page=ajax_data&type=student_full_details&lang=<?php echo $lang; ?>',
-                type: 'GET',
-                data: {
-                    student_id: studentId
-                },
-                dataType: 'html',
-                success: function(response) {
-                    modalContent.html(response);
-                },
-                error: function() {
-                    modalContent.html('<p class="alert alert-danger">Error loading student details.</p>');
-                }
-            });
         });
 
         function printReport(reportId) {
@@ -3835,17 +2699,15 @@ generate_csrf_token();
 function displayAdminPanel($pdo, $t, $lang)
 {
     global $section;
-    $csrf = generate_csrf_token();
     switch ($section) {
         case 'students':
             echo '<h3>' . $t['student_list'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3 me-2" data-bs-toggle="modal" data-bs-target="#addStudentModal">' . $t['add_new_student'] . '</button>';
-            echo '<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#promoteStudentsModal">' . $t['promote_students'] . '</button>';
-            $stmt = $pdo->query("SELECT s.*, c.name AS class_name, p.username AS parent_username FROM students s LEFT JOIN classes c ON s.class_id = c.id LEFT JOIN users p ON s.parent_id = p.id");
+            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">' . $t['add_new_student'] . '</button>';
+            $stmt = $pdo->query("SELECT s.*, c.name AS class_name FROM students s LEFT JOIN classes c ON s.class_id = c.id");
             $students = $stmt->fetchAll();
             echo '<div class="table-responsive">';
             echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>' . $t['name'] . '</th><th>' . $t['roll_no'] . '</th><th>' . $t['class_name'] . '</th><th>' . $t['phone_number'] . '</th><th>Parent</th><th>' . $t['actions'] . '</th></tr></thead>';
+            echo '<thead><tr><th>ID</th><th>' . $t['name'] . '</th><th>' . $t['roll_no'] . '</th><th>' . $t['class_name'] . '</th><th>' . $t['phone_number'] . '</th><th>' . $t['actions'] . '</th></tr></thead>';
             echo '<tbody>';
             if ($students) {
                 foreach ($students as $student) {
@@ -3855,30 +2717,27 @@ function displayAdminPanel($pdo, $t, $lang)
                     echo '<td>' . htmlspecialchars($student['roll_no']) . '</td>';
                     echo '<td>' . htmlspecialchars($student['class_name']) . '</td>';
                     echo '<td>' . htmlspecialchars($student['phone']) . '</td>';
-                    echo '<td>' . htmlspecialchars($student['parent_username'] ?? 'N/A') . '</td>';
                     echo '<td>';
-                    echo '<button type="button" class="btn btn-sm btn-primary view-details-btn me-1" data-bs-toggle="modal" data-bs-target="#studentDetailsModal" data-student-id="' . $student['id'] . '"><i class="fas fa-eye"></i> ' . $t['view_details'] . '</button>';
                     echo '<button type="button" class="btn btn-sm btn-info edit-btn me-1" data-bs-toggle="modal" data-bs-target="#editStudentModal" data-json=\'' . json_encode($student) . '\' data-form-id="editStudentForm" data-type="student"><i class="fas fa-edit"></i> ' . $t['edit'] . '</button>';
                     echo '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $student['id'] . '" data-type="student"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
                     echo '</td>';
                     echo '</tr>';
                 }
             } else {
-                echo '<tr><td colspan="7" class="text-center">' . $t['no_records'] . '</td></tr>';
+                echo '<tr><td colspan="6" class="text-center">' . $t['no_records'] . '</td></tr>';
             }
             echo '</tbody></table>';
             echo '</div>';
             echo '<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">';
             echo '<div class="modal-dialog">';
             echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="addStudentForm" enctype="multipart/form-data">';
+            echo '<form action="" method="POST" id="addStudentForm">';
             echo '<div class="modal-header">';
             echo '<h5 class="modal-title" id="addStudentModalLabel">' . $t['add_new_student'] . '</h5>';
             echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_student">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_student_name" class="form-label">' . $t['student_name'] . '</label><input type="text" class="form-control" id="add_student_name" name="name" required></div>';
             echo '<div class="mb-3"><label for="add_student_username" class="form-label">' . $t['username'] . '</label><input type="text" class="form-control" id="add_student_username" name="username" required></div>';
             echo '<div class="mb-3"><label for="add_student_password" class="form-label">' . $t['password'] . '</label><input type="password" class="form-control" id="add_student_password" name="password" required></div>';
@@ -3898,10 +2757,6 @@ function displayAdminPanel($pdo, $t, $lang)
                 echo '<option value="' . $parent['id'] . '">' . htmlspecialchars($parent['username']) . '</option>';
             }
             echo '</select></div>';
-            echo '<div class="mb-3"><label for="add_student_medical_history" class="form-label">' . $t['medical_history'] . '</label><textarea class="form-control" id="add_student_medical_history" name="medical_history" rows="3"></textarea></div>';
-            echo '<div class="mb-3"><label for="add_student_emergency_contact_name" class="form-label">' . $t['emergency_contact'] . ' ' . $t['guardian_name'] . '</label><input type="text" class="form-control" id="add_student_emergency_contact_name" name="emergency_contact_name"></div>';
-            echo '<div class="mb-3"><label for="add_student_emergency_contact_phone" class="form-label">' . $t['emergency_contact'] . ' ' . $t['guardian_phone'] . '</label><input type="text" class="form-control" id="add_student_emergency_contact_phone" name="emergency_contact_phone"></div>';
-            echo '<div class="mb-3"><label for="student_document" class="form-label">' . $t['student_document'] . ' (PDF, JPG, PNG)</label><input type="file" class="form-control" id="student_document" name="student_document" accept=".pdf,.jpg,.jpeg,.png"></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -3914,7 +2769,7 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">';
             echo '<div class="modal-dialog">';
             echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="editStudentForm" enctype="multipart/form-data">';
+            echo '<form action="" method="POST" id="editStudentForm">';
             echo '<div class="modal-header">';
             echo '<h5 class="modal-title" id="editStudentModalLabel">' . $t['edit_student_details'] . '</h5>';
             echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
@@ -3922,8 +2777,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_student">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<input type="hidden" name="current_document_path" id="current_document_path">';
             echo '<div class="mb-3"><label for="name" class="form-label">' . $t['student_name'] . '</label><input type="text" class="form-control" id="name" name="name" required></div>';
             echo '<div class="mb-3"><label for="class_id" class="form-label">' . $t['class_name'] . '</label><select class="form-select" id="class_id" name="class_id" required>';
             foreach ($classes as $class) {
@@ -3939,63 +2792,12 @@ function displayAdminPanel($pdo, $t, $lang)
                 echo '<option value="' . $parent['id'] . '">' . htmlspecialchars($parent['username']) . '</option>';
             }
             echo '</select></div>';
-            echo '<div class="mb-3"><label for="medical_history" class="form-label">' . $t['medical_history'] . '</label><textarea class="form-control" id="medical_history" name="medical_history" rows="3"></textarea></div>';
-            echo '<div class="mb-3"><label for="emergency_contact_name" class="form-label">' . $t['emergency_contact'] . ' ' . $t['guardian_name'] . '</label><input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name"></div>';
-            echo '<div class="mb-3"><label for="emergency_contact_phone" class="form-label">' . $t['emergency_contact'] . ' ' . $t['guardian_phone'] . '</label><input type="text" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone"></div>';
-            echo '<div class="mb-3"><label for="student_document" class="form-label">New ' . $t['student_document'] . ' (PDF, JPG, PNG)</label><input type="file" class="form-control" id="student_document" name="student_document" accept=".pdf,.jpg,.jpeg,.png"></div>';
-            echo '<div class="mb-3"><label class="form-label">Current Document:</label> <a href="#" id="current_document_link" target="_blank" class="d-none">View Current Document</a></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
             echo '<button type="submit" class="btn btn-primary">' . $t['save_changes'] . '</button>';
             echo '</div>';
             echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="promoteStudentsModal" tabindex="-1" aria-labelledby="promoteStudentsModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="promoteStudentsModalLabel">' . $t['promote_students'] . ' ' . $t['next_academic_year'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="promote_students">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="promote_current_class_id" class="form-label">Promote From ' . $t['class'] . '</label><select class="form-select" id="promote_current_class_id" name="current_class_id" required>';
-            foreach ($classes as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select><input type="hidden" name="current_class_name" id="promote_current_class_name" value=""></div>';
-            echo '<div class="mb-3"><label for="promote_next_class_id" class="form-label">' . $t['promote_class'] . ' ' . $t['to_class'] . '</label><select class="form-select" id="promote_next_class_id" name="next_class_id" required>';
-            foreach ($classes as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select><input type="hidden" name="next_class_name" id="promote_next_class_name" value=""></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['promote'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog modal-xl">';
-            echo '<div class="modal-content">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="studentDetailsModalLabel">Student Details</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<div id="studentDetailsContent"><p class="text-center">Loading...</p></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '</div>';
             echo '</div>';
             echo '</div>';
             echo '</div>';
@@ -4038,7 +2840,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_teacher">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_teacher_name" class="form-label">' . $t['name'] . '</label><input type="text" class="form-control" id="add_teacher_name" name="name" required></div>';
             echo '<div class="mb-3"><label for="add_teacher_username" class="form-label">' . $t['username'] . '</label><input type="text" class="form-control" id="add_teacher_username" name="username" required></div>';
             echo '<div class="mb-3"><label for="add_teacher_password" class="form-label">' . $t['password'] . '</label><input type="password" class="form-control" id="add_teacher_password" name="password" required></div>';
@@ -4065,7 +2866,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_teacher">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="name" class="form-label">' . $t['name'] . '</label><input type="text" class="form-control" id="name" name="name" required></div>';
             echo '<div class="mb-3"><label for="subject_specialty" class="form-label">' . $t['subject_specialty'] . '</label><input type="text" class="form-control" id="subject_specialty" name="subject_specialty"></div>';
             echo '<div class="mb-3"><label for="phone" class="form-label">' . $t['phone_number'] . '</label><input type="text" class="form-control" id="phone" name="phone"></div>';
@@ -4117,7 +2917,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_class">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_class_name" class="form-label">' . $t['class_name'] . '</label><input type="text" class="form-control" id="add_class_name" name="name" required></div>';
             echo '<div class="mb-3"><label for="add_class_teacher_id" class="form-label">' . $t['assigned_teacher'] . '</label><select class="form-select" id="add_class_teacher_id" name="teacher_id"><option value="">None</option>';
             foreach ($all_teachers as $teacher) {
@@ -4144,7 +2943,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_class">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="name" class="form-label">' . $t['class_name'] . '</label><input type="text" class="form-control" id="name" name="name" required></div>';
             echo '<div class="mb-3"><label for="teacher_id" class="form-label">' . $t['assigned_teacher'] . '</label><select class="form-select" id="teacher_id" name="teacher_id"><option value="">None</option>';
             foreach ($all_teachers as $teacher) {
@@ -4192,7 +2990,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_subject">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_subject_name" class="form-label">' . $t['name'] . '</label><input type="text" class="form-control" id="add_subject_name" name="name" required></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
@@ -4214,7 +3011,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_subject">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="name" class="form-label">' . $t['name'] . '</label><input type="text" class="form-control" id="name" name="name" required></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
@@ -4258,7 +3054,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_class_subject">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_class_subject_class_id" class="form-label">' . $t['class_name'] . '</label><select class="form-select" id="add_class_subject_class_id" name="class_id" required>';
             foreach ($classes as $class) {
                 echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
@@ -4321,7 +3116,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_timetable_entry">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_timetable_class_id" class="form-label">' . $t['class_name'] . '</label><select class="form-select" id="add_timetable_class_id" name="class_id" required>';
             foreach ($classes as $class) {
                 echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
@@ -4373,7 +3167,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_timetable_entry">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="class_id" class="form-label">' . $t['class_name'] . '</label><select class="form-select" id="class_id" name="class_id" required>';
             foreach ($classes as $class) {
                 echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
@@ -4409,7 +3202,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<h4>' . $t['take_attendance'] . '</h4>';
             echo '<form action="" method="POST" class="mb-4">';
             echo '<input type="hidden" name="action" value="save_attendance">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="row mb-3">';
             echo '<div class="col-md-4"><label for="attendance_class_id" class="form-label">' . $t['select_class'] . '</label><select class="form-select" id="attendance_class_id" name="class_id" required>';
             echo '<option value="">' . $t['select_class'] . '</option>';
@@ -4521,20 +3313,18 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addExamModal">' . $t['add_new_exam'] . '</button>';
             echo '<div class="table-responsive mb-4">';
             echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>' . $t['exam_name'] . '</th><th>' . $t['class_name'] . '</th><th>' . $t['subject'] . '</th><th>Teacher</th><th>' . $t['exam_date'] . '</th><th>' . $t['max_marks'] . '</th><th>' . $t['actions'] . '</th></tr></thead>';
+            echo '<thead><tr><th>ID</th><th>' . $t['exam_name'] . '</th><th>' . $t['class_name'] . '</th><th>' . $t['subject'] . '</th><th>' . $t['exam_date'] . '</th><th>' . $t['max_marks'] . '</th><th>' . $t['actions'] . '</th></tr></thead>';
             echo '<tbody>';
-            $stmt = $pdo->query("SELECT e.*, c.name AS class_name, s.name AS subject_name, t.name AS teacher_name FROM exams e JOIN classes c ON e.class_id = c.id JOIN subjects s ON e.subject_id = s.id LEFT JOIN teachers t ON e.teacher_id = t.id ORDER BY exam_date DESC");
+            $stmt = $pdo->query("SELECT e.*, c.name AS class_name, s.name AS subject_name FROM exams e JOIN classes c ON e.class_id = c.id JOIN subjects s ON e.subject_id = s.id ORDER BY exam_date DESC");
             $exams = $stmt->fetchAll();
             $all_classes = $pdo->query("SELECT id, name FROM classes")->fetchAll();
             $all_subjects = $pdo->query("SELECT id, name FROM subjects")->fetchAll();
-            $all_teachers = $pdo->query("SELECT id, name FROM teachers")->fetchAll();
             foreach ($exams as $exam) {
                 echo '<tr>';
                 echo '<td>' . htmlspecialchars($exam['id']) . '</td>';
                 echo '<td>' . htmlspecialchars($exam['name']) . '</td>';
                 echo '<td>' . htmlspecialchars($exam['class_name']) . '</td>';
                 echo '<td>' . htmlspecialchars($exam['subject_name']) . '</td>';
-                echo '<td>' . htmlspecialchars($exam['teacher_name'] ?? 'N/A') . '</td>';
                 echo '<td>' . htmlspecialchars($exam['exam_date']) . '</td>';
                 echo '<td>' . htmlspecialchars($exam['max_marks']) . '</td>';
                 echo '<td>';
@@ -4544,7 +3334,7 @@ function displayAdminPanel($pdo, $t, $lang)
                 echo '</tr>';
             }
             if (!$exams) {
-                echo '<tr><td colspan="8" class="text-center">' . $t['no_records'] . '</td></tr>';
+                echo '<tr><td colspan="7" class="text-center">' . $t['no_records'] . '</td></tr>';
             }
             echo '</tbody></table>';
             echo '</div>';
@@ -4558,7 +3348,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_exam">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_exam_name" class="form-label">' . $t['exam_name'] . '</label><input type="text" class="form-control" id="add_exam_name" name="name" required></div>';
             echo '<div class="mb-3"><label for="add_exam_class_id" class="form-label">' . $t['class_name'] . '</label><select class="form-select" id="add_exam_class_id" name="class_id" required>';
             foreach ($all_classes as $class) {
@@ -4576,11 +3365,6 @@ function displayAdminPanel($pdo, $t, $lang)
                 }
             } else {
                 echo '<option value="">' . $t['select_class'] . ' first</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="add_exam_teacher_id" class="form-label">Teacher</label><select class="form-select" id="add_exam_teacher_id" name="teacher_id"><option value="">None</option>';
-            foreach ($all_teachers as $teacher) {
-                echo '<option value="' . $teacher['id'] . '">' . htmlspecialchars($teacher['name']) . '</option>';
             }
             echo '</select></div>';
             echo '<div class="mb-3"><label for="add_exam_date" class="form-label">' . $t['exam_date'] . '</label><input type="date" class="form-control" id="add_exam_date" name="exam_date" required></div>';
@@ -4605,7 +3389,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_exam">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="name" class="form-label">' . $t['exam_name'] . '</label><input type="text" class="form-control" id="name" name="name" required></div>';
             echo '<div class="mb-3"><label for="class_id" class="form-label">' . $t['class_name'] . '</label><select class="form-select" id="class_id" name="class_id" required>';
             foreach ($all_classes as $class) {
@@ -4614,11 +3397,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</select></div>';
             echo '<div class="mb-3"><label for="subject_id" class="form-label">' . $t['subject'] . '</label><select class="form-select" id="subject_id" name="subject_id" required>';
             echo '<option value="">Select Class First</option>';
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="teacher_id" class="form-label">Teacher</label><select class="form-select" id="teacher_id" name="teacher_id"><option value="">None</option>';
-            foreach ($all_teachers as $teacher) {
-                echo '<option value="' . $teacher['id'] . '">' . htmlspecialchars($teacher['name']) . '</option>';
-            }
             echo '</select></div>';
             echo '<div class="mb-3"><label for="exam_date" class="form-label">' . $t['exam_date'] . '</label><input type="date" class="form-control" id="exam_date" name="exam_date" required></div>';
             echo '<div class="mb-3"><label for="max_marks" class="form-label">' . $t['max_marks'] . '</label><input type="number" class="form-control" id="max_marks" name="max_marks" required></div>';
@@ -4634,7 +3412,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<h4>' . $t['enter_marks'] . '</h4>';
             echo '<form action="" method="POST" class="mb-4">';
             echo '<input type="hidden" name="action" value="save_marks">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="row mb-3">';
             echo '<div class="col-md-6"><label for="marks_exam_id" class="form-label">' . $t['select_exam'] . '</label><select class="form-select" id="marks_exam_id" name="exam_id" required>';
             echo '<option value="">' . $t['select_exam'] . '</option>';
@@ -4736,135 +3513,37 @@ function displayAdminPanel($pdo, $t, $lang)
                 echo '</div>';
             }
             break;
-        case 'fees_structures':
-            echo '<h3>' . $t['manage_fees_structures'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addFeeStructureModal">' . $t['add_fee_structure'] . '</button>';
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>' . $t['fee_structure_name'] . '</th><th>' . $t['amount'] . '</th><th>' . $t['fee_type'] . '</th><th>' . $t['class_name'] . '</th><th>' . $t['description'] . '</th><th>' . $t['actions'] . '</th></tr></thead>';
-            echo '<tbody>';
-            $stmt = $pdo->query("SELECT fs.*, c.name AS class_name FROM fee_structures fs LEFT JOIN classes c ON fs.class_id = c.id ORDER BY fs.name");
-            $fee_structures = $stmt->fetchAll();
-            $all_classes = $pdo->query("SELECT id, name FROM classes")->fetchAll();
-            if ($fee_structures) {
-                foreach ($fee_structures as $structure) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($structure['id']) . '</td>';
-                    echo '<td>' . htmlspecialchars($structure['name']) . '</td>';
-                    echo '<td>' . htmlspecialchars($structure['amount']) . '</td>';
-                    echo '<td>' . htmlspecialchars($structure['type']) . '</td>';
-                    echo '<td>' . htmlspecialchars($structure['class_name'] ?? 'All Classes') . '</td>';
-                    echo '<td>' . htmlspecialchars($structure['description'] ?? 'N/A') . '</td>';
-                    echo '<td>';
-                    echo '<button type="button" class="btn btn-sm btn-info edit-btn me-1" data-bs-toggle="modal" data-bs-target="#editFeeStructureModal" data-json=\'' . json_encode($structure) . '\' data-form-id="editFeeStructureForm" data-type="fee_structure"><i class="fas fa-edit"></i> ' . $t['edit'] . '</button>';
-                    echo '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $structure['id'] . '" data-type="fee_structure"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
-                    echo '</td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="7" class="text-center">' . $t['no_records'] . '</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '<div class="modal fade" id="addFeeStructureModal" tabindex="-1" aria-labelledby="addFeeStructureModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="addFeeStructureForm">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="addFeeStructureModalLabel">' . $t['add_fee_structure'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="add_fee_structure">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="add_fee_structure_name" class="form-label">' . $t['fee_structure_name'] . '</label><input type="text" class="form-control" id="add_fee_structure_name" name="name" required></div>';
-            echo '<div class="mb-3"><label for="add_fee_structure_amount" class="form-label">' . $t['amount'] . '</label><input type="number" step="0.01" class="form-control" id="add_fee_structure_amount" name="amount" required></div>';
-            echo '<div class="mb-3"><label for="add_fee_structure_type" class="form-label">' . $t['fee_type'] . '</label><select class="form-select" id="add_fee_structure_type" name="type" required><option value="Tuition">Tuition</option><option value="Transport">Transport</option><option value="Lab">Lab</option><option value="Exam">Exam</option><option value="Other">Other</option></select></div>';
-            echo '<div class="mb-3"><label for="add_fee_structure_class_id" class="form-label">' . $t['class_name'] . ' (Optional)</label><select class="form-select" id="add_fee_structure_class_id" name="class_id"><option value="">All Classes</option>';
-            foreach ($all_classes as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="add_fee_structure_description" class="form-label">' . $t['fee_structure_description'] . '</label><textarea class="form-control" id="add_fee_structure_description" name="description" rows="3"></textarea></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['add_fee_structure'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="editFeeStructureModal" tabindex="-1" aria-labelledby="editFeeStructureModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="editFeeStructureForm">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="editFeeStructureModalLabel">' . $t['edit'] . ' ' . $t['fee_structure_details'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" id="action" value="edit_fee_structure">';
-            echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="name" class="form-label">' . $t['fee_structure_name'] . '</label><input type="text" class="form-control" id="name" name="name" required></div>';
-            echo '<div class="mb-3"><label for="amount" class="form-label">' . $t['amount'] . '</label><input type="number" step="0.01" class="form-control" id="amount" name="amount" required></div>';
-            echo '<div class="mb-3"><label for="type" class="form-label">' . $t['fee_type'] . '</label><select class="form-select" id="type" name="type" required><option value="Tuition">Tuition</option><option value="Transport">Transport</option><option value="Lab">Lab</option><option value="Exam">Exam</option><option value="Other">Other</option></select></div>';
-            echo '<div class="mb-3"><label for="class_id" class="form-label">' . $t['class_name'] . ' (Optional)</label><select class="form-select" id="class_id" name="class_id"><option value="">All Classes</option>';
-            foreach ($all_classes as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="description" class="form-label">' . $t['fee_structure_description'] . '</label><textarea class="form-control" id="description" name="description" rows="3"></textarea></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['save_changes'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            break;
         case 'fees':
             echo '<h3>' . $t['manage_fees'] . '</h3>';
             echo '<h4>' . $t['fee_invoices'] . '</h4>';
             echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addFeeInvoiceModal">' . $t['add_new_invoice'] . '</button>';
-            echo '<button type="button" class="btn btn-info mb-3 ms-2" data-bs-toggle="modal" data-bs-target="#addBulkFeeInvoiceModal">Generate Bulk Invoice</button>';
             echo '<div class="table-responsive">';
             echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>Student</th><th>Fee Item</th><th>' . $t['amount'] . '</th><th>' . $t['concession'] . '</th><th>' . $t['fine'] . '</th><th>Net Amount</th><th>Paid Amount</th><th>' . $t['due_date_invoice'] . '</th><th>' . $t['paid_date'] . '</th><th>' . $t['invoice_status'] . '</th><th>Description</th><th>' . $t['actions'] . '</th></tr></thead>';
+            echo '<thead><tr><th>ID</th><th>Student</th><th>' . $t['amount'] . '</th><th>' . $t['due_date_invoice'] . '</th><th>' . $t['paid_date'] . '</th><th>' . $t['invoice_status'] . '</th><th>Description</th><th>' . $t['actions'] . '</th></tr></thead>';
             echo '<tbody>';
-            $stmt = $pdo->query("SELECT f.*, s.name AS student_name, fs.name AS fee_structure_name, (f.amount - f.concession + f.fine) AS net_amount, (SELECT SUM(amount_paid) FROM fee_transactions WHERE fee_id = f.id) AS total_paid FROM fees f JOIN students s ON f.student_id = s.id LEFT JOIN fee_structures fs ON f.fee_structure_id = fs.id ORDER BY due_date ASC");
+            $stmt = $pdo->query("SELECT f.*, s.name AS student_name FROM fees f JOIN students s ON f.student_id = s.id ORDER BY due_date ASC");
             $fees = $stmt->fetchAll();
             $all_students = $pdo->query("SELECT id, name FROM students")->fetchAll();
-            $fee_structures_list = $pdo->query("SELECT id, name, amount, description FROM fee_structures")->fetchAll();
-            if ($fees) {
-                foreach ($fees as $fee) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($fee['id']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['student_name']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['fee_structure_name'] ?? 'Custom Fee') . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['amount']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['concession']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['fine']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['net_amount']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['total_paid'] ?? 0) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['due_date']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['paid_date'] ?? 'N/A') . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['status']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['description']) . '</td>';
-                    echo '<td>';
-                    if ($fee['status'] != 'Paid' && ($fee['net_amount'] - ($fee['total_paid'] ?? 0)) > 0) {
-                        echo '<button type="button" class="btn btn-sm btn-success mark-paid-btn me-1" data-id="' . $fee['id'] . '" data-amount="' . $fee['net_amount'] . '" data-paid-amount="' . ($fee['total_paid'] ?? 0) . '"><i class="fas fa-money-check-alt"></i>Collect</button>';
-                    }
-                    echo '<button type="button" class="btn btn-sm btn-info edit-btn me-1" data-bs-toggle="modal" data-bs-target="#editFeeInvoiceModal" data-json=\'' . json_encode($fee) . '\' data-form-id="editFeeInvoiceForm" data-type="fee_invoice"><i class="fas fa-edit"></i> ' . $t['edit'] . '</button>';
-                    echo '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $fee['id'] . '" data-type="fee_invoice"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
-                    echo '</td>';
-                    echo '</tr>';
+            foreach ($fees as $fee) {
+                echo '<tr>';
+                echo '<td>' . htmlspecialchars($fee['id']) . '</td>';
+                echo '<td>' . htmlspecialchars($fee['student_name']) . '</td>';
+                echo '<td>' . htmlspecialchars($fee['amount']) . '</td>';
+                echo '<td>' . htmlspecialchars($fee['due_date']) . '</td>';
+                echo '<td>' . htmlspecialchars($fee['paid_date'] ?? 'N/A') . '</td>';
+                echo '<td>' . htmlspecialchars($fee['status']) . '</td>';
+                echo '<td>' . htmlspecialchars($fee['description']) . '</td>';
+                echo '<td>';
+                if ($fee['status'] != 'Paid') {
+                    echo '<button type="button" class="btn btn-sm btn-success mark-paid-btn me-1" data-id="' . $fee['id'] . '"><i class="fas fa-money-check-alt"></i> ' . $t['mark_as_paid'] . '</button>';
                 }
-            } else {
-                echo '<tr><td colspan="13" class="text-center">' . $t['no_records'] . '</td></tr>';
+                echo '<button type="button" class="btn btn-sm btn-info edit-btn me-1" data-bs-toggle="modal" data-bs-target="#editFeeInvoiceModal" data-json=\'' . json_encode($fee) . '\' data-form-id="editFeeInvoiceForm" data-type="fee_invoice"><i class="fas fa-edit"></i> ' . $t['edit'] . '</button>';
+                echo '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $fee['id'] . '" data-type="fee_invoice"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
+                echo '</td>';
+                echo '</tr>';
+            }
+            if (!$fees) {
+                echo '<tr><td colspan="8" class="text-center">' . $t['no_records'] . '</td></tr>';
             }
             echo '</tbody></table>';
             echo '</div>';
@@ -4878,20 +3557,12 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_fee_invoice">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_fee_student_id" class="form-label">Student</label><select class="form-select" id="add_fee_student_id" name="student_id" required>';
             foreach ($all_students as $student) {
                 echo '<option value="' . $student['id'] . '">' . htmlspecialchars($student['name']) . '</option>';
             }
             echo '</select></div>';
-            echo '<div class="mb-3"><label for="fee_structure_id" class="form-label">' . $t['select_fee_structure'] . ' (Optional)</label><select class="form-select" id="fee_structure_id" name="fee_structure_id"><option value="">Custom Fee</option>';
-            foreach ($fee_structures_list as $fs) {
-                echo '<option value="' . $fs['id'] . '">' . htmlspecialchars($fs['name']) . ' (' . htmlspecialchars($fs['amount']) . ')</option>';
-            }
-            echo '</select></div>';
             echo '<div class="mb-3"><label for="add_fee_amount" class="form-label">' . $t['amount'] . '</label><input type="number" step="0.01" class="form-control" id="add_fee_amount" name="amount" required></div>';
-            echo '<div class="mb-3"><label for="add_fee_concession" class="form-label">' . $t['concession'] . '</label><input type="number" step="0.01" class="form-control" id="add_fee_concession" name="concession" value="0.00"></div>';
-            echo '<div class="mb-3"><label for="add_fee_fine" class="form-label">' . $t['fine'] . '</label><input type="number" step="0.01" class="form-control" id="add_fee_fine" name="fine" value="0.00"></div>';
             echo '<div class="mb-3"><label for="add_fee_due_date" class="form-label">' . $t['due_date_invoice'] . '</label><input type="date" class="form-control" id="add_fee_due_date" name="due_date" required></div>';
             echo '<div class="mb-3"><label for="add_fee_status" class="form-label">' . $t['invoice_status'] . '</label><select class="form-select" id="add_fee_status" name="status" required><option value="Unpaid">Unpaid</option><option value="Paid">Paid</option><option value="Partially Paid">Partially Paid</option></select></div>';
             echo '<div class="mb-3"><label for="add_fee_description" class="form-label">Description</label><textarea class="form-control" id="add_fee_description" name="description"></textarea></div>';
@@ -4915,20 +3586,12 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_fee_invoice">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="student_id" class="form-label">Student</label><select class="form-select" id="student_id" name="student_id" required>';
             foreach ($all_students as $student) {
                 echo '<option value="' . $student['id'] . '">' . htmlspecialchars($student['name']) . '</option>';
             }
             echo '</select></div>';
-            echo '<div class="mb-3"><label for="fee_structure_id" class="form-label">' . $t['select_fee_structure'] . ' (Optional)</label><select class="form-select" id="fee_structure_id" name="fee_structure_id"><option value="">Custom Fee</option>';
-            foreach ($fee_structures_list as $fs) {
-                echo '<option value="' . $fs['id'] . '">' . htmlspecialchars($fs['name']) . ' (' . htmlspecialchars($fs['amount']) . ')</option>';
-            }
-            echo '</select></div>';
             echo '<div class="mb-3"><label for="amount" class="form-label">' . $t['amount'] . '</label><input type="number" step="0.01" class="form-control" id="amount" name="amount" required></div>';
-            echo '<div class="mb-3"><label for="concession" class="form-label">' . $t['concession'] . '</label><input type="number" step="0.01" class="form-control" id="concession" name="concession"></div>';
-            echo '<div class="mb-3"><label for="fine" class="form-label">' . $t['fine'] . '</label><input type="number" step="0.01" class="form-control" id="fine" name="fine"></div>';
             echo '<div class="mb-3"><label for="due_date" class="form-label">' . $t['due_date_invoice'] . '</label><input type="date" class="form-control" id="due_date" name="due_date" required></div>';
             echo '<div class="mb-3"><label for="status" class="form-label">' . $t['invoice_status'] . '</label><select class="form-select" id="status" name="status" required><option value="Unpaid">Unpaid</option><option value="Paid">Paid</option><option value="Partially Paid">Partially Paid</option></select></div>';
             echo '<div class="mb-3"><label for="paid_date" class="form-label">' . $t['paid_date'] . '</label><input type="date" class="form-control" id="paid_date" name="paid_date"></div>';
@@ -4937,29 +3600,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
             echo '<button type="submit" class="btn btn-primary">' . $t['save_changes'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="markFeePaidModal" tabindex="-1" aria-labelledby="markFeePaidModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="markFeePaidModalLabel">Collect Fee Payment</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="mark_fee_paid">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<input type="hidden" name="id" id="fee_id">';
-            echo '<div class="mb-3"><strong>Remaining Amount:</strong> <span id="remaining_amount_display"></span></div>';
-            echo '<div class="mb-3"><label for="paid_amount" class="form-label">Amount to Collect</label><input type="number" step="0.01" class="form-control" id="paid_amount" name="paid_amount" min="0" required></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-success">Record Payment</button>';
             echo '</div>';
             echo '</form>';
             echo '</div>';
@@ -5109,7 +3749,7 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<button type="submit" class="btn btn-info">' . $t['generate_report'] . '</button>';
             if (isset($_GET['report_type']) && $_GET['report_type'] == 'fees' && (isset($_GET['student_id']) || isset($_GET['status']))) {
-                $sql = "SELECT f.*, s.name AS student_name, fs.name AS fee_structure_name, (f.amount - f.concession + f.fine) AS net_amount, (SELECT SUM(amount_paid) FROM fee_transactions WHERE fee_id = f.id) AS total_paid FROM fees f JOIN students s ON f.student_id = s.id LEFT JOIN fee_structures fs ON f.fee_structure_id = fs.id WHERE 1=1";
+                $sql = "SELECT f.*, s.name AS student_name FROM fees f JOIN students s ON f.student_id = s.id WHERE 1=1";
                 $params = [];
                 if (!empty($_GET['student_id'])) {
                     $sql .= " AND f.student_id = ?";
@@ -5127,14 +3767,14 @@ function displayAdminPanel($pdo, $t, $lang)
                 echo '<h5>Fee Report ' . (!empty($_GET['student_id']) ? 'for ' . ($report_data_fees[0]['student_name'] ?? '') : '') . ' (' . (!empty($_GET['status']) ? $_GET['status'] : 'All Statuses') . ')</h5>';
                 echo '<div class="table-responsive">';
                 echo '<table class="table table-bordered table-striped">';
-                echo '<thead><tr><th>Student</th><th>Fee Item</th><th>' . $t['amount'] . '</th><th>' . $t['concession'] . '</th><th>' . $t['fine'] . '</th><th>Net Amount</th><th>Paid Amount</th><th>' . $t['due_date_invoice'] . '</th><th>' . $t['paid_date'] . '</th><th>' . $t['invoice_status'] . '</th><th>Description</th></tr></thead>';
+                echo '<thead><tr><th>Student</th><th>' . $t['amount'] . '</th><th>' . $t['due_date_invoice'] . '</th><th>' . $t['paid_date'] . '</th><th>' . $t['invoice_status'] . '</th><th>Description</th></tr></thead>';
                 echo '<tbody>';
                 if ($report_data_fees) {
                     foreach ($report_data_fees as $row) {
-                        echo '<tr><td>' . htmlspecialchars($row['student_name']) . '</td><td>' . htmlspecialchars($row['fee_structure_name'] ?? 'Custom Fee') . '</td><td>' . htmlspecialchars($row['amount']) . '</td><td>' . htmlspecialchars($row['concession']) . '</td><td>' . htmlspecialchars($row['fine']) . '</td><td>' . htmlspecialchars($row['net_amount']) . '</td><td>' . htmlspecialchars($row['total_paid'] ?? 0) . '</td><td>' . htmlspecialchars($row['due_date']) . '</td><td>' . htmlspecialchars($row['paid_date'] ?? 'N/A') . '</td><td>' . htmlspecialchars($row['status']) . '</td><td>' . htmlspecialchars($row['description']) . '</td></tr>';
+                        echo '<tr><td>' . htmlspecialchars($row['student_name']) . '</td><td>' . htmlspecialchars($row['amount']) . '</td><td>' . htmlspecialchars($row['due_date']) . '</td><td>' . htmlspecialchars($row['paid_date'] ?? 'N/A') . '</td><td>' . htmlspecialchars($row['status']) . '</td><td>' . htmlspecialchars($row['description']) . '</td></tr>';
                     }
                 } else {
-                    echo '<tr><td colspan="11" class="text-center">' . $t['no_records'] . '</td></tr>';
+                    echo '<tr><td colspan="6" class="text-center">' . $t['no_records'] . '</td></tr>';
                 }
                 echo '</tbody></table>';
                 echo '</div>';
@@ -5178,7 +3818,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="create_user_account">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="create_username" class="form-label">' . $t['username'] . '</label><input type="text" class="form-control" id="create_username" name="username" required></div>';
             echo '<div class="mb-3"><label for="create_password" class="form-label">' . $t['password'] . '</label><input type="password" class="form-control" id="create_password" name="password" required></div>';
             echo '<div class="mb-3"><label for="create_confirm_password" class="form-label">' . $t['confirm_password'] . '</label><input type="password" class="form-control" id="create_confirm_password" name="confirm_password" required></div>';
@@ -5204,7 +3843,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_user_account">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="username" class="form-label">' . $t['username'] . '</label><input type="text" class="form-control" id="username" name="username" required></div>';
             echo '<div class="mb-3"><label for="password" class="form-label">New Password (Leave blank to keep current)</label><input type="password" class="form-control" id="password" name="password"></div>';
             echo '<div class="mb-3"><label for="confirm_password" class="form-label">Confirm New Password</label><input type="password" class="form-control" id="confirm_password" name="confirm_password"></div>';
@@ -5272,7 +3910,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<form action="" method="POST" class="mt-3">';
             echo '<input type="hidden" name="action" value="update_admission_status">';
             echo '<input type="hidden" name="id" id="update_admission_id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3">';
             echo '<label for="update_admission_status_select" class="form-label">' . $t['update_status'] . '</label>';
             echo '<select class="form-select" id="update_admission_status_select" name="status">';
@@ -5337,7 +3974,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<form action="" method="POST" class="mt-3">';
             echo '<input type="hidden" name="action" value="update_contact_status">';
             echo '<input type="hidden" name="id" id="update_contact_id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3">';
             echo '<label for="update_contact_status_select" class="form-label">' . $t['update_status'] . '</label>';
             echo '<select class="form-select" id="update_contact_status_select" name="status">';
@@ -5385,7 +4021,7 @@ function displayAdminPanel($pdo, $t, $lang)
                     echo '</tr>';
                 }
             } else {
-                echo '<tr><td colspan="6" class="text-center">' . $t['no_records'] . '</td></tr>';
+                echo '<tr><td colspan="5" class="text-center">' . $t['no_records'] . '</td></tr>';
             }
             echo '</tbody></table>';
             echo '</div>';
@@ -5399,10 +4035,9 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_announcement">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_announcement_title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="add_announcement_title" name="title" required></div>';
             echo '<div class="mb-3"><label for="add_announcement_content" class="form-label">Content</label><textarea class="form-control" id="add_announcement_content" name="content" rows="5" required></textarea></div>';
-            echo '<div class="mb-3"><label for="add_announcement_file" class="form-label">Attachment File (PDF, DOCX, JPG, PNG)</label><input type="file" class="form-control" id="add_announcement_file" name="announcement_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"></div>';
+            echo '<div class="mb-3"><label for="add_announcement_file" class="form-label">Attachment File</label><input type="file" class="form-control" id="add_announcement_file" name="announcement_file"></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -5423,11 +4058,10 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_announcement">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="title" name="title" required></div>';
             echo '<div class="mb-3"><label for="content" class="form-label">Content</label><textarea class="form-control" id="content" name="content" rows="5" required></textarea></div>';
             echo '<input type="hidden" name="file_path_old" id="file_path_old">';
-            echo '<div class="mb-3"><label for="announcement_file" class="form-label">New Attachment (optional, PDF, DOCX, JPG, PNG)</label><input type="file" class="form-control" id="announcement_file" name="announcement_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"></div>';
+            echo '<div class="mb-3"><label for="announcement_file" class="form-label">New Attachment (optional)</label><input type="file" class="form-control" id="announcement_file" name="announcement_file"></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -5477,7 +4111,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_event">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_event_title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="add_event_title" name="title" required></div>';
             echo '<div class="mb-3"><label for="add_event_description" class="form-label">Description</label><textarea class="form-control" id="add_event_description" name="description" rows="3"></textarea></div>';
             echo '<div class="mb-3"><label for="add_event_date" class="form-label">' . $t['event_date'] . '</label><input type="date" class="form-control" id="add_event_date" name="event_date" required></div>';
@@ -5503,7 +4136,6 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_event">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="title" name="title" required></div>';
             echo '<div class="mb-3"><label for="description" class="form-label">Description</label><textarea class="form-control" id="description" name="description" rows="3"></textarea></div>';
             echo '<div class="mb-3"><label for="event_date" class="form-label">' . $t['event_date'] . '</label><input type="date" class="form-control" id="event_date" name="event_date" required></div>';
@@ -5553,151 +4185,14 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_gallery_image">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_image_title" class="form-label">' . $t['image_title'] . '</label><input type="text" class="form-control" id="add_image_title" name="title" required></div>';
-            echo '<div class="mb-3"><label for="image_file" class="form-label">' . $t['image'] . ' (JPG, PNG, GIF)</label><input type="file" class="form-control" id="image_file" name="image_file" accept="image/*" required></div>';
+            echo '<div class="mb-3"><label for="image_file" class="form-label">' . $t['image'] . '</label><input type="file" class="form-control" id="image_file" name="image_file" accept="image/*" required></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
             echo '<button type="submit" class="btn btn-primary">' . $t['add_image'] . '</button>';
             echo '</div>';
             echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            break;
-        case 'messages':
-            echo '<h3>' . $t['internal_messaging'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#composeMessageModal">' . $t['compose_new_message'] . '</button>';
-            echo '<h4>' . $t['my_messages'] . '</h4>';
-            echo '<ul class="nav nav-tabs mb-3" id="messageTabs" role="tablist">';
-            echo '<li class="nav-item" role="presentation"><button class="nav-link active" id="inbox-tab" data-bs-toggle="tab" data-bs-target="#inbox" type="button" role="tab" aria-controls="inbox" aria-selected="true">Inbox</button></li>';
-            echo '<li class="nav-item" role="presentation"><button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab" aria-controls="sent" aria-selected="false">' . $t['sent_messages'] . '</button></li>';
-            echo '</ul>';
-            echo '<div class="tab-content" id="messageTabContent">';
-            echo '<div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">';
-            echo '<h5>Unread Messages</h5>';
-            $stmt_inbox_unread = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.receiver_id = ? AND m.read_status = FALSE ORDER BY m.sent_at DESC");
-            $stmt_inbox_unread->execute([$_SESSION['id']]);
-            $inbox_unread_messages = $stmt_inbox_unread->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive mb-3">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Sender</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($inbox_unread_messages) {
-                foreach ($inbox_unread_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['sender_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td><button class="btn btn-sm btn-primary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['read_message'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="5" class="text-center">No unread messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '<h5>Read Messages</h5>';
-            $stmt_inbox_read = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.receiver_id = ? AND m.read_status = TRUE ORDER BY m.sent_at DESC");
-            $stmt_inbox_read->execute([$_SESSION['id']]);
-            $inbox_read_messages = $stmt_inbox_read->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Sender</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($inbox_read_messages) {
-                foreach ($inbox_read_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['sender_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['read_message'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="5" class="text-center">No read messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="tab-pane fade" id="sent" role="tabpanel" aria-labelledby="sent-tab">';
-            echo '<h5>Sent Messages</h5>';
-            $stmt_sent = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.sender_id = ? ORDER BY m.sent_at DESC");
-            $stmt_sent->execute([$_SESSION['id']]);
-            $sent_messages = $stmt_sent->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Receiver</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($sent_messages) {
-                foreach ($sent_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['receiver_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td>' . ($message_data['read_status'] ? 'Read' : 'Unread') . '</td>';
-                    echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['view'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="6" class="text-center">No sent messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="composeMessageModal" tabindex="-1" aria-labelledby="composeMessageModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="composeMessageModalLabel">' . $t['compose_new_message'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="send_internal_message">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="receiver_id" class="form-label">' . $t['receiver'] . '</label><select class="form-select" id="receiver_id" name="receiver_id" required>';
-            echo '<option value="">' . $t['select_receiver'] . '</option>';
-            $all_users = $pdo->prepare("SELECT id, username, role FROM users WHERE id != ? ORDER BY role, username");
-            $all_users->execute([$_SESSION['id']]);
-            $users_for_message = $all_users->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($users_for_message as $user_msg) {
-                echo '<option value="' . $user_msg['id'] . '">' . htmlspecialchars($user_msg['username']) . ' (' . htmlspecialchars($user_msg['role']) . ')</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="message_subject" class="form-label">' . $t['subject'] . '</label><input type="text" class="form-control" id="message_subject" name="subject" required></div>';
-            echo '<div class="mb-3"><label for="message_content" class="form-label">' . $t['message'] . '</label><textarea class="form-control" id="message_content" name="message_content" rows="5" required></textarea></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['send'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog modal-lg">';
-            echo '<div class="modal-content">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="messageModalLabel">Message Subject</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<p><strong>From:</strong> <span id="messageModalSender"></span></p>';
-            echo '<p><strong>To:</strong> <span id="messageModalReceiver"></span></p>';
-            echo '<p><strong>Date:</strong> <span id="messageModalTimestamp"></span></p>';
-            echo '<hr>';
-            echo '<div id="messageModalBody"></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '</div>';
             echo '</div>';
             echo '</div>';
             echo '</div>';
@@ -5709,16 +4204,14 @@ function displayAdminPanel($pdo, $t, $lang)
             echo '<p>Download a JSON file containing all school data for backup purposes.</p>';
             echo '<form action="" method="POST">';
             echo '<input type="hidden" name="action" value="export_data">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<button type="submit" class="btn btn-success"><i class="fas fa-download"></i> ' . $t['export_data'] . '</button>';
             echo '</form>';
             echo '</div>';
             echo '<div class="card p-4">';
             echo '<h4>' . $t['import_data'] . '</h4>';
-            echo '<p>Upload a previously exported JSON file to restore or replace current school data. <strong class="text-danger">Warning: This will overwrite ALL existing data!</strong></p>';
+            echo '<p>Upload a previously exported JSON file to restore or replace current school data.</p>';
             echo '<form action="" method="POST" enctype="multipart/form-data">';
             echo '<input type="hidden" name="action" value="import_data">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3">';
             echo '<label for="json_file" class="form-label">' . $t['choose_json_file'] . '</label>';
             echo '<input type="file" class="form-control" id="json_file" name="json_file" accept=".json" required>';
@@ -5736,75 +4229,25 @@ function displayAdminPanel($pdo, $t, $lang)
 function displayTeacherPanel($pdo, $t, $lang)
 {
     global $section;
-    $csrf = generate_csrf_token();
-    $teacher_id_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
-    $teacher_id_stmt->execute([$_SESSION['id']]);
-    $teacher_db_id = $teacher_id_stmt->fetchColumn();
-    if (!$teacher_db_id) {
-        echo '<p class="alert alert-danger">Teacher record not found. Please contact administrator.</p>';
-        return;
-    }
-    $classes_taught_stmt = $pdo->prepare("SELECT id, name FROM classes WHERE teacher_id = ? ORDER BY name");
-    $classes_taught_stmt->execute([$teacher_db_id]);
-    $classes_taught_list = $classes_taught_stmt->fetchAll();
     switch ($section) {
-        case 'teacher_classes':
-            echo '<h3>' . $t['teacher_classes'] . '</h3>';
-            echo '<div class="accordion" id="teacherClassesAccordion">';
-            if ($classes_taught_list) {
-                $counter = 0;
-                foreach ($classes_taught_list as $class) {
-                    $counter++;
-                    $stmt_students_in_class = $pdo->prepare("SELECT id, name, roll_no FROM students WHERE class_id = ? ORDER BY name");
-                    $stmt_students_in_class->execute([$class['id']]);
-                    $students_in_class = $stmt_students_in_class->fetchAll();
-                    echo '<div class="accordion-item">';
-                    echo '  <h2 class="accordion-header" id="heading' . $class['id'] . '">';
-                    echo '    <button class="accordion-button' . ($counter > 1 ? ' collapsed' : '') . '" type="button" data-bs-toggle="collapse" data-bs-target="#collapse' . $class['id'] . '" aria-expanded="' . ($counter === 1 ? 'true' : 'false') . '" aria-controls="collapse' . $class['id'] . '">';
-                    echo htmlspecialchars($class['name']) . ' - ' . count($students_in_class) . ' Students';
-                    echo '    </button>';
-                    echo '  </h2>';
-                    echo '  <div id="collapse' . $class['id'] . '" class="accordion-collapse collapse' . ($counter === 1 ? ' show' : '') . '" aria-labelledby="heading' . $class['id'] . '" data-bs-parent="#teacherClassesAccordion">';
-                    echo '    <div class="accordion-body">';
-                    if ($students_in_class) {
-                        echo '<h5>' . $t['view_all_students_in_class'] . '</h5>';
-                        echo '<div class="table-responsive">';
-                        echo '<table class="table table-bordered table-striped table-sm">';
-                        echo '<thead><tr><th>' . $t['student_name'] . '</th><th>' . $t['roll_no'] . '</th></tr></thead>';
-                        echo '<tbody>';
-                        foreach ($students_in_class as $student) {
-                            echo '<tr><td>' . htmlspecialchars($student['name']) . '</td><td>' . htmlspecialchars($student['roll_no']) . '</td></tr>';
-                        }
-                        echo '</tbody></table>';
-                        echo '</div>';
-                    } else {
-                        echo '<p>No students assigned to this class.</p>';
-                    }
-                    echo '    </div>';
-                    echo '  </div>';
-                    echo '</div>';
-                }
-            } else {
-                echo '<p>' . $t['no_records'] . '</p>';
-            }
-            echo '</div>';
-            break;
         case 'attendance':
             echo '<h3>' . $t['take_class_attendance'] . '</h3>';
             echo '<form action="" method="POST" class="mb-4">';
             echo '<input type="hidden" name="action" value="save_attendance">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="row mb-3">';
             echo '<div class="col-md-4"><label for="attendance_class_id" class="form-label">' . $t['select_class'] . '</label><select class="form-select" id="attendance_class_id" name="class_id" required>';
             echo '<option value="">' . $t['select_class'] . '</option>';
-            foreach ($classes_taught_list as $class) {
+            $stmt = $pdo->prepare("SELECT id, name FROM classes WHERE teacher_id = (SELECT id FROM teachers WHERE user_id = ?)");
+            $stmt->execute([$_SESSION['id']]);
+            $classes = $stmt->fetchAll();
+            foreach ($classes as $class) {
                 echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
             }
             echo '</select></div>';
             echo '<div class="col-md-4"><label for="attendance_subject_id" class="form-label">' . $t['select_subject'] . '</label><select class="form-select" id="attendance_subject_id" name="subject_id">';
             echo '<option value="">' . $t['select_subject'] . '</option>';
-            $all_subjects = $pdo->query("SELECT id, name FROM subjects")->fetchAll();
-            foreach ($all_subjects as $subject) {
+            $subjects = $pdo->query("SELECT id, name FROM subjects")->fetchAll();
+            foreach ($subjects as $subject) {
                 echo '<option value="' . $subject['id'] . '">' . htmlspecialchars($subject['name']) . '</option>';
             }
             echo '</select></div>';
@@ -5848,9 +4291,12 @@ function displayTeacherPanel($pdo, $t, $lang)
             echo '<table class="table table-bordered table-striped">';
             echo '<thead><tr><th>ID</th><th>' . $t['title'] . '</th><th>' . $t['class_name'] . '</th><th>' . $t['subject'] . '</th><th>' . $t['due_date'] . '</th><th>File</th><th>Submissions</th><th>' . $t['actions'] . '</th></tr></thead>';
             echo '<tbody>';
-            $stmt = $pdo->prepare("SELECT a.*, c.name AS class_name, s.name AS subject_name FROM assignments a JOIN classes c ON a.class_id = c.id JOIN subjects s ON a.subject_id = s.id WHERE a.teacher_id = ? ORDER BY due_date DESC");
-            $stmt->execute([$teacher_db_id]);
+            $stmt = $pdo->prepare("SELECT a.*, c.name AS class_name, s.name AS subject_name FROM assignments a JOIN classes c ON a.class_id = c.id JOIN subjects s ON a.subject_id = s.id WHERE a.teacher_id = (SELECT id FROM teachers WHERE user_id = ?) ORDER BY due_date DESC");
+            $stmt->execute([$_SESSION['id']]);
             $assignments = $stmt->fetchAll();
+            $classes_taught = $pdo->prepare("SELECT id, name FROM classes WHERE teacher_id = (SELECT id FROM teachers WHERE user_id = ?)");
+            $classes_taught->execute([$_SESSION['id']]);
+            $classes_taught_list = $classes_taught->fetchAll();
             $all_subjects = $pdo->query("SELECT id, name FROM subjects")->fetchAll();
             if ($assignments) {
                 foreach ($assignments as $assignment) {
@@ -5899,7 +4345,6 @@ function displayTeacherPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="add_assignment">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<div class="mb-3"><label for="add_assignment_title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="add_assignment_title" name="title" required></div>';
             echo '<div class="mb-3"><label for="add_assignment_class_id" class="form-label">' . $t['select_class'] . '</label><select class="form-select" id="add_assignment_class_id" name="class_id" required>';
             foreach ($classes_taught_list as $class) {
@@ -5921,7 +4366,7 @@ function displayTeacherPanel($pdo, $t, $lang)
             echo '</select></div>';
             echo '<div class="mb-3"><label for="add_assignment_description" class="form-label">' . $t['description'] . '</label><textarea class="form-control" id="add_assignment_description" name="description"></textarea></div>';
             echo '<div class="mb-3"><label for="add_assignment_due_date" class="form-label">' . $t['due_date'] . '</label><input type="date" class="form-control" id="add_assignment_due_date" name="due_date" required></div>';
-            echo '<div class="mb-3"><label for="assignment_file" class="form-label">' . $t['upload_file'] . ' (PDF, DOCX, JPG, PNG)</label><input type="file" class="form-control" id="assignment_file" name="assignment_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"></div>';
+            echo '<div class="mb-3"><label for="assignment_file" class="form-label">' . $t['upload_file'] . '</label><input type="file" class="form-control" id="assignment_file" name="assignment_file"></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -5942,7 +4387,6 @@ function displayTeacherPanel($pdo, $t, $lang)
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" id="action" value="edit_assignment">';
             echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<input type="hidden" name="file_path_old" id="file_path_old">';
             echo '<div class="mb-3"><label for="title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="title" name="title" required></div>';
             echo '<div class="mb-3"><label for="class_id" class="form-label">' . $t['select_class'] . '</label><select class="form-select" id="class_id" name="class_id" required>';
@@ -5955,7 +4399,7 @@ function displayTeacherPanel($pdo, $t, $lang)
             echo '</select></div>';
             echo '<div class="mb-3"><label for="description" class="form-label">' . $t['description'] . '</label><textarea class="form-control" id="description" name="description"></textarea></div>';
             echo '<div class="mb-3"><label for="due_date" class="form-label">' . $t['due_date'] . '</label><input type="date" class="form-control" id="due_date" name="due_date" required></div>';
-            echo '<div class="mb-3"><label for="assignment_file" class="form-label">' . $t['upload_file'] . ' (Leave blank to keep current file)</label><input type="file" class="form-control" id="assignment_file" name="assignment_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"></div>';
+            echo '<div class="mb-3"><label for="assignment_file" class="form-label">' . $t['upload_file'] . ' (Leave blank to keep current file)</label><input type="file" class="form-control" id="assignment_file" name="assignment_file"></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -6006,260 +4450,54 @@ function displayTeacherPanel($pdo, $t, $lang)
             echo '});';
             echo '</script>';
             break;
-        case 'study_materials':
-            echo '<h3>' . $t['study_materials_list'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudyMaterialModal">' . $t['add_study_material'] . '</button>';
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>' . $t['title'] . '</th><th>' . $t['class_name'] . '</th><th>' . $t['subject'] . '</th><th>Description</th><th>File</th><th>' . $t['actions'] . '</th></tr></thead>';
-            echo '<tbody>';
-            $stmt = $pdo->prepare("SELECT sm.*, c.name AS class_name, s.name AS subject_name FROM study_materials sm JOIN classes c ON sm.class_id = c.id JOIN subjects s ON sm.subject_id = s.id WHERE sm.teacher_id = ? ORDER BY uploaded_at DESC");
-            $stmt->execute([$teacher_db_id]);
-            $materials = $stmt->fetchAll();
-            $all_subjects = $pdo->query("SELECT id, name FROM subjects")->fetchAll();
-            if ($materials) {
-                foreach ($materials as $material) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($material['id']) . '</td>';
-                    echo '<td>' . htmlspecialchars($material['title']) . '</td>';
-                    echo '<td>' . htmlspecialchars($material['class_name']) . '</td>';
-                    echo '<td>' . htmlspecialchars($material['subject_name']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($material['description']), 0, 50) . '...</td>';
-                    echo '<td><a href="' . htmlspecialchars($material['file_path']) . '" target="_blank">Download</a></td>';
-                    echo '<td>';
-                    echo '<button type="button" class="btn btn-sm btn-info edit-btn me-1" data-bs-toggle="modal" data-bs-target="#editStudyMaterialModal" data-json=\'' . json_encode($material) . '\' data-form-id="editStudyMaterialForm" data-type="study_material"><i class="fas fa-edit"></i> ' . $t['edit'] . '</button>';
-                    echo '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $material['id'] . '" data-type="study_material"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
-                    echo '</td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="7" class="text-center">' . $t['no_records'] . '</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '<div class="modal fade" id="addStudyMaterialModal" tabindex="-1" aria-labelledby="addStudyMaterialModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="addStudyMaterialForm" enctype="multipart/form-data">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="addStudyMaterialModalLabel">' . $t['add_study_material'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="add_study_material">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="add_study_material_title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="add_study_material_title" name="title" required></div>';
-            echo '<div class="mb-3"><label for="add_study_material_class_id" class="form-label">' . $t['select_class'] . '</label><select class="form-select" id="add_study_material_class_id" name="class_id" required>';
-            foreach ($classes_taught_list as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="add_study_material_subject_id" class="form-label">' . $t['select_subject'] . '</label><select class="form-select" id="add_study_material_subject_id" name="subject_id" required>';
-            if (!empty($classes_taught_list)) {
-                $default_class_id = $classes_taught_list[0]['id'];
-                $stmt_sub = $pdo->prepare("SELECT s.id, s.name FROM class_subjects cs JOIN subjects s ON cs.subject_id = s.id WHERE cs.class_id = ?");
-                $stmt_sub->execute([$default_class_id]);
-                $class_subjects_options = $stmt_sub->fetchAll();
-                foreach ($class_subjects_options as $sub) {
-                    echo '<option value="' . $sub['id'] . '">' . htmlspecialchars($sub['name']) . '</option>';
-                }
-            } else {
-                echo '<option value="">' . $t['select_class'] . ' first</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="add_study_material_description" class="form-label">' . $t['description'] . '</label><textarea class="form-control" id="add_study_material_description" name="description"></textarea></div>';
-            echo '<div class="mb-3"><label for="material_file" class="form-label">' . $t['upload_file'] . ' (PDF, DOCX, JPG, PNG)</label><input type="file" class="form-control" id="material_file" name="material_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" required></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['add_study_material'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="editStudyMaterialModal" tabindex="-1" aria-labelledby="editStudyMaterialModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="editStudyMaterialForm" enctype="multipart/form-data">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="editStudyMaterialModalLabel">' . $t['edit'] . ' Study Material</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" id="action" value="edit_study_material">';
-            echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<input type="hidden" name="current_material_path" id="current_material_path">';
-            echo '<div class="mb-3"><label for="title" class="form-label">' . $t['title'] . '</label><input type="text" class="form-control" id="title" name="title" required></div>';
-            echo '<div class="mb-3"><label for="class_id" class="form-label">' . $t['select_class'] . '</label><select class="form-select" id="class_id" name="class_id" required>';
-            foreach ($classes_taught_list as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="subject_id" class="form-label">' . $t['select_subject'] . '</label><select class="form-select" id="subject_id" name="subject_id" required>';
-            echo '<option value="">Select Class First</option>';
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="description" class="form-label">' . $t['description'] . '</label><textarea class="form-control" id="description" name="description"></textarea></div>';
-            echo '<div class="mb-3"><label for="material_file" class="form-label">' . $t['upload_file'] . ' (Leave blank to keep current file)</label><input type="file" class="form-control" id="material_file" name="material_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['save_changes'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            break;
         case 'exams_marks':
-            echo '<h3>' . $t['manage_my_exams'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTeacherExamModal">' . $t['add_exam_for_my_class'] . '</button>';
-            echo '<div class="table-responsive mb-4">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>' . $t['exam_name'] . '</th><th>' . $t['class_name'] . '</th><th>' . $t['subject'] . '</th><th>' . $t['exam_date'] . '</th><th>' . $t['max_marks'] . '</th><th>' . $t['actions'] . '</th></tr></thead>';
-            echo '<tbody>';
-            $stmt = $pdo->prepare("SELECT e.*, c.name AS class_name, s.name AS subject_name FROM exams e JOIN classes c ON e.class_id = c.id JOIN subjects s ON e.subject_id = s.id WHERE e.teacher_id = ? ORDER BY exam_date DESC");
-            $stmt->execute([$teacher_db_id]);
-            $exams_by_me = $stmt->fetchAll();
-            $all_subjects = $pdo->query("SELECT id, name FROM subjects")->fetchAll();
-            if ($exams_by_me) {
-                foreach ($exams_by_me as $exam) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($exam['id']) . '</td>';
-                    echo '<td>' . htmlspecialchars($exam['name']) . '</td>';
-                    echo '<td>' . htmlspecialchars($exam['class_name']) . '</td>';
-                    echo '<td>' . htmlspecialchars($exam['subject_name']) . '</td>';
-                    echo '<td>' . htmlspecialchars($exam['exam_date']) . '</td>';
-                    echo '<td>' . htmlspecialchars($exam['max_marks']) . '</td>';
-                    echo '<td>';
-                    echo '<button type="button" class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" data-bs-target="#enterMarksModal" data-exam-id="' . $exam['id'] . '">' . $t['enter_marks'] . '</button>';
-                    echo '<button type="button" class="btn btn-sm btn-info edit-btn me-1" data-bs-toggle="modal" data-bs-target="#editTeacherExamModal" data-json=\'' . json_encode($exam) . '\' data-form-id="editTeacherExamForm" data-type="teacher_exam"><i class="fas fa-edit"></i> ' . $t['edit'] . '</button>';
-                    echo '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $exam['id'] . '" data-type="teacher_exam"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
-                    echo '</td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="7" class="text-center">' . $t['no_records'] . '</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '<div class="modal fade" id="addTeacherExamModal" tabindex="-1" aria-labelledby="addTeacherExamModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="addTeacherExamForm">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="addTeacherExamModalLabel">' . $t['add_exam_for_my_class'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="teacher_add_exam">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="add_teacher_exam_name" class="form-label">' . $t['exam_name'] . '</label><input type="text" class="form-control" id="add_teacher_exam_name" name="name" required></div>';
-            echo '<div class="mb-3"><label for="add_teacher_exam_class_id" class="form-label">' . $t['class_name'] . '</label><select class="form-select" id="add_teacher_exam_class_id" name="class_id" required>';
-            foreach ($classes_taught_list as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="add_teacher_exam_subject_id" class="form-label">' . $t['subject'] . '</label><select class="form-select" id="add_teacher_exam_subject_id" name="subject_id" required>';
-            if (!empty($classes_taught_list)) {
-                $default_class_id = $classes_taught_list[0]['id'];
-                $stmt_sub = $pdo->prepare("SELECT s.id, s.name FROM class_subjects cs JOIN subjects s ON cs.subject_id = s.id WHERE cs.class_id = ?");
-                $stmt_sub->execute([$default_class_id]);
-                $class_subjects_options = $stmt_sub->fetchAll();
-                foreach ($class_subjects_options as $sub) {
-                    echo '<option value="' . $sub['id'] . '">' . htmlspecialchars($sub['name']) . '</option>';
-                }
-            } else {
-                echo '<option value="">' . $t['select_class'] . ' first</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="add_teacher_exam_date" class="form-label">' . $t['exam_date'] . '</label><input type="date" class="form-control" id="add_teacher_exam_date" name="exam_date" required></div>';
-            echo '<div class="mb-3"><label for="add_teacher_exam_max_marks" class="form-label">' . $t['max_marks'] . '</label><input type="number" class="form-control" id="add_teacher_exam_max_marks" name="max_marks" required></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['add_exam'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="editTeacherExamModal" tabindex="-1" aria-labelledby="editTeacherExamModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="editTeacherExamForm">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="editTeacherExamModalLabel">' . $t['edit'] . ' ' . $t['exam_name'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" id="action" value="teacher_edit_exam">';
-            echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="name" class="form-label">' . $t['exam_name'] . '</label><input type="text" class="form-control" id="name" name="name" required></div>';
-            echo '<div class="mb-3"><label for="class_id" class="form-label">' . $t['class_name'] . '</label><select class="form-select" id="class_id" name="class_id" required>';
-            foreach ($classes_taught_list as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="subject_id" class="form-label">' . $t['subject'] . '</label><select class="form-select" id="subject_id" name="subject_id" required>';
-            echo '<option value="">Select Class First</option>';
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="exam_date" class="form-label">' . $t['exam_date'] . '</label><input type="date" class="form-control" id="exam_date" name="exam_date" required></div>';
-            echo '<div class="mb-3"><label for="max_marks" class="form-label">' . $t['max_marks'] . '</label><input type="number" class="form-control" id="max_marks" name="max_marks" required></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['save_changes'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="enterMarksModal" tabindex="-1" aria-labelledby="enterMarksModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="enterMarksForm">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="enterMarksModalLabel">' . $t['enter_exam_marks'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
+            echo '<h3>' . $t['enter_exam_marks'] . '</h3>';
+            echo '<form action="" method="POST" class="mb-4">';
             echo '<input type="hidden" name="action" value="save_marks">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<input type="hidden" name="exam_id" id="marks_exam_id_modal">';
-            echo '<div id="student_marks_list_modal">';
-            echo '<p>Loading students...</p>';
+            echo '<div class="row mb-3">';
+            echo '<div class="col-md-6"><label for="marks_exam_id" class="form-label">' . $t['select_exam'] . '</label><select class="form-select" id="marks_exam_id" name="exam_id" required>';
+            echo '<option value="">' . $t['select_exam'] . '</option>';
+            $stmt = $pdo->prepare("SELECT e.id, e.name, c.name AS class_name, s.name AS subject_name, e.max_marks FROM exams e JOIN classes c ON e.class_id = c.id JOIN subjects s ON e.subject_id = s.id WHERE c.teacher_id = (SELECT id FROM teachers WHERE user_id = ?) ORDER BY e.exam_date DESC");
+            $stmt->execute([$_SESSION['id']]);
+            $exams_taught = $stmt->fetchAll();
+            foreach ($exams_taught as $exam) {
+                echo '<option value="' . $exam['id'] . '">' . htmlspecialchars($exam['name'] . ' - ' . $exam['class_name'] . ' - ' . $exam['subject_name'] . ' (Max: ' . $exam['max_marks'] . ')') . '</option>';
+            }
+            echo '</select></div>';
             echo '</div>';
+            echo '<div id="student_marks_list">';
+            echo '<p>Select an exam to enter marks.</p>';
             echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['save_marks'] . '</button>';
-            echo '</div>';
+            echo '<button type="submit" class="btn btn-primary d-none" id="save_marks_btn">' . $t['save_marks'] . '</button>';
             echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
             echo '<script>';
-            echo '$(document).on("click", "[data-bs-target=\"#enterMarksModal\"]", function() {';
-            echo '    var examId = $(this).data("exam-id");';
-            echo '    $("#marks_exam_id_modal").val(examId);';
-            echo '    $.ajax({';
-            echo '        url: "?page=ajax_data&type=marks_students&lang=' . $lang . '",';
-            echo '        type: "GET",';
-            echo '        data: { exam_id: examId },';
-            echo '        success: function(response) {';
-            echo '            $("#student_marks_list_modal").html(response);';
+            echo '$(document).ready(function() {';
+            echo '    function loadStudentsForMarks() {';
+            echo '        var examId = $("#marks_exam_id").val();';
+            echo '        if (examId) {';
+            echo '            $.ajax({';
+            echo '                url: "?page=ajax_data&type=marks_students&lang=' . $lang . '",';
+            echo '                type: "GET",';
+            echo '                data: { exam_id: examId },';
+            echo '                success: function(response) {';
+            echo '                    $("#student_marks_list").html(response);';
+            echo '                    $("#save_marks_btn").removeClass("d-none");';
+            echo '                }';
+            echo '            });';
+            echo '        } else {';
+            echo '            $("#student_marks_list").html("<p>Select an exam to enter marks.</p>");';
+            echo '            $("#save_marks_btn").addClass("d-none");';
             echo '        }';
-            echo '    });';
+            echo '    }';
+            echo '    $("#marks_exam_id").change(loadStudentsForMarks);';
+            echo '    loadStudentsForMarks();';
             echo '});';
             echo '</script>';
             break;
         case 'timetable':
             echo '<h3>' . $t['view_timetable'] . '</h3>';
-            $stmt = $pdo->prepare("SELECT tt.*, c.name AS class_name, s.name AS subject_name, t.name AS teacher_name FROM timetables tt JOIN classes c ON tt.class_id = c.id JOIN subjects s ON tt.subject_id = s.id JOIN teachers t ON tt.teacher_id = t.id WHERE tt.teacher_id = ? ORDER BY FIELD(day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time");
-            $stmt->execute([$teacher_db_id]);
+            $stmt = $pdo->prepare("SELECT tt.*, c.name AS class_name, s.name AS subject_name, t.name AS teacher_name FROM timetables tt JOIN classes c ON tt.class_id = c.id JOIN subjects s ON tt.subject_id = s.id JOIN teachers t ON tt.teacher_id = t.id WHERE tt.teacher_id = (SELECT id FROM teachers WHERE user_id = ?) ORDER BY FIELD(day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time");
+            $stmt->execute([$_SESSION['id']]);
             $timetable_entries = $stmt->fetchAll();
             $grouped_timetable = [];
             foreach ($timetable_entries as $entry) {
@@ -6290,255 +4528,6 @@ function displayTeacherPanel($pdo, $t, $lang)
                 echo '<p>' . $t['no_records'] . '</p>';
             }
             break;
-        case 'teacher_notes':
-            echo '<h3>' . $t['teacher_notes'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTeacherNoteModal">' . $t['add_note'] . '</button>';
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>Student</th><th>' . $t['note_title'] . '</th><th>Note Snippet</th><th>Date</th><th>' . $t['actions'] . '</th></tr></thead>';
-            echo '<tbody>';
-            $stmt = $pdo->prepare("SELECT tn.*, s.name AS student_name, t.name AS teacher_name FROM teacher_notes tn JOIN students s ON tn.student_id = s.id JOIN teachers t ON tn.teacher_id = t.id WHERE tn.teacher_id = ? ORDER BY tn.created_at DESC");
-            $stmt->execute([$teacher_db_id]);
-            $notes = $stmt->fetchAll();
-            $students_in_my_classes_stmt = $pdo->prepare("SELECT s.id, s.name FROM students s JOIN classes c ON s.class_id = c.id WHERE c.teacher_id = ? ORDER BY s.name");
-            $students_in_my_classes_stmt->execute([$teacher_db_id]);
-            $students_in_my_classes = $students_in_my_classes_stmt->fetchAll();
-            if ($notes) {
-                foreach ($notes as $note) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($note['id']) . '</td>';
-                    echo '<td>' . htmlspecialchars($note['student_name']) . '</td>';
-                    echo '<td>' . htmlspecialchars($note['title']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($note['note']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d", strtotime($note['created_at'])) . '</td>';
-                    echo '<td>';
-                    echo '<button type="button" class="btn btn-sm btn-info view-note-btn me-1" data-bs-toggle="modal" data-bs-target="#teacherNoteModal" data-json=\'' . json_encode($note) . '\'>' . $t['view'] . '</button>';
-                    echo '<button type="button" class="btn btn-sm btn-info edit-btn me-1" data-bs-toggle="modal" data-bs-target="#editTeacherNoteModal" data-json=\'' . json_encode($note) . '\' data-form-id="editTeacherNoteForm" data-type="teacher_note"><i class="fas fa-edit"></i> ' . $t['edit'] . '</button>';
-                    echo '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' . $note['id'] . '" data-type="teacher_note"><i class="fas fa-trash"></i> ' . $t['delete'] . '</button>';
-                    echo '</td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="6" class="text-center">' . $t['no_records'] . '</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '<div class="modal fade" id="addTeacherNoteModal" tabindex="-1" aria-labelledby="addTeacherNoteModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="addTeacherNoteForm">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="addTeacherNoteModalLabel">' . $t['add_note'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="add_teacher_note">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="add_note_student_id" class="form-label">Student</label><select class="form-select" id="add_note_student_id" name="student_id" required>';
-            if ($students_in_my_classes) {
-                foreach ($students_in_my_classes as $student) {
-                    echo '<option value="' . $student['id'] . '">' . htmlspecialchars($student['name']) . '</option>';
-                }
-            } else {
-                echo '<option value="">No students in your classes</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="add_note_title" class="form-label">' . $t['note_title'] . '</label><input type="text" class="form-control" id="add_note_title" name="note_title" required></div>';
-            echo '<div class="mb-3"><label for="add_note_content" class="form-label">' . $t['note_content'] . '</label><textarea class="form-control" id="add_note_content" name="note_content" rows="5" required></textarea></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['add_note'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="editTeacherNoteModal" tabindex="-1" aria-labelledby="editTeacherNoteModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="editTeacherNoteForm">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="editTeacherNoteModalLabel">' . $t['edit'] . ' Teacher Note</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" id="action" value="edit_teacher_note">';
-            echo '<input type="hidden" name="id" id="id">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="student_id" class="form-label">Student</label><select class="form-select" id="student_id" name="student_id" required>';
-            foreach ($students_in_my_classes as $student) {
-                echo '<option value="' . $student['id'] . '">' . htmlspecialchars($student['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="note_title" class="form-label">' . $t['note_title'] . '</label><input type="text" class="form-control" id="note_title" name="note_title" required></div>';
-            echo '<div class="mb-3"><label for="note_content" class="form-label">' . $t['note_content'] . '</label><textarea class="form-control" id="note_content" name="note_content" rows="5" required></textarea></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['save_changes'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="teacherNoteModal" tabindex="-1" aria-labelledby="teacherNoteModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog modal-lg">';
-            echo '<div class="modal-content">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="teacherNoteModalLabel">Note Details</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<p><strong>Student:</strong> <span id="teacherNoteModalStudent"></span></p>';
-            echo '<p><strong>Teacher:</strong> <span id="teacherNoteModalTeacher"></span></p>';
-            echo '<p><strong>Date:</strong> <span id="teacherNoteModalDate"></span></p>';
-            echo '<hr>';
-            echo '<div id="teacherNoteModalContent"></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            break;
-        case 'messages':
-            echo '<h3>' . $t['internal_messaging'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#composeMessageModal">' . $t['compose_new_message'] . '</button>';
-            echo '<h4>' . $t['my_messages'] . '</h4>';
-            echo '<ul class="nav nav-tabs mb-3" id="messageTabs" role="tablist">';
-            echo '<li class="nav-item" role="presentation"><button class="nav-link active" id="inbox-tab" data-bs-toggle="tab" data-bs-target="#inbox" type="button" role="tab" aria-controls="inbox" aria-selected="true">Inbox</button></li>';
-            echo '<li class="nav-item" role="presentation"><button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab" aria-controls="sent" aria-selected="false">' . $t['sent_messages'] . '</button></li>';
-            echo '</ul>';
-            echo '<div class="tab-content" id="messageTabContent">';
-            echo '<div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">';
-            echo '<h5>Unread Messages</h5>';
-            $stmt_inbox_unread = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.receiver_id = ? AND m.read_status = FALSE ORDER BY m.sent_at DESC");
-            $stmt_inbox_unread->execute([$_SESSION['id']]);
-            $inbox_unread_messages = $stmt_inbox_unread->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive mb-3">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Sender</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($inbox_unread_messages) {
-                foreach ($inbox_unread_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['sender_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td><button class="btn btn-sm btn-primary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['read_message'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="5" class="text-center">No unread messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '<h5>Read Messages</h5>';
-            $stmt_inbox_read = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.receiver_id = ? AND m.read_status = TRUE ORDER BY m.sent_at DESC");
-            $stmt_inbox_read->execute([$_SESSION['id']]);
-            $inbox_read_messages = $stmt_inbox_read->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Sender</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($inbox_read_messages) {
-                foreach ($inbox_read_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['sender_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['read_message'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="5" class="text-center">No read messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="tab-pane fade" id="sent" role="tabpanel" aria-labelledby="sent-tab">';
-            echo '<h5>Sent Messages</h5>';
-            $stmt_sent = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.sender_id = ? ORDER BY m.sent_at DESC");
-            $stmt_sent->execute([$_SESSION['id']]);
-            $sent_messages = $stmt_sent->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Receiver</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($sent_messages) {
-                foreach ($sent_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['receiver_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td>' . ($message_data['read_status'] ? 'Read' : 'Unread') . '</td>';
-                    echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['view'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="6" class="text-center">No sent messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="composeMessageModal" tabindex="-1" aria-labelledby="composeMessageModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="composeMessageModalLabel">' . $t['compose_new_message'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="send_internal_message">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="receiver_id" class="form-label">' . $t['receiver'] . '</label><select class="form-select" id="receiver_id" name="receiver_id" required>';
-            echo '<option value="">' . $t['select_receiver'] . '</option>';
-            $all_users = $pdo->prepare("SELECT id, username, role FROM users WHERE id != ? ORDER BY role, username");
-            $all_users->execute([$_SESSION['id']]);
-            $users_for_message = $all_users->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($users_for_message as $user_msg) {
-                echo '<option value="' . $user_msg['id'] . '">' . htmlspecialchars($user_msg['username']) . ' (' . htmlspecialchars($user_msg['role']) . ')</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="message_subject" class="form-label">' . $t['subject'] . '</label><input type="text" class="form-control" id="message_subject" name="subject" required></div>';
-            echo '<div class="mb-3"><label for="message_content" class="form-label">' . $t['message'] . '</label><textarea class="form-control" id="message_content" name="message_content" rows="5" required></textarea></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['send'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog modal-lg">';
-            echo '<div class="modal-content">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="messageModalLabel">Message Subject</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<p><strong>From:</strong> <span id="messageModalSender"></span></p>';
-            echo '<p><strong>To:</strong> <span id="messageModalReceiver"></span></p>';
-            echo '<p><strong>Date:</strong> <span id="messageModalTimestamp"></span></p>';
-            echo '<hr>';
-            echo '<div id="messageModalBody"></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            break;
         default:
             echo '<h2>Welcome, Teacher!</h2>';
             echo '<p>Use the sidebar to manage your classes and students.</p>';
@@ -6548,7 +4537,6 @@ function displayTeacherPanel($pdo, $t, $lang)
 function displayStudentPanel($pdo, $t, $lang)
 {
     global $section;
-    $csrf = generate_csrf_token();
     $student_info_stmt = $pdo->prepare("SELECT s.id, s.name, s.class_id, c.name AS class_name FROM students s JOIN users u ON s.user_id = u.id LEFT JOIN classes c ON s.class_id = c.id WHERE u.id = ?");
     $student_info_stmt->execute([$_SESSION['id']]);
     $student = $student_info_stmt->fetch();
@@ -6653,7 +4641,7 @@ function displayStudentPanel($pdo, $t, $lang)
         case 'assignments':
             echo '<h3>' . $t['download_assignments'] . '</h3>';
             echo '<h4>My Assignments (' . htmlspecialchars($student['name']) . ')</h4>';
-            $stmt = $pdo->prepare("SELECT a.*, c.name AS class_name, s.name AS subject_name, tea.name AS teacher_name, sa.file_path AS submitted_file, sa.submission_date FROM assignments a JOIN classes c ON a.class_id = c.id JOIN subjects s ON a.subject_id = s.id JOIN teachers tea ON a.teacher_id = tea.id LEFT JOIN student_assignments sa ON a.id = sa.assignment_id AND sa.student_id = ? WHERE a.class_id = ? ORDER BY due_date DESC");
+            $stmt = $pdo->prepare("SELECT a.*, c.name AS class_name, s.name AS subject_name, t.name AS teacher_name, sa.file_path AS submitted_file, sa.submission_date FROM assignments a JOIN classes c ON a.class_id = c.id JOIN subjects s ON a.subject_id = s.id JOIN teachers tea ON a.teacher_id = tea.id LEFT JOIN student_assignments sa ON a.id = sa.assignment_id AND sa.student_id = ? WHERE a.class_id = ? ORDER BY due_date DESC");
             $stmt->execute([$student_id, $class_id]);
             $assignments = $stmt->fetchAll();
             echo '<div class="table-responsive">';
@@ -6701,10 +4689,9 @@ function displayStudentPanel($pdo, $t, $lang)
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<input type="hidden" name="action" value="submit_student_assignment">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
             echo '<input type="hidden" name="assignment_id" id="submit_assignment_id">';
             echo '<input type="hidden" name="student_id" id="submit_student_id">';
-            echo '<div class="mb-3"><label for="submission_file" class="form-label">' . $t['submission_file'] . '</label><input type="file" class="form-control" id="submission_file" name="submission_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" required></div>';
+            echo '<div class="mb-3"><label for="submission_file" class="form-label">' . $t['submission_file'] . '</label><input type="file" class="form-control" id="submission_file" name="submission_file" required></div>';
             echo '</div>';
             echo '<div class="modal-footer">';
             echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
@@ -6723,173 +4710,6 @@ function displayStudentPanel($pdo, $t, $lang)
             echo '});';
             echo '</script>';
             break;
-        case 'study_materials':
-            echo '<h3>Study Materials</h3>';
-            echo '<h4>Available Study Materials for My Class (' . htmlspecialchars($student['class_name'] ?? 'N/A') . ')</h4>';
-            if ($class_id) {
-                $stmt = $pdo->prepare("SELECT sm.*, c.name AS class_name, s.name AS subject_name, t.name AS teacher_name FROM study_materials sm JOIN classes c ON sm.class_id = c.id JOIN subjects s ON sm.subject_id = s.id JOIN teachers t ON sm.teacher_id = t.id WHERE sm.class_id = ? ORDER BY uploaded_at DESC");
-                $stmt->execute([$class_id]);
-                $materials = $stmt->fetchAll();
-                echo '<div class="table-responsive">';
-                echo '<table class="table table-bordered table-striped">';
-                echo '<thead><tr><th>' . $t['title'] . '</th><th>Teacher</th><th>Subject</th><th>Description</th><th>File</th><th>Uploaded At</th></tr></thead>';
-                echo '<tbody>';
-                if ($materials) {
-                    foreach ($materials as $material) {
-                        echo '<tr>';
-                        echo '<td>' . htmlspecialchars($material['title']) . '</td>';
-                        echo '<td>' . htmlspecialchars($material['teacher_name']) . '</td>';
-                        echo '<td>' . htmlspecialchars($material['subject_name']) . '</td>';
-                        echo '<td>' . substr(htmlspecialchars($material['description']), 0, 50) . '...</td>';
-                        echo '<td><a href="' . htmlspecialchars($material['file_path']) . '" target="_blank">Download</a></td>';
-                        echo '<td>' . date("Y-m-d H:i", strtotime($material['uploaded_at'])) . '</td>';
-                        echo '</tr>';
-                    }
-                } else {
-                    echo '<tr><td colspan="6" class="text-center">' . $t['no_records'] . '</td></tr>';
-                }
-                echo '</tbody></table>';
-                echo '</div>';
-            } else {
-                echo '<p>You are not assigned to a class. Please contact administration.</p>';
-            }
-            break;
-        case 'messages':
-            echo '<h3>' . $t['internal_messaging'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#composeMessageModal">' . $t['compose_new_message'] . '</button>';
-            echo '<h4>' . $t['my_messages'] . '</h4>';
-            echo '<ul class="nav nav-tabs mb-3" id="messageTabs" role="tablist">';
-            echo '<li class="nav-item" role="presentation"><button class="nav-link active" id="inbox-tab" data-bs-toggle="tab" data-bs-target="#inbox" type="button" role="tab" aria-controls="inbox" aria-selected="true">Inbox</button></li>';
-            echo '<li class="nav-item" role="presentation"><button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab" aria-controls="sent" aria-selected="false">' . $t['sent_messages'] . '</button></li>';
-            echo '</ul>';
-            echo '<div class="tab-content" id="messageTabContent">';
-            echo '<div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">';
-            echo '<h5>Unread Messages</h5>';
-            $stmt_inbox_unread = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.receiver_id = ? AND m.read_status = FALSE ORDER BY m.sent_at DESC");
-            $stmt_inbox_unread->execute([$_SESSION['id']]);
-            $inbox_unread_messages = $stmt_inbox_unread->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive mb-3">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Sender</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($inbox_unread_messages) {
-                foreach ($inbox_unread_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['sender_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td><button class="btn btn-sm btn-primary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['read_message'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="5" class="text-center">No unread messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '<h5>Read Messages</h5>';
-            $stmt_inbox_read = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.receiver_id = ? AND m.read_status = TRUE ORDER BY m.sent_at DESC");
-            $stmt_inbox_read->execute([$_SESSION['id']]);
-            $inbox_read_messages = $stmt_inbox_read->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Sender</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($inbox_read_messages) {
-                foreach ($inbox_read_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['sender_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['read_message'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="5" class="text-center">No read messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="tab-pane fade" id="sent" role="tabpanel" aria-labelledby="sent-tab">';
-            echo '<h5>Sent Messages</h5>';
-            $stmt_sent = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.sender_id = ? ORDER BY m.sent_at DESC");
-            $stmt_sent->execute([$_SESSION['id']]);
-            $sent_messages = $stmt_sent->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Receiver</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($sent_messages) {
-                foreach ($sent_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['receiver_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td>' . ($message_data['read_status'] ? 'Read' : 'Unread') . '</td>';
-                    echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['view'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="6" class="text-center">No sent messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="composeMessageModal" tabindex="-1" aria-labelledby="composeMessageModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="composeMessageModalLabel">' . $t['compose_new_message'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="send_internal_message">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="receiver_id" class="form-label">' . $t['receiver'] . '</label><select class="form-select" id="receiver_id" name="receiver_id" required>';
-            echo '<option value="">' . $t['select_receiver'] . '</option>';
-            $all_users = $pdo->prepare("SELECT id, username, role FROM users WHERE id != ? ORDER BY role, username");
-            $all_users->execute([$_SESSION['id']]);
-            $users_for_message = $all_users->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($users_for_message as $user_msg) {
-                echo '<option value="' . $user_msg['id'] . '">' . htmlspecialchars($user_msg['username']) . ' (' . htmlspecialchars($user_msg['role']) . ')</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="message_subject" class="form-label">' . $t['subject'] . '</label><input type="text" class="form-control" id="message_subject" name="subject" required></div>';
-            echo '<div class="mb-3"><label for="message_content" class="form-label">' . $t['message'] . '</label><textarea class="form-control" id="message_content" name="message_content" rows="5" required></textarea></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['send'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog modal-lg">';
-            echo '<div class="modal-content">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="messageModalLabel">Message Subject</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<p><strong>From:</strong> <span id="messageModalSender"></span></p>';
-            echo '<p><strong>To:</strong> <span id="messageModalReceiver"></span></p>';
-            echo '<p><strong>Date:</strong> <span id="messageModalTimestamp"></span></p>';
-            echo '<hr>';
-            echo '<div id="messageModalBody"></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            break;
         default:
             echo '<h2>Welcome, Student!</h2>';
             echo '<p>Use the sidebar to view your academic information.</p>';
@@ -6899,7 +4719,6 @@ function displayStudentPanel($pdo, $t, $lang)
 function displayParentPanel($pdo, $t, $lang)
 {
     global $section;
-    $csrf = generate_csrf_token();
     $parent_user_id = $_SESSION['id'];
     $stmt_students = $pdo->prepare("SELECT id, name, class_id FROM students WHERE parent_id = ?");
     $stmt_students->execute([$parent_user_id]);
@@ -6910,7 +4729,7 @@ function displayParentPanel($pdo, $t, $lang)
     }
     $selected_student_id = $_GET['student_id'] ?? ($linked_students[0]['id'] ?? null);
     echo '<div class="mb-4">';
-    echo '<h4>Select Child:</h4>';
+    echo '<h4>Select Student:</h4>';
     echo '<form method="GET" class="d-inline-block">';
     echo '<input type="hidden" name="page" value="dashboard">';
     echo '<input type="hidden" name="section" value="' . $section . '">';
@@ -6937,260 +4756,46 @@ function displayParentPanel($pdo, $t, $lang)
     echo '<h3>Viewing information for: ' . htmlspecialchars($current_student['name']) . ' (Class: ' . htmlspecialchars($current_student['class_name'] ?? 'N/A') . ')</h3>';
     switch ($section) {
         case 'performance':
-            echo '<h4>' . $t['student_performance_overview'] . '</h4>';
-            echo '<div class="d-flex justify-content-between align-items-center mb-3">';
-            echo '<h5>' . $t['view_report_card'] . '</h5>';
-            echo '<form method="GET" class="d-inline-block">';
-            echo '<input type="hidden" name="page" value="dashboard">';
-            echo '<input type="hidden" name="section" value="performance">';
-            echo '<input type="hidden" name="lang" value="' . $lang . '">';
-            echo '<input type="hidden" name="student_id" value="' . htmlspecialchars($selected_student_id) . '">';
-            echo '<label for="report_card_academic_year" class="form-label me-2">Academic Year:</label>';
-            echo '<select class="form-select d-inline-block w-auto" id="report_card_academic_year" name="academic_year">';
-            $current_year = date('Y');
-            for ($year = $current_year; $year >= 2020; $year--) {
-                $selected = (isset($_GET['academic_year']) && $_GET['academic_year'] == $year) ? 'selected' : (($year == $current_year && !isset($_GET['academic_year'])) ? 'selected' : '');
-                echo '<option value="' . $year . '" ' . $selected . '>' . $year . '</option>';
-            }
-            echo '</select>';
-            echo '</form>';
-            echo '</div>';
-            echo '<div id="report_card_display_area">';
-            echo '<p>Loading report card...</p>';
-            echo '</div>';
-            break;
-        case 'fees':
-            echo '<h4>' . $t['view_student_fees'] . '</h4>';
-            $stmt_fees = $pdo->prepare("SELECT f.*, fs.name AS fee_structure_name, (f.amount - f.concession + f.fine) AS net_amount, (SELECT SUM(amount_paid) FROM fee_transactions WHERE fee_id = f.id) AS total_paid FROM fees f LEFT JOIN fee_structures fs ON f.fee_structure_id = fs.id WHERE student_id = ? ORDER BY due_date DESC");
-            $stmt_fees->execute([$selected_student_id]);
-            $fee_records = $stmt_fees->fetchAll();
-            echo '<div class="table-responsive">';
+            echo '<h4>' . $t['view_performance'] . ' (Attendance & Marks)</h4>';
+            echo '<h5>Attendance Summary</h5>';
+            $stmt_att = $pdo->prepare("SELECT att.attendance_date, att.status, c.name AS class_name, sub.name AS subject_name FROM attendance att JOIN classes c ON att.class_id = c.id LEFT JOIN subjects sub ON att.subject_id = sub.id WHERE student_id = ? ORDER BY attendance_date DESC LIMIT 10");
+            $stmt_att->execute([$selected_student_id]);
+            $attendance_records = $stmt_att->fetchAll();
+            echo '<div class="table-responsive mb-4">';
             echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>ID</th><th>Fee Item</th><th>' . $t['amount'] . '</th><th>' . $t['concession'] . '</th><th>' . $t['fine'] . '</th><th>Net Amount</th><th>Paid Amount</th><th>' . $t['due_date_invoice'] . '</th><th>' . $t['paid_date'] . '</th><th>' . $t['invoice_status'] . '</th><th>Description</th></tr></thead>';
+            echo '<thead><tr><th>Date</th><th>Class</th><th>Subject</th><th>Status</th></tr></thead>';
             echo '<tbody>';
-            if ($fee_records) {
-                foreach ($fee_records as $fee) {
+            if ($attendance_records) {
+                foreach ($attendance_records as $record) {
                     echo '<tr>';
-                    echo '<td>' . htmlspecialchars($fee['id']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['fee_structure_name'] ?? 'Custom Fee') . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['amount']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['concession']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['fine']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['net_amount']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['total_paid'] ?? 0) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['due_date']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['paid_date'] ?? 'N/A') . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['status']) . '</td>';
-                    echo '<td>' . htmlspecialchars($fee['description']) . '</td>';
+                    echo '<td>' . htmlspecialchars($record['attendance_date']) . '</td>';
+                    echo '<td>' . htmlspecialchars($record['class_name']) . '</td>';
+                    echo '<td>' . htmlspecialchars($record['subject_name'] ?? 'N/A') . '</td>';
+                    echo '<td>' . htmlspecialchars($record['status']) . '</td>';
                     echo '</tr>';
                 }
             } else {
-                echo '<tr><td colspan="11" class="text-center">' . $t['no_records'] . '</td></tr>';
+                echo '<tr><td colspan="4" class="text-center">' . $t['no_records'] . '</td></tr>';
             }
             echo '</tbody></table>';
             echo '</div>';
-            $fee_structures_list = $pdo->query("SELECT id, name, amount, description FROM fee_structures ORDER BY name")->fetchAll();
-            echo '<div class="modal fade" id="addBulkFeeInvoiceModal" tabindex="-1" aria-labelledby="addBulkFeeInvoiceModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST" id="addBulkFeeInvoiceForm">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="addBulkFeeInvoiceModalLabel">Generate Bulk Fee Invoices</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="bulk_add_fee_invoice">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="bulk_class_id" class="form-label">For Class</label><select class="form-select" id="bulk_class_id" name="class_id" required>';
-            $all_classes = $pdo->query("SELECT id, name FROM classes")->fetchAll();
-            foreach ($all_classes as $class) {
-                echo '<option value="' . $class['id'] . '">' . htmlspecialchars($class['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="bulk_fee_structure_id" class="form-label">' . $t['select_fee_structure'] . '</label><select class="form-select" id="bulk_fee_structure_id" name="fee_structure_id"><option value="">Custom Fee</option>';
-            foreach ($fee_structures_list as $fs) {
-                echo '<option value="' . $fs['id'] . '" data-amount="' . $fs['amount'] . '" data-description="' . htmlspecialchars($fs['description'] ?? $fs['name']) . '">' . htmlspecialchars($fs['name']) . '</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="bulk_amount" class="form-label">' . $t['amount'] . '</label><input type="number" step="0.01" class="form-control" id="bulk_amount" name="amount" required></div>';
-            echo '<div class="mb-3"><label for="bulk_description" class="form-label">Description (e.g., Tuition Fee for Sep 2025)</label><input type="text" class="form-control" id="bulk_description" name="description" required></div>';
-            echo '<div class="mb-3"><label for="bulk_due_date" class="form-label">' . $t['due_date_invoice'] . '</label><input type="date" class="form-control" id="bulk_due_date" name="due_date" required></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">Generate Invoices</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<script>';
-            echo '$("#bulk_fee_structure_id").on("change", function() {';
-            echo '    var selectedOption = $(this).find("option:selected");';
-            echo '    var amount = selectedOption.data("amount");';
-            echo '    var description = selectedOption.data("description");';
-            echo '    if (amount) { $("#bulk_amount").val(amount); }';
-            echo '    if (description) { $("#bulk_description").val(description); }';
-            echo '});';
-            echo '</script>';
-            break;
-
-        case 'messages':
-            echo '<h3>' . $t['internal_messaging'] . '</h3>';
-            echo '<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#composeMessageModal">' . $t['compose_new_message'] . '</button>';
-            echo '<h4>' . $t['my_messages'] . '</h4>';
-            echo '<ul class="nav nav-tabs mb-3" id="messageTabs" role="tablist">';
-            echo '<li class="nav-item" role="presentation"><button class="nav-link active" id="inbox-tab" data-bs-toggle="tab" data-bs-target="#inbox" type="button" role="tab" aria-controls="inbox" aria-selected="true">Inbox</button></li>';
-            echo '<li class="nav-item" role="presentation"><button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab" aria-controls="sent" aria-selected="false">' . $t['sent_messages'] . '</button></li>';
-            echo '</ul>';
-            echo '<div class="tab-content" id="messageTabContent">';
-            echo '<div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">';
-            echo '<h5>Unread Messages</h5>';
-            $stmt_inbox_unread = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.receiver_id = ? AND m.read_status = FALSE ORDER BY m.sent_at DESC");
-            $stmt_inbox_unread->execute([$_SESSION['id']]);
-            $inbox_unread_messages = $stmt_inbox_unread->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive mb-3">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Sender</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($inbox_unread_messages) {
-                foreach ($inbox_unread_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['sender_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td><button class="btn btn-sm btn-primary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['read_message'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="5" class="text-center">No unread messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '<h5>Read Messages</h5>';
-            $stmt_inbox_read = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.receiver_id = ? AND m.read_status = TRUE ORDER BY m.sent_at DESC");
-            $stmt_inbox_read->execute([$_SESSION['id']]);
-            $inbox_read_messages = $stmt_inbox_read->fetchAll(PDO::FETCH_ASSOC);
+            echo '<h5>Marks Summary</h5>';
+            $stmt_marks = $pdo->prepare("SELECT m.marks_obtained, e.name AS exam_name, e.max_marks, s.name AS subject_name, c.name AS class_name FROM marks m JOIN exams e ON m.exam_id = e.id JOIN subjects s ON e.subject_id = s.id JOIN classes c ON e.class_id = c.id WHERE m.student_id = ? ORDER BY e.exam_date DESC");
+            $stmt_marks->execute([$selected_student_id]);
+            $marks_records = $stmt_marks->fetchAll();
             echo '<div class="table-responsive">';
             echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Sender</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Actions</th></tr></thead>';
+            echo '<thead><tr><th>Exam</th><th>Subject</th><th>' . $t['marks_obtained'] . '</th><th>' . $t['max_marks'] . '</th><th>Percentage</th></tr></thead>';
             echo '<tbody>';
-            if ($inbox_read_messages) {
-                foreach ($inbox_read_messages as $message_data) {
+            if ($marks_records) {
+                foreach ($marks_records as $record) {
+                    $percentage = ($record['max_marks'] > 0) ? round(($record['marks_obtained'] / $record['max_marks']) * 100, 2) : 0;
                     echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['sender_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['read_message'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="5" class="text-center">No read messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="tab-pane fade" id="sent" role="tabpanel" aria-labelledby="sent-tab">';
-            echo '<h5>Sent Messages</h5>';
-            $stmt_sent = $pdo->prepare("SELECT m.*, s.username AS sender_username, s.role AS sender_role, r.username AS receiver_username, r.role AS receiver_role FROM messages m JOIN users s ON m.sender_id = s.id JOIN users r ON m.receiver_id = r.id WHERE m.sender_id = ? ORDER BY m.sent_at DESC");
-            $stmt_sent->execute([$_SESSION['id']]);
-            $sent_messages = $stmt_sent->fetchAll(PDO::FETCH_ASSOC);
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Receiver</th><th>Subject</th><th>Message Snippet</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>';
-            echo '<tbody>';
-            if ($sent_messages) {
-                foreach ($sent_messages as $message_data) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($message_data['receiver_username']) . '</td>';
-                    echo '<td>' . htmlspecialchars($message_data['subject']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($message_data['message']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d H:i", strtotime($message_data['sent_at'])) . '</td>';
-                    echo '<td>' . ($message_data['read_status'] ? 'Read' : 'Unread') . '</td>';
-                    echo '<td><button class="btn btn-sm btn-secondary view-message-btn" data-bs-toggle="modal" data-bs-target="#messageModal" data-json=\'' . json_encode($message_data) . '\'>' . $t['view'] . '</button></td>';
-                    echo '</tr>';
-                }
-            } else {
-                echo '<tr><td colspan="6" class="text-center">No sent messages.</td></tr>';
-            }
-            echo '</tbody></table>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="composeMessageModal" tabindex="-1" aria-labelledby="composeMessageModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog">';
-            echo '<div class="modal-content">';
-            echo '<form action="" method="POST">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="composeMessageModalLabel">' . $t['compose_new_message'] . '</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<input type="hidden" name="action" value="send_internal_message">';
-            echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
-            echo '<div class="mb-3"><label for="receiver_id" class="form-label">' . $t['receiver'] . '</label><select class="form-select" id="receiver_id" name="receiver_id" required>';
-            echo '<option value="">' . $t['select_receiver'] . '</option>';
-            $all_users = $pdo->prepare("SELECT id, username, role FROM users WHERE id != ? ORDER BY role, username");
-            $all_users->execute([$_SESSION['id']]);
-            $users_for_message = $all_users->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($users_for_message as $user_msg) {
-                echo '<option value="' . $user_msg['id'] . '">' . htmlspecialchars($user_msg['username']) . ' (' . htmlspecialchars($user_msg['role']) . ')</option>';
-            }
-            echo '</select></div>';
-            echo '<div class="mb-3"><label for="message_subject" class="form-label">' . $t['subject'] . '</label><input type="text" class="form-control" id="message_subject" name="subject" required></div>';
-            echo '<div class="mb-3"><label for="message_content" class="form-label">' . $t['message'] . '</label><textarea class="form-control" id="message_content" name="message_content" rows="5" required></textarea></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '<button type="submit" class="btn btn-primary">' . $t['send'] . '</button>';
-            echo '</div>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog modal-lg">';
-            echo '<div class="modal-content">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="messageModalLabel">Message Subject</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<p><strong>From:</strong> <span id="messageModalSender"></span></p>';
-            echo '<p><strong>To:</strong> <span id="messageModalReceiver"></span></p>';
-            echo '<p><strong>Date:</strong> <span id="messageModalTimestamp"></span></p>';
-            echo '<hr>';
-            echo '<div id="messageModalBody"></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            break;
-        case 'teacher_notes':
-            echo '<h3>View Teacher Notes</h3>';
-            echo '<h4>Notes for ' . htmlspecialchars($current_student['name']) . '</h4>';
-            $stmt = $pdo->prepare("SELECT tn.*, t.name AS teacher_name FROM teacher_notes tn JOIN teachers t ON tn.teacher_id = t.id WHERE tn.student_id = ? ORDER BY tn.created_at DESC");
-            $stmt->execute([$selected_student_id]);
-            $notes = $stmt->fetchAll();
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead><tr><th>Teacher</th><th>' . $t['note_title'] . '</th><th>Note Snippet</th><th>Date</th><th>' . $t['actions'] . '</th></tr></thead>';
-            echo '<tbody>';
-            if ($notes) {
-                foreach ($notes as $note) {
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($note['teacher_name']) . '</td>';
-                    echo '<td>' . htmlspecialchars($note['title']) . '</td>';
-                    echo '<td>' . substr(htmlspecialchars($note['note']), 0, 100) . '...</td>';
-                    echo '<td>' . date("Y-m-d", strtotime($note['created_at'])) . '</td>';
-                    echo '<td>';
-                    echo '<button type="button" class="btn btn-sm btn-info view-note-btn me-1" data-bs-toggle="modal" data-bs-target="#teacherNoteModal" data-json=\'' . json_encode($note) . '\'>' . $t['view'] . '</button>';
-                    echo '</td>';
+                    echo '<td>' . htmlspecialchars($record['exam_name']) . '</td>';
+                    echo '<td>' . htmlspecialchars($record['subject_name']) . '</td>';
+                    echo '<td>' . htmlspecialchars($record['marks_obtained']) . '</td>';
+                    echo '<td>' . htmlspecialchars($record['max_marks']) . '</td>';
+                    echo '<td>' . $percentage . '%</td>';
                     echo '</tr>';
                 }
             } else {
@@ -7198,25 +4803,31 @@ function displayParentPanel($pdo, $t, $lang)
             }
             echo '</tbody></table>';
             echo '</div>';
-            echo '<div class="modal fade" id="teacherNoteModal" tabindex="-1" aria-labelledby="teacherNoteModalLabel" aria-hidden="true">';
-            echo '<div class="modal-dialog modal-lg">';
-            echo '<div class="modal-content">';
-            echo '<div class="modal-header">';
-            echo '<h5 class="modal-title" id="teacherNoteModalLabel">Note Details</h5>';
-            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
-            echo '</div>';
-            echo '<div class="modal-body">';
-            echo '<p><strong>Student:</strong> ' . htmlspecialchars($current_student['name']) . '</p>';
-            echo '<p><strong>Teacher:</strong> <span id="teacherNoteModalTeacher"></span></p>';
-            echo '<p><strong>Date:</strong> <span id="teacherNoteModalDate"></span></p>';
-            echo '<hr>';
-            echo '<div id="teacherNoteModalContent"></div>';
-            echo '</div>';
-            echo '<div class="modal-footer">';
-            echo '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
+            break;
+        case 'fees':
+            echo '<h4>' . $t['view_student_fees'] . '</h4>';
+            $stmt_fees = $pdo->prepare("SELECT * FROM fees WHERE student_id = ? ORDER BY due_date DESC");
+            $stmt_fees->execute([$selected_student_id]);
+            $fee_records = $stmt_fees->fetchAll();
+            echo '<div class="table-responsive">';
+            echo '<table class="table table-bordered table-striped">';
+            echo '<thead><tr><th>ID</th><th>' . $t['amount'] . '</th><th>' . $t['due_date_invoice'] . '</th><th>' . $t['paid_date'] . '</th><th>' . $t['invoice_status'] . '</th><th>Description</th></tr></thead>';
+            echo '<tbody>';
+            if ($fee_records) {
+                foreach ($fee_records as $fee) {
+                    echo '<tr>';
+                    echo '<td>' . htmlspecialchars($fee['id']) . '</td>';
+                    echo '<td>' . htmlspecialchars($fee['amount']) . '</td>';
+                    echo '<td>' . htmlspecialchars($fee['due_date']) . '</td>';
+                    echo '<td>' . htmlspecialchars($fee['paid_date'] ?? 'N/A') . '</td>';
+                    echo '<td>' . htmlspecialchars($fee['status']) . '</td>';
+                    echo '<td>' . htmlspecialchars($fee['description']) . '</td>';
+                    echo '</tr>';
+                }
+            } else {
+                echo '<tr><td colspan="6" class="text-center">' . $t['no_records'] . '</td></tr>';
+            }
+            echo '</tbody></table>';
             echo '</div>';
             break;
         default:
