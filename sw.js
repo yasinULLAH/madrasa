@@ -258,11 +258,11 @@ if (workbox) {
     },
     {
         "url": "html14.html",
-        "revision": "ecf525f5bfd83440f18605bda35d5d1c"
+        "revision": "f04835b400f1c2f30c33fd614e5e6ff0"
     },
     {
         "url": "id card and certificate.html",
-        "revision": "ff0582d0d463286c4159b38c6aadc078"
+        "revision": "672d60d2f388de46b0ab821f5e3efab8"
     },
     {
         "url": "ID-Card-0002-Back.png",
@@ -406,7 +406,7 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "958a264f1094e6a6f42ddfef268a1b8d"
+        "revision": "96dfdb57e5da7df5db893eb67f3865a2"
     },
     {
         "url": "indexnewonemakeacopy.py",
@@ -526,7 +526,7 @@ if (workbox) {
     },
     {
         "url": "school app yasin best.html",
-        "revision": "0b3c5a55d62b4d1649354ba0652e09e3"
+        "revision": "8dc17fa34e800595b0f032ff6826d2c4"
     },
     {
         "url": "school app.ahk",
@@ -606,7 +606,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "609e64ed8b0c120b61af2941ef8199af"
+        "revision": "3ebdbfe601cfa77dd6449f2e87ad6072"
     },
     {
         "url": "table-export attendence.pdf",
