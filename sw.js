@@ -213,6 +213,10 @@ if (workbox) {
         "revision": "b4fd811f8c95bd518bdc583c0537e70c"
     },
     {
+        "url": "Copy of schoolnewone.php",
+        "revision": "4cec8d3bf24a26deb5f61243afad0425"
+    },
+    {
         "url": "create users via console yasin indexnewone.html.txt",
         "revision": "0db051dc0ab8c8c98157ef3d80994228"
     },
@@ -254,11 +258,11 @@ if (workbox) {
     },
     {
         "url": "html14.html",
-        "revision": "93be1b6027a89d6129d4f7b07c6a0466"
+        "revision": "ecf525f5bfd83440f18605bda35d5d1c"
     },
     {
         "url": "id card and certificate.html",
-        "revision": "6ad5d5f6c492aa1acc33c7bd607f5872"
+        "revision": "ff0582d0d463286c4159b38c6aadc078"
     },
     {
         "url": "ID-Card-0002-Back.png",
@@ -385,6 +389,10 @@ if (workbox) {
         "revision": "8b2ba54f9b6173d3415778deb250a600"
     },
     {
+        "url": "indexnewone readme file guide full.pdf",
+        "revision": "1dbfb01b7e8f12ae66a5318d66ef10a1"
+    },
+    {
         "url": "indexnewone readme file guide shortcut keys.pdf",
         "revision": "45d0a1e954a8a53777928b38f7de1190"
     },
@@ -398,7 +406,7 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "f7f2a6ad6ebaf7cb1c6fa1b45fb25b85"
+        "revision": "958a264f1094e6a6f42ddfef268a1b8d"
     },
     {
         "url": "indexnewonemakeacopy.py",
@@ -489,6 +497,14 @@ if (workbox) {
         "revision": "1f5adb316c5f1d50f502c99c6ce1aeff"
     },
     {
+        "url": "readme file for schoolnewone.pdf",
+        "revision": "7c1a4652079d7f6912d9b9c01c387376"
+    },
+    {
+        "url": "readme file for schoolnewone.php.docx",
+        "revision": "faeddb175c723733eedaebc15b709705"
+    },
+    {
         "url": "README.md",
         "revision": "a7eb8ca8793c9d19cb7948b3f45670fb"
     },
@@ -510,7 +526,7 @@ if (workbox) {
     },
     {
         "url": "school app yasin best.html",
-        "revision": "0f82f900f8068b584ae3a133662c1e15"
+        "revision": "0b3c5a55d62b4d1649354ba0652e09e3"
     },
     {
         "url": "school app.ahk",
@@ -534,7 +550,7 @@ if (workbox) {
     },
     {
         "url": "schoolnewone.php",
-        "revision": "9bbbfed7e182241a5b7a051b5b010e22"
+        "revision": "b24e1d02273fb1cedd0f9f5330af0c83"
     },
     {
         "url": "school_madrasa.db",
@@ -559,6 +575,10 @@ if (workbox) {
     {
         "url": "school_management_db-db_2025-08-19 for schoolnewone.php.sql",
         "revision": "9d8f67a938e7cb7cacd1a78d2f0d565f"
+    },
+    {
+        "url": "school_management_dbv2-db_2025-08-29 for schoolnewone.php.sql",
+        "revision": "02251c4884207bbc1c62416c6665d5c6"
     },
     {
         "url": "script for inexnewone.html for disabling inspect and other things for security.txt",
@@ -586,7 +606,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "63039dd57d62da2d4dd494409cbfcb42"
+        "revision": "609e64ed8b0c120b61af2941ef8199af"
     },
     {
         "url": "table-export attendence.pdf",
@@ -1325,10 +1345,6 @@ if (workbox) {
         "revision": "2499e0fda40d2282524ddcade1625c8a"
     },
     {
-        "url": "uploads/announcements/68a4526758aba_maulana muhammad ilyas db.pdf",
-        "revision": "5409379254464459fd05c02d02746e2c"
-    },
-    {
         "url": "uploads/gallery/68a449a03eb42_7_Tips_to_Prepare_for_the_First_Day_of_School.png",
         "revision": "676bd95451a928a94419eb621258bb08"
     },
@@ -1379,10 +1395,6 @@ if (workbox) {
     {
         "url": "yasin/school app.ahk",
         "revision": "cbc2ab8f4bf111f48e738dd6cb9ebbfd"
-    },
-    {
-        "url": "yasin/school app.exe",
-        "revision": "28aa72b04907083a01298348c522f50f"
     }
 ]);
 
