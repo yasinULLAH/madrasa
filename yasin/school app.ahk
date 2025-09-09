@@ -53,7 +53,7 @@ Process, Close, chrome.exe
 Sleep, 1000
 
 ; 🚀 Step 2: Launch Chrome in kiosk mode
-Run, "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk "D:\yasin\indexnewone.html"
+Run, "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk "https://yasinullah.github.io/madrasa/indexnewone.html"
 ;Run, "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --app="file:///D:/yasin/indexnewone.html" --user-data-dir="C:\EdgeProfiles\MyApp" --start-fullscreen
 ;Run, "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --app="file:///C:/yasin/indexnewone.html" --profile-directory="Default" --start-fullscreen --no-first-run
 
