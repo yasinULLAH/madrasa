@@ -936,13 +936,108 @@
             content: ' (Error)';
             font-size: 0.8em;
         }
+
+        /* Find this rule and REPLACE it */
+        .certificate-container {
+            width: 800px;
+            height: 550px;
+            border: 5px double #2c3e50;
+            padding: 25px;
+            background-color: white;
+            text-align: center;
+            page-break-inside: avoid;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            /* --- MODIFIED LINES --- */
+            background-repeat: no-repeat;
+            background-size: 102% 106%;
+            background-position: center;
+            background-origin: border-box;
+            background-clip: padding-box;
+            position: relative;
+            transition: background-image 0.3s ease-in-out;
+            /* Added for smooth frame switching */
+        }
+
+        /* Find this rule and make sure it exists */
+        .certificate-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url(logo2.png);
+            background-size: 63%;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* Find this rule and REPLACE it */
+        .certificate-container [contenteditable="true"] {
+            cursor: text;
+            padding: 5px;
+            outline: 1px dashed rgba(52, 152, 219, 0.5);
+            /* Made outline subtle */
+            transition: all 0.2s ease-in-out;
+            min-height: 1.2em;
+            /* Ensure empty elements are clickable */
+        }
+
+        /* Find this rule and REPLACE it */
+        .certificate-container [contenteditable="true"]:hover,
+        .certificate-container [contenteditable="true"]:focus {
+            background-color: rgba(52, 152, 219, 0.1);
+            outline: 1px solid #3498db;
+        }
+
+        /* --- ADD these NEW rules for the buttons --- */
+        .certificate-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+            color: #777;
+        }
+
+        .cert-frame-btn {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .cert-frame-btn:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .certificate-container p {
+            padding: 0px 22px !important;
+        }
+
+        .certificate-container h2,
+        .certificate-container h3 {
+            background: #ffffffad;
+            border-radius: 67px;
+        }
     </style>
-<script src="chart.js"></script>
-<script src="html2canvas.min.js"></script>
-<script src="qrcode.min.js"></script>
-<script src="jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link href="favicon.svg" rel="icon" type="image/svg+xml"/>
-<link href="manifest.json" rel="manifest"/></head>
+<link href="manifest.json" rel="manifest"/>
+</head>
 <body>
 <div class="modal" id="combined-message-modal">
 <div class="modal-content" style="max-width: 600px;">
@@ -3383,7 +3478,7 @@
         let db;
         let appSettings = {};
         const DB_NAME = 'SchoolMadrasaDB';
-        const DB_VERSION = 6;
+        const DB_VERSION = 3;
         const STORES = {
             STUDENTS: 'students',
             TEACHERS: 'teachers',
@@ -5674,7 +5769,7 @@
                             users: false,
                             reports: true,
                             settings: false,
-                            backup: true, 'id-cards': false
+                            backup: true, 'id-cards': true
                         },
                         createdAt: new Date().toISOString()
                     },
@@ -7200,8 +7295,8 @@
                         <td>${teacher ? teacher.name : 'N/A'}</td>
                         <td>${studentsCount}</td>
                         <td class="no-print">
-                            <button class="btn btn-primary btn-sm">Edit</button>
-                            <button class="btn btn-danger btn-sm">Delete</button>
+                            <button class="btn btn-primary btn-sm" onclick="editSection(${section.id})">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.SECTIONS}', ${section.id})">Delete</button>
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -8614,33 +8709,41 @@
         async function saveSection() {
             try {
                 showLoading();
+                const saveButton = document.getElementById('save-section');
+                const editId = saveButton.dataset.editId ? parseInt(saveButton.dataset.editId) : null;
+
                 const classId = document.getElementById('section-class').value;
                 const sectionName = document.getElementById('section-name').value;
                 const inChargeId = document.getElementById('section-incharge').value;
+
                 if (!classId || !sectionName || !inChargeId) {
                     showNotification('Please fill in all fields.', 'error');
+                    hideLoading();
                     return;
                 }
-                const existingSections = await getAllFromStore(STORES.SECTIONS);
-                const existingSection = existingSections.find(section =>
-                    section.classId === parseInt(classId) && section.name === sectionName
-                );
-                if (existingSection) {
-                    await updateInStore(STORES.SECTIONS, existingSection.id, {
-                        inChargeId: parseInt(inChargeId),
-                        updatedAt: new Date().toISOString()
-                    });
+
+                const sectionData = {
+                    classId: parseInt(classId),
+                    name: sectionName,
+                    inChargeId: parseInt(inChargeId),
+                };
+
+                if (editId) {
+                    // This is an UPDATE
+                    await updateInStore(STORES.SECTIONS, editId, sectionData);
                     showNotification('Section updated successfully.', 'success');
                 } else {
-                    const sectionData = {
-                        classId: parseInt(classId),
-                        name: sectionName,
-                        inChargeId: parseInt(inChargeId),
-                        createdAt: new Date().toISOString()
-                    };
+                    // This is a NEW entry
                     await addToStore(STORES.SECTIONS, sectionData);
                     showNotification('Section saved successfully.', 'success');
                 }
+
+                // Clear the ID and reset the form
+                delete saveButton.dataset.editId;
+                document.getElementById('section-class').value = '';
+                document.getElementById('section-name').value = 'A';
+                document.getElementById('section-incharge').value = '';
+
                 loadSectionsTable();
             } catch (error) {
                 console.error('Error saving section:', error);
@@ -8875,6 +8978,7 @@
                 hideLoading();
             }
         }
+        // Find and completely REPLACE this function
         async function collectFee() {
             try {
                 showLoading();
@@ -8884,29 +8988,40 @@
                 const monthlyFeeNow = feeStructure?.monthlyFee || student.monthlyFee || 0;
                 const monthNumber = parseInt(document.getElementById('fee-month').value);
                 const year = parseInt(document.getElementById('fee-year').value);
-                const payingNow = parseFloat(document.getElementById('fee-paying-now').value);
+
+                // This is the total money the user is giving you.
+                const amountReceived = parseFloat(document.getElementById('fee-paying-now').value);
+
                 const fine = parseFloat(document.getElementById('fee-fine').value) || 0;
                 const discount = parseFloat(document.getElementById('fee-discount').value) || 0;
+
+                // ** THIS IS THE FIX **
+                // We create the data object for saving.
                 const feeData = {
                     receiptNumber: 'FEE' + Date.now().toString().slice(-6),
                     studentId: studentId,
                     studentName: student.name,
                     month: monthNumber,
                     year: year,
-                    amount: payingNow,
+                    // 'amount' is the portion that covers the actual fee.
+                    // It's calculated by taking the total received and removing the fine/adding back the discount.
+                    amount: amountReceived - fine + discount,
                     fine: fine,
                     discount: discount,
-                    total: payingNow + fine - discount,
+                    // 'total' is the actual cash transaction amount.
+                    total: amountReceived,
                     monthlyFeeAtTimeOfPayment: monthlyFeeNow,
                     date: document.getElementById('fee-payment-date').value,
                     paymentMethod: document.getElementById('fee-payment-method').value,
                     notes: document.getElementById('fee-notes').value,
                 };
-                if (feeData.amount <= 0 && feeData.fine <= 0 && feeData.discount <= 0) {
+
+                if (feeData.total <= 0) {
                     showNotification('Total collected amount must be greater than zero.', 'error');
                     hideLoading();
                     return;
                 }
+
                 await addToStore(STORES.FEES, feeData);
                 showNotification('Fee collected successfully.', 'success');
                 await showFeeReceipt(feeData, student);
@@ -8975,6 +9090,11 @@
                 const employeeName = document.getElementById('salary-employee-name').value;
                 const month = document.getElementById('salary-month').value;
                 const year = parseInt(document.getElementById('salary-year').value);
+                // Add these two lines just before the `salaryData` object
+                const storeName = employeeType === 'teacher' ? STORES.TEACHERS : STORES.STAFF;
+                const employee = await getFromStore(storeName, employeeId);
+                const grossSalaryNow = (employee.basicSalary || 0) + (employee.allowances || 0);
+
                 const salaryData = {
                     voucherNumber: 'SAL' + Date.now().toString().slice(-6),
                     employeeId: employeeId,
@@ -8986,6 +9106,7 @@
                     bonus: parseFloat(document.getElementById('salary-payment-bonus').value) || 0,
                     deductions: parseFloat(document.getElementById('salary-payment-deductions').value) || 0,
                     total: parseFloat(document.getElementById('salary-payment-total').value),
+                    grossSalaryAtTimeOfPayment: grossSalaryNow, // <-- ADD THIS LINE
                     date: document.getElementById('salary-payment-date').value,
                     paymentMethod: document.getElementById('salary-payment-method').value,
                     transactionId: document.getElementById('salary-payment-transaction').value,
@@ -11016,61 +11137,125 @@
             document.getElementById('generate-certificate-btn').addEventListener('click', generateCertificate);
             document.getElementById('bulk-export-zip-btn').addEventListener('click', exportAllCardsAsZip);
         }
+        // Add this NEW function before generateCertificate
+        function setupCertificateInteraction(studentId) {
+            const certificateFrames = ['bgc.png', 'bgc2.png', 'bgc3.png', 'bgc4.png', 'bgc5.png'];
+            let currentFrameIndex = 0;
+            const certContainer = document.getElementById(`cert-container-${studentId}`);
+
+            // Load saved frame from localStorage
+            const savedFrameIndex = localStorage.getItem(`certFrame_${studentId}`);
+            if (savedFrameIndex !== null) {
+                currentFrameIndex = parseInt(savedFrameIndex, 10);
+            }
+            certContainer.style.backgroundImage = `url(${certificateFrames[currentFrameIndex]})`;
+
+            // Add event listeners for frame switching
+            document.getElementById('cert-prev-frame').addEventListener('click', () => {
+                currentFrameIndex = (currentFrameIndex - 1 + certificateFrames.length) % certificateFrames.length;
+                certContainer.style.backgroundImage = `url(${certificateFrames[currentFrameIndex]})`;
+                localStorage.setItem(`certFrame_${studentId}`, currentFrameIndex);
+            });
+
+            document.getElementById('cert-next-frame').addEventListener('click', () => {
+                currentFrameIndex = (currentFrameIndex + 1) % certificateFrames.length;
+                certContainer.style.backgroundImage = `url(${certificateFrames[currentFrameIndex]})`;
+                localStorage.setItem(`certFrame_${studentId}`, currentFrameIndex);
+            });
+
+            // Make elements editable and handle saving
+            const editableElements = certContainer.querySelectorAll('[data-editable-id]');
+            editableElements.forEach(el => {
+                const editableId = el.dataset.editableId;
+
+                // Load saved text from localStorage
+                const savedText = localStorage.getItem(`certText_${studentId}_${editableId}`);
+                if (savedText) {
+                    el.innerHTML = savedText;
+                }
+
+                // Save text on edit
+                el.addEventListener('blur', () => {
+                    localStorage.setItem(`certText_${studentId}_${editableId}`, el.innerHTML);
+                    showNotification('Certificate text saved!', 'info');
+                });
+            });
+        }
+        // Find and completely REPLACE this function
         async function generateCertificate() {
             showLoading();
             const certType = document.getElementById('certificate-type').value;
             const studentId = parseInt(document.getElementById('certificate-student-filter').value);
             const outputDiv = document.getElementById('certificate-output');
             outputDiv.innerHTML = '';
+
             if (!studentId) {
                 showNotification('Please select a student.', 'error');
                 hideLoading();
                 return;
             }
+
             const student = await getFromStore(STORES.STUDENTS, studentId);
             const settings = await getFromStore(STORES.SETTINGS, 'general');
             const schoolName = settings?.schoolName || "Deeni Madrasa";
             const principalName = settings?.principalName || "Principal";
             const className = student.classId ? (await getFromStore(STORES.CLASSES, student.classId))?.name : '';
             const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
             let title = "";
             let body = "";
+
             switch (certType) {
                 case 'promotion':
                     title = "Promotion Certificate";
-                    body = `<p>This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> has successfully completed Class <b>${className}</b> and is promoted to the next class. We wish them all the best for their future endeavors.</p>`;
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> has successfully completed Class <b>${className}</b> and is promoted to the next class. We wish them all the best for their future endeavors.</p>`;
                     break;
                 case 'leaving':
                     title = "Leaving Certificate";
-                    body = `<p>This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b>, Roll No. <b>${student.rollNumber}</b>, has been studying in our institution. This certificate is issued to them. We wish them a bright future.</p>`;
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b>, Roll No. <b>${student.rollNumber}</b>, has been studying in our institution. This certificate is issued to them. We wish them a bright future.</p>`;
                     break;
                 case 'character':
                     title = "Character Certificate";
-                    body = `<p>This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> is known to our institution as a student of good character and excellent morals. Their conduct with teachers and fellow students has always been positive.</p>`;
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certifies that student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> is known to our institution as a student of good character and excellent morals. Their conduct with teachers and fellow students has always been positive.</p>`;
                     break;
                 case 'achievement':
                     title = "Achievement Certificate";
                     const achievement = document.getElementById('achievement-description').value || 'Outstanding Performance';
-                    body = `<p>This certificate is presented to student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> for their <b>${achievement}</b>. The institution is proud of their remarkable achievement.</p>`;
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certificate is presented to student <b>${student.name}</b> son/daughter of <b>${student.fatherName}</b> for their <b>${achievement}</b>. The institution is proud of their remarkable achievement.</p>`;
                     break;
             }
+
+            // Notice the new data-editable-id attributes and the new controls section
             const certificateHTML = `
     <div class="certificate-wrapper" id="cert-wrapper-${student.id}">
+        <div class="certificate-controls no-print">
+            <button id="cert-prev-frame" class="cert-frame-btn" title="Previous Frame">❮</button>
+            <span style="font-style: italic;">Click any text to edit. Changes are saved automatically.</span>
+            <button id="cert-next-frame" class="cert-frame-btn" title="Next Frame">❯</button>
+        </div>
         <button title="Download PNG" class="card-export-btn no-print" onclick="exportElementAsPNG('cert-container-${student.id}', 'Certificate-${student.rollNumber}.png')">↓</button>
         <div class="certificate-container" id="cert-container-${student.id}">
-            <h2>${schoolName}</h2>
-            <h3>${title}</h3>
+            <h2 data-editable-id="school_name" contenteditable="true">${schoolName}</h2>
+            <h3 data-editable-id="cert_title" contenteditable="true">${title}</h3>
             <hr>
             <div style="text-align: left; margin-top: 40px;">
                 ${body}
             </div>
             <div class="certificate-signature">
-                <div>Date: ${today}</div>
-                <div>Principal's Signature</div>
+                <div data-editable-id="cert_date" contenteditable="true">Date: ${today}</div>
+                <div data-editable-id="cert_signature_title" contenteditable="true">
+                    <img src="sign.png" alt="Signature" style="height: 56px;display: block;margin: -38px -30px;position: absolute;">
+                    Principal's Signature
+                </div>
             </div>
         </div>
     </div>`;
+
             outputDiv.innerHTML = certificateHTML;
+
+            // Call the new function to activate the features
+            setupCertificateInteraction(studentId);
+
             hideLoading();
         }
         async function exportElementAsPNG(elementId, filename) {
@@ -12499,146 +12684,168 @@
     }
 
 
+    async function editSection(id) {
+        showLoading();
+        try {
+            const section = await getFromStore(STORES.SECTIONS, id);
+            if (!section) {
+                showNotification('Section not found.', 'error');
+                return;
+            }
 
+            // Put the section's data into the form
+            document.getElementById('section-class').value = section.classId;
+            document.getElementById('section-name').value = section.name;
+            document.getElementById('section-incharge').value = section.inChargeId;
+
+            // Store the ID on the save button so it knows to update instead of create
+            document.getElementById('save-section').dataset.editId = id;
+
+        } catch (e) {
+            console.error('Error loading section for edit:', e);
+        } finally {
+            hideLoading();
+        }
+    }
     function initializeShortcuts() {
-    const shortcutConfig = {
-        'alt+d': { func: () => showView('dashboard'), selector: '[data-view="dashboard"]', title: 'Dashboard' },
-        'alt+s': { func: () => showView('students'), selector: '[data-view="students"]', title: 'Students' },
-        'alt+t': { func: () => showView('teachers'), selector: '[data-view="teachers"]', title: 'Teachers' },
-        'alt+f': { func: () => showView('fees'), selector: '[data-view="fees"]', title: 'Fees' },
-        'alt+e': { func: () => showView('exams'), selector: '[data-view="exams"]', title: 'Exams' },
-        'alt+c': { func: () => showView('classes'), selector: '[data-view="classes"]', title: 'Classes' },
-        'alt+b': { func: () => showView('backup'), selector: '[data-view="backup"]', title: 'Backup' },
-        /* 'alt+i': { func: () => showView('id-cards'), selector: '[data-view="id-cards"]', title: 'ID Cards' }, */
-        'alt+p': { func: () => showView('salaries'), selector: '[data-view="salaries"]', title: 'Salaries (Pay)' },
-        'alt+l': { func: () => showView('library'), selector: '[data-view="library"]', title: 'Library' },
-        'alt+r': { func: () => showView('reports'), selector: '[data-view="reports"]', title: 'Reports' },
-        /* 'alt+o': { func: () => showView('settings'), selector: '[data-view="settings"]', title: 'Settings (Options)' }, */
-    };
+        const shortcutConfig = {
+            'alt+d': { func: () => showView('dashboard'), selector: '[data-view="dashboard"]', title: 'Dashboard' },
+            'alt+s': { func: () => showView('students'), selector: '[data-view="students"]', title: 'Students' },
+            'alt+t': { func: () => showView('teachers'), selector: '[data-view="teachers"]', title: 'Teachers' },
+            'alt+f': { func: () => showView('fees'), selector: '[data-view="fees"]', title: 'Fees' },
+            'alt+e': { func: () => showView('exams'), selector: '[data-view="exams"]', title: 'Exams' },
+            'alt+c': { func: () => showView('classes'), selector: '[data-view="classes"]', title: 'Classes' },
+            'alt+b': { func: () => showView('backup'), selector: '[data-view="backup"]', title: 'Backup' },
+            /* 'alt+i': { func: () => showView('id-cards'), selector: '[data-view="id-cards"]', title: 'ID Cards' }, */
+            'alt+p': { func: () => showView('salaries'), selector: '[data-view="salaries"]', title: 'Salaries (Pay)' },
+            'alt+l': { func: () => showView('library'), selector: '[data-view="library"]', title: 'Library' },
+            'alt+r': { func: () => showView('reports'), selector: '[data-view="reports"]', title: 'Reports' },
+            /* 'alt+o': { func: () => showView('settings'), selector: '[data-view="settings"]', title: 'Settings (Options)' }, */
+        };
 
-    function addShortcutTooltips() {
-        for (const key in shortcutConfig) {
-            const config = shortcutConfig[key];
-            const element = document.querySelector(config.selector);
-            if (element) {
-                const shortcutHint = `(${key.replace('alt+', 'Alt+')})`;
-                element.title = `${config.title} ${shortcutHint}`;
-            }
-        }
-    }
-
-    function findVisibleElement(selector) {
-        const elements = Array.from(document.querySelectorAll(selector));
-        return elements.find(el => el.offsetParent !== null);
-    }
-
-    function handleKeydown(e) {
-         if (!e.key) return;
-        if (e.target.matches('input, textarea, select')) {
-            if (e.key === 'Escape') {
-                e.target.blur();
-            } else if (e.key.toLowerCase() === 's' && e.ctrlKey) {
-                 e.preventDefault();
-                 const submitButton = findVisibleElement('.tab-content.active form .btn-primary[type="submit"]');
-                 if(submitButton) submitButton.click();
-            }
-            return;
-        }
-
-        const key = `${e.altKey ? 'alt+' : ''}${e.ctrlKey ? 'ctrl+' : ''}${e.shiftKey ? 'shift+' : ''}${e.key.toLowerCase()}`;
-        
-        if (shortcutConfig[key]) {
-            e.preventDefault();
-            shortcutConfig[key].func();
-            return;
-        }
-        
-        switch (e.key) {
-            case 'Escape':
-                const visibleModal = findVisibleElement('.modal[style*="display: block"]');
-                if (visibleModal) {
-                    e.preventDefault();
-                    const closeButton = visibleModal.querySelector('.close');
-                    if (closeButton) closeButton.click();
+        function addShortcutTooltips() {
+            for (const key in shortcutConfig) {
+                const config = shortcutConfig[key];
+                const element = document.querySelector(config.selector);
+                if (element) {
+                    const shortcutHint = `(${key.replace('alt+', 'Alt+')})`;
+                    element.title = `${config.title} ${shortcutHint}`;
                 }
-                break;
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-                if (e.altKey) {
+            }
+        }
+
+        function findVisibleElement(selector) {
+            const elements = Array.from(document.querySelectorAll(selector));
+            return elements.find(el => el.offsetParent !== null);
+        }
+
+        function handleKeydown(e) {
+            if (!e.key) return;
+            if (e.target.matches('input, textarea, select')) {
+                if (e.key === 'Escape') {
+                    e.target.blur();
+                } else if (e.key.toLowerCase() === 's' && e.ctrlKey) {
                     e.preventDefault();
-                    const activeView = findVisibleElement('.section-view');
-                    if (activeView) {
-                        const tabIndex = parseInt(e.key) - 1;
-                        const tab = activeView.querySelectorAll('.tabs .tab')[tabIndex];
-                        if (tab) tab.click();
+                    const submitButton = findVisibleElement('.tab-content.active form .btn-primary[type="submit"]');
+                    if (submitButton) submitButton.click();
+                }
+                return;
+            }
+
+            const key = `${e.altKey ? 'alt+' : ''}${e.ctrlKey ? 'ctrl+' : ''}${e.shiftKey ? 'shift+' : ''}${e.key.toLowerCase()}`;
+
+            if (shortcutConfig[key]) {
+                e.preventDefault();
+                shortcutConfig[key].func();
+                return;
+            }
+
+            switch (e.key) {
+                case 'Escape':
+                    const visibleModal = findVisibleElement('.modal[style*="display: block"]');
+                    if (visibleModal) {
+                        e.preventDefault();
+                        const closeButton = visibleModal.querySelector('.close');
+                        if (closeButton) closeButton.click();
                     }
-                }
-                break;
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    if (e.altKey) {
+                        e.preventDefault();
+                        const activeView = findVisibleElement('.section-view');
+                        if (activeView) {
+                            const tabIndex = parseInt(e.key) - 1;
+                            const tab = activeView.querySelectorAll('.tabs .tab')[tabIndex];
+                            if (tab) tab.click();
+                        }
+                    }
+                    break;
+            }
         }
+
+        addShortcutTooltips();
+        document.addEventListener('keydown', handleKeydown);
     }
 
-    addShortcutTooltips();
-    document.addEventListener('keydown', handleKeydown);
-}
-
-// Activate the shortcut system
-initializeShortcuts();
+    // Activate the shortcut system
+    initializeShortcuts();
 </script>
 <script>
-let protectionEnabled = true;
+    let protectionEnabled = true;
 
-function blockKeys(e) {
-  if (!protectionEnabled) return;
+    function blockKeys(e) {
+        if (!protectionEnabled) return;
 
-  const isCtrl = e.ctrlKey;
-  const isAlt = e.altKey;
-  const isShift = e.shiftKey;
+        const isCtrl = e.ctrlKey;
+        const isAlt = e.altKey;
+        const isShift = e.shiftKey;
 
-  // Allow Ctrl+C / Ctrl+V / Alt+F4 / Tab
-  const allowed =
-    (isCtrl && ['c', 'v'].includes(e.key.toLowerCase())) ||
-    (isAlt && e.key === 'F4') ||
-    e.key === 'Tab';
+        // Allow Ctrl+C / Ctrl+V / Alt+F4 / Tab
+        const allowed =
+            (isCtrl && ['c', 'v'].includes(e.key.toLowerCase())) ||
+            (isAlt && e.key === 'F4') ||
+            e.key === 'Tab';
 
-  // Secret unlock: Ctrl+Alt+Shift+Y
-  if (isCtrl && isAlt && isShift && e.key.toLowerCase() === 'y') {
-    protectionEnabled = false;
-    alert("Protection disabled.");
-    return;
-  }
+        // Secret unlock: Ctrl+Alt+Shift+Y
+        if (isCtrl && isAlt && isShift && e.key.toLowerCase() === 'y') {
+            protectionEnabled = false;
+            alert("Protection disabled.");
+            return;
+        }
 
-  // Block common dev shortcuts
-  const blocked =
-    e.key === 'F12' ||
-    (isCtrl && ['u', 's', 'p', 'i', 'j', 'k'].includes(e.key.toLowerCase())) ||
-    (isCtrl && isShift) ||
-    (isCtrl && isAlt && e.key.toLowerCase() === 'i');
+        // Block common dev shortcuts
+        const blocked =
+            e.key === 'F12' ||
+            (isCtrl && ['u', 's', 'p', 'i', 'j', 'k'].includes(e.key.toLowerCase())) ||
+            (isCtrl && isShift) ||
+            (isCtrl && isAlt && e.key.toLowerCase() === 'i');
 
-  if (blocked && !allowed) {
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  }
-}
+        if (blocked && !allowed) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }
 
-document.addEventListener('keydown', blockKeys);
+    document.addEventListener('keydown', blockKeys);
 
-document.addEventListener('contextmenu', function (e) {
-  if (protectionEnabled) e.preventDefault();
-});
+    document.addEventListener('contextmenu', function (e) {
+        if (protectionEnabled) e.preventDefault();
+    });
 
-document.addEventListener('dragstart', function (e) {
-  if (protectionEnabled) e.preventDefault();
-});
+    document.addEventListener('dragstart', function (e) {
+        if (protectionEnabled) e.preventDefault();
+    });
 
-// Optional: Clear page if DevTools is open
-setInterval(() => {
-  if (!protectionEnabled) return;
-  const open = window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160;
-  if (open) {
-    document.body.innerHTML = "<h1 style='color:red; text-align:center;'>DevTools are blocked</h1>";
-  }
-}, 1000);
+    // Optional: Clear page if DevTools is open
+    setInterval(() => {
+        if (!protectionEnabled) return;
+        const open = window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160;
+        if (open) {
+            document.body.innerHTML = "<h1 style='color:red; text-align:center;'>DevTools are blocked</h1>";
+        }
+    }, 1000);
 </script>

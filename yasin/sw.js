@@ -90,7 +90,7 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "fff565da9c90d14cd96086f4ece331ae"
+        "revision": "bbbb692c930837cba879d0d0ac8e70c7"
     },
     {
         "url": "jszip.min.js",
@@ -105,8 +105,12 @@ if (workbox) {
         "revision": "377904ca580f80b117d3430589a11d54"
     },
     {
+        "url": "manifest.json",
+        "revision": "247a786ecf9705dc6c3c3444a1a790a1"
+    },
+    {
         "url": "offline.html",
-        "revision": "7656c61e25225c4fcc77cb000be6d527"
+        "revision": "93dd8135f88165fc1bbc0acf525cd1d3"
     },
     {
         "url": "qrcode.min.js",
@@ -123,6 +127,10 @@ if (workbox) {
     {
         "url": "sign.png",
         "revision": "ac675e0e6e31bb8dbb66f6e418008084"
+    },
+    {
+        "url": "sw.js",
+        "revision": "82b98b8c58304899dbc24a45f4a5c21c"
     }
 ]);
 
