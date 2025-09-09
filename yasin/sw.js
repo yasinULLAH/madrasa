@@ -90,7 +90,7 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "bbbb692c930837cba879d0d0ac8e70c7"
+        "revision": "991f445d63c03b23653f3f2f98fb2d0e"
     },
     {
         "url": "jszip.min.js",
@@ -110,7 +110,7 @@ if (workbox) {
     },
     {
         "url": "offline.html",
-        "revision": "93dd8135f88165fc1bbc0acf525cd1d3"
+        "revision": "8987c4b748db7cbdf5e4c6165507121b"
     },
     {
         "url": "qrcode.min.js",
@@ -130,7 +130,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "82b98b8c58304899dbc24a45f4a5c21c"
+        "revision": "c7302bb0ec59177ea33d91be754e873d"
     }
 ]);
 
