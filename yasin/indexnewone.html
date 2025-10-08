@@ -1031,6 +1031,38 @@
             background: #ffffffad;
             border-radius: 67px;
         }
+
+        .qr-photo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .qr-wrapper {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            background-color: #fff;
+        }
+
+        .cert-photo-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            background-color: #f0f0f0;
+        }
+
+        .certificate-signature {
+            align-items: center;
+            /* Better vertical alignment */
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -3479,6 +3511,7 @@
             <div class="tabs">
                 <div class="tab active" data-tab="id-card-generator">ID Card Generator</div>
                 <div class="tab" data-tab="certificate-generator">Certificate Generator</div>
+                <div class="tab" data-tab="teacher-certificate-generator">Teacher Certificate Generator</div>
             </div>
             <div class="tab-content active" id="id-card-generator">
                 <div class="form-container no-print">
@@ -3545,6 +3578,31 @@
                     </div>
                 </div>
                 <div id="certificate-output"
+                    style="background: #e9ecef; padding: 20px; display:flex; justify-content: center;"></div>
+            </div>
+            <div class="tab-content" id="teacher-certificate-generator">
+                <div class="form-container no-print">
+                    <div class="form-title">Generate Teacher Certificate</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Certificate Type</label>
+                            <select class="form-control" id="teacher-certificate-type">
+                                <option value="experience">Experience Certificate</option>
+                                <option value="appreciation">Appreciation Certificate</option>
+                                <option value="training">Training Completion Certificate</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select Teacher</label>
+                            <select class="form-control" id="teacher-certificate-teacher-filter"></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <button class="btn btn-primary" id="generate-teacher-certificate-btn">Generate
+                            Certificate</button>
+                    </div>
+                </div>
+                <div id="teacher-certificate-output"
                     style="background: #e9ecef; padding: 20px; display:flex; justify-content: center;"></div>
             </div>
         </div>
@@ -11187,32 +11245,6 @@
             };
             return { html: html, chartData: chartData };
         }
-        async function initializeIdCardsView() {
-            const classDropdown = document.getElementById('id-card-class-filter');
-            const studentDropdown = document.getElementById('certificate-student-filter');
-            classDropdown.innerHTML = '<option value="">All Classes</option>';
-            studentDropdown.innerHTML = '<option value="">Select Student</option>';
-            const classes = await getAllFromStore(STORES.CLASSES);
-            const students = await getAllFromStore(STORES.STUDENTS);
-            classes.forEach(c => classDropdown.innerHTML += `<option value="${c.id}">${c.name}</option>`);
-            students.sort((a, b) => a.name.localeCompare(b.name, 'en')).forEach(s => studentDropdown.innerHTML += `<option value="${s.id}">${s.name} (${s.rollNumber})</option>`);
-            document.getElementById('id-card-class-filter').addEventListener('change', async () => {
-                const classId = parseInt(document.getElementById('id-card-class-filter').value);
-                const sectionDropdown = document.getElementById('id-card-section-filter');
-                sectionDropdown.innerHTML = '<option value="">All Sections</option>';
-                if (classId) {
-                    const sections = await getAllFromIndex(STORES.SECTIONS, 'classId', classId);
-                    sections.forEach(s => sectionDropdown.innerHTML += `<option value="${s.id}">${s.name}</option>`);
-                }
-            });
-            document.getElementById('certificate-type').addEventListener('change', (e) => {
-                document.getElementById('achievement-details-row').style.display = (e.target.value === 'achievement') ? 'flex' : 'none';
-            });
-            document.getElementById('generate-id-cards-btn').addEventListener('click', generateIdCards);
-            document.getElementById('generate-certificate-btn').addEventListener('click', generateCertificate);
-            document.getElementById('bulk-export-zip-btn').addEventListener('click', exportAllCardsAsZip);
-        }
-        // Add this NEW function before generateCertificate
         function setupCertificateInteraction(studentId) {
             const certificateFrames = ['bgc.png', 'bgc2.png', 'bgc3.png', 'bgc4.png', 'bgc5.png'];
             let currentFrameIndex = 0;
@@ -11391,12 +11423,22 @@
         async function initializeIdCardsView() {
             const classDropdown = document.getElementById('id-card-class-filter');
             const studentDropdown = document.getElementById('certificate-student-filter');
+            const teacherDropdown = document.getElementById('teacher-certificate-teacher-filter'); // New
+
             classDropdown.innerHTML = '<option value="">All Classes</option>';
             studentDropdown.innerHTML = '<option value="">Select Student</option>';
-            const classes = await getAllFromStore(STORES.CLASSES);
-            const students = await getAllFromStore(STORES.STUDENTS);
+            teacherDropdown.innerHTML = '<option value="">Select Teacher</option>'; // New
+
+            const [classes, students, teachers] = await Promise.all([ // New
+                getAllFromStore(STORES.CLASSES),
+                getAllFromStore(STORES.STUDENTS),
+                getAllFromStore(STORES.TEACHERS) // New
+            ]);
+
             classes.forEach(c => classDropdown.innerHTML += `<option value="${c.id}">${c.name}</option>`);
             students.sort((a, b) => a.name.localeCompare(b.name, 'en')).forEach(s => studentDropdown.innerHTML += `<option value="${s.id}">${s.name} (${s.rollNumber})</option>`);
+            teachers.sort((a, b) => a.name.localeCompare(b.name, 'en')).forEach(t => teacherDropdown.innerHTML += `<option value="${t.id}">${t.name} (${t.employeeId})</option>`); // New
+
             document.getElementById('id-card-class-filter').addEventListener('change', async () => {
                 const classId = parseInt(document.getElementById('id-card-class-filter').value);
                 const sectionDropdown = document.getElementById('id-card-section-filter');
@@ -11406,13 +11448,17 @@
                     sections.forEach(s => sectionDropdown.innerHTML += `<option value="${s.id}">${s.name}</option>`);
                 }
             });
+
             document.getElementById('certificate-type').addEventListener('change', (e) => {
                 document.getElementById('achievement-details-row').style.display = (e.target.value === 'achievement') ? 'flex' : 'none';
             });
+
             document.getElementById('generate-id-cards-btn').addEventListener('click', generateIdCards);
             document.getElementById('generate-certificate-btn').addEventListener('click', generateCertificate);
+            document.getElementById('generate-teacher-certificate-btn').addEventListener('click', generateTeacherCertificate); // New
             document.getElementById('bulk-export-zip-btn').addEventListener('click', exportAllCardsAsZip);
         }
+
         async function generateIdCards() {
             showLoading();
             const memberType = document.getElementById('id-card-member-type').value;
@@ -11965,8 +12011,105 @@
                     });
                 }
             });
-        })(); 
+        })();
+        async function generateTeacherCertificate() {
+            showLoading();
+            const certType = document.getElementById('teacher-certificate-type').value;
+            const teacherId = parseInt(document.getElementById('teacher-certificate-teacher-filter').value);
+            const outputDiv = document.getElementById('teacher-certificate-output');
+            outputDiv.innerHTML = '';
+
+            if (!teacherId) {
+                showNotification('Please select a teacher.', 'error');
+                hideLoading();
+                return;
+            }
+
+            const teacher = await getFromStore(STORES.TEACHERS, teacherId);
+            const settings = await getFromStore(STORES.SETTINGS, 'general');
+            const schoolName = settings?.schoolName || "Deeni Madrasa";
+            const principalName = settings?.principalName || "Principal";
+            const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            let title = "";
+            let body = "";
+
+            switch (certType) {
+                case 'experience':
+                    title = "Experience Certificate";
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This is to certify that <b>${teacher.name}</b> has worked at <b>${schoolName}</b> as a Teacher of <b>${teacher.specialization}</b> from <b>${formatDate(teacher.joiningDate)}</b> to <b>Present</b>. During their tenure, their performance and conduct were found to be excellent.</p>`;
+                    break;
+                case 'appreciation':
+                    title = "Certificate of Appreciation";
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certificate is proudly presented to <b>${teacher.name}</b> in recognition of their dedicated service and outstanding contribution to our institution. We appreciate their hard work and commitment.</p>`;
+                    break;
+                case 'training':
+                    title = "Training Completion Certificate";
+                    body = `<p data-editable-id="cert_body" contenteditable="true">This certifies that <b>${teacher.name}</b> has successfully completed the training program on <b>[Training Name]</b> held from <b>[Start Date]</b> to <b>[End Date]</b>. We congratulate them on their achievement.</p>`;
+                    break;
+            }
+
+            const qrText = `Name: ${teacher.name}\nID: ${teacher.employeeId}\nQualification: ${teacher.qualification}`;
+
+            const certificateHTML = `
+    <div class="certificate-wrapper" id="cert-wrapper-${teacher.id}">
+        <div class="certificate-controls no-print">
+    <button id="cert-prev-frame" class="cert-frame-btn" title="Previous Frame">❮</button>
+    <span style="font-style: italic;">Click text to edit.</span>
+    <button id="cert-next-frame" class="cert-frame-btn" title="Next Frame">❯</button>
+</div>
+        <button title="Download PNG" class="card-export-btn no-print" onclick="exportElementAsPNG('cert-container-${teacher.id}', 'Certificate-${teacher.employeeId}.png')">↓</button>
+        <div class="certificate-container" id="cert-container-${teacher.id}">
+            <h2 data-editable-id="school_name" contenteditable="true">${schoolName}</h2>
+            <h3 data-editable-id="cert_title" contenteditable="true">${title}</h3>
+            <hr>
+            <div style="text-align: left; margin-top: 40px;">
+                ${body}
+            </div>
+            <div class="certificate-signature">
+                <div data-editable-id="cert_date" contenteditable="true">Date: ${today}</div>
+                 <div class="qr-photo-container">
+                    <div class="qr-wrapper" id="teacher-cert-qr-code-${teacher.id}" onclick="document.getElementById('teacher-cert-photo-upload-${teacher.id}').click()" title="Click to upload photo">
+                         </div>
+                    <img id="teacher-cert-photo-${teacher.id}" src="${teacher.photo || ''}" class="cert-photo-preview" style="${teacher.photo ? '' : 'display:none;'}"/>
+                    <input type="file" id="teacher-cert-photo-upload-${teacher.id}" style="display:none;" accept="image/*" onchange="handleTeacherCertPhotoUpload(event, ${teacher.id})">
+                </div>
+                <div data-editable-id="cert_signature_title" contenteditable="true">
+                    <img src="sign.png" alt="Signature" style="height: 56px;display: block;margin: -38px -30px;position: absolute;">
+                    Principal's Signature
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+            outputDiv.innerHTML = certificateHTML;
+            generateQrCode(`teacher-cert-qr-code-${teacher.id}`, qrText);
+            setupCertificateInteraction(teacher.id); // Re-use existing function
+            hideLoading();
+        }
+
+        async function handleTeacherCertPhotoUpload(event, teacherId) {
+            const file = event.target.files[0];
+            if (!file) return;
+            showLoading();
+            try {
+                const b64 = await fileToBase64(file);
+                const imgElement = document.getElementById(`teacher-cert-photo-${teacherId}`);
+                if (imgElement) {
+                    imgElement.src = b64;
+                    imgElement.style.display = 'block';
+                }
+                await updateInStore(STORES.TEACHERS, teacherId, { photo: b64 });
+                showNotification("Teacher photo updated for all records.", "success");
+            } catch (error) {
+                console.error("Error handling certificate photo upload:", error);
+                showNotification("Failed to upload photo.", "error");
+            } finally {
+                hideLoading();
+            }
+        }
     </script>
+
     <script type="module">
         import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 

@@ -90,7 +90,7 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "b665be0237ffbbc4313951edded37f98"
+        "revision": "77bcf7bbc29e29e9f273d9f2298accc3"
     },
     {
         "url": "jszip.min.js",
@@ -130,7 +130,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "b49433bc208ce59312bce2fbd26c2830"
+        "revision": "0b8afeb6c7c1bb4e6894689d73a1e362"
     }
 ]);
 
