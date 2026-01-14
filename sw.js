@@ -406,7 +406,7 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "9db8f2e3f1dac951fa7d91c4ff0395a8"
+        "revision": "b03122925bc75c51cf70a84962d9a51b"
     },
     {
         "url": "indexnewonemakeacopy.py",
@@ -606,7 +606,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "aa6961c25192ce24d6643b3f64dbd078"
+        "revision": "5efc2dc35d7772556a3323d3b15355ed"
     },
     {
         "url": "table-export attendence.pdf",
@@ -635,6 +635,22 @@ if (workbox) {
     {
         "url": "Yasin_Ullah_front.png",
         "revision": "6fddfeeaa3fd53405df5c32bae1b6783"
+    },
+    {
+        "url": "\u0627\u0633\u06a9\u0648\u0644 \u0645\u06cc\u0646\u062c\u0645\u0646\u0679 \u0633\u0633\u0679\u0645 \u06cc\u0648\u0632\u0631 \u06af\u0627\u0626\u06cc\u0688 indexnewone short.docx",
+        "revision": "7927eee6dd547113292d2a05a88624b2"
+    },
+    {
+        "url": "\u0627\u0633\u06a9\u0648\u0644 \u0645\u06cc\u0646\u062c\u0645\u0646\u0679 \u0633\u0633\u0679\u0645 \u06cc\u0648\u0632\u0631 \u06af\u0627\u0626\u06cc\u0688 indexnewone short.pdf",
+        "revision": "c107dbd3867d4997143026b5fa4b5bd9"
+    },
+    {
+        "url": "\u0627\u0633\u06a9\u0648\u0644 \u0648 \u0645\u062f\u0631\u0633\u06c1 \u0645\u06cc\u0646\u062c\u0645\u0646\u0679 \u0627\u06cc\u067e indexnewone.docx",
+        "revision": "7a39593c9b9dfe283788f33af020786e"
+    },
+    {
+        "url": "\u0627\u0633\u06a9\u0648\u0644 \u0648 \u0645\u062f\u0631\u0633\u06c1 \u0645\u06cc\u0646\u062c\u0645\u0646\u0679 \u0627\u06cc\u067e indexnewone.pdf",
+        "revision": "ddd28e6f8cc688bf579e18c6f75ef82c"
     },
     {
         "url": "All_Result_Cards_2025-06-30/ResultCard_0031_Rukhsana_Sheikh.png",
@@ -1365,8 +1381,36 @@ if (workbox) {
         "revision": "11c323e462081167e352542cf9ddd64e"
     },
     {
+        "url": "yasin/bgc.png",
+        "revision": "36106cfb750804a9cd2d0c8633cda5ae"
+    },
+    {
+        "url": "yasin/bgc2.png",
+        "revision": "deeb0127ebbc84c22d88b3a19c732c43"
+    },
+    {
+        "url": "yasin/bgc3.png",
+        "revision": "bc3b6d222ebcb740e42f754cd3250d86"
+    },
+    {
+        "url": "yasin/bgc4.png",
+        "revision": "fbb15774e784d882a7ddbbac8ac31552"
+    },
+    {
+        "url": "yasin/bgc5.png",
+        "revision": "c98f404a5b5a2d39b9337c4ddcaaff97"
+    },
+    {
+        "url": "yasin/build pwa make html app offline and installable yasin best working re-run this for updates best for html only.py",
+        "revision": "912a9d55d74613b8f4f07180d0df1fd3"
+    },
+    {
         "url": "yasin/chart.js",
         "revision": "187ffe7a12d1079ea1653198f9e19187"
+    },
+    {
+        "url": "yasin/favicon.ico",
+        "revision": "7cbcf8be98d3ce63133537d07504db0f"
     },
     {
         "url": "yasin/favicon.svg",
@@ -1381,12 +1425,60 @@ if (workbox) {
         "revision": "d7530aa0b7587e627484c49fdf8f13f2"
     },
     {
+        "url": "yasin/icon-128.png",
+        "revision": "1ec8980d1a4a78149a5ec7aac0a52a79"
+    },
+    {
+        "url": "yasin/icon-144.png",
+        "revision": "70839b0a9ce56b64a72ca87b9c29f139"
+    },
+    {
+        "url": "yasin/icon-152.png",
+        "revision": "24fd20976f6dc6d81b99bdecd571fced"
+    },
+    {
+        "url": "yasin/icon-192.png",
+        "revision": "286958b45be08bdc916b8e3126b2203d"
+    },
+    {
+        "url": "yasin/icon-384.png",
+        "revision": "d3d46f60ff5014f7d85d047e1c55329f"
+    },
+    {
+        "url": "yasin/icon-512.png",
+        "revision": "1a98134a086859d517de611e9e0579bc"
+    },
+    {
+        "url": "yasin/icon-72.png",
+        "revision": "d7e2fea916659bbf271b4632f028fed5"
+    },
+    {
+        "url": "yasin/icon-96.png",
+        "revision": "f1bdf68dd999551760088eb79f5cbcba"
+    },
+    {
         "url": "yasin/indexnewone.html",
-        "revision": "883a7d818dc573d441410e6f01e022a9"
+        "revision": "cc0527528b6c67be8716e61c4fb59f38"
     },
     {
         "url": "yasin/jszip.min.js",
         "revision": "b5d02b3f0bf3ae026451909419df07bb"
+    },
+    {
+        "url": "yasin/logo.png",
+        "revision": "377904ca580f80b117d3430589a11d54"
+    },
+    {
+        "url": "yasin/logo2.png",
+        "revision": "377904ca580f80b117d3430589a11d54"
+    },
+    {
+        "url": "yasin/manifest.json",
+        "revision": "247a786ecf9705dc6c3c3444a1a790a1"
+    },
+    {
+        "url": "yasin/offline.html",
+        "revision": "8987c4b748db7cbdf5e4c6165507121b"
     },
     {
         "url": "yasin/qrcode.min.js",
@@ -1394,7 +1486,19 @@ if (workbox) {
     },
     {
         "url": "yasin/school app.ahk",
-        "revision": "cbc2ab8f4bf111f48e738dd6cb9ebbfd"
+        "revision": "3a42b69c3c74463347ca2fa3010bc065"
+    },
+    {
+        "url": "yasin/school app.exe",
+        "revision": "b9d7297beb9643f593c67e77a5a9970a"
+    },
+    {
+        "url": "yasin/sign.png",
+        "revision": "ac675e0e6e31bb8dbb66f6e418008084"
+    },
+    {
+        "url": "yasin/sw.js",
+        "revision": "8f85048756174eaee1fe9d329ea82f4e"
     }
 ]);
 
