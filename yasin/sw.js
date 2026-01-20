@@ -69,6 +69,14 @@ if (workbox) {
         "revision": "c98f404a5b5a2d39b9337c4ddcaaff97"
     },
     {
+        "url": "biometric_attendance.db",
+        "revision": "ef7f3c56cc1bad83894f2327269ec821"
+    },
+    {
+        "url": "biometric_attendance2.db",
+        "revision": "c15809c5bf8e3dc0c0dc3ee84afddb82"
+    },
+    {
         "url": "build pwa make html app offline and installable yasin best working re-run this for updates best for html only.py",
         "revision": "912a9d55d74613b8f4f07180d0df1fd3"
     },
@@ -90,7 +98,7 @@ if (workbox) {
     },
     {
         "url": "indexnewone.html",
-        "revision": "77bcf7bbc29e29e9f273d9f2298accc3"
+        "revision": "902b20618ad3f87f096ea8a67a20e666"
     },
     {
         "url": "jszip.min.js",
@@ -117,6 +125,10 @@ if (workbox) {
         "revision": "517b55d3688ce9ef1085a3d9632bcb97"
     },
     {
+        "url": "readme for teacher.py.txt",
+        "revision": "1d2aae1283a19d9750a7c3b321d19396"
+    },
+    {
         "url": "school app.ahk",
         "revision": "3a42b69c3c74463347ca2fa3010bc065"
     },
@@ -130,7 +142,15 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "0b8afeb6c7c1bb4e6894689d73a1e362"
+        "revision": "19d08ff5c56c53d088c6ea3fc8b5c958"
+    },
+    {
+        "url": "teacher.py",
+        "revision": "6430ae25f3278b7cd42c6e3108b17576"
+    },
+    {
+        "url": "teacher2.py",
+        "revision": "5918f186dcfb7f93afe778345acd2804"
     }
 ]);
 

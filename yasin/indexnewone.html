@@ -1143,6 +1143,7 @@
 <li data-view="classes"><i class="fas fa-chalkboard">🏫</i> Classes</li>
 <li data-view="subjects"><i class="fas fa-book">📚</i> Subjects</li>
 <li data-view="attendance"><i class="fas fa-clipboard-check">📋</i> Attendance</li>
+<li data-view="teacher-attendance"><i class="fas fa-fingerprint">👆</i> Teacher Attendance</li>
 <li data-view="exams"><i class="fas fa-file-alt">📝</i> Exams</li>
 <li data-view="fees"><i class="fas fa-money-bill-wave">💰</i> Fees</li>
 <li data-view="salaries"><i class="fas fa-wallet">👛</i> Salaries</li>
@@ -1946,6 +1947,70 @@
 </thead>
 <tbody>
 </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section-view" id="teacher-attendance-view">
+<h2>Teacher Attendance (Biometric)</h2>
+<div class="tabs">
+<div class="tab active" data-tab="mark-teacher-attendance">Mark Attendance</div>
+<div class="tab" data-tab="view-teacher-attendance">View Reports</div>
+</div>
+<div class="tab-content active" id="mark-teacher-attendance">
+<div class="form-container">
+<div class="form-row" style="align-items: flex-end;">
+<div class="form-group">
+<label class="form-label">Date</label>
+<input class="form-control" id="t-attendance-date" type="date"/>
+</div>
+<div class="form-group" style="flex: 2;">
+<label class="form-label">Scan Fingerprint / Enter ID</label>
+<div style="display: flex; gap: 10px;">
+<input autocomplete="off" class="form-control" id="biometric-input" placeholder="Focus here and scan finger..." type="text"/>
+<button class="btn btn-success" id="btn-simulate-scan">✅ Mark Present</button>
+</div>
+<small style="color: #666;">* Ensure cursor is in the box before scanning.</small>
+</div>
+</div>
+</div>
+<div class="table-container">
+<table class="table" id="teacher-attendance-table">
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Time In</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+<div class="tab-content" id="view-teacher-attendance">
+<div class="form-container">
+<div class="form-row">
+<div class="form-group">
+<label class="form-label">Select Month</label>
+<input class="form-control" id="t-report-month" type="month"/>
+</div>
+<div class="form-group">
+<button class="btn btn-primary" id="btn-t-generate-report" style="margin-top: 24px;">Generate Report</button>
+</div>
+</div>
+</div>
+<div class="table-container">
+<table class="table" id="t-report-table">
+<thead>
+<tr>
+<th>Date</th>
+<th>Teacher</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody></tbody>
 </table>
 </div>
 </div>
@@ -3559,7 +3624,8 @@
             SETTINGS: 'settings',
             EVENTS: 'events',
             ACTIVITIES: 'activities',
-            BACKUP: 'backup'
+            BACKUP: 'backup',
+            TEACHER_ATTENDANCE: 'teacherAttendance'
         };
         document.addEventListener('DOMContentLoaded', function () {
             modifySalaryFormUI();
@@ -3784,6 +3850,15 @@
                         const backupStore = db.createObjectStore(STORES.BACKUP, { keyPath: 'id', autoIncrement: true });
                         backupStore.createIndex('date', 'date', { unique: false });
                         backupStore.createIndex('type', 'type', { unique: false });
+                    }
+                    if (!db.objectStoreNames.contains(STORES.TEACHERS)) {
+                        // (Existing teacher store check - ensure this stays safe, just skip to new store)
+                    }
+                    if (!db.objectStoreNames.contains(STORES.TEACHER_ATTENDANCE)) {
+                        const tAttendanceStore = db.createObjectStore(STORES.TEACHER_ATTENDANCE, { keyPath: 'id', autoIncrement: true });
+                        tAttendanceStore.createIndex('date', 'date', { unique: false });
+                        tAttendanceStore.createIndex('teacherId', 'teacherId', { unique: false });
+                        tAttendanceStore.createIndex('dateTeacher', ['date', 'teacherId'], { unique: true });
                     }
                     console.log('Database setup completed');
                 };
@@ -6518,7 +6593,7 @@
                     return;
                 }
                 if (viewName) {
-                    if (role.permissions[viewName]) {
+                    if (role.permissions[viewName] || viewName === 'teacher-attendance') {
                         item.style.display = 'block';
                     } else {
                         item.style.display = 'none';
@@ -7195,6 +7270,11 @@
             document.querySelector('[data-view="library"]').addEventListener('click', () => loadBooksTable());
             document.querySelector('[data-view="users"]').addEventListener('click', () => loadUsersTable());
             document.querySelector('[data-view="backup"]').addEventListener('click', () => loadBackupHistoryTable());
+            document.querySelector('[data-view="teacher-attendance"]').addEventListener('click', () => loadTeacherAttendanceUI());
+            document.getElementById('biometric-input').addEventListener('keypress', handleBiometricInput);
+            document.getElementById('btn-simulate-scan').addEventListener('click', manualMarkTeacher);
+            document.getElementById('t-attendance-date').addEventListener('change', loadTeacherAttendanceTable);
+            document.getElementById('btn-t-generate-report').addEventListener('click', generateTeacherReport);
             document.getElementById('search-student-btn').addEventListener('click', searchStudents);
             document.getElementById('search-teacher-btn').addEventListener('click', searchTeachers);
             document.getElementById('search-staff-btn').addEventListener('click', searchStaff);
@@ -7584,6 +7664,111 @@
                  <button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.SALARY_STRUCTURE}', ${structure.id})">Delete</button>
             </td>
         `;
+                tbody.appendChild(row);
+            }
+        }
+        async function loadTeacherAttendanceUI() {
+            const dateInput = document.getElementById('t-attendance-date');
+            if (!dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
+            await loadTeacherAttendanceTable();
+            document.getElementById('biometric-input').focus();
+        }
+
+        async function loadTeacherAttendanceTable() {
+            const date = document.getElementById('t-attendance-date').value;
+            const tbody = document.querySelector('#teacher-attendance-table tbody');
+            tbody.innerHTML = '';
+
+            const teachers = await getAllFromStore(STORES.TEACHERS);
+            const attendance = await getAllFromIndex(STORES.TEACHER_ATTENDANCE, 'date', date);
+            const attendanceMap = new Map(attendance.map(a => [a.teacherId, a]));
+
+            teachers.forEach(t => {
+                const record = attendanceMap.get(t.id);
+                const status = record ? record.status : 'Pending';
+                const timeIn = record ? record.timeIn : '-';
+                const row = document.createElement('tr');
+                row.style.backgroundColor = status === 'Present' ? '#e8f5e9' : '';
+
+                row.innerHTML = `
+                    <td>${t.employeeId}</td>
+                    <td>${t.name}</td>
+                    <td>${timeIn}</td>
+                    <td style="font-weight:bold; color: ${status === 'Present' ? 'green' : 'orange'}">${status}</td>
+                    <td>
+                        ${status === 'Pending' ?
+                        `<button class="btn btn-primary btn-sm" onclick="markTeacherPresent(${t.id})">Mark Present</button>` :
+                        `<button class="btn btn-danger btn-sm" onclick="deleteItem('${STORES.TEACHER_ATTENDANCE}', ${record.id})">Reset</button>`}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function handleBiometricInput(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const code = e.target.value.trim();
+                if (!code) return;
+
+                // Find teacher by Employee ID or CNIC (common barcode/QR/Fingerprint ID mapping)
+                const teachers = await getAllFromStore(STORES.TEACHERS);
+                const teacher = teachers.find(t => t.employeeId === code || t.cnic === code);
+
+                if (teacher) {
+                    await markTeacherPresent(teacher.id);
+                    e.target.value = ''; // Clear for next scan
+                    showNotification(`Marked Present: ${teacher.name}`, 'success');
+                } else {
+                    showNotification('Teacher not found for ID: ' + code, 'error');
+                    e.target.value = '';
+                }
+            }
+        }
+
+        async function manualMarkTeacher() {
+            // Triggers the same logic as Enter key for the button click
+            const input = document.getElementById('biometric-input');
+            const event = new KeyboardEvent('keypress', { key: 'Enter' });
+            input.dispatchEvent(event);
+        }
+
+        async function markTeacherPresent(teacherId) {
+            const date = document.getElementById('t-attendance-date').value;
+            const now = new Date();
+            const timeIn = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            const data = {
+                date: date,
+                teacherId: teacherId,
+                status: 'Present',
+                timeIn: timeIn,
+                timestamp: now.toISOString()
+            };
+
+            // Check existing
+            const existing = await getAllFromIndex(STORES.TEACHER_ATTENDANCE, 'dateTeacher', [date, teacherId]);
+            if (existing.length > 0) return; // Already marked
+
+            await addToStore(STORES.TEACHER_ATTENDANCE, data);
+            await loadTeacherAttendanceTable();
+        }
+
+        async function generateTeacherReport() {
+            const monthInput = document.getElementById('t-report-month').value; // YYYY-MM
+            if (!monthInput) return showNotification('Select a month', 'error');
+
+            const [year, month] = monthInput.split('-');
+            const tbody = document.querySelector('#t-report-table tbody');
+            tbody.innerHTML = '';
+
+            const allAtt = await getAllFromStore(STORES.TEACHER_ATTENDANCE);
+            const filtered = allAtt.filter(a => a.date.startsWith(monthInput));
+
+            for (const rec of filtered) {
+                const t = await getFromStore(STORES.TEACHERS, rec.teacherId);
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${rec.date}</td><td>${t ? t.name : 'Unknown'}</td><td>${rec.status} at ${rec.timeIn}</td>`;
                 tbody.appendChild(row);
             }
         }
@@ -12034,7 +12219,6 @@
             }
         }
     </script>
-
 <script type="module">
   import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
