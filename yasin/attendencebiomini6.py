@@ -929,39 +929,72 @@ class BiometricVerificationDialog(QDialog):
 
 
 class LoginWindow(QDialog):
-    def __init__(self, db):
+    def __init__(self, db, biometric):
         super().__init__()
         self.db = db
+        self.biometric = biometric
         self.current_user = None
         
-        self.setWindowTitle("Biometric Attendance System - Login")
-        self.setFixedSize(400, 300)
+        self.setWindowTitle("Biometric Attendance System")
+        self.setFixedSize(400, 500)
         
         layout = QVBoxLayout()
         
-        title = QLabel("Biometric Attendance System")
-        title.setStyleSheet("font-size: 20px; font-weight: bold; padding: 20px;")
+        # --- Admin Login Section ---
+        title = QLabel("Admin Login")
+        title.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 10px; color: #0078d4;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
         
         form_layout = QFormLayout()
         
         self.username_input = QLineEdit()
-        self.username_input.setPlaceholderText("Enter username")
+        self.username_input.setPlaceholderText("Username")
         form_layout.addRow("Username:", self.username_input)
         
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password_input.setPlaceholderText("Enter password")
+        self.password_input.setPlaceholderText("Password")
         self.password_input.returnPressed.connect(self.login)
         form_layout.addRow("Password:", self.password_input)
         
         layout.addLayout(form_layout)
         
-        login_btn = QPushButton("Login")
+        login_btn = QPushButton("Login to Dashboard")
         login_btn.clicked.connect(self.login)
-        login_btn.setStyleSheet("padding: 10px; font-size: 14px;")
+        login_btn.setStyleSheet("padding: 10px; font-size: 14px; background-color: #0078d4; color: white; font-weight: bold;")
         layout.addWidget(login_btn)
+        
+        # --- Divider ---
+        line = QFrame()
+        line.setFrameShape(QFrame.Shape.HLine)
+        line.setFrameShadow(QFrame.Shadow.Sunken)
+        line.setStyleSheet("margin: 20px 0;")
+        layout.addWidget(line)
+        
+        # --- Attendance Section ---
+        att_title = QLabel("Mark Attendance")
+        att_title.setStyleSheet("font-size: 18px; font-weight: bold; color: #28a745;")
+        att_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(att_title)
+        
+        att_layout = QVBoxLayout()
+        self.att_id_input = QLineEdit()
+        self.att_id_input.setPlaceholderText("Enter ID (e.g. TCH001, STD001)")
+        self.att_id_input.setStyleSheet("padding: 8px;")
+        att_layout.addWidget(self.att_id_input)
+        
+        mark_btn = QPushButton("Scan Finger & Mark")
+        mark_btn.clicked.connect(self.mark_attendance)
+        mark_btn.setStyleSheet("padding: 12px; font-size: 14px; background-color: #28a745; color: white; font-weight: bold;")
+        att_layout.addWidget(mark_btn)
+        
+        layout.addLayout(att_layout)
+        
+        dev_label = QLabel("Author & Developer: Yasin Ullah")
+        dev_label.setStyleSheet("font-size: 11px; color: #666666; margin-top: 15px;")
+        dev_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(dev_label)
         
         self.setLayout(layout)
     
@@ -986,6 +1019,91 @@ class LoginWindow(QDialog):
         else:
             QMessageBox.warning(self, "Login Failed", "Invalid username or password.")
 
+    def mark_attendance(self):
+        user_id = self.att_id_input.text().strip()
+        if not user_id:
+            QMessageBox.warning(self, "Required", "Please enter your ID first.")
+            return
+            
+        # 1. Identify Person
+        person = None
+        p_type = None
+        
+        # Check Teachers
+        t = self.db.fetch_one("SELECT id, name FROM teachers WHERE teacher_id = ?", (user_id,))
+        if t: person, p_type = t, 'teacher'
+        
+        # Check Students
+        if not person:
+            s = self.db.fetch_one("SELECT id, name FROM students WHERE roll_no = ?", (user_id,))
+            if s: person, p_type = s, 'student'
+            
+        # Check Staff
+        if not person:
+            st = self.db.fetch_one("SELECT id, name FROM staff WHERE staff_id = ?", (user_id,))
+            if st: person, p_type = st, 'staff'
+            
+        if not person:
+            QMessageBox.warning(self, "Not Found", "ID not found in system.")
+            return
+
+        # 2. Capture Fingerprint
+        if not self.biometric.is_device_connected():
+            QMessageBox.critical(self, "Device Error", "Biometric device not connected.")
+            return
+            
+        QMessageBox.information(self, "Ready", f"Please place finger for: {person['name']}")
+        
+        captured = self.biometric.capture_fingerprint()
+        if not captured:
+            QMessageBox.warning(self, "Error", "Fingerprint capture failed.")
+            return
+            
+        # 3. Verify
+        stored_templates = self.db.fetch_all(
+            "SELECT template_data FROM biometric_data WHERE person_type = ? AND person_id = ?", 
+            (p_type, person['id'])
+        )
+        
+        if not stored_templates:
+            QMessageBox.warning(self, "Error", "No fingerprints enrolled for this ID.")
+            return
+
+        verified = False
+        for tmpl in stored_templates:
+            if self.biometric.verify_fingerprint(captured, tmpl['template_data']):
+                verified = True
+                break
+        
+        if verified:
+            now = datetime.now()
+            today = date.today().isoformat()
+            time_str = now.time().isoformat()[:8]
+            
+            existing = self.db.fetch_one(
+                "SELECT id, check_out_time FROM attendance_logs WHERE person_type=? AND person_id=? AND log_date=?",
+                (p_type, person['id'], today)
+            )
+            
+            if existing:
+                if existing['check_out_time']:
+                    QMessageBox.information(self, "Info", f"Already checked out today.\nHave a good day {person['name']}!")
+                else:
+                    self.db.execute_query(
+                        "UPDATE attendance_logs SET check_out_time=?, remarks='Login Screen Check-out' WHERE id=?", 
+                        (time_str, existing['id'])
+                    )
+                    QMessageBox.information(self, "Success", f"Check-OUT Successful!\nName: {person['name']}\nTime: {time_str}")
+            else:
+                self.db.execute_query(
+                    "INSERT INTO attendance_logs (person_type, person_id, log_date, check_in_time, status, created_at) VALUES (?, ?, ?, ?, 'Present', ?)",
+                    (p_type, person['id'], today, time_str, now.isoformat())
+                )
+                QMessageBox.information(self, "Success", f"Check-IN Successful!\nName: {person['name']}\nTime: {time_str}")
+            
+            self.att_id_input.clear()
+        else:
+            QMessageBox.critical(self, "Failed", "Fingerprint did NOT match.")
 
 class MainWindow(QMainWindow):
     def __init__(self, db, biometric, current_user):
@@ -3290,7 +3408,7 @@ def main():
     db = Database()
     biometric = NBioBSPWrapper()
     
-    login_window = LoginWindow(db)
+    login_window = LoginWindow(db, biometric)
     
     if login_window.exec() == QDialog.DialogCode.Accepted:
         main_window = MainWindow(db, biometric, login_window.current_user)
