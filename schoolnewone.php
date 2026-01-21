@@ -31,6 +31,15 @@ function hashPassword($password)
 {
     return password_hash($password, PASSWORD_BCRYPT);
 }
+function getDistance($lat1, $lon1, $lat2, $lon2)
+{
+    $theta = $lon1 - $lon2;
+    $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+    $dist = acos($dist);
+    $dist = rad2deg($dist);
+    $miles = $dist * 60 * 1.1515;
+    return ($miles * 1.609344) * 1000; // Return meters
+}
 /*
 CREATE DATABASE IF NOT EXISTS school_management_db;
 USE school_management_db;
@@ -271,6 +280,25 @@ CREATE TABLE IF NOT EXISTS teacher_notes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE,
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS school_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(50) UNIQUE,
+    setting_value VARCHAR(255)
+);
+INSERT IGNORE INTO school_settings (setting_key, setting_value) VALUES 
+('school_lat', '32.9908'), 
+('school_long', '70.6053'), 
+('allowed_radius_meters', '100');
+
+CREATE TABLE IF NOT EXISTS teacher_attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    teacher_id INT NOT NULL,
+    login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    status ENUM('Onsite', 'Offsite') DEFAULT 'Offsite',
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
 );
 -- Dummy Data Insertion
 INSERT IGNORE INTO users (username, password, role, email) VALUES
@@ -948,7 +976,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt = $pdo->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
                 $stmt->execute([$username]);
                 $user = $stmt->fetch();
+            case 'login':
+                $username = trim($_POST['username']);
+                $password = trim($_POST['password']);
+                $lat = $_POST['latitude'] ?? null;
+                $long = $_POST['longitude'] ?? null;
+
+                $stmt = $pdo->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
+                $stmt->execute([$username]);
+                $user = $stmt->fetch();
+
                 if ($user && password_verify($password, $user['password'])) {
+                    // Geo-fencing for Teachers
+                    if ($user['role'] === 'teacher') {
+                        if (empty($lat) || empty($long)) {
+                            $_SESSION['error'] = 'Location is required for teachers to login. Please enable location services.';
+                            header("Location: ?page=login&lang=$lang");
+                            exit;
+                        }
+
+                        // Fetch School Settings
+                        $settings = $pdo->query("SELECT setting_key, setting_value FROM school_settings")->fetchAll(PDO::FETCH_KEY_PAIR);
+                        $school_lat = $settings['school_lat'] ?? 0;
+                        $school_long = $settings['school_long'] ?? 0;
+                        $radius = $settings['allowed_radius_meters'] ?? 100;
+
+                        $distance = getDistance($lat, $long, $school_lat, $school_long);
+                        $status = ($distance <= $radius) ? 'Onsite' : 'Offsite';
+
+                        // Get Teacher ID
+                        $t_stmt = $pdo->prepare("SELECT id FROM teachers WHERE user_id = ?");
+                        $t_stmt->execute([$user['id']]);
+                        $teacher_id = $t_stmt->fetchColumn();
+
+                        if ($teacher_id) {
+                            $log_stmt = $pdo->prepare("INSERT INTO teacher_attendance (teacher_id, latitude, longitude, status) VALUES (?, ?, ?, ?)");
+                            $log_stmt->execute([$teacher_id, $lat, $long, $status]);
+                        }
+                    }
+
                     $_SESSION['loggedin'] = true;
                     $_SESSION['id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
@@ -2205,6 +2271,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     exit;
                 }
                 break;
+            case 'update_school_settings':
+                if (isAdmin()) {
+                    $lat = $_POST['school_lat'];
+                    $long = $_POST['school_long'];
+                    $radius = $_POST['allowed_radius_meters'];
+
+                    $pdo->prepare("INSERT INTO school_settings (setting_key, setting_value) VALUES ('school_lat', ?) ON DUPLICATE KEY UPDATE setting_value = ?")->execute([$lat, $lat]);
+                    $pdo->prepare("INSERT INTO school_settings (setting_key, setting_value) VALUES ('school_long', ?) ON DUPLICATE KEY UPDATE setting_value = ?")->execute([$long, $long]);
+                    $pdo->prepare("INSERT INTO school_settings (setting_key, setting_value) VALUES ('allowed_radius_meters', ?) ON DUPLICATE KEY UPDATE setting_value = ?")->execute([$radius, $radius]);
+
+                    $_SESSION['message'] = "School location settings updated.";
+                    header("Location: ?page=dashboard&section=school_settings&lang=$lang");
+                    exit;
+                }
+                break;
         }
     }
 }
@@ -3314,8 +3395,12 @@ generate_csrf_token();
                                         <h3><?php echo $t['login_to_dashboard']; ?></h3>
                                     </div>
                                     <div class="card-body">
-                                        <form action="" method="POST">
+                                        <form action="" method="POST" id="loginForm">
                                             <input type="hidden" name="action" value="login">
+                                            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                                            <input type="hidden" name="latitude" id="latitude">
+                                            <input type="hidden" name="longitude" id="longitude">
+                                            <div class="alert alert-info" id="geo-msg" style="display:none;">Fetching location...</div>
                                             <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                                             <div class="mb-3">
                                                 <label for="username" class="form-label"><?php echo $t['username']; ?></label>
@@ -3333,6 +3418,32 @@ generate_csrf_token();
                                                 <a href="?page=forgot_password&lang=<?php echo $lang; ?>">Forgot Password?</a>
                                             </div>
                                         </form>
+                                        <script>
+                                            document.addEventListener("DOMContentLoaded", function() {
+                                                const latInput = document.getElementById('latitude');
+                                                const longInput = document.getElementById('longitude');
+                                                const geoMsg = document.getElementById('geo-msg');
+                                                const btn = document.querySelector('button[type="submit"]');
+
+                                                if (navigator.geolocation) {
+                                                    geoMsg.style.display = 'block';
+                                                    btn.disabled = true;
+                                                    navigator.geolocation.getCurrentPosition(
+                                                        function(position) {
+                                                            latInput.value = position.coords.latitude;
+                                                            longInput.value = position.coords.longitude;
+                                                            geoMsg.style.display = 'none';
+                                                            btn.disabled = false;
+                                                        },
+                                                        function(error) {
+                                                            geoMsg.className = 'alert alert-warning';
+                                                            geoMsg.innerText = 'Location access denied or unavailable. Teachers cannot login without location.';
+                                                            btn.disabled = false; // Allow non-teachers to try
+                                                        }
+                                                    );
+                                                }
+                                            });
+                                        </script>
                                     </div>
                                 </div>
                             </div>
@@ -3439,6 +3550,7 @@ generate_csrf_token();
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'events_admin' ? 'active' : ''); ?>" href="?page=dashboard&section=events_admin&lang=<?php echo $lang; ?>"><i class="fas fa-calendar-check"></i> Manage Events</a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'gallery' ? 'active' : ''); ?>" href="?page=dashboard&section=gallery&lang=<?php echo $lang; ?>"><i class="fas fa-images"></i> Gallery Management</a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'messages' ? 'active' : ''); ?>" href="?page=dashboard&section=messages&lang=<?php echo $lang; ?>"><i class="fas fa-comments"></i> <?php echo $t['internal_messaging']; ?></a></li>
+                                <li class="nav-item"><a class="nav-link <?php echo ($section == 'school_settings' ? 'active' : ''); ?>" href="?page=dashboard&section=school_settings&lang=<?php echo $lang; ?>"><i class="fas fa-map-marked-alt"></i> School Settings & Logs</a></li>
                                 <li class="nav-item"><a class="nav-link <?php echo ($section == 'backup_restore' ? 'active' : ''); ?>" href="?page=dashboard&section=backup_restore&lang=<?php echo $lang; ?>"><i class="fas fa-database"></i> <?php echo $t['backup_restore']; ?></a></li>
                             <?php endif; ?>
                             <?php if (isTeacher()) : ?>
@@ -5818,6 +5930,34 @@ function displayAdminPanel($pdo, $t, $lang)
                         echo '<button type="submit" class="btn btn-warning"><i class="fas fa-upload"></i> ' . $t['import_data'] . '</button>';
                         echo '</form>';
                         echo '</div>';
+                        break;
+                    case 'school_settings':
+                        echo '<h3>School Settings & Teacher Attendance</h3>';
+
+                        // Settings Form
+                        $settings = $pdo->query("SELECT setting_key, setting_value FROM school_settings")->fetchAll(PDO::FETCH_KEY_PAIR);
+                        echo '<div class="card mb-4"><div class="card-header">Geo-Fencing Configuration</div><div class="card-body">';
+                        echo '<form method="POST">';
+                        echo '<input type="hidden" name="action" value="update_school_settings">';
+                        echo '<input type="hidden" name="csrf_token" value="' . $csrf . '">';
+                        echo '<div class="row">';
+                        echo '<div class="col-md-4"><label>Latitude</label><input type="text" class="form-control" name="school_lat" value="' . ($settings['school_lat'] ?? '') . '"></div>';
+                        echo '<div class="col-md-4"><label>Longitude</label><input type="text" class="form-control" name="school_long" value="' . ($settings['school_long'] ?? '') . '"></div>';
+                        echo '<div class="col-md-4"><label>Allowed Radius (Meters)</label><input type="number" class="form-control" name="allowed_radius_meters" value="' . ($settings['allowed_radius_meters'] ?? '100') . '"></div>';
+                        echo '</div>';
+                        echo '<button type="submit" class="btn btn-primary mt-3">Save Settings</button>';
+                        echo '</form></div></div>';
+
+                        // Attendance Log
+                        echo '<h4>Teacher Attendance Logs</h4>';
+                        $logs = $pdo->query("SELECT ta.*, t.name FROM teacher_attendance ta JOIN teachers t ON ta.teacher_id = t.id ORDER BY ta.login_time DESC LIMIT 50")->fetchAll();
+                        echo '<table class="table table-striped table-bordered">';
+                        echo '<thead><tr><th>Teacher</th><th>Time</th><th>Status</th><th>Coordinates</th></tr></thead><tbody>';
+                        foreach ($logs as $log) {
+                            $color = $log['status'] == 'Onsite' ? 'text-success' : 'text-danger fw-bold';
+                            echo "<tr><td>{$log['name']}</td><td>{$log['login_time']}</td><td class='$color'>{$log['status']}</td><td>{$log['latitude']}, {$log['longitude']}</td></tr>";
+                        }
+                        echo '</tbody></table>';
                         break;
                     default:
                         echo '<h2>Welcome, Admin!</h2>';
