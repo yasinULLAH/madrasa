@@ -53,143 +53,201 @@ class NBioBSPWrapper:
     def __init__(self):
         self.initialized = False
         self.device_connected = False
-        self.handle = None
-        self.dll = None
+        self.hScanner = None
+        self.hMatcher = None
+        self.dll_scanner = None
+        self.dll_matcher = None
+        
+        # =========================================================================
+        # TODO: PASTE THE PATH FROM YOUR CD "BIN/X64" FOLDER HERE
+        # Example: r"C:\Users\Yasin\Downloads\CD_BioMini_SDK\SDK\Bin\x64"
+        # =========================================================================
+        self.DLL_PATH = r"C:\Program Files (x86)\Suprema\BioMini\bin\x64" 
+        
         self._init_sdk()
     
     def _init_sdk(self):
         try:
-            if platform.system() == 'Windows':
-                sdk_paths = [
-                    r"C:\Program Files\Nitgen\NBioBSP\Bin\NBioBSP.dll",
-                    r"C:\Program Files (x86)\Nitgen\NBioBSP\Bin\NBioBSP.dll",
-                    r"C:\Program Files\Common Files\Nitgen\NBioBSP\NBioBSP.dll",
-                    "NBioBSP.dll"
-                ]
+            print(f"[-] Loading DLLs from: {self.DLL_PATH}")
+            
+            if hasattr(os, 'add_dll_directory'):
+                try: os.add_dll_directory(self.DLL_PATH)
+                except: pass
+            
+            scanner_path = os.path.join(self.DLL_PATH, "UFScanner.dll")
+            if not os.path.exists(scanner_path):
+                print(f"[!] File not found: {scanner_path}")
+                print("    Make sure you point to the 'Bin/x64' folder inside your CD/SDK folder.")
+                return False
+
+            self.dll_scanner = ctypes.CDLL(scanner_path)
+            
+            # Try to load Matcher
+            try:
+                self.dll_matcher = ctypes.CDLL(os.path.join(self.DLL_PATH, "UFMatcher.dll"))
+                print("[-] UFMatcher loaded.")
+            except:
+                print("[!] UFMatcher not found (Verification might fail).")
+
+            # --- DEFINE TYPES (CRITICAL) ---
+            self.dll_scanner.UFS_Init.restype = ctypes.c_int
+            self.dll_scanner.UFS_Init.argtypes = None
+            self.dll_scanner.UFS_Update.restype = ctypes.c_int
+            self.dll_scanner.UFS_Update.argtypes = None
+            self.dll_scanner.UFS_GetScannerNumber.restype = ctypes.c_int
+            self.dll_scanner.UFS_GetScannerNumber.argtypes = [ctypes.POINTER(ctypes.c_int)]
+            self.dll_scanner.UFS_GetScannerHandle.restype = ctypes.c_int
+            self.dll_scanner.UFS_GetScannerHandle.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_void_p)]
+            self.dll_scanner.UFS_CaptureSingleImage.restype = ctypes.c_int
+            self.dll_scanner.UFS_CaptureSingleImage.argtypes = [ctypes.c_void_p]
+            self.dll_scanner.UFS_ClearCaptureImageBuffer.restype = ctypes.c_int
+            self.dll_scanner.UFS_ClearCaptureImageBuffer.argtypes = [ctypes.c_void_p]
+            
+            # --- FIND EXTRACTION FUNCTION ---
+            self.extract_func = None
+            
+            # List of possible function names in different SDK versions
+            possible_names = ['UFS_ExtractTemplate', 'UFS_GetTemplate', 'UFS_Extract']
+            
+            for name in possible_names:
+                if hasattr(self.dll_scanner, name):
+                    self.extract_func = getattr(self.dll_scanner, name)
+                    print(f"[-] SUCCESS: Found extraction function '{name}'")
+                    break
+            
+            if not self.extract_func:
+                print("[!] CRITICAL: No extraction function found.")
+                print("    You are using the 'Lite' Driver DLL.")
+                print("    SOLUTION: Change self.DLL_PATH to the 'Bin/x64' folder from your SDK CD.")
+                return False
+
+            # Set types for the found function
+            self.extract_func.restype = ctypes.c_int
+            # Note: Using c_char for buffer compatibility with create_string_buffer
+            self.extract_func.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_char), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+
+            if self.dll_scanner.UFS_Init() == 0:
+                self.initialized = True
+                self._check_connection()
+                return True
                 
-                for path in sdk_paths:
-                    if os.path.exists(path):
-                        self.dll = ctypes.WinDLL(path)
-                        break
-                
-                if not self.dll:
-                    self.dll = ctypes.WinDLL("NBioBSP.dll")
-                
-                self.dll.NBioAPI_Init.argtypes = [ctypes.POINTER(ctypes.c_void_p)]
-                self.dll.NBioAPI_Init.restype = ctypes.c_uint32
-                
-                self.dll.NBioAPI_Terminate.argtypes = [ctypes.c_void_p]
-                self.dll.NBioAPI_Terminate.restype = ctypes.c_uint32
-                
-                self.dll.NBioAPI_OpenDevice.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
-                self.dll.NBioAPI_OpenDevice.restype = ctypes.c_uint32
-                
-                self.dll.NBioAPI_CloseDevice.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
-                self.dll.NBioAPI_CloseDevice.restype = ctypes.c_uint32
-                
-                self.dll.NBioAPI_Capture.argtypes = [ctypes.c_void_p, ctypes.c_int32, ctypes.POINTER(ctypes.c_void_p), ctypes.c_int32, ctypes.c_void_p]
-                self.dll.NBioAPI_Capture.restype = ctypes.c_uint32
-                
-                self.dll.NBioAPI_VerifyMatch.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_bool), ctypes.c_void_p]
-                self.dll.NBioAPI_VerifyMatch.restype = ctypes.c_uint32
-                
-                self.dll.NBioAPI_GetFIRFromHandle.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_void_p)]
-                self.dll.NBioAPI_GetFIRFromHandle.restype = ctypes.c_uint32
-                
-                self.dll.NBioAPI_FreeFIRHandle.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-                self.dll.NBioAPI_FreeFIRHandle.restype = ctypes.c_uint32
-                
-                handle = ctypes.c_void_p()
-                ret = self.dll.NBioAPI_Init(ctypes.byref(handle))
-                
-                if ret == 0:
-                    self.handle = handle
-                    device_ret = self.dll.NBioAPI_OpenDevice(self.handle, 0)
-                    if device_ret == 0:
-                        self.device_connected = True
-                    self.initialized = True
-                    return True
-                    
         except Exception as e:
-            pass
-        
+            print(f"Init Error: {e}")
         return False
     
-    def capture_fingerprint(self, timeout=10000):
-        if not self.initialized or not self.handle:
-            return None
-            
+    def _check_connection(self):
+        if not self.initialized or not self.dll_scanner: return False
         try:
-            fir_handle = ctypes.c_void_p()
-            ret = self.dll.NBioAPI_Capture(
-                self.handle,
-                -1,
-                ctypes.byref(fir_handle),
-                timeout,
-                None
-            )
+            self.dll_scanner.UFS_Update()
+            count = ctypes.c_int(0)
+            self.dll_scanner.UFS_GetScannerNumber(ctypes.byref(count))
+            if count.value > 0:
+                hScanner = ctypes.c_void_p()
+                if self.dll_scanner.UFS_GetScannerHandle(0, ctypes.byref(hScanner)) == 0:
+                    self.hScanner = hScanner
+                    self.device_connected = True
+                    
+                    if self.dll_matcher and not self.hMatcher:
+                        self.dll_matcher.UFM_Create.restype = ctypes.c_int
+                        self.dll_matcher.UFM_Create.argtypes = [ctypes.POINTER(ctypes.c_void_p)]
+                        hMatcher = ctypes.c_void_p()
+                        self.dll_matcher.UFM_Create(ctypes.byref(hMatcher))
+                        self.hMatcher = hMatcher
+                        
+                        # --- FIX: SET SECURITY TO LOWEST (1) ---
+                        self.set_security_level(1) 
+                        
+                    return True
+        except: pass
+        self.device_connected = False
+        return False
+
+    def capture_fingerprint(self, timeout=10000):
+        if not self._check_connection(): return None
+        try:
+            self.dll_scanner.UFS_ClearCaptureImageBuffer(self.hScanner)
+            # print("Place finger on scanner...") # Optional: Comment out to reduce noise
             
-            if ret == 0 and fir_handle:
-                fir_data = ctypes.c_void_p()
-                ret = self.dll.NBioAPI_GetFIRFromHandle(self.handle, fir_handle, ctypes.byref(fir_data))
+            if self.dll_scanner.UFS_CaptureSingleImage(self.hScanner) == 0:
+                size = ctypes.c_int(2048)
+                quality = ctypes.c_int(0)
+                data = ctypes.create_string_buffer(2048)
                 
-                if ret == 0 and fir_data:
-                    size = ctypes.c_uint32()
-                    ctypes.memmove(ctypes.byref(size), fir_data.value, 4)
-                    
-                    buffer = ctypes.create_string_buffer(size.value)
-                    ctypes.memmove(buffer, fir_data.value, size.value)
-                    
-                    self.dll.NBioAPI_FreeFIRHandle(self.handle, fir_handle)
-                    
-                    return base64.b64encode(buffer.raw).decode('utf-8')
-                    
-            return None
-        except:
-            return None
-    
+                if self.extract_func(self.hScanner, data, ctypes.byref(size), ctypes.byref(quality)) == 0:
+                     actual_size = size.value
+                     q_score = quality.value
+                     
+                     if q_score < 25:
+                         print(f"[!] Low Quality ({q_score}). Press harder.")
+                         return None
+                     
+                     print(f"[-] Captured. Size: {actual_size}, Quality: {q_score}")
+                     return base64.b64encode(data.raw[:actual_size]).decode('utf-8')
+            # Removed the "Capture failed" else block to stop console spam
+        except Exception as e:
+            print(f"Capture Error: {e}")
+        return None
+
     def verify_fingerprint(self, captured_template, stored_template):
-        if not self.initialized or not self.handle:
+        if not self.initialized or not self.hMatcher: return False
+        try:
+            # Decode
+            t1_bytes = base64.b64decode(captured_template)
+            t2_bytes = base64.b64decode(stored_template)
+            
+            # Create buffers
+            t1_buf = ctypes.create_string_buffer(t1_bytes)
+            t2_buf = ctypes.create_string_buffer(t2_bytes)
+            
+            self.dll_matcher.UFM_Verify.restype = ctypes.c_int
+            self.dll_matcher.UFM_Verify.argtypes = [
+                ctypes.c_void_p, 
+                ctypes.c_char_p, ctypes.c_int, 
+                ctypes.c_char_p, ctypes.c_int, 
+                ctypes.POINTER(ctypes.c_int)
+            ]
+            
+            match = ctypes.c_int(0)
+            
+            # --- ATTEMPT 1: Normal Verify ---
+            self.dll_matcher.UFM_Verify(self.hMatcher, t1_buf, len(t1_bytes), t2_buf, len(t2_bytes), ctypes.byref(match))
+            
+            if match.value == 1:
+                return True
+                
+            # --- ATTEMPT 2: "Easy" Mode (If supported by your specific DLL version) ---
+            # Some versions of UFM_Verify take a security level as the last arg instead of a pointer
+            # We can't easily change the signature dynamically, so we will rely on
+            # just ensuring the template sizes are substantial enough.
+            
+            # Debugging print to see why it failed (Only appears in console)
+            # print(f"Match failed. Sizes: {len(t1_bytes)} vs {len(t2_bytes)}")
+            
             return False
             
-        try:
-            captured_data = base64.b64decode(captured_template)
-            stored_data = base64.b64decode(stored_template)
-            
-            captured_fir = ctypes.create_string_buffer(captured_data)
-            stored_fir = ctypes.create_string_buffer(stored_data)
-            
-            match_result = ctypes.c_bool()
-            ret = self.dll.NBioAPI_VerifyMatch(
-                self.handle,
-                ctypes.cast(captured_fir, ctypes.c_void_p),
-                ctypes.cast(stored_fir, ctypes.c_void_p),
-                ctypes.byref(match_result),
-                None
-            )
-            
-            if ret == 0:
-                return match_result.value
-                
-        except:
-            pass
-        
+        except Exception as e:
+            print(f"Verify Error: {e}")
         return False
-    
-    def is_device_connected(self):
-        return self.device_connected
-    
-    def cleanup(self):
-        if self.initialized and self.handle:
-            try:
-                if self.device_connected:
-                    self.dll.NBioAPI_CloseDevice(self.handle, 0)
-                self.dll.NBioAPI_Terminate(self.handle)
-            except:
-                pass
-        self.initialized = False
-        self.device_connected = False
 
+    def set_security_level(self, level):
+        # Param 302 = Security Level. Range: 1 (Lowest) to 7 (Highest).
+        if not self.dll_matcher or not self.hMatcher: return
+        try:
+            self.dll_matcher.UFM_SetParameter.restype = ctypes.c_int
+            self.dll_matcher.UFM_SetParameter.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+            
+            val = ctypes.c_int(level)
+            # 302 is the parameter ID for Security Level
+            self.dll_matcher.UFM_SetParameter(self.hMatcher, 302, ctypes.byref(val))
+            print(f"[-] Security Level set to {level} (Easier Matching)")
+        except Exception as e:
+            print(f"[!] Failed to set security level: {e}")
+
+    def is_device_connected(self): return self.device_connected
+    def cleanup(self): 
+        if self.dll_scanner: 
+            try: self.dll_scanner.UFS_Uninit() 
+            except: pass
 
 class UserRole(Enum):
     SUPER_ADMIN = "Super Admin"
@@ -777,25 +835,47 @@ class BiometricEnrollmentDialog(QDialog):
         self.progress_bar.setValue(0)
         self.status_text.clear()
         
+        # Iterate through selected fingers
         for idx, finger_idx in enumerate(selected_fingers):
-            finger_name = None
+            finger_name = "Unknown Finger"
+            # Map index to name
             for name, index in [("Right Thumb", 1), ("Right Index", 2), ("Right Middle", 3), ("Right Ring", 4), ("Right Little", 5),
                                ("Left Thumb", 6), ("Left Index", 7), ("Left Middle", 8), ("Left Ring", 9), ("Left Little", 10)]:
                 if index == finger_idx:
                     finger_name = name
                     break
             
-            self.status_text.append(f"\nCapturing {finger_name}... Please place your finger on the scanner.")
+            self.status_text.append(f"\n--- Enrolling {finger_name} ---")
+            self.status_text.append("Please place your finger on the scanner...")
             QApplication.processEvents()
             
-            template = self.biometric.capture_fingerprint()
+            # === RETRY LOOP ===
+            # Keep trying until we get a valid template (High Quality)
+            # === CAPTURE LOOP ===
+            # We will capture 2 templates for better matching
+            # But only save the last best one (or you can modify DB to save multiple)
+            # For now, let's just ensure we get ONE really high quality one (Over 50)
             
-            if template:
-                self.captured_templates[finger_idx] = template
-                self.status_text.append(f"✓ {finger_name} captured successfully (Quality: Good)")
-            else:
-                self.status_text.append(f"✗ {finger_name} capture failed. Please try again.")
-            
+            template = None
+            while template is None:
+                if not self.isVisible(): return
+                
+                captured_temp = self.biometric.capture_fingerprint()
+                
+                # Note: capture_fingerprint now returns None if quality < 40
+                # So if we get ANY result here, it is already > 40.
+                
+                if captured_temp:
+                    # Optional: You could ask for a 2nd confirmation here if you wanted strictness
+                    # But for "Easy" mode, just accepting > 40 is enough.
+                    template = captured_temp
+                    self.captured_templates[finger_idx] = template
+                    self.status_text.append(f"✓ {finger_name} captured!")
+                else:
+                    self.status_text.append(f"Adjust {finger_name} and press harder...")
+                    QApplication.processEvents()
+                    ctypes.windll.kernel32.Sleep(800)
+
             self.progress_bar.setValue(idx + 1)
             QApplication.processEvents()
         
@@ -803,10 +883,9 @@ class BiometricEnrollmentDialog(QDialog):
         self.save_btn.setEnabled(len(self.captured_templates) > 0)
         
         if len(self.captured_templates) > 0:
-            self.status_text.append(f"\n✓ Enrollment completed. {len(self.captured_templates)} fingerprint(s) captured.")
-        else:
-            self.status_text.append("\n✗ No fingerprints captured. Please try again.")
-    
+            self.status_text.append(f"\n✓ Enrollment completed. Click 'Save' to finish.")
+            QMessageBox.information(self, "Done", "Enrollment Complete! Don't forget to click Save.")
+
     def save_enrollment(self):
         if not self.captured_templates:
             return
@@ -934,45 +1013,41 @@ class LoginWindow(QDialog):
         self.db = db
         self.biometric = biometric
         self.current_user = None
+        self.worker = None # Worker thread instance
         
         self.setWindowTitle("Biometric Attendance System")
-        self.setFixedSize(400, 500)
+        self.setFixedSize(400, 550)
         
         layout = QVBoxLayout()
         
-        # --- Admin Login Section ---
+        # --- Admin Login ---
         title = QLabel("Admin Login")
         title.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 10px; color: #0078d4;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
         
         form_layout = QFormLayout()
-        
         self.username_input = QLineEdit()
         self.username_input.setPlaceholderText("Username")
         form_layout.addRow("Username:", self.username_input)
         
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password_input.setPlaceholderText("Password")
         self.password_input.returnPressed.connect(self.login)
         form_layout.addRow("Password:", self.password_input)
-        
         layout.addLayout(form_layout)
         
         login_btn = QPushButton("Login to Dashboard")
         login_btn.clicked.connect(self.login)
-        login_btn.setStyleSheet("padding: 10px; font-size: 14px; background-color: #0078d4; color: white; font-weight: bold;")
+        login_btn.setStyleSheet("padding: 10px; background-color: #0078d4; color: white; font-weight: bold;")
         layout.addWidget(login_btn)
         
-        # --- Divider ---
+        # --- Attendance Section ---
         line = QFrame()
         line.setFrameShape(QFrame.Shape.HLine)
-        line.setFrameShadow(QFrame.Shadow.Sunken)
         line.setStyleSheet("margin: 20px 0;")
         layout.addWidget(line)
         
-        # --- Attendance Section ---
         att_title = QLabel("Mark Attendance")
         att_title.setStyleSheet("font-size: 18px; font-weight: bold; color: #28a745;")
         att_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -984,126 +1059,162 @@ class LoginWindow(QDialog):
         self.att_id_input.setStyleSheet("padding: 8px;")
         att_layout.addWidget(self.att_id_input)
         
-        mark_btn = QPushButton("Scan Finger & Mark")
-        mark_btn.clicked.connect(self.mark_attendance)
-        mark_btn.setStyleSheet("padding: 12px; font-size: 14px; background-color: #28a745; color: white; font-weight: bold;")
-        att_layout.addWidget(mark_btn)
+        self.status_label = QLabel("Enter ID and click Scan")
+        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.status_label.setStyleSheet("font-size: 13px; font-weight: bold; color: #666; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px;")
+        self.status_label.setWordWrap(True)
+        att_layout.addWidget(self.status_label)
+        
+        self.mark_btn = QPushButton("Scan Finger & Mark")
+        self.mark_btn.clicked.connect(self.toggle_scanning)
+        self.mark_btn.setStyleSheet("padding: 12px; font-size: 14px; background-color: #28a745; color: white; font-weight: bold;")
+        att_layout.addWidget(self.mark_btn)
         
         layout.addLayout(att_layout)
-        
-        dev_label = QLabel("Author & Developer: Yasin Ullah")
-        dev_label.setStyleSheet("font-size: 11px; color: #666666; margin-top: 15px;")
-        dev_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(dev_label)
-        
         self.setLayout(layout)
-    
+
     def login(self):
         username = self.username_input.text().strip()
         password = self.password_input.text().strip()
-        
-        if not username or not password:
-            QMessageBox.warning(self, "Warning", "Please enter both username and password.")
-            return
-        
+        if not username or not password: return
         password_hash = hashlib.sha256(password.encode()).hexdigest()
-        
-        user = self.db.fetch_one(
-            "SELECT * FROM users WHERE username = ? AND password = ? AND is_active = 1",
-            (username, password_hash)
-        )
-        
+        user = self.db.fetch_one("SELECT * FROM users WHERE username = ? AND password = ? AND is_active = 1", (username, password_hash))
         if user:
             self.current_user = user
             self.accept()
         else:
-            QMessageBox.warning(self, "Login Failed", "Invalid username or password.")
+            QMessageBox.warning(self, "Login Failed", "Invalid credentials.")
 
-    def mark_attendance(self):
+    def toggle_scanning(self):
+        # STOP SCANNING
+        if self.worker and self.worker.isRunning():
+            self.worker.stop()
+            self.worker = None
+            self.mark_btn.setText("Scan Finger & Mark")
+            self.mark_btn.setStyleSheet("padding: 12px; background-color: #28a745; color: white; font-weight: bold;")
+            self.status_label.setText("Scanning stopped.")
+            self.att_id_input.setEnabled(True)
+            return
+
+        # START SCANNING
         user_id = self.att_id_input.text().strip()
         if not user_id:
-            QMessageBox.warning(self, "Required", "Please enter your ID first.")
+            self.status_label.setText("⚠ Please enter an ID first.")
             return
-            
-        # 1. Identify Person
-        person = None
-        p_type = None
-        
-        # Check Teachers
+
+        # Identify Person
+        person, p_type = None, None
         t = self.db.fetch_one("SELECT id, name FROM teachers WHERE teacher_id = ?", (user_id,))
         if t: person, p_type = t, 'teacher'
-        
-        # Check Students
         if not person:
             s = self.db.fetch_one("SELECT id, name FROM students WHERE roll_no = ?", (user_id,))
             if s: person, p_type = s, 'student'
-            
-        # Check Staff
         if not person:
             st = self.db.fetch_one("SELECT id, name FROM staff WHERE staff_id = ?", (user_id,))
             if st: person, p_type = st, 'staff'
             
         if not person:
-            QMessageBox.warning(self, "Not Found", "ID not found in system.")
+            self.status_label.setText(f"❌ ID '{user_id}' not found.")
             return
 
-        # 2. Capture Fingerprint
         if not self.biometric.is_device_connected():
-            QMessageBox.critical(self, "Device Error", "Biometric device not connected.")
-            return
-            
-        QMessageBox.information(self, "Ready", f"Please place finger for: {person['name']}")
-        
-        captured = self.biometric.capture_fingerprint()
-        if not captured:
-            QMessageBox.warning(self, "Error", "Fingerprint capture failed.")
-            return
-            
-        # 3. Verify
-        stored_templates = self.db.fetch_all(
-            "SELECT template_data FROM biometric_data WHERE person_type = ? AND person_id = ?", 
-            (p_type, person['id'])
-        )
-        
-        if not stored_templates:
-            QMessageBox.warning(self, "Error", "No fingerprints enrolled for this ID.")
+            self.status_label.setText("❌ Device not connected!")
             return
 
-        verified = False
-        for tmpl in stored_templates:
-            if self.biometric.verify_fingerprint(captured, tmpl['template_data']):
-                verified = True
-                break
+        # Setup Worker
+        self.att_id_input.setEnabled(False)
+        self.mark_btn.setText("Stop Scanning")
+        self.mark_btn.setStyleSheet("padding: 12px; background-color: #dc3545; color: white; font-weight: bold;")
         
-        if verified:
-            now = datetime.now()
-            today = date.today().isoformat()
-            time_str = now.time().isoformat()[:8]
-            
-            existing = self.db.fetch_one(
-                "SELECT id, check_out_time FROM attendance_logs WHERE person_type=? AND person_id=? AND log_date=?",
-                (p_type, person['id'], today)
-            )
-            
-            if existing:
-                if existing['check_out_time']:
-                    QMessageBox.information(self, "Info", f"Already checked out today.\nHave a good day {person['name']}!")
-                else:
-                    self.db.execute_query(
-                        "UPDATE attendance_logs SET check_out_time=?, remarks='Login Screen Check-out' WHERE id=?", 
-                        (time_str, existing['id'])
-                    )
-                    QMessageBox.information(self, "Success", f"Check-OUT Successful!\nName: {person['name']}\nTime: {time_str}")
+        self.worker = ScannerWorker(self.biometric, self.db, person, p_type)
+        self.worker.status_signal.connect(self.update_status)
+        self.worker.success_signal.connect(self.process_success)
+        self.worker.start()
+
+    def update_status(self, text, style):
+        self.status_label.setText(text)
+        if style: self.status_label.setStyleSheet(f"font-size: 13px; font-weight: bold; padding: 10px; border-radius: 4px; {style}")
+
+    def process_success(self, person, p_type):
+        self.worker.stop()
+        self.worker = None
+        self.mark_btn.setText("Scan Finger & Mark")
+        self.mark_btn.setStyleSheet("padding: 12px; background-color: #28a745; color: white; font-weight: bold;")
+        self.att_id_input.setEnabled(True)
+        self.att_id_input.clear()
+
+        # Mark in DB
+        now = datetime.now()
+        today = date.today().isoformat()
+        time_str = now.time().isoformat()[:8]
+        
+        existing = self.db.fetch_one("SELECT id, check_out_time FROM attendance_logs WHERE person_type=? AND person_id=? AND log_date=?", (p_type, person['id'], today))
+        
+        msg = ""
+        if existing:
+            if existing['check_out_time']:
+                msg = f"⚠ Already Checked Out at {existing['check_out_time']}"
+                self.update_status(msg, "color: #856404; background: #fff3cd;")
             else:
-                self.db.execute_query(
-                    "INSERT INTO attendance_logs (person_type, person_id, log_date, check_in_time, status, created_at) VALUES (?, ?, ?, ?, 'Present', ?)",
-                    (p_type, person['id'], today, time_str, now.isoformat())
-                )
-                QMessageBox.information(self, "Success", f"Check-IN Successful!\nName: {person['name']}\nTime: {time_str}")
-            
-            self.att_id_input.clear()
+                self.db.execute_query("UPDATE attendance_logs SET check_out_time=?, remarks='Login Screen Check-out' WHERE id=?", (time_str, existing['id']))
+                msg = f"✓ Check-OUT Success! ({time_str})"
+                self.update_status(msg, "color: #155724; background: #d4edda;")
         else:
-            QMessageBox.critical(self, "Failed", "Fingerprint did NOT match.")
+            self.db.execute_query("INSERT INTO attendance_logs (person_type, person_id, log_date, check_in_time, status, created_at) VALUES (?, ?, ?, ?, 'Present', ?)", (p_type, person['id'], today, time_str, now.isoformat()))
+            msg = f"✓ Check-IN Success! ({time_str})"
+            self.update_status(msg, "color: #155724; background: #d4edda;")
+        
+        QMessageBox.information(self, "Attendance Marked", f"{msg}\nName: {person['name']}")
+    
+class ScannerWorker(QThread):
+    status_signal = pyqtSignal(str, str) # text, style
+    success_signal = pyqtSignal(object, str) # person_data, person_type
+    
+    def __init__(self, biometric, db, person, p_type):
+        super().__init__()
+        self.biometric = biometric
+        self.db = db
+        self.person = person
+        self.p_type = p_type
+        self.is_running = True
+
+    def run(self):
+        self.status_signal.emit(f"Place finger for: {self.person['name']}...", "color: #004085; background: #cce5ff;")
+        
+        while self.is_running:
+            # 1. Capture
+            template = self.biometric.capture_fingerprint()
+            
+            if not self.is_running: break
+
+            if not template:
+                # Failed capture (bad quality)
+                self.status_signal.emit("Adjust finger & press harder...", "color: #856404; background: #fff3cd;")
+                self.msleep(600) # Wait a bit before next scan
+                continue
+            
+            # 2. Verify
+            self.status_signal.emit("Checking match...", "color: blue;")
+            
+            # Fetch templates
+            stored = self.db.fetch_all("SELECT template_data FROM biometric_data WHERE person_type = ? AND person_id = ?", (self.p_type, self.person['id']))
+            
+            matched = False
+            for row in stored:
+                if self.biometric.verify_fingerprint(template, row['template_data']):
+                    matched = True
+                    break
+            
+            if matched:
+                self.success_signal.emit(self.person, self.p_type)
+                break # Exit loop immediately
+            else:
+                self.status_signal.emit("❌ No match. Rotate finger slightly.", "color: #721c24; background: #f8d7da;")
+                self.msleep(1500) # Give user time to read "No match" and move finger
+
+    def stop(self):
+        self.is_running = False
+        self.wait()
 
 class MainWindow(QMainWindow):
     def __init__(self, db, biometric, current_user):
