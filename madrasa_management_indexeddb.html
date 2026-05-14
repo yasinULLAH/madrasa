@@ -342,6 +342,15 @@
         display: none
       }
 
+      #mobileNav {
+        overflow-x: auto
+      }
+
+      #mobileNav .nav-item {
+        min-width: 92px;
+        flex: 0 0 auto
+      }
+
       [dir=rtl] .nav-link,
       [dir=rtl] .btn {
         flex-direction: row-reverse
@@ -408,6 +417,10 @@
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
@@ -416,7 +429,7 @@
         'use strict';
         const C = {
           db: 'bss_madrasa_indexeddb_v1',
-          ver: 1,
+          ver: 6,
           tz: 'Asia/Karachi',
           idle: 2400000,
           abs: 28800000,
@@ -429,7 +442,7 @@
           },
           sp: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/
         };
-        const stores = ['meta', 'users', 'settings', 'themes', 'audit', 'students', 'teachers', 'classes', 'feePlans', 'feePayments', 'salaryPayments', 'attendance', 'staffAttendance', 'exams', 'timetable', 'expenses', 'inventory'];
+        const stores = ['meta', 'users', 'settings', 'themes', 'audit', 'students', 'teachers', 'classes', 'feePlans', 'feePayments', 'salaryPayments', 'attendance', 'staffAttendance', 'exams', 'timetable', 'expenses', 'inventory', 'libraryBooks', 'libraryIssues', 'hostelRooms', 'hostelAllocations', 'fines', 'donations', 'academicYears', 'promotions', 'certificates'];
         const cfg = {
           meta: ['key'],
           settings: ['key'],
@@ -447,7 +460,16 @@
           exams: ['id', 1],
           timetable: ['id', 1],
           expenses: ['id', 1],
-          inventory: ['id', 1]
+          inventory: ['id', 1],
+          libraryBooks: ['id', 1],
+          libraryIssues: ['id', 1],
+          hostelRooms: ['id', 1],
+          hostelAllocations: ['id', 1],
+          fines: ['id', 1],
+          donations: ['id', 1],
+          academicYears: ['id', 1],
+          promotions: ['id', 1],
+          certificates: ['id', 1]
         };
         let db, user, session, settings, theme, mod = 'dashboard',
           dirty = false,
@@ -488,20 +510,26 @@
           id = p => p + '-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
         const roles = {
           admin: ['*'],
-          teacher: ['dashboard', 'students', 'classes', 'attendance', 'exams', 'timetable', 'reports', 'settings.profile', 'settings.theme', 'staffAttendance'],
-          standard: ['dashboard', 'students', 'classes', 'feeCollection', 'reports', 'settings.profile', 'settings.theme']
+          teacher: ['dashboard', 'students', 'classes', 'attendance', 'exams', 'timetable', 'library', 'documents', 'reports', 'settings.profile', 'settings.theme', 'staffAttendance'],
+          standard: ['dashboard', 'students', 'classes', 'feeCollection', 'fines', 'donations', 'documents', 'reports', 'settings.profile', 'settings.theme']
         };
         const nav = [
           ['dashboard', 'Dashboard', 'ڈیش بورڈ', 'fa-chart-line'],
           ['students', 'Students', 'طلبہ', 'fa-user-graduate'],
           ['teachers', 'Teachers', 'اساتذہ', 'fa-chalkboard-user'],
           ['classes', 'Classes', 'جماعتیں', 'fa-school'],
+          ['academic', 'Academic Year', 'تعلیمی سال', 'fa-graduation-cap'],
           ['fees', 'Fee Structures', 'فیس', 'fa-tags'],
           ['feeCollection', 'Fee Collection', 'وصولی', 'fa-receipt'],
+          ['fines', 'Fines & Arrears', 'جرمانے', 'fa-scale-balanced'],
           ['payroll', 'Payroll', 'تنخواہیں', 'fa-money-check-dollar'],
           ['attendance', 'Attendance', 'حاضری', 'fa-clipboard-check'],
-          ['exams', 'Exams', 'امتحان', 'fa-file-pen'],
-          ['timetable', 'Timetable', 'اوقات', 'fa-calendar-days'],
+          ['exams', 'Exams & Results', 'امتحان', 'fa-file-pen'],
+          ['timetable', 'Timetable & Roster', 'اوقات', 'fa-calendar-days'],
+          ['library', 'Library', 'کتب خانہ', 'fa-book-open'],
+          ['hostel', 'Hostel', 'دارالاقامہ', 'fa-bed'],
+          ['donations', 'Donations / Zakat', 'عطیات', 'fa-hand-holding-heart'],
+          ['documents', 'ID Cards & Certificates', 'اسناد', 'fa-id-card'],
           ['expenses', 'Expenses', 'اخراجات', 'fa-wallet'],
           ['inventory', 'Inventory', 'سامان', 'fa-boxes-stacked'],
           ['staffAttendance', 'Staff Attendance', 'عملہ', 'fa-user-clock'],
@@ -601,6 +629,21 @@
                     unique: true
                   });
                   if (s === 'staffAttendance') o.createIndex('date', 'date', {
+                    unique: true
+                  });
+                  if (s === 'libraryBooks') o.createIndex('accession', 'accession', {
+                    unique: true
+                  });
+                  if (s === 'libraryIssues') {
+                    o.createIndex('bookId', 'bookId');
+                    o.createIndex('studentId', 'studentId')
+                  }
+                  if (s === 'hostelAllocations') o.createIndex('studentId', 'studentId');
+                  if (s === 'fines') o.createIndex('studentId', 'studentId');
+                  if (s === 'donations') o.createIndex('receipt', 'receipt', {
+                    unique: true
+                  });
+                  if (s === 'certificates') o.createIndex('certNo', 'certNo', {
                     unique: true
                   })
                 }
@@ -1220,7 +1263,7 @@
           x.fillStyle = '#f8fafc';
           x.fillRect(0, 0, w, h);
           for (let i = 0; i < 70; i++) {
-            x.fillStyle = `rgba(${Math.random() * 90},${120 + Math.random() * 80},${120 + Math.random() * 80},.32)`;
+            x.fillStyle = `rgba(${Math.random()*90},${120+Math.random()*80},${120+Math.random()*80},.32)`;
             x.beginPath();
             x.arc(Math.random() * w, Math.random() * h, Math.random() * 2 + 1, 0, 7);
             x.fill()
@@ -1246,7 +1289,7 @@
             op = Math.random() > .35 ? '+' : '-',
             ans = op === '+' ? a + b : a - b,
             is = mode === 'login';
-          app().innerHTML = `<main class="min-h-screen auth-bg flex flex-col"><section class="flex-1 flex items-center justify-center p-4"><div class="card max-w-5xl w-full overflow-hidden animate__animated animate__fadeIn"><div class="grid lg:grid-cols-[1fr_1.15fr]"><div class="bg-gradient-to-br from-teal-800 to-emerald-700 p-8 text-white"><div class="mb-6 h-16 w-16 rounded-2xl bg-white/15 flex items-center justify-center text-3xl"><i class="fa-solid fa-mosque"></i></div><h1 class="text-3xl font-black">${esc(settings.school || 'Madrasa Management')}</h1><p class="mt-3 text-white/85">Single HTML IndexedDB app for Madrasa and School Management with receipts, attendance, payroll, reports, backup, RBAC, Urdu/RTL and mobile navigation.</p><div class="mt-8 rounded-2xl bg-white/10 p-4 text-sm"><b>Demo login</b><p>admin@madrasa.local / Admin@123</p><p>teacher@madrasa.local / Teacher@123</p><p>clerk@madrasa.local / Clerk@123</p></div></div><div class="p-6 sm:p-8"><div class="mb-5 flex justify-between gap-3"><div><h2 class="text-2xl font-black text-slate-900">${is ? 'Secure Login' : 'Register Account'}</h2><p class="text-sm text-slate-500">Math CAPTCHA and browser throttling are enabled.</p></div><button class="btn btn-soft" data-auth="${is ? 'register' : 'login'}">${is ? 'Register' : 'Login'}</button></div><form id="${pre}" class="space-y-4" novalidate>${is ? '' : `<div><label>Name</label><input class="form-input" name="name" required autofocus></div>`}<div><label>Email</label><input class="form-input" type="email" name="email" required ${is ? 'autofocus' : ''}></div><div><label>Password</label><input class="form-input" type="password" name="password" required><p class="text-xs text-slate-500 mt-1">Minimum 8 characters with 1 special character.</p></div><div><label>Math CAPTCHA</label><div class="flex gap-3"><canvas id="cap" width="210" height="64" class="rounded-xl border bg-white"></canvas><button type="button" class="btn btn-soft" data-refresh="1"><i class="fa-solid fa-rotate"></i></button></div><input class="form-input mt-2" type="number" name="cap" required></div><button class="btn btn-primary w-full" type="submit"><i class="fa-solid fa-shield"></i>${is ? 'Login' : 'Create Account'}</button></form></div></div></div></section>${footer()}</main>`;
+          app().innerHTML = `<main class="min-h-screen auth-bg flex flex-col"><section class="flex-1 flex items-center justify-center p-4"><div class="card max-w-5xl w-full overflow-hidden animate__animated animate__fadeIn"><div class="grid lg:grid-cols-[1fr_1.15fr]"><div class="bg-gradient-to-br from-teal-800 to-emerald-700 p-8 text-white"><div class="mb-6 h-16 w-16 rounded-2xl bg-white/15 flex items-center justify-center text-3xl"><i class="fa-solid fa-mosque"></i></div><h1 class="text-3xl font-black">${esc(settings.school||'Madrasa Management')}</h1><p class="mt-3 text-white/85">Single HTML IndexedDB app for Madrasa and School Management with receipts, attendance, payroll, reports, backup, RBAC, Urdu/RTL and mobile navigation.</p><div class="mt-8 rounded-2xl bg-white/10 p-4 text-sm"><b>Demo login</b><p>admin@madrasa.local / Admin@123</p><p>teacher@madrasa.local / Teacher@123</p><p>clerk@madrasa.local / Clerk@123</p></div></div><div class="p-6 sm:p-8"><div class="mb-5 flex justify-between gap-3"><div><h2 class="text-2xl font-black text-slate-900">${is?'Secure Login':'Register Account'}</h2><p class="text-sm text-slate-500">Math CAPTCHA and browser throttling are enabled.</p></div><button class="btn btn-soft" data-auth="${is?'register':'login'}">${is?'Register':'Login'}</button></div><form id="${pre}" class="space-y-4" novalidate>${is?'':`<div><label>Name</label><input class="form-input" name="name" required autofocus></div>`}<div><label>Email</label><input class="form-input" type="email" name="email" required ${is?'autofocus':''}></div><div><label>Password</label><input class="form-input" type="password" name="password" required><p class="text-xs text-slate-500 mt-1">Minimum 8 characters with 1 special character.</p></div><div><label>Math CAPTCHA</label><div class="flex gap-3"><canvas id="cap" width="210" height="64" class="rounded-xl border bg-white"></canvas><button type="button" class="btn btn-soft" data-refresh="1"><i class="fa-solid fa-rotate"></i></button></div><input class="form-input mt-2" type="number" name="cap" required></div><button class="btn btn-primary w-full" type="submit"><i class="fa-solid fa-shield"></i>${is?'Login':'Create Account'}</button></form></div></div></div></section>${footer()}</main>`;
           drawCap($('#cap'), `${a} ${op} ${b}`);
           app().onclick = e => {
             let q = e.target.closest('[data-auth]');
@@ -1311,7 +1354,7 @@
           await loadTheme();
           await audit('Logged in', 'auth', u.email);
           shell();
-          route('dashboard', 1);
+          await go('dashboard', true);
           watchSession();
           toast('success', 'Welcome back')
         }
@@ -1341,7 +1384,7 @@
           await loadTheme();
           await audit('Registered', 'auth', email);
           shell();
-          route('dashboard', 1);
+          await go('dashboard', true);
           watchSession();
           toast('success', 'Account created')
         }
@@ -1432,7 +1475,7 @@
                     pageLength: 10,
                     autoWidth: false,
                     dom: 'Bfrtip',
-                    buttons: ['copyHtml5', 'csvHtml5', 'excelHtml5', 'print'],
+                    buttons: ['copyHtml5', 'csvHtml5', 'excelHtml5', 'pdfHtml5', 'print'],
                     language: {
                       search: 'Search',
                       lengthMenu: 'Rows _MENU_',
@@ -1509,7 +1552,7 @@
 
         function cleanPath(m) {
           if (location.protocol === 'file:') return false;
-          let base = location.pathname.replace(/\/(dashboard|students|teachers|classes|fees|feeCollection|payroll|attendance|exams|timetable|expenses|inventory|staffAttendance|reports|settings)\/?$/, '/').replace(/\/[^\/]*\.html$/, '/');
+          let base = location.pathname.replace(/\/(dashboard|students|teachers|classes|academic|fees|feeCollection|fines|payroll|attendance|exams|timetable|library|hostel|donations|documents|expenses|inventory|staffAttendance|reports|settings)\/?$/, '/').replace(/\/[^\/]*\.html$/, '/');
           history.pushState({
             m
           }, '', base + (m === 'dashboard' ? '' : m))
@@ -1539,11 +1582,11 @@
         }
 
         function navHtml(mobile = false) {
-          return nav.filter(n => ok(n[0])).map(n => `<button class="nav-item ${mod === n[0] ? 'active' : ''} ${mobile ? 'justify-center flex-1' : ''}" data-route="${n[0]}" title="${esc(n[1])}"><i class="fa-solid ${n[3]}"></i><span>${label(n[1], n[2])}</span></button>`).join('')
+          return nav.filter(n => ok(n[0])).map(n => `<button class="nav-item ${mod===n[0]?'active':''} ${mobile?'justify-center flex-1':''}" data-route="${n[0]}" title="${esc(n[1])}"><i class="fa-solid ${n[3]}"></i><span>${label(n[1],n[2])}</span></button>`).join('')
         }
 
         function shell() {
-          app().innerHTML = `<div class="min-h-screen flex bg-[var(--mbg)] text-[var(--mt)]"><aside class="hidden lg:flex w-72 shrink-0 flex-col sticky top-0 h-screen border-r border-slate-200 bg-[var(--sbg)] text-[var(--st)]"><div class="p-5 border-b border-slate-100"><div class="flex items-center gap-3"><div class="h-12 w-12 rounded-2xl bg-teal-700 text-white flex items-center justify-center text-xl"><i class="fa-solid fa-mosque"></i></div><div><div class="font-black leading-tight">${esc(settings.school || 'Madrasa')}</div><div class="text-xs opacity-70">${esc(settings.schoolUrdu || '')}</div></div></div></div><nav id="deskNav" class="p-3 space-y-1 overflow-y-auto flex-1">${navHtml()}</nav><div class="p-4 text-xs opacity-70">${roleName(user.role)} · ${esc(user.name)}</div></aside><main class="flex-1 min-w-0 flex flex-col pb-20 lg:pb-0"><header class="sticky top-0 z-30 bg-[var(--hbg)] text-[var(--ht)] shadow-sm"><div class="px-4 py-3 flex items-center gap-3 justify-between"><div class="min-w-0"><h1 class="font-black text-lg truncate">${label('Madrasa Management System', 'مدرسہ مینجمنٹ سسٹم')}</h1><p class="text-xs opacity-80 truncate">${esc(settings.address || '')}</p></div><div class="flex items-center gap-2"><button class="btn btn-ghost text-white border-white/20" data-action="lang"><i class="fa-solid fa-language"></i><span class="hidden sm:inline">${settings.lang === 'ur' ? 'English' : 'اردو'}</span></button><button class="btn btn-ghost text-white border-white/20" data-action="profile"><i class="fa-solid fa-user"></i><span class="hidden sm:inline">${esc(user.name)}</span></button><button class="btn btn-ghost text-white border-white/20" data-action="logout"><i class="fa-solid fa-right-from-bracket"></i></button></div></div></header><section id="main" class="flex-1 p-4 sm:p-6 animate__animated animate__fadeIn"></section>${footer()}</main></div><nav id="mobileNav" class="lg:hidden fixed bottom-0 inset-x-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur px-1 py-1 flex gap-1 transition-transform duration-200">${navHtml(true)}</nav>`;
+          app().innerHTML = `<div class="min-h-screen flex bg-[var(--mbg)] text-[var(--mt)]"><aside class="hidden lg:flex w-72 shrink-0 flex-col sticky top-0 h-screen border-r border-slate-200 bg-[var(--sbg)] text-[var(--st)]"><div class="p-5 border-b border-slate-100"><div class="flex items-center gap-3"><div class="h-12 w-12 rounded-2xl bg-teal-700 text-white flex items-center justify-center text-xl"><i class="fa-solid fa-mosque"></i></div><div><div class="font-black leading-tight">${esc(settings.school||'Madrasa')}</div><div class="text-xs opacity-70">${esc(settings.schoolUrdu||'')}</div></div></div></div><nav id="deskNav" class="p-3 space-y-1 overflow-y-auto flex-1">${navHtml()}</nav><div class="p-4 text-xs opacity-70">${roleName(user.role)} · ${esc(user.name)}</div></aside><main class="flex-1 min-w-0 flex flex-col pb-20 lg:pb-0"><header class="sticky top-0 z-30 bg-[var(--hbg)] text-[var(--ht)] shadow-sm"><div class="px-4 py-3 flex items-center gap-3 justify-between"><div class="min-w-0"><h1 class="font-black text-lg truncate">${label('Madrasa Management System','مدرسہ مینجمنٹ سسٹم')}</h1><p class="text-xs opacity-80 truncate">${esc(settings.address||'')}</p></div><div class="flex items-center gap-2"><button class="btn btn-ghost text-white border-white/20" data-action="lang"><i class="fa-solid fa-language"></i><span class="hidden sm:inline">${settings.lang==='ur'?'English':'اردو'}</span></button><button class="btn btn-ghost text-white border-white/20" data-action="profile"><i class="fa-solid fa-user"></i><span class="hidden sm:inline">${esc(user.name)}</span></button><button class="btn btn-ghost text-white border-white/20" data-action="logout"><i class="fa-solid fa-right-from-bracket"></i></button></div></div></header><section id="main" class="flex-1 p-4 sm:p-6 animate__animated animate__fadeIn"></section>${footer()}</main></div><nav id="mobileNav" class="lg:hidden fixed bottom-0 inset-x-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur px-1 py-1 flex gap-1 transition-transform duration-200">${navHtml(true)}</nav>`;
           app().onclick = handleClick;
           app().oninput = touchDirty;
           window.onpopstate = () => go(currentRoute(), true);
@@ -1586,19 +1629,59 @@
           if (x === 'crudEdit') await openCrud(a.dataset.key, +a.dataset.id);
           if (x === 'crudDelete') await deleteCrud(a.dataset.key, +a.dataset.id);
           if (x === 'printRecord') await printRecord(a.dataset.type, +a.dataset.id);
+          if (x === 'showMedia') await showMedia(a.dataset.store, a.dataset.field, +a.dataset.id);
+          if (x === 'dashRun') await renderDashboard();
+          if (x === 'feePlanFilter') await renderCRUD('fees');
           if (x === 'feeCollect') await openFee();
+          if (x === 'feeFilter') await renderFeeCollection();
+          if (x === 'feeReceiptSelected') await printLatestFee();
           if (x === 'salaryPay') await openSalary();
           if (x === 'attendanceLoad') await renderAttendance(true);
           if (x === 'attendanceSave') await saveAttendance(a);
+          if (x === 'printAttendance') await printAttendanceRegister();
           if (x === 'examAdd') await openExam();
           if (x === 'examEdit') await openExam(+a.dataset.id);
           if (x === 'examDelete') await deleteExam(+a.dataset.id);
+          if (x === 'resultCardView') await showResultCard(false);
+          if (x === 'resultCardPrint') await showResultCard(true);
           if (x === 'timetableAdd') await openTimetable();
           if (x === 'timetableEdit') await openTimetable(+a.dataset.id);
           if (x === 'timetableDelete') await deleteGeneric('timetable', +a.dataset.id, 'timetable');
+          if (x === 'rosterLoad') await renderTimetable();
+          if (x === 'rosterPrint') await printRoster();
           if (x === 'staffLoad') await renderStaffAttendance(true);
           if (x === 'staffSave') await saveStaffAttendance(a);
+          if (x === 'yearAdd') await openYear();
+          if (x === 'yearEdit') await openYear(+a.dataset.id);
+          if (x === 'yearCurrent') await setYearStatus(+a.dataset.id, 'Current');
+          if (x === 'yearClose') await setYearStatus(+a.dataset.id, 'Closed');
+          if (x === 'promoteStudents') await promoteStudents();
+          if (x === 'bookAdd') await openBook();
+          if (x === 'bookEdit') await openBook(+a.dataset.id);
+          if (x === 'bookDelete') await deleteGeneric('libraryBooks', +a.dataset.id, 'book');
+          if (x === 'issueAdd') await openIssue();
+          if (x === 'bookReturn') await returnBook(+a.dataset.id);
+          if (x === 'issueDelete') await deleteGeneric('libraryIssues', +a.dataset.id, 'issue');
+          if (x === 'roomAdd') await openRoom();
+          if (x === 'roomEdit') await openRoom(+a.dataset.id);
+          if (x === 'roomDelete') await deleteGeneric('hostelRooms', +a.dataset.id, 'room');
+          if (x === 'allocAdd') await openAllocation();
+          if (x === 'allocDelete') await deleteGeneric('hostelAllocations', +a.dataset.id, 'allocation');
+          if (x === 'hostelCheckout') await hostelCheckout(+a.dataset.id);
+          if (x === 'fineAdd') await openFine();
+          if (x === 'finePaid') await updateFineStatus(+a.dataset.id, 'Paid');
+          if (x === 'fineWaive') await updateFineStatus(+a.dataset.id, 'Waived');
+          if (x === 'fineDelete') await deleteGeneric('fines', +a.dataset.id, 'fine');
+          if (x === 'donationAdd') await openDonation();
+          if (x === 'donationDelete') await deleteGeneric('donations', +a.dataset.id, 'donation');
+          if (x === 'studentIdCard') await generateIdCard('student');
+          if (x === 'teacherIdCard') await generateIdCard('teacher');
+          if (x === 'certGenerate') await generateCertificate();
+          if (x === 'printDocPreview') await printDocPreview();
+          if (x === 'docResultPrint') await printDocResult();
           if (x === 'reportRun') await renderReports(true);
+          if (x === 'reportPdf') await reportPdf();
+          if (x === 'reportSend') await reportSend();
           if (x === 'backup') await backup();
           if (x === 'restore') $('#restoreFile')?.click();
           if (x === 'wipeData') await wipeData();
@@ -1615,7 +1698,7 @@
         }
 
         function modal(title, body, foot = '') {
-          M().innerHTML = `<div class="modal-backdrop" data-action="modalClose"></div><div class="modal-card animate__animated animate__slideInUp"><div class="flex items-start justify-between gap-4 p-5 border-b"><div><h2 class="text-xl font-black">${title}</h2><p class="text-sm text-slate-500">${esc(settings.school || '')}</p></div><button class="btn btn-soft" data-action="modalClose"><i class="fa-solid fa-xmark"></i></button></div><div class="p-5">${body}</div>${foot ? `<div class="p-5 border-t bg-slate-50">${foot}</div>` : ''}</div>`;
+          M().innerHTML = `<div class="modal-backdrop" data-action="modalClose"></div><div class="modal-card animate__animated animate__slideInUp"><div class="flex items-start justify-between gap-4 p-5 border-b"><div><h2 class="text-xl font-black">${title}</h2><p class="text-sm text-slate-500">${esc(settings.school||'')}</p></div><button class="btn btn-soft" data-action="modalClose"><i class="fa-solid fa-xmark"></i></button></div><div class="p-5">${body}</div>${foot?`<div class="p-5 border-t bg-slate-50">${foot}</div>`:''}</div>`;
           M().classList.remove('hidden');
           setTimeout(() => {
             let i = M().querySelector('input,select,textarea,button');
@@ -1625,16 +1708,16 @@
         }
 
         function head(title, sub, actions = '') {
-          return `${tenant()}<div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><h2 class="text-2xl sm:text-3xl font-black text-slate-900">${title}</h2><p class="text-slate-500 text-sm">${sub || ''}</p></div><div class="flex flex-wrap gap-2">${actions}</div></div>`
+          return `${tenant()}<div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><h2 class="text-2xl sm:text-3xl font-black text-slate-900">${title}</h2><p class="text-slate-500 text-sm">${sub||''}</p></div><div class="flex flex-wrap gap-2">${actions}</div></div>`
         }
 
         function table(id, heads, rows) {
-          return `<div class="card p-3 overflow-hidden"><div class="overflow-x-auto"><table id="${id}" class="display responsive nowrap w-full text-sm"><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div></div>`
+          return `<div class="card p-3 overflow-hidden"><div class="overflow-x-auto"><table id="${id}" class="display responsive nowrap w-full text-sm"><thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div></div>`
         }
 
         function actions(key, id, print = '') {
           let e = canAdmin() ? `<button class="btn btn-soft" data-action="crudEdit" data-key="${key}" data-id="${id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="crudDelete" data-key="${key}" data-id="${id}"><i class="fa-solid fa-trash"></i></button>` : '';
-          return `<div class="flex gap-2">${print ? `<button class="btn btn-soft" data-action="printRecord" data-type="${print}" data-id="${id}"><i class="fa-solid fa-print"></i></button>` : ''}${e}</div>`
+          return `<div class="flex gap-2">${print?`<button class="btn btn-soft" data-action="printRecord" data-type="${print}" data-id="${id}"><i class="fa-solid fa-print"></i></button>`:''}${e}</div>`
         }
         async function readImage(file) {
           if (!file) return '';
@@ -1670,7 +1753,7 @@
           return out
         }
         async function options(store, text) {
-          let a = await all(store);
+          let a = store === 'classes' ? await visibleClasses() : store === 'students' ? await visibleStudents() : await all(store);
           return a.map(x => [x.id, text(x)])
         }
         async function clsMap() {
@@ -1689,6 +1772,378 @@
         function grade(p) {
           p = num(p);
           return p >= 90 ? 'A+' : p >= 80 ? 'A' : p >= 70 ? 'B' : p >= 60 ? 'C' : p >= 50 ? 'D' : 'F'
+        }
+        let lastReport = {
+          title: '',
+          heads: [],
+          rows: []
+        };
+
+        function norm(v) {
+          return String(v || '').trim().toLowerCase().replace(/\s+/g, ' ')
+        }
+        async function teacherIdForUser() {
+          if (!user || user.role !== 'teacher') return 0;
+          if (user.teacherId) return +user.teacherId;
+          let t = (await all('teachers')).find(x => norm(x.name) === norm(user.name)) || (await all('teachers'))[0];
+          if (t) {
+            user.teacherId = t.id;
+            await put('users', user);
+            return t.id
+          }
+          return 0
+        }
+        async function visibleClasses() {
+          let c = await all('classes');
+          if (user?.role === 'teacher') {
+            let tid = await teacherIdForUser();
+            return c.filter(x => +x.teacherId === +tid)
+          }
+          return c
+        }
+        async function visibleStudents() {
+          let s = await all('students');
+          if (user?.role === 'teacher') {
+            let ids = (await visibleClasses()).map(x => +x.id);
+            return s.filter(x => ids.includes(+x.classId))
+          }
+          return s
+        }
+        async function classAllowed(cid) {
+          if (canAdmin() || user.role !== 'teacher') return true;
+          let ids = (await visibleClasses()).map(x => +x.id);
+          return ids.includes(+cid)
+        }
+        async function studentAllowed(sid) {
+          if (canAdmin() || user.role !== 'teacher') return true;
+          let st = await one('students', +sid);
+          return st ? await classAllowed(st.classId) : false
+        }
+
+        function miniPhoto(src, alt = 'photo') {
+          return src ? `<img src="${src}" alt="${esc(alt)}" class="h-12 w-12 rounded-xl object-cover border">` : `<span class="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400"><i class="fa-solid fa-image"></i></span>`
+        }
+        async function ensureEnhancedData() {
+          let t = now(),
+            st = await one('settings', 'app');
+          if (st) {
+            if (!st.lateFee) st.lateFee = 100;
+            if (!st.receiptFooter) st.receiptFooter = 'Thank you for supporting quality Islamic and school education.';
+            await put('settings', st)
+          }
+          let teachers = await all('teachers'),
+            users = await all('users');
+          for (let u of users.filter(x => x.role === 'teacher' && !x.teacherId)) {
+            let m = teachers.find(t => norm(t.name) === norm(u.name)) || teachers[0];
+            if (m) {
+              u.teacherId = m.id;
+              u.updatedAt = t;
+              await put('users', u)
+            }
+          }
+          let classes = await all('classes'),
+            students = await all('students');
+          if (!(await all('academicYears')).length) await bulk('academicYears', [{
+            name: '2025-2026',
+            start: '2025-08-01',
+            end: '2026-07-31',
+            status: 'Current',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            name: '2024-2025',
+            start: '2024-08-01',
+            end: '2025-07-31',
+            status: 'Closed',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            name: '2026-2027',
+            start: '2026-08-01',
+            end: '2027-07-31',
+            status: 'Planned',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            name: 'Ramadan Short Course 2026',
+            start: '2026-02-18',
+            end: '2026-03-20',
+            status: 'Planned',
+            createdAt: t,
+            updatedAt: t
+          }]);
+          if (!(await all('libraryBooks')).length) await bulk('libraryBooks', [{
+            accession: 'LIB-001',
+            title: 'Taleem-ul-Quran Reader',
+            author: 'Qari Abdul Rahman',
+            category: 'Quran',
+            qty: 12,
+            available: 10,
+            location: 'Shelf A1',
+            status: 'Active',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            accession: 'LIB-002',
+            title: 'Riyaz-us-Saliheen Selection',
+            author: 'Imam Nawawi',
+            category: 'Hadith',
+            qty: 8,
+            available: 7,
+            location: 'Shelf B2',
+            status: 'Active',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            accession: 'LIB-003',
+            title: 'Easy English Grammar Grade 4',
+            author: 'Oxford Education',
+            category: 'School',
+            qty: 15,
+            available: 14,
+            location: 'Shelf C1',
+            status: 'Active',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            accession: 'LIB-004',
+            title: 'Basic Fiqh for Students',
+            author: 'Mufti Taqi Usmani',
+            category: 'Fiqh',
+            qty: 10,
+            available: 9,
+            location: 'Shelf B1',
+            status: 'Active',
+            createdAt: t,
+            updatedAt: t
+          }]);
+          if (!(await all('hostelRooms')).length) await bulk('hostelRooms', [{
+            name: 'Room A1',
+            building: 'Dar-ul-Iqama Block A',
+            capacity: 6,
+            messFee: 4500,
+            notes: 'Near warden office',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            name: 'Room A2',
+            building: 'Dar-ul-Iqama Block A',
+            capacity: 6,
+            messFee: 4500,
+            notes: 'Senior hifz students',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            name: 'Room B1',
+            building: 'School Hostel Block B',
+            capacity: 4,
+            messFee: 5200,
+            notes: 'School section',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            name: 'Room G1',
+            building: 'Girls Boarding Wing',
+            capacity: 5,
+            messFee: 4800,
+            notes: 'Female warden supervised',
+            createdAt: t,
+            updatedAt: t
+          }]);
+          if (!(await all('hostelAllocations')).length && students.length) {
+            let rooms = await all('hostelRooms');
+            await bulk('hostelAllocations', students.slice(0, 4).map((s, i) => ({
+              studentId: s.id,
+              roomId: rooms[i % rooms.length].id,
+              bedNo: String(i + 1),
+              startDate: today(),
+              endDate: '',
+              status: i === 3 ? 'Day Scholar' : 'Boarding',
+              messFee: rooms[i % rooms.length].messFee,
+              notes: i === 3 ? 'Not staying overnight' : 'Monthly mess fee applies',
+              createdAt: t,
+              updatedAt: t
+            })))
+          }
+          if (!(await all('fines')).length && students.length) await bulk('fines', students.slice(0, 4).map((s, i) => ({
+            studentId: s.id,
+            date: today(),
+            type: ['Late Fee', 'Discipline', 'Library', 'Uniform'][i] || 'Other',
+            amount: [100, 250, 150, 200][i] || 100,
+            status: i === 0 ? 'Paid' : 'Unpaid',
+            paidDate: i === 0 ? today() : '',
+            notes: ['Paid late fee sample', 'Class discipline fine', 'Library delay fine', 'Uniform rule fine'][i] || '',
+            createdAt: t,
+            updatedAt: t
+          })));
+          if (!(await all('donations')).length) await bulk('donations', [{
+            receipt: 'DON-00001',
+            donor: 'Haji Kareem Ullah',
+            phone: '03001112222',
+            type: 'Zakat',
+            date: today(),
+            amount: 50000,
+            method: 'Cash',
+            notes: 'Annual zakat contribution',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            receipt: 'DON-00002',
+            donor: 'Dr. Saeed Ahmad',
+            phone: '03003334444',
+            type: 'Sadaqah',
+            date: today(),
+            amount: 15000,
+            method: 'Bank',
+            notes: 'Monthly support',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            receipt: 'DON-00003',
+            donor: 'Bannu Traders Welfare',
+            phone: '03005556666',
+            type: 'General Donation',
+            date: today(),
+            amount: 30000,
+            method: 'Check',
+            notes: 'Classroom repairs',
+            createdAt: t,
+            updatedAt: t
+          }, {
+            receipt: 'DON-00004',
+            donor: 'Anonymous Donor',
+            phone: '',
+            type: 'Waqf',
+            date: today(),
+            amount: 75000,
+            method: 'Bank',
+            notes: 'Library books fund',
+            createdAt: t,
+            updatedAt: t
+          }]);
+          if (!(await all('libraryIssues')).length && students.length) {
+            let books = await all('libraryBooks');
+            await bulk('libraryIssues', students.slice(0, 4).map((s, i) => ({
+              bookId: books[i % books.length].id,
+              studentId: s.id,
+              issueDate: today(),
+              dueDate: today(),
+              returnDate: i === 1 ? today() : '',
+              status: i === 1 ? 'Returned' : 'Issued',
+              fine: 0,
+              notes: 'Seed lending record',
+              createdAt: t,
+              updatedAt: t
+            })))
+          }
+          await put('meta', {
+            key: 'enhancedSeeded',
+            at: t
+          })
+        }
+        async function dueForStudent(studentId, dt = today()) {
+          let st = await one('students', +studentId);
+          if (!st) return {
+            monthly: 0,
+            paidMonth: 0,
+            unpaidFines: 0,
+            late: 0,
+            totalDue: 0,
+            balance: 0
+          };
+          let cl = await one('classes', +st.classId) || {},
+            plans = (await all('feePlans')).filter(p => +p.classId === +st.classId && p.type === 'Monthly'),
+            plan = plans[0] || {},
+            monthly = num(plan.amount) || num(cl.fee),
+            dueDay = num(plan.dueDay) || 10,
+            m = (dt || today()).slice(0, 7),
+            payments = (await all('feePayments')).filter(p => +p.studentId === +studentId && (p.date || '').slice(0, 7) === m),
+            paidMonth = payments.reduce((a, b) => a + num(b.amount), 0),
+            unpaidFines = (await all('fines')).filter(f => +f.studentId === +studentId && f.status === 'Unpaid').reduce((a, b) => a + num(b.amount), 0),
+            late = (new Date(dt + 'T00:00:00').getDate() > dueDay && paidMonth < monthly) ? num(settings.lateFee || 100) : 0,
+            balance = Math.max(0, monthly - paidMonth);
+          return {
+            monthly,
+            paidMonth,
+            unpaidFines,
+            late,
+            totalDue: balance + unpaidFines + late,
+            balance,
+            dueDay
+          }
+        }
+
+        function periodRange(p) {
+          let d = new Date(),
+            y = d.getFullYear(),
+            m = d.getMonth();
+          if (p === 'month') return [new Date(y, m, 1).toISOString().slice(0, 10), today()];
+          if (p === '6m') return [new Date(y, m - 5, 1).toISOString().slice(0, 10), today()];
+          if (p === 'year') return [new Date(y, 0, 1).toISOString().slice(0, 10), today()];
+          return ['', '9999-12-31']
+        }
+
+        function selectedValues(sel) {
+          return Array.from(document.querySelectorAll(sel + ' option:checked')).map(x => x.value).filter(Boolean)
+        }
+        async function exportRowsPdf(title, heads, rows) {
+          try {
+            let jspdf = window.jspdf || window.jsPDF;
+            if (!jspdf || !jspdf.jsPDF) throw Error('PDF library is not loaded');
+            let docu = new jspdf.jsPDF({
+              orientation: 'landscape',
+              unit: 'pt',
+              format: 'a4'
+            });
+            docu.setFontSize(16);
+            docu.text(title, 40, 40);
+            docu.setFontSize(10);
+            docu.text(`${settings.school||''} - ${settings.address||''}`, 40, 58);
+            docu.autoTable({
+              head: [heads],
+              body: rows,
+              startY: 78,
+              styles: {
+                fontSize: 8,
+                cellPadding: 4
+              },
+              headStyles: {
+                fillColor: [15, 118, 110]
+              }
+            });
+            docu.text(`Created by: ${C.author.name} - ${C.author.company} | ${C.author.site} | WhatsApp: ${C.author.whatsapp}`, 40, docu.internal.pageSize.height - 22);
+            docu.save(title.replace(/\W+/g, '-').toLowerCase() + '.pdf');
+            await audit('Exported PDF', 'reports', title);
+            toast('success', 'PDF exported')
+          } catch (e) {
+            toast('error', e.message);
+            if (lastReport.body) await printHtml(title, lastReport.body)
+          }
+        }
+        async function resultCardHtml(studentId, examId) {
+          let e = await one('exams', +examId),
+            st = await one('students', +studentId),
+            cm = await clsMap();
+          if (!e || !st) throw Error('Choose a valid student and exam');
+          let r = (e.results || []).find(x => +x.studentId === +studentId) || {
+              marks: 0
+            },
+            p = Math.round(num(r.marks) / Math.max(1, num(e.total)) * 100);
+          return `<div class="rounded-2xl border p-4"><div class="grid grid-cols-2 gap-2 text-sm"><p><b>Student:</b> ${esc(st.name)}</p><p><b>Enrollment:</b> ${esc(st.enroll)}</p><p><b>Father:</b> ${esc(st.father)}</p><p><b>Class:</b> ${esc(cm[st.classId]?.name||'')}</p><p><b>Exam:</b> ${esc(e.exam)}</p><p><b>Subject:</b> ${esc(e.subject)}</p><p><b>Date:</b> ${date(e.date)}</p><p><b>Result:</b> ${p>=50?'Passed':'Failed'}</p></div><table class="w-full mt-4 border-collapse"><thead><tr><th>Subject</th><th>Total Marks</th><th>Obtained</th><th>Percentage</th><th>Grade</th><th>Status</th></tr></thead><tbody><tr><td>${esc(e.subject)}</td><td>${num(e.total)}</td><td>${num(r.marks)}</td><td>${p}%</td><td>${grade(p)}</td><td>${p>=50?'Passed':'Failed'}</td></tr></tbody></table><div class="grid grid-cols-3 gap-4 mt-8 text-center text-xs"><div>Class Teacher Signature</div><div>Exam Controller</div><div>Principal / Mohtamim</div></div></div>`
+        }
+        async function idCardHtml(type, idv) {
+          let rec = await one(type === 'student' ? 'students' : 'teachers', +idv),
+            cm = await clsMap();
+          if (!rec) throw Error('Record not found');
+          let cls = type === 'student' ? cm[rec.classId]?.name || '' : 'Staff';
+          return `<div class="mx-auto rounded-3xl border-4 border-teal-700 overflow-hidden" style="width:340px"><div class="bg-teal-700 text-white text-center p-3"><h2 class="font-black text-lg">${esc(settings.school||'Madrasa')}</h2><p class="text-xs">${type==='student'?'Student ID Card':'Teacher ID Card'}</p></div><div class="p-4 text-center">${rec.photo?`<img src="${rec.photo}" class="mx-auto h-28 w-28 rounded-2xl object-cover border mb-3">`:`<div class="mx-auto h-28 w-28 rounded-2xl bg-slate-100 border flex items-center justify-center text-4xl text-slate-400 mb-3"><i class="fa-solid fa-user"></i></div>`}<h3 class="text-xl font-black">${esc(rec.name)}</h3><p class="text-sm text-slate-600">${type==='student'?esc(rec.enroll):esc(rec.subjects)}</p><div class="mt-3 text-left text-sm space-y-1"><p><b>${type==='student'?'Father':'Qualification'}:</b> ${esc(type==='student'?rec.father:rec.qualification)}</p><p><b>${type==='student'?'Class':'Mobile'}:</b> ${esc(type==='student'?cls:rec.mobile)}</p><p><b>Status:</b> ${esc(rec.status||'Active')}</p><p><b>Contact:</b> ${esc(type==='student'?rec.contact:settings.contact)}</p></div></div><div class="bg-amber-50 p-3 text-center text-xs">Created by: ${C.author.name} – ${C.author.company}<br>${C.author.site} · WhatsApp: ${C.author.whatsapp}</div></div>`
+        }
+        async function certificateHtml(studentId, type, reason, conduct, remarks, issueDate) {
+          let st = await one('students', +studentId),
+            cm = await clsMap();
+          if (!st) throw Error('Student not found');
+          let no = (settings.prefix || 'BSS') + '-CERT-' + String(Date.now()).slice(-7);
+          return `<div class="p-8 border-4 border-double border-teal-700 text-center"><h1 class="text-3xl font-black mb-2">${esc(type||'Leaving Certificate / Sanad')}</h1><p class="mb-6">Certificate No: <b>${esc(no)}</b> · Issue Date: <b>${date(issueDate||today())}</b></p><p class="leading-8 text-lg">This is to certify that <b>${esc(st.name)}</b>, son/daughter of <b>${esc(st.father)}</b>, enrollment number <b>${esc(st.enroll)}</b>, studied in <b>${esc(cm[st.classId]?.name||'')}</b> at <b>${esc(settings.school||'our institution')}</b>.</p><p class="mt-4 leading-8">Reason / Completion: <b>${esc(reason||'Completed course requirements')}</b>. Conduct: <b>${esc(conduct||'Good')}</b>.</p><p class="mt-4">${esc(remarks||'We wish the student success in future studies and life.')}</p><div class="grid grid-cols-3 gap-8 mt-16 text-sm"><div>Office Seal</div><div>Class Teacher</div><div>Principal / Mohtamim</div></div></div>`
         }
         const defs = {
           students: {
@@ -1820,6 +2275,9 @@
             row: x => [esc(x.item), esc(x.category), num(x.qty), money(x.unit), money(num(x.qty) * num(x.unit)), date(x.purchase), esc(x.details), actions('inventory', x.id)]
           }
         };
+        defs.expenses.heads = ['Date', 'Category', 'Amount', 'Paid To', 'Details', 'Receipt Scan', 'Actions'];
+        defs.expenses.fields.push(['receipt', 'Scanned Receipt', 'image']);
+        defs.expenses.row = x => [date(x.date), esc(x.category), money(x.amount), esc(x.paidTo), esc(x.details), x.receipt ? `<button class="btn btn-soft" data-action="showMedia" data-store="expenses" data-field="receipt" data-id="${x.id}"><i class="fa-solid fa-image"></i>View</button>` : '', actions('expenses', x.id)];
         async function renderCRUD(key) {
           let d = defs[key],
             data = await all(d.store),
@@ -1827,21 +2285,20 @@
               classes: await clsMap(),
               teachers: await tchMap(),
               students: await stuMap()
-            },
-            rows = data.map(x => `<tr>${d.row(x, maps).map(c => `<td>${c}</td>`).join('')}</tr>`),
-            add = canAdmin() ? `<button class="btn btn-primary" data-action="crudAdd" data-key="${key}"><i class="fa-solid fa-plus"></i>Add ${d.title.split(' ')[0]}</button>` : '';
-          main().innerHTML = head(label(d.title, d.ur), d.sub, add) + table('tbl_' + key, d.heads, rows);
-          plugins(main())
-        }
-        async function fieldHtml(f, rec = {}) {
-          let [n, l, t, opt] = f, v = rec[n] ?? '';
-          if (t === 'textarea') return `<div class="sm:col-span-2"><label>${l}</label><textarea class="form-input" name="${n}" rows="3" required>${esc(v)}</textarea></div>`;
-          if (t === 'select') {
-            let o = Array.isArray(opt) ? opt : opt === 'classes' ? await options('classes', x => x.name) : opt === 'teachers' ? await options('teachers', x => x.name) : opt === 'students' ? await options('students', x => `${x.enroll} - ${x.name}`) : [];
-            return `<div><label>${l}</label><select class="form-input" name="${n}" required data-placeholder="${l}"><option></option>${o.map(a => `<option value="${esc(a[0])}" ${String(v) === String(a[0]) ? 'selected' : ''}>${esc(a[1])}</option>`).join('')}</select></div>`
+            };
+          if (key === 'students') data = await visibleStudents();
+          if (key === 'classes') data = await visibleClasses();
+          let filters = '';
+          if (key === 'fees') {
+            let classes = await visibleClasses(),
+              cid = $('#feePlanClass')?.value || '0';
+            if (cid !== '0') data = data.filter(x => String(x.classId) === String(cid));
+            filters = `<div class="card p-4 mb-4"><div class="grid sm:grid-cols-[1fr_auto] gap-3 items-end"><div><label>Filter fee structure by class</label><select id="feePlanClass" class="form-input"><option value="0">All Classes</option>${classes.map(c=>`<option value="${c.id}" ${String(c.id)===String(cid)?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><button class="btn btn-primary" data-action="feePlanFilter"><i class="fa-solid fa-filter"></i>Apply Filter</button></div></div>`
           }
-          if (t === 'image') return `<div class="sm:col-span-2"><label>${l}</label>${v ? `<img src="${v}" class="h-20 w-20 object-cover rounded-2xl mb-2 border" alt="photo">` : ''}<input class="form-input" type="file" name="${n}" accept="image/jpeg,image/png,image/webp,image/gif"><p class="text-xs text-slate-500 mt-1">JPG, PNG, WEBP, GIF only. Files over 200KB are resized/compressed.</p></div>`;
-          return `<div><label>${l}</label><input class="form-input" name="${n}" type="${t === 'number' ? 'number' : t}" step="${t === 'number' ? '0.01' : '1'}" value="${esc(v)}" required></div>`
+          let rows = data.map(x => `<tr>${d.row(x,maps).map(c=>`<td>${c}</td>`).join('')}</tr>`),
+            add = canAdmin() ? `<button class="btn btn-primary" data-action="crudAdd" data-key="${key}"><i class="fa-solid fa-plus"></i>Add ${d.title.split(' ')[0]}</button>` : '';
+          main().innerHTML = head(label(d.title, d.ur), d.sub, add) + filters + table('tbl_' + key, d.heads, rows);
+          plugins(main())
         }
         async function openCrud(key, rid = 0) {
           if (!canAdmin()) return toast('error', 'Admin rights required');
@@ -1929,21 +2386,20 @@
           return a
         }
         async function renderDashboard() {
-          let [s, t, c, fp, sp, ex, att] = await Promise.all(['students', 'teachers', 'classes', 'feePayments', 'salaryPayments', 'expenses', 'attendance'].map(all)), td = today(), income = fp.filter(x => x.date === td).reduce((a, b) => a + num(b.amount), 0), expense = ex.filter(x => x.date === td).reduce((a, b) => a + num(b.amount), 0), newAdm = s.filter(x => x.admit && x.admit.slice(0, 7) === month()).length, cls = Object.fromEntries(c.map(x => [x.id, x.name])), cards = [
-            ['Students', s.length, 'fa-user-graduate', 'text-teal-700'],
-            ['Teachers', t.length, 'fa-chalkboard-user', 'text-emerald-700'],
-            ['Classes', c.length, 'fa-school', 'text-amber-700'],
-            ['Daily Income', money(income), 'fa-arrow-trend-up', 'text-green-700'],
-            ['Daily Expenses', money(expense), 'fa-arrow-trend-down', 'text-red-700'],
+          let [sAll, t, cAll, fp, sp, ex, att, don] = await Promise.all(['students', 'teachers', 'classes', 'feePayments', 'salaryPayments', 'expenses', 'attendance', 'donations'].map(all)), s = await visibleStudents(), c = await visibleClasses(), td = today(), mode = $('#dashMode')?.value || 'month', from = $('#dashFrom')?.value || (month() + '-01'), to = $('#dashTo')?.value || today(), income = fp.filter(x => x.date === td).reduce((a, b) => a + num(b.amount), 0) + don.filter(x => x.date === td).reduce((a, b) => a + num(b.amount), 0), expense = ex.filter(x => x.date === td).reduce((a, b) => a + num(b.amount), 0), rangeIncome = fp.filter(x => inRange(x.date, from, to)).reduce((a, b) => a + num(b.amount), 0) + don.filter(x => inRange(x.date, from, to)).reduce((a, b) => a + num(b.amount), 0), rangeExpense = ex.filter(x => inRange(x.date, from, to)).reduce((a, b) => a + num(b.amount), 0) + sp.filter(x => inRange(x.date, from, to)).reduce((a, b) => a + num(b.amount), 0), newAdm = s.filter(x => inRange(x.admit, from, to)).length, profit = rangeIncome - rangeExpense, cards = [
+            ['Total Students', s.length, 'fa-user-graduate', 'text-teal-700'],
+            ['Total Teachers', t.length, 'fa-chalkboard-user', 'text-emerald-700'],
+            ['Total Classes', c.length, 'fa-school', 'text-amber-700'],
+            ["Today's Income", money(income), 'fa-arrow-trend-up', 'text-green-700'],
+            ["Today's Expenses", money(expense), 'fa-arrow-trend-down', 'text-red-700'],
             ['New Admissions', newAdm, 'fa-user-plus', 'text-indigo-700']
           ];
-          main().innerHTML = head(label('Dashboard & Analytics', 'ڈیش بورڈ'), 'Live school overview, finances, attendance, exams and cached IndexedDB statistics.', `<button class="btn btn-soft" onclick="window.print()"><i class="fa-solid fa-print"></i>Print</button>`) + `<div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-5">${cards.map(x => `<div class="card p-5 animate__animated animate__fadeIn"><div class="flex items-center justify-between"><div><p class="text-sm text-slate-500">${x[0]}</p><h3 class="text-2xl font-black mt-1">${x[1]}</h3></div><div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center ${x[3]} text-xl"><i class="fa-solid ${x[2]}"></i></div></div></div>`).join('')}</div><div class="grid xl:grid-cols-2 gap-4"><div class="card p-5"><h3 class="font-black mb-3">Class-wise Students</h3><div class="chartbox"><canvas id="chClass"></canvas></div></div><div class="card p-5"><h3 class="font-black mb-3">30-Day Attendance Summary</h3><div class="chartbox"><canvas id="chAtt"></canvas></div></div><div class="card p-5"><h3 class="font-black mb-3">Monthly Income vs Expenses</h3><div class="chartbox"><canvas id="chFinance"></canvas></div></div><div class="card p-5"><h3 class="font-black mb-3">Exam Averages</h3><div class="chartbox"><canvas id="chExam"></canvas></div></div></div>`;
-          let cc = c.map(cl => s.filter(st => st.classId === cl.id).length);
+          main().innerHTML = head(label('Dashboard Analytics', 'ڈیش بورڈ اینالیٹکس'), 'Quick statistics, profit/loss reporting, admissions counters, exam averages and salary charts.', `<button class="btn btn-soft" onclick="window.print()"><i class="fa-solid fa-print"></i>Print</button>`) + `<div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-5">${cards.map(x=>`<div class="card p-5 animate__animated animate__fadeIn"><div class="flex items-center justify-between"><div><p class="text-sm text-slate-500">${x[0]}</p><h3 class="text-2xl font-black mt-1">${x[1]}</h3></div><div class="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center ${x[3]} text-xl"><i class="fa-solid ${x[2]}"></i></div></div></div>`).join('')}</div><div class="card p-5 mb-5"><h3 class="font-black text-lg mb-3">Detailed Reports Generator</h3><div class="grid sm:grid-cols-4 gap-3 items-end"><div><label>Summary Type</label><select id="dashMode" class="form-input"><option value="month" ${mode==='month'?'selected':''}>Monthly Summary</option><option value="year" ${mode==='year'?'selected':''}>Yearly Summary</option><option value="custom" ${mode==='custom'?'selected':''}>Custom Period</option></select></div><div><label>From</label><input id="dashFrom" type="date" class="form-input" value="${esc(from)}"></div><div><label>To</label><input id="dashTo" type="date" class="form-input" value="${esc(to)}"></div><button class="btn btn-primary" data-action="dashRun"><i class="fa-solid fa-calculator"></i>Calculate</button></div><div class="grid sm:grid-cols-4 gap-3 mt-4"><div class="rounded-2xl bg-green-50 p-4"><p class="text-sm text-green-700">Income</p><b>${money(rangeIncome)}</b></div><div class="rounded-2xl bg-red-50 p-4"><p class="text-sm text-red-700">Expenses + Payroll</p><b>${money(rangeExpense)}</b></div><div class="rounded-2xl ${profit>=0?'bg-teal-50':'bg-amber-50'} p-4"><p class="text-sm">Profit / Loss</p><b>${money(profit)}</b></div><div class="rounded-2xl bg-indigo-50 p-4"><p class="text-sm text-indigo-700">New Admissions</p><b>${newAdm}</b></div></div></div><div class="grid xl:grid-cols-2 gap-4"><div class="card p-5"><h3 class="font-black mb-3">Class-wise Students</h3><div class="chartbox"><canvas id="chClass"></canvas></div></div><div class="card p-5"><h3 class="font-black mb-3">30-Day Attendance Summary</h3><div class="chartbox"><canvas id="chAtt"></canvas></div></div><div class="card p-5"><h3 class="font-black mb-3">Monthly Income vs Expenses</h3><div class="chartbox"><canvas id="chFinance"></canvas></div></div><div class="card p-5"><h3 class="font-black mb-3">Exam Average (All Exams)</h3><div class="chartbox"><canvas id="chExam"></canvas></div></div><div class="card p-5 xl:col-span-2"><h3 class="font-black mb-3">Teacher Salary Distribution (Last 12 Months)</h3><div class="chartbox"><canvas id="chSalary"></canvas></div></div></div>`;
           chart('chClass', 'bar', {
             labels: c.map(x => x.name),
             datasets: [{
               label: 'Students',
-              data: cc
+              data: c.map(cl => s.filter(st => st.classId === cl.id).length)
             }]
           });
           let marks = {
@@ -1952,19 +2408,22 @@
             Leave: 0,
             'ح': 0,
             'غ': 0,
-            'ر': 0
+            'ر': 0,
+            '✓': 0,
+            '✗': 0,
+            '—': 0
           };
           att.filter(x => Date.now() - new Date(x.date + 'T00:00:00') < 2592000000).forEach(a => Object.values(a.marks || {}).forEach(v => {
             marks[v] = (marks[v] || 0) + 1
           }));
           chart('chAtt', 'doughnut', {
-            labels: ['Present/ح', 'Absent/غ', 'Leave/ر'],
+            labels: ['Present/ح/✓', 'Absent/غ/✗', 'Leave/ر/—'],
             datasets: [{
-              data: [marks.Present + marks['ح'], marks.Absent + marks['غ'], marks.Leave + marks['ر']]
+              data: [marks.Present + marks['ح'] + marks['✓'], marks.Absent + marks['غ'] + marks['✗'], marks.Leave + marks['ر'] + marks['—']]
             }]
           });
           let ms = lastMonths(6),
-            inc = ms.map(m => fp.filter(x => (x.date || '').slice(0, 7) === m).reduce((a, b) => a + num(b.amount), 0)),
+            inc = ms.map(m => fp.filter(x => (x.date || '').slice(0, 7) === m).reduce((a, b) => a + num(b.amount), 0) + don.filter(x => (x.date || '').slice(0, 7) === m).reduce((a, b) => a + num(b.amount), 0)),
             out = ms.map(m => ex.filter(x => (x.date || '').slice(0, 7) === m).reduce((a, b) => a + num(b.amount), 0));
           chart('chFinance', 'line', {
             labels: ms.map(ml),
@@ -1976,20 +2435,28 @@
               data: out
             }]
           });
-          let exams = await all('exams'),
-            av = exams.map(e => e.results?.length ? Math.round(e.results.reduce((a, b) => a + num(b.marks), 0) / e.results.length / num(e.total) * 100) : 0);
+          let exams = [];
+          for (let e of await all('exams')) {
+            if (await classAllowed(e.classId)) exams.push(e)
+          }
+          let av = exams.map(e => e.results?.length ? Math.round(e.results.reduce((a, b) => a + num(b.marks), 0) / e.results.length / num(e.total) * 100) : 0);
           chart('chExam', 'bar', {
-            labels: exams.map(e => e.exam),
+            labels: exams.map(e => e.exam + ' - ' + e.subject),
             datasets: [{
               label: 'Average %',
               data: av
             }]
           });
+          let m12 = lastMonths(12),
+            sal = m12.map(m => sp.filter(x => (x.month || x.date || '').slice(0, 7) === m).reduce((a, b) => a + num(b.amount), 0));
+          chart('chSalary', 'bar', {
+            labels: m12.map(ml),
+            datasets: [{
+              label: 'Salary Paid',
+              data: sal
+            }]
+          });
           plugins(main())
-        }
-
-        function doc(title, body) {
-          return `<section class="print-doc"><div class="text-center mb-4"><h1 class="text-2xl font-black">${esc(settings.school || 'Madrasa')}</h1><p>${esc(settings.schoolUrdu || '')} · ${esc(settings.address || '')} · ${esc(settings.contact || '')}</p><h2 class="mt-3 text-xl font-bold">${title}</h2></div>${body}<div class="print-footer mt-8 pt-4 border-t text-center text-sm"><b>Created by: ${C.author.name} – ${C.author.company}</b><br><span>Website: ${C.author.site}</span> · <span>WhatsApp: ${C.author.whatsapp}</span></div></section>`
         }
         async function printHtml(title, body) {
           P().innerHTML = doc(title, body);
@@ -2004,21 +2471,31 @@
               cm = await clsMap(),
               st = sm[x.studentId] || {},
               cl = cm[st.classId] || {};
-            await printHtml('Fee Receipt', `<div class="grid grid-cols-2 gap-3 text-sm"><p><b>Receipt #:</b> ${esc(x.receipt || rid)}</p><p><b>Date:</b> ${date(x.date)}</p><p><b>Student:</b> ${esc(st.name)}</p><p><b>Class:</b> ${esc(cl.name)}</p><p><b>Fee Type:</b> ${esc(x.type)}</p><p><b>Payment:</b> ${esc(x.method)}</p><p><b>Due:</b> ${money(x.due)}</p><p><b>Discount:</b> ${money(x.discount)}</p><p><b>Paid:</b> ${money(x.amount)}</p><p><b>Balance:</b> ${money(x.balance)}</p></div><p class="mt-4"><b>Notes:</b> ${esc(x.notes || '')}</p>`)
+            await printHtml('Fee Receipt', `<div class="grid grid-cols-2 gap-3 text-sm"><p><b>Receipt #:</b> ${esc(x.receipt||rid)}</p><p><b>Date:</b> ${date(x.date)}</p><p><b>Student:</b> ${esc(st.name)}</p><p><b>Class:</b> ${esc(cl.name)}</p><p><b>Fee Type:</b> ${esc(x.type)}</p><p><b>Payment:</b> ${esc(x.method)}</p><p><b>Due:</b> ${money(x.due)}</p><p><b>Discount:</b> ${money(x.discount)}</p><p><b>Paid:</b> ${money(x.amount)}</p><p><b>Balance:</b> ${money(x.balance)}</p></div><p class="mt-4"><b>Notes:</b> ${esc(x.notes||'')}</p>`)
           }
           if (type === 'salary') {
             let x = await one('salaryPayments', rid),
               tm = await tchMap(),
               tc = tm[x.teacherId] || {};
-            await printHtml('Salary Slip', `<div class="grid grid-cols-2 gap-3 text-sm"><p><b>Slip ID:</b> ${esc(x.slip || rid)}</p><p><b>Payment Date:</b> ${date(x.date)}</p><p><b>Teacher:</b> ${esc(tc.name)}</p><p><b>Month:</b> ${ml(x.month)}</p><p><b>Fixed Salary:</b> ${money(x.fixed)}</p><p><b>Paid:</b> ${money(x.amount)}</p><p><b>Balance:</b> ${money(x.balance)}</p><p><b>Notes:</b> ${esc(x.notes || '')}</p></div>`)
+            await printHtml('Salary Slip', `<div class="grid grid-cols-2 gap-3 text-sm"><p><b>Slip ID:</b> ${esc(x.slip||rid)}</p><p><b>Payment Date:</b> ${date(x.date)}</p><p><b>Teacher:</b> ${esc(tc.name)}</p><p><b>Month:</b> ${ml(x.month)}</p><p><b>Fixed Salary:</b> ${money(x.fixed)}</p><p><b>Paid:</b> ${money(x.amount)}</p><p><b>Balance:</b> ${money(x.balance)}</p><p><b>Notes:</b> ${esc(x.notes||'')}</p></div>`)
+          }
+          if (type === 'donation') {
+            let x = await one('donations', rid);
+            await printHtml('Donation Receipt', `<div class="grid grid-cols-2 gap-3 text-sm"><p><b>Receipt #:</b> ${esc(x.receipt||rid)}</p><p><b>Date:</b> ${date(x.date)}</p><p><b>Donor:</b> ${esc(x.donor)}</p><p><b>Phone:</b> ${esc(x.phone)}</p><p><b>Fund Category:</b> ${esc(x.type)}</p><p><b>Method:</b> ${esc(x.method)}</p><p><b>Amount:</b> ${money(x.amount)}</p><p><b>Notes:</b> ${esc(x.notes||'')}</p></div><p class="mt-5 text-sm">${esc(settings.receiptFooter||'Thank you for your contribution.')}</p>`)
+          }
+          if (type === 'libraryIssue') {
+            let x = await one('libraryIssues', rid),
+              books = Object.fromEntries((await all('libraryBooks')).map(b => [b.id, b])),
+              sm = await stuMap();
+            await printHtml('Library Issue Slip', `<div class="grid grid-cols-2 gap-3 text-sm"><p><b>Book:</b> ${esc(books[x.bookId]?.title||'')}</p><p><b>Student:</b> ${esc(sm[x.studentId]?.name||'')}</p><p><b>Issue Date:</b> ${date(x.issueDate)}</p><p><b>Due Date:</b> ${date(x.dueDate)}</p><p><b>Status:</b> ${esc(x.status)}</p><p><b>Fine:</b> ${money(x.fine)}</p></div>`)
           }
           if (['student', 'teacher', 'class'].includes(type)) {
             let store = type === 'student' ? 'students' : type === 'teacher' ? 'teachers' : 'classes',
               x = await one(store, rid),
               cm = await clsMap(),
               tm = await tchMap();
-            let rows = Object.entries(x || {}).filter(([k]) => !['photo', 'hash', 'salt'].includes(k)).map(([k, v]) => `<tr><th class="text-left p-2 border">${esc(k)}</th><td class="p-2 border">${k === 'classId' ? esc(cm[v]?.name || v) : k === 'teacherId' ? esc(tm[v]?.name || v) : esc(v)}</td></tr>`).join('');
-            await printHtml(type[0].toUpperCase() + type.slice(1) + ' Record', `<table class="w-full border-collapse">${rows}</table>`)
+            let rows = Object.entries(x || {}).filter(([k]) => !['photo', 'hash', 'salt'].includes(k)).map(([k, v]) => `<tr><th class="text-left p-2 border">${esc(k)}</th><td class="p-2 border">${k==='classId'?esc(cm[v]?.name||v):k==='teacherId'?esc(tm[v]?.name||v):esc(v)}</td></tr>`).join('');
+            await printHtml(type[0].toUpperCase() + type.slice(1) + ' Record', `${x?.photo?`<img src="${x.photo}" class="h-28 w-28 object-cover rounded-2xl border mb-4">`:''}<table class="w-full border-collapse">${rows}</table>`)
           }
           if (type === 'exam') {
             let e = await one('exams', rid),
@@ -2026,29 +2503,42 @@
               cm = await clsMap();
             let rows = (e.results || []).map(r => {
               let p = Math.round(num(r.marks) / num(e.total) * 100);
-              return `<tr><td>${esc(sm[r.studentId]?.name || '')}</td><td>${num(e.total)}</td><td>${num(r.marks)}</td><td>${p}%</td><td>${grade(p)}</td><td>${p >= 50 ? 'Passed' : 'Failed'}</td></tr>`
+              return `<tr><td>${esc(sm[r.studentId]?.name||'')}</td><td>${num(e.total)}</td><td>${num(r.marks)}</td><td>${p}%</td><td>${grade(p)}</td><td>${p>=50?'Passed':'Failed'}</td></tr>`
             }).join('');
-            await printHtml('Result Sheet', `<p><b>Exam:</b> ${esc(e.exam)} · <b>Class:</b> ${esc(cm[e.classId]?.name || '')} · <b>Subject:</b> ${esc(e.subject)} · <b>Date:</b> ${date(e.date)}</p><table class="w-full mt-4 border-collapse"><thead><tr><th>Student</th><th>Total</th><th>Obtained</th><th>%</th><th>Grade</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`)
+            await printHtml('Result Sheet', `<p><b>Exam:</b> ${esc(e.exam)} · <b>Class:</b> ${esc(cm[e.classId]?.name||'')} · <b>Subject:</b> ${esc(e.subject)} · <b>Date:</b> ${date(e.date)}</p><table class="w-full mt-4 border-collapse"><thead><tr><th>Student</th><th>Total</th><th>Obtained</th><th>%</th><th>Grade</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`)
           }
         }
         async function renderFeeCollection() {
-          let [p, sm, cm] = await Promise.all([all('feePayments'), stuMap(), clsMap()]);
-          let rows = p.map(x => {
-            let st = sm[x.studentId] || {},
-              cl = cm[st.classId] || {};
-            return `<tr><td><b>${esc(x.receipt || x.id)}</b></td><td>${date(x.date)}</td><td>${esc(st.name || '')}</td><td>${esc(cl.name || '')}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${money(x.balance)}</td><td>${esc(x.method)}</td><td><div class="flex gap-2"><button class="btn btn-soft" data-action="printRecord" data-type="fee" data-id="${x.id}"><i class="fa-solid fa-print"></i></button>${canAdmin() ? `<button class="btn btn-danger" data-action="crudDelete" data-key="feeCollection" data-id="${x.id}"><i class="fa-solid fa-trash"></i></button>` : ''}</div></td></tr>`
-          });
-          main().innerHTML = head('Fee Collection & Receipts', 'Collect student-wise fees, calculate balance and print professional receipts.', `<button class="btn btn-primary" data-action="feeCollect"><i class="fa-solid fa-plus"></i>Collect Fee</button>`) + table('tbl_fee_col', ['Receipt', 'Date', 'Student', 'Class', 'Type', 'Paid', 'Balance', 'Method', 'Actions'], rows);
+          let [p, sm, cm, students] = await Promise.all([all('feePayments'), stuMap(), clsMap(), visibleStudents()]), period = $('#feePeriod')?.value || 'all', sid = $('#feeStudentFilter')?.value || '0', [from, to] = periodRange(period), filtered = p.filter(x => inRange(x.date, from, to)).filter(x => sid === '0' || String(x.studentId) === String(sid)), paid = filtered.reduce((a, b) => a + num(b.amount), 0), dueTotal = 0;
+          for (let st of students) {
+            let d = await dueForStudent(st.id);
+            dueTotal += d.totalDue
+          }
+          let rows = filtered.map(x => {
+              let st = sm[x.studentId] || {},
+                cl = cm[st.classId] || {};
+              return `<tr><td><b>${esc(x.receipt||x.id)}</b></td><td>${date(x.date)}</td><td>${esc(st.name||'')}</td><td>${esc(cl.name||'')}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${money(x.discount)}</td><td>${money(x.balance)}</td><td>${esc(x.method)}</td><td><div class="flex gap-2"><button class="btn btn-soft" data-action="printRecord" data-type="fee" data-id="${x.id}"><i class="fa-solid fa-print"></i></button>${canAdmin()?`<button class="btn btn-danger" data-action="crudDelete" data-key="feeCollection" data-id="${x.id}"><i class="fa-solid fa-trash"></i></button>`:''}</div></td></tr>`
+            }),
+            hist = sid === '0' ? '<tr><td colspan="5" class="text-slate-500">Select a student to view individual fee history.</td></tr>' : p.filter(x => String(x.studentId) === String(sid)).sort((a, b) => (b.date || '').localeCompare(a.date || '')).map(x => `<tr><td>${date(x.date)}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${money(x.discount)}</td><td>${money(x.balance)}</td></tr>`).join('');
+          main().innerHTML = head('Fee & Salary Management - Fee Collection', 'Student fee history, duration status filters, late-fee arrears and separate receipt generation.', `<button class="btn btn-primary" data-action="feeCollect"><i class="fa-solid fa-plus"></i>Collect Fee</button><button class="btn btn-soft" data-action="feeReceiptSelected"><i class="fa-solid fa-receipt"></i>Create Receipt</button>`) + `<div class="grid sm:grid-cols-3 gap-4 mb-4"><div class="card p-4"><p class="text-sm text-slate-500">Total Paid (${period})</p><b class="text-2xl">${money(paid)}</b></div><div class="card p-4"><p class="text-sm text-slate-500">Current Arrears + Fines</p><b class="text-2xl">${money(dueTotal)}</b></div><div class="card p-4"><p class="text-sm text-slate-500">Selected Records</p><b class="text-2xl">${filtered.length}</b></div></div><div class="card p-4 mb-4"><div class="grid sm:grid-cols-[1fr_1fr_auto] gap-3 items-end"><div><label>Fee Status Duration</label><select id="feePeriod" class="form-input"><option value="all" ${period==='all'?'selected':''}>All</option><option value="month" ${period==='month'?'selected':''}>This Month</option><option value="6m" ${period==='6m'?'selected':''}>Last 6 Months</option><option value="year" ${period==='year'?'selected':''}>This Year</option></select></div><div><label>Selected Student Fee History</label><select id="feeStudentFilter" class="form-input"><option value="0">All Students</option>${students.map(s=>`<option value="${s.id}" ${String(s.id)===String(sid)?'selected':''}>${esc(s.enroll)} - ${esc(s.name)}</option>`).join('')}</select></div><button class="btn btn-primary" data-action="feeFilter"><i class="fa-solid fa-filter"></i>Apply</button></div></div><div class="grid xl:grid-cols-[1.3fr_.9fr] gap-4"><div>${table('tbl_fee_col',['Receipt','Date','Student','Class','Type','Paid','Discount','Balance','Method','Actions'],rows)}</div><div>${table('tbl_fee_hist',['Date','Fee Type','Paid','Discount','Balance'],[hist||'<tr><td colspan="5">No history found.</td></tr>'])}</div></div>`;
           plugins(main())
         }
         async function openFee() {
           let students = await options('students', x => `${x.enroll} - ${x.name}`);
-          modal('Collect Fee', `<form id="feeForm" class="grid sm:grid-cols-2 gap-4" novalidate><input type="hidden" name="csrf" value="${esc(session.csrf)}"><div><label>Student</label><select name="studentId" class="form-input" required><option></option>${students.map(o => `<option value="${o[0]}">${esc(o[1])}</option>`).join('')}</select></div><div><label>Date</label><input class="form-input" type="date" name="date" value="${today()}" required></div><div><label>Fee Type</label><select name="type" class="form-input" required><option>Monthly</option><option>Admission</option><option>Yearly</option><option>Custom</option></select></div><div><label>Due Amount</label><input class="form-input calc" type="number" step="0.01" name="due" required></div><div><label>Discount</label><input class="form-input calc" type="number" step="0.01" name="discount" value="0" required></div><div><label>Amount Paid</label><input class="form-input calc" type="number" step="0.01" name="amount" required></div><div><label>Balance</label><input class="form-input" name="balance" readonly></div><div><label>Payment Method</label><select name="method" class="form-input" required><option>Cash</option><option>Bank</option><option>Check</option></select></div><div class="sm:col-span-2"><label>Notes</label><textarea class="form-input" name="notes" rows="2"></textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary"><i class="fa-solid fa-receipt"></i>Save & Print</button></div></form>`);
-          let calc = () => {
-            let f = $('#feeForm'),
-              b = num(f.due.value) - num(f.discount.value) - num(f.amount.value);
-            f.balance.value = Math.max(0, b).toFixed(2)
-          };
+          modal('Collect Fee', `<form id="feeForm" class="grid sm:grid-cols-2 gap-4" novalidate><input type="hidden" name="csrf" value="${esc(session.csrf)}"><div><label>Student</label><select name="studentId" class="form-input" required><option></option>${students.map(o=>`<option value="${o[0]}">${esc(o[1])}</option>`).join('')}</select></div><div><label>Date</label><input class="form-input calc" type="date" name="date" value="${today()}" required></div><div><label>Fee Type</label><select name="type" class="form-input" required><option>Monthly</option><option>Admission</option><option>Yearly</option><option>Late Fee</option><option>Fine</option><option>Hostel Mess</option><option>Custom</option></select></div><div><label>Due Amount</label><input class="form-input calc" type="number" step="0.01" name="due" required></div><div><label>Discount</label><input class="form-input calc" type="number" step="0.01" name="discount" value="0" required></div><div><label>Amount Paid</label><input class="form-input calc" type="number" step="0.01" name="amount" required></div><div><label>Balance</label><input class="form-input" name="balance" readonly></div><div><label>Payment Method</label><select name="method" class="form-input" required><option>Cash</option><option>Bank</option><option>Check</option></select></div><div class="sm:col-span-2 rounded-2xl bg-amber-50 p-3 text-sm" id="feeDueInfo">Select a student to auto-calculate monthly dues, late fee, fines and arrears.</div><div class="sm:col-span-2"><label>Notes</label><textarea class="form-input" name="notes" rows="2"></textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary"><i class="fa-solid fa-coins"></i>Collect Fee</button></div></form>`);
+          let f = $('#feeForm'),
+            fill = async () => {
+              if (!f.studentId.value) return;
+              let d = await dueForStudent(f.studentId.value, f.date.value || today());
+              f.due.value = d.totalDue.toFixed(2);
+              f.amount.value = d.totalDue.toFixed(2);
+              f.balance.value = '0.00';
+              $('#feeDueInfo').innerHTML = `Monthly: <b>${money(d.monthly)}</b> · Paid this month: <b>${money(d.paidMonth)}</b> · Arrears: <b>${money(d.balance)}</b> · Unpaid fines: <b>${money(d.unpaidFines)}</b> · Auto late fee: <b>${money(d.late)}</b> · Due day: ${d.dueDay}`
+            }, calc = () => {
+              f.balance.value = Math.max(0, num(f.due.value) - num(f.discount.value) - num(f.amount.value)).toFixed(2)
+            };
+          f.studentId.addEventListener('change', fill);
+          f.date.addEventListener('change', fill);
           M().querySelectorAll('.calc').forEach(i => i.addEventListener('input', calc));
           bind('#feeForm', [
             ['studentId', 'select'],
@@ -2084,8 +2574,7 @@
               dirty = false;
               await closeModal(true);
               await renderFeeCollection();
-              toast('success', 'Fee collected');
-              await printRecord('fee', rid)
+              toast('success', 'Fee collected. Use Create Receipt or row print when needed.')
             } catch (e) {
               toast('error', e.message)
             } finally {
@@ -2093,16 +2582,23 @@
             }
           })
         }
+        async function printLatestFee() {
+          let sid = $('#feeStudentFilter')?.value;
+          if (!sid || sid === '0') return toast('error', 'Select a student first');
+          let p = (await all('feePayments')).filter(x => String(x.studentId) === String(sid)).sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))[0];
+          if (!p) return toast('error', 'No receipt found for selected student');
+          await printRecord('fee', p.id)
+        }
         async function renderPayroll() {
           let [p, tm] = await Promise.all([all('salaryPayments'), tchMap()]);
-          let rows = p.map(x => `<tr><td><b>${esc(x.slip || x.id)}</b></td><td>${date(x.date)}</td><td>${esc(tm[x.teacherId]?.name || '')}</td><td>${ml(x.month)}</td><td>${money(x.fixed)}</td><td>${money(x.amount)}</td><td>${money(x.balance)}</td><td><div class="flex gap-2"><button class="btn btn-soft" data-action="printRecord" data-type="salary" data-id="${x.id}"><i class="fa-solid fa-print"></i></button>${canAdmin() ? `<button class="btn btn-danger" data-action="crudDelete" data-key="payroll" data-id="${x.id}"><i class="fa-solid fa-trash"></i></button>` : ''}</div></td></tr>`);
+          let rows = p.map(x => `<tr><td><b>${esc(x.slip||x.id)}</b></td><td>${date(x.date)}</td><td>${esc(tm[x.teacherId]?.name||'')}</td><td>${ml(x.month)}</td><td>${money(x.fixed)}</td><td>${money(x.amount)}</td><td>${money(x.balance)}</td><td><div class="flex gap-2"><button class="btn btn-soft" data-action="printRecord" data-type="salary" data-id="${x.id}"><i class="fa-solid fa-print"></i></button>${canAdmin()?`<button class="btn btn-danger" data-action="crudDelete" data-key="payroll" data-id="${x.id}"><i class="fa-solid fa-trash"></i></button>`:''}</div></td></tr>`);
           main().innerHTML = head('Salary & Payroll Management', 'Teacher-wise salary payments, balance calculation and printable salary slips.', canAdmin() ? `<button class="btn btn-primary" data-action="salaryPay"><i class="fa-solid fa-plus"></i>Pay Salary</button>` : '') + table('tbl_payroll', ['Slip', 'Date', 'Teacher', 'Month', 'Fixed', 'Paid', 'Balance', 'Actions'], rows);
           plugins(main())
         }
         async function openSalary() {
           if (!canAdmin()) return toast('error', 'Admin rights required');
           let teachers = await all('teachers');
-          modal('Pay Teacher Salary', `<form id="salaryForm" class="grid sm:grid-cols-2 gap-4" novalidate><input type="hidden" name="csrf" value="${esc(session.csrf)}"><div><label>Teacher</label><select name="teacherId" class="form-input" required><option></option>${teachers.map(t => `<option data-salary="${num(t.salary)}" value="${t.id}">${esc(t.name)}</option>`).join('')}</select></div><div><label>Month</label><input class="form-input" type="month" name="month" value="${month()}" required></div><div><label>Payment Date</label><input class="form-input" type="date" name="date" value="${today()}" required></div><div><label>Fixed Salary</label><input class="form-input calc" type="number" name="fixed" required></div><div><label>Paid Amount</label><input class="form-input calc" type="number" name="amount" required></div><div><label>Balance</label><input class="form-input" name="balance" readonly></div><div class="sm:col-span-2"><label>Notes</label><textarea name="notes" class="form-input" rows="2"></textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary"><i class="fa-solid fa-money-check-dollar"></i>Save & Print</button></div></form>`);
+          modal('Pay Teacher Salary', `<form id="salaryForm" class="grid sm:grid-cols-2 gap-4" novalidate><input type="hidden" name="csrf" value="${esc(session.csrf)}"><div><label>Teacher</label><select name="teacherId" class="form-input" required><option></option>${teachers.map(t=>`<option data-salary="${num(t.salary)}" value="${t.id}">${esc(t.name)}</option>`).join('')}</select></div><div><label>Month</label><input class="form-input" type="month" name="month" value="${month()}" required></div><div><label>Payment Date</label><input class="form-input" type="date" name="date" value="${today()}" required></div><div><label>Fixed Salary</label><input class="form-input calc" type="number" name="fixed" required></div><div><label>Paid Amount</label><input class="form-input calc" type="number" name="amount" required></div><div><label>Balance</label><input class="form-input" name="balance" readonly></div><div class="sm:col-span-2"><label>Notes</label><textarea name="notes" class="form-input" rows="2"></textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary"><i class="fa-solid fa-money-check-dollar"></i>Save & Print</button></div></form>`);
           let f = $('#salaryForm'),
             calc = () => f.balance.value = Math.max(0, num(f.fixed.value) - num(f.amount.value)).toFixed(2);
           f.teacherId.addEventListener('change', () => {
@@ -2150,13 +2646,29 @@
           })
         }
         async function renderAttendance(force = false) {
-          let cls = await all('classes'),
-            cid = +($('#attClass')?.value || cls[0]?.id || 0),
+          let cls = await visibleClasses();
+          if (!cls.length) {
+            main().innerHTML = head('Attendance Management', 'No assigned class is available for this user.') + '<div class="card p-6">No classes found.</div>';
+            return
+          }
+          let cid = +($('#attClass')?.value || cls[0]?.id || 0),
             d = $('#attDate')?.value || today(),
-            students = (await all('students')).filter(s => s.classId === cid),
+            mon = $('#attMonth')?.value || d.slice(0, 7),
+            mode = $('#attMarkType')?.value || 'letters';
+          if (!await classAllowed(cid)) cid = cls[0].id;
+          let students = (await visibleStudents()).filter(s => +s.classId === +cid),
             rec = cid ? await idx('attendance', 'classDate', [cid, d]).catch(() => null) : null,
-            rows = students.map(s => `<tr><td><b>${esc(s.enroll)}</b></td><td>${esc(s.name)}</td><td><select class="form-input" data-sid="${s.id}"><option value="ح" ${(rec?.marks || {})[s.id] === 'ح' ? 'selected' : ''}>ح - Present</option><option value="غ" ${(rec?.marks || {})[s.id] === 'غ' ? 'selected' : ''}>غ - Absent</option><option value="ر" ${(rec?.marks || {})[s.id] === 'ر' ? 'selected' : ''}>ر - Leave</option><option value="✓" ${(rec?.marks || {})[s.id] === '✓' ? 'selected' : ''}>✓</option><option value="✗" ${(rec?.marks || {})[s.id] === '✗' ? 'selected' : ''}>✗</option><option value="—" ${(rec?.marks || {})[s.id] === '—' ? 'selected' : ''}>—</option></select></td></tr>`).join(''),
-            allAtt = (await all('attendance')).filter(a => a.classId === cid).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30),
+            opts = mode === 'symbols' ? [
+              ['✓', '✓ Present'],
+              ['✗', '✗ Absent'],
+              ['—', '— Leave']
+            ] : [
+              ['ح', 'ح - Present'],
+              ['غ', 'غ - Absent'],
+              ['ر', 'ر - Leave']
+            ],
+            rows = students.map(s => `<tr><td><b>${esc(s.enroll)}</b></td><td>${esc(s.name)}</td><td><select class="form-input" data-sid="${s.id}">${opts.map(o=>`<option value="${o[0]}" ${(rec?.marks||{})[s.id]===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></td></tr>`).join(''),
+            allAtt = (await all('attendance')).filter(a => +a.classId === +cid && (a.date || '').slice(0, 7) === mon).sort((a, b) => a.date.localeCompare(b.date)),
             reg = allAtt.map(a => {
               let v = Object.values(a.marks || {}),
                 p = v.filter(x => ['ح', '✓', 'Present'].includes(x)).length,
@@ -2164,7 +2676,7 @@
                 l = v.filter(x => ['ر', '—', 'Leave'].includes(x)).length;
               return `<tr><td>${date(a.date)}</td><td>${p}</td><td>${ab}</td><td>${l}</td><td>${v.length}</td></tr>`
             }).join('');
-          main().innerHTML = head('Attendance Management', 'Daily class attendance with Urdu markers and printable monthly register.', `<button class="btn btn-soft" onclick="window.print()"><i class="fa-solid fa-print"></i>Print</button>`) + `<div class="card p-4 mb-4"><div class="grid sm:grid-cols-[1fr_1fr_auto] gap-3 items-end"><div><label>Class</label><select id="attClass" class="form-input">${cls.map(c => `<option value="${c.id}" ${c.id === cid ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div><div><label>Date</label><input id="attDate" type="date" class="form-input" value="${d}"></div><button class="btn btn-primary" data-action="attendanceLoad"><i class="fa-solid fa-filter"></i>Load</button></div></div><div class="grid xl:grid-cols-2 gap-4"><div>${table('tbl_att_daily', ['Enrollment', 'Student', 'Status'], rows)}</div><div>${table('tbl_att_reg', ['Date', 'Present', 'Absent', 'Leave', 'Total'], reg)}</div></div><div class="mt-4 flex justify-end"><button class="btn btn-primary" data-action="attendanceSave"><i class="fa-solid fa-floppy-disk"></i>Save Attendance</button></div>`;
+          main().innerHTML = head('Attendance Management', 'Daily attendance with date/month double filters, mark-type toggle and dedicated monthly register printing.', `<button class="btn btn-soft" data-action="printAttendance"><i class="fa-solid fa-print"></i>Print Attendance Register</button>`) + `<div class="card p-4 mb-4"><div class="grid sm:grid-cols-5 gap-3 items-end"><div><label>Class</label><select id="attClass" class="form-input">${cls.map(c=>`<option value="${c.id}" ${c.id===cid?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div><label>Date</label><input id="attDate" type="date" class="form-input" value="${d}"></div><div><label>Month Register</label><input id="attMonth" type="month" class="form-input" value="${mon}"></div><div><label>Mark Type</label><select id="attMarkType" class="form-input"><option value="letters" ${mode==='letters'?'selected':''}>Urdu Letters ح/غ/ر</option><option value="symbols" ${mode==='symbols'?'selected':''}>Symbols ✓/✗/—</option></select></div><button class="btn btn-primary" data-action="attendanceLoad"><i class="fa-solid fa-filter"></i>Load</button></div></div><div class="grid xl:grid-cols-2 gap-4"><div>${table('tbl_att_daily',['Enrollment','Student','Status'],[rows||'<tr><td colspan="3">No students found.</td></tr>'])}</div><div>${table('tbl_att_reg',['Date','Present','Absent','Leave','Total'],[reg||'<tr><td colspan="5">No monthly records found.</td></tr>'])}</div></div><div class="mt-4 flex justify-end"><button class="btn btn-primary" data-action="attendanceSave"><i class="fa-solid fa-floppy-disk"></i>Save Attendance</button></div>`;
           plugins(main())
         }
         async function saveAttendance(btn) {
@@ -2174,6 +2686,7 @@
             let cid = +$('#attClass').value,
               d = $('#attDate').value;
             if (!cid || !d) throw Error('Choose class and date');
+            if (!await classAllowed(cid)) throw Error('You can only mark assigned classes');
             let old = await idx('attendance', 'classDate', [cid, d]).catch(() => null),
               marks = {};
             $$('[data-sid]').forEach(x => marks[x.dataset.sid] = x.value);
@@ -2195,42 +2708,55 @@
             stop()
           }
         }
-        async function renderExams() {
-          let [ex, cm] = await Promise.all([all('exams'), clsMap()]);
-          let rows = ex.map(e => {
-            let avg = e.results?.length ? Math.round(e.results.reduce((a, b) => a + num(b.marks), 0) / e.results.length / num(e.total) * 100) : 0;
-            return `<tr><td>${esc(e.exam)}</td><td>${esc(cm[e.classId]?.name || '')}</td><td>${esc(e.subject)}</td><td>${date(e.date)}</td><td>${num(e.total)}</td><td>${avg}%</td><td>${grade(avg)}</td><td><div class="flex gap-2"><button class="btn btn-soft" data-action="printRecord" data-type="exam" data-id="${e.id}"><i class="fa-solid fa-print"></i></button>${canAdmin() || user.role === 'teacher' ? `<button class="btn btn-soft" data-action="examEdit" data-id="${e.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="examDelete" data-id="${e.id}"><i class="fa-solid fa-trash"></i></button>` : ''}</div></td></tr>`
-          });
-          main().innerHTML = head('Exam & Results Management', 'Marks entry, grade calculation, pass/fail status and printable result cards.', canAdmin() || user.role === 'teacher' ? `<button class="btn btn-primary" data-action="examAdd"><i class="fa-solid fa-plus"></i>Add Exam</button>` : '') + table('tbl_exams', ['Exam', 'Class', 'Subject', 'Date', 'Total', 'Average', 'Grade', 'Actions'], rows);
-          plugins(main())
+        async function printAttendanceRegister() {
+          let cid = +($('#attClass')?.value || 0),
+            mon = $('#attMonth')?.value || month();
+          if (!cid) return toast('error', 'Choose class');
+          let cm = await clsMap(),
+            students = (await visibleStudents()).filter(s => +s.classId === +cid),
+            records = (await all('attendance')).filter(a => +a.classId === +cid && (a.date || '').slice(0, 7) === mon).sort((a, b) => a.date.localeCompare(b.date)),
+            dates = [...new Set(records.map(a => a.date))],
+            by = Object.fromEntries(records.map(a => [a.date, a.marks || {}])),
+            rows = students.map(s => `<tr><td>${esc(s.enroll)}</td><td>${esc(s.name)}</td>${dates.map(d=>`<td class="text-center">${esc(by[d]?.[s.id]||'')}</td>`).join('')}</tr>`).join('');
+          await printHtml('Attendance Register - ' + esc(cm[cid]?.name || '') + ' - ' + ml(mon), `<table class="w-full border-collapse text-xs"><thead><tr><th>Enrollment</th><th>Student</th>${dates.map(d=>`<th>${esc(d.slice(8))}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>`)
         }
-        async function examRows(cid, rec = {}) {
-          let ss = (await all('students')).filter(s => s.classId === +cid),
-            rm = Object.fromEntries((rec.results || []).map(r => [r.studentId, r]));
-          return ss.map(s => `<tr><td><b>${esc(s.enroll)}</b><br>${esc(s.name)}</td><td><input class="form-input mark" type="number" min="0" step="0.01" data-sid="${s.id}" value="${esc(rm[s.id]?.marks ?? '')}"></td><td class="pct">0%</td><td class="gr">F</td></tr>`).join('')
+        async function renderExams() {
+          let [exAll, cm, students] = await Promise.all([all('exams'), clsMap(), visibleStudents()]), ex = [];
+          for (let e of exAll) {
+            if (await classAllowed(e.classId)) ex.push(e)
+          }
+          let sid = $('#resStudent')?.value || '',
+            eid = $('#resExam')?.value || '',
+            rows = ex.map(e => {
+              let avg = e.results?.length ? Math.round(e.results.reduce((a, b) => a + num(b.marks), 0) / e.results.length / num(e.total) * 100) : 0;
+              return `<tr><td>${esc(e.exam)}</td><td>${esc(cm[e.classId]?.name||'')}</td><td>${esc(e.subject)}</td><td>${date(e.date)}</td><td>${num(e.total)}</td><td>${avg}%</td><td>${grade(avg)}</td><td><div class="flex gap-2"><button class="btn btn-soft" data-action="printRecord" data-type="exam" data-id="${e.id}"><i class="fa-solid fa-print"></i></button>${canAdmin()||user.role==='teacher'?`<button class="btn btn-soft" data-action="examEdit" data-id="${e.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="examDelete" data-id="${e.id}"><i class="fa-solid fa-trash"></i></button>`:''}</div></td></tr>`
+            });
+          main().innerHTML = head('Exam Results & Result Cards', 'Marks entry with live percentage/grade plus dedicated result card viewer and printer.', canAdmin() || user.role === 'teacher' ? `<button class="btn btn-primary" data-action="examAdd"><i class="fa-solid fa-plus"></i>Add Exam</button>` : '') + `<div class="card p-4 mb-4"><h3 class="font-black text-lg mb-3">Result Card Viewer / Printer</h3><div class="grid sm:grid-cols-[1fr_1fr_auto_auto] gap-3 items-end"><div><label>Student</label><select id="resStudent" class="form-input"><option></option>${students.map(s=>`<option value="${s.id}" ${String(s.id)===String(sid)?'selected':''}>${esc(s.enroll)} - ${esc(s.name)}</option>`).join('')}</select></div><div><label>Exam</label><select id="resExam" class="form-input"><option></option>${ex.map(e=>`<option value="${e.id}" ${String(e.id)===String(eid)?'selected':''}>${esc(e.exam)} - ${esc(cm[e.classId]?.name||'')} - ${esc(e.subject)}</option>`).join('')}</select></div><button class="btn btn-primary" data-action="resultCardView"><i class="fa-solid fa-eye"></i>View Card</button><button class="btn btn-soft" data-action="resultCardPrint"><i class="fa-solid fa-print"></i>Print Card</button></div><div id="resultCardPreview" class="mt-4"></div></div>` + table('tbl_exams', ['Exam', 'Class', 'Subject', 'Date', 'Total', 'Average', 'Grade', 'Actions'], rows);
+          plugins(main())
         }
         async function openExam(rid = 0) {
           if (!(canAdmin() || user.role === 'teacher')) return toast('error', 'Permission required');
+          let classes = await visibleClasses();
+          if (!classes.length) return toast('error', 'No assigned classes found');
           let rec = rid ? await one('exams', rid) : {
-              classId: (await all('classes'))[0]?.id,
-              date: today(),
-              total: 100
-            },
-            classes = await all('classes');
-          modal((rid ? 'Edit' : 'Add') + ' Exam', `<form id="examForm" class="space-y-4" novalidate><input type="hidden" name="csrf" value="${esc(session.csrf)}"><div class="grid sm:grid-cols-2 gap-4"><div><label>Exam Name</label><input class="form-input" name="exam" value="${esc(rec.exam || '')}" required></div><div><label>Class</label><select class="form-input" name="classId" required>${classes.map(c => `<option value="${c.id}" ${c.id === rec.classId ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div><div><label>Subject</label><input class="form-input" name="subject" value="${esc(rec.subject || '')}" required></div><div><label>Date</label><input class="form-input" type="date" name="date" value="${rec.date || today()}" required></div><div><label>Total Marks</label><input class="form-input" type="number" name="total" value="${num(rec.total) || 100}" required></div></div><div class="card p-3"><table class="w-full text-sm"><thead><tr><th>Student</th><th>Obtained</th><th>%</th><th>Grade</th></tr></thead><tbody id="examRows"></tbody></table></div><div class="flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i>Save Result</button></div></form>`);
+            classId: classes[0]?.id,
+            date: today(),
+            total: 100
+          };
+          if (rid && !await classAllowed(rec.classId)) return toast('error', 'You can only edit exams for assigned classes');
+          modal((rid ? 'Edit' : 'Add') + ' Exam', `<form id="examForm" class="space-y-4" novalidate><input type="hidden" name="csrf" value="${esc(session.csrf)}"><div class="grid sm:grid-cols-2 gap-4"><div><label>Exam Name</label><input class="form-input" name="exam" value="${esc(rec.exam||'')}" required></div><div><label>Class</label><select class="form-input" name="classId" required>${classes.map(c=>`<option value="${c.id}" ${c.id===rec.classId?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div><label>Subject</label><input class="form-input" name="subject" value="${esc(rec.subject||'')}" required></div><div><label>Date</label><input class="form-input" type="date" name="date" value="${rec.date||today()}" required></div><div><label>Total Marks</label><input class="form-input" type="number" name="total" value="${num(rec.total)||100}" required></div></div><div class="card p-3"><table class="w-full text-sm"><thead><tr><th>Student</th><th>Obtained</th><th>%</th><th>Grade</th></tr></thead><tbody id="examRows"></tbody></table></div><div class="flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i>Save Result</button></div></form>`);
           let f = $('#examForm'),
             draw = async () => {
               $('#examRows').innerHTML = await examRows(f.classId.value, rec);
               calcExam()
+            }, calcExam = () => {
+              $$('#examRows .mark').forEach(i => {
+                let p = Math.round(num(i.value) / Math.max(1, num(f.total.value)) * 100),
+                  tr = i.closest('tr');
+                tr.querySelector('.pct').textContent = p + '%';
+                tr.querySelector('.gr').textContent = grade(p)
+              })
             };
-          let calcExam = () => {
-            $$('#examRows .mark').forEach(i => {
-              let p = Math.round(num(i.value) / Math.max(1, num(f.total.value)) * 100),
-                tr = i.closest('tr');
-              tr.querySelector('.pct').textContent = p + '%';
-              tr.querySelector('.gr').textContent = grade(p)
-            })
-          };
           f.classId.addEventListener('change', draw);
           f.total.addEventListener('input', calcExam);
           await draw();
@@ -2248,6 +2774,7 @@
             try {
               let d = Object.fromEntries(new FormData(form));
               if (d.csrf !== session.csrf) throw Error('Security token mismatch');
+              if (!await classAllowed(+d.classId)) throw Error('You can only save assigned classes');
               let results = $$('#examRows .mark').map(i => ({
                 studentId: +i.dataset.sid,
                 marks: num(i.value)
@@ -2280,6 +2807,8 @@
         }
         async function deleteExam(id) {
           if (!(canAdmin() || user.role === 'teacher')) return toast('error', 'Permission required');
+          let e = await one('exams', id);
+          if (e && !await classAllowed(e.classId)) return toast('error', 'You can only delete assigned class exams');
           if (await ask('Delete exam?', 'Marks and result card data will be removed.', 'Delete')) {
             await del('exams', id);
             await audit('Deleted exam', 'exams', String(id));
@@ -2287,10 +2816,21 @@
             toast('success', 'Exam deleted')
           }
         }
+        async function showResultCard(print = false) {
+          try {
+            let sid = $('#resStudent')?.value,
+              eid = $('#resExam')?.value;
+            if (!sid || !eid) throw Error('Select student and exam');
+            let html = await resultCardHtml(sid, eid);
+            if (print) await printHtml('Result Card', html);
+            else $('#resultCardPreview').innerHTML = html
+          } catch (e) {
+            toast('error', e.message)
+          }
+        }
         async function renderTimetable() {
-          let [tt, cm, tm] = await Promise.all([all('timetable'), clsMap(), tchMap()]);
-          let rows = tt.map(x => `<tr><td>${esc(x.day)}</td><td>${num(x.period)}</td><td>${esc(cm[x.classId]?.name || '')}</td><td>${esc(x.start)} - ${esc(x.end)}</td><td>${esc(x.subject)}</td><td>${esc(tm[x.teacherId]?.name || '')}</td><td>${canAdmin() ? `<div class="flex gap-2"><button class="btn btn-soft" data-action="timetableEdit" data-id="${x.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="timetableDelete" data-id="${x.id}"><i class="fa-solid fa-trash"></i></button></div>` : ''}</td></tr>`);
-          main().innerHTML = head('Timetable & Duty Roster', 'Weekly days × periods schedule with teacher duty roster and print view.', canAdmin() ? `<button class="btn btn-primary" data-action="timetableAdd"><i class="fa-solid fa-plus"></i>Add Period</button>` : '') + table('tbl_timetable', ['Day', 'Period', 'Class', 'Time', 'Subject', 'Teacher', 'Actions'], rows);
+          let [ttAll, cm, tm] = await Promise.all([all('timetable'), clsMap(), tchMap()]), allowed = await visibleClasses(), allowedIds = allowed.map(c => +c.id), tid = $('#rosterTeacher')?.value || (user.role === 'teacher' ? await teacherIdForUser() : '0'), tt = ttAll.filter(x => canAdmin() || allowedIds.includes(+x.classId) || +x.teacherId === +tid), rows = tt.map(x => `<tr><td>${esc(x.day)}</td><td>${num(x.period)}</td><td>${esc(cm[x.classId]?.name||'')}</td><td>${esc(x.start)} - ${esc(x.end)}</td><td>${esc(x.subject)}</td><td>${esc(tm[x.teacherId]?.name||'')}</td><td>${canAdmin()?`<div class="flex gap-2"><button class="btn btn-soft" data-action="timetableEdit" data-id="${x.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="timetableDelete" data-id="${x.id}"><i class="fa-solid fa-trash"></i></button></div>`:''}</td></tr>`), teachers = Object.values(tm), roster = ttAll.filter(x => !tid || tid === '0' ? false : +x.teacherId === +tid).sort((a, b) => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(a.day) - ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].indexOf(b.day) || num(a.period) - num(b.period)), rrows = roster.map(x => `<tr><td>${esc(x.day)}</td><td>${num(x.period)}</td><td>${esc(x.start)} - ${esc(x.end)}</td><td>${esc(x.subject)}</td><td>${esc(cm[x.classId]?.name||'')}</td></tr>`);
+          main().innerHTML = head('Timetable & Teacher Duty Roster', 'Weekly period start/end times, class timetable and teacher-wise duty roster.', canAdmin() ? `<button class="btn btn-primary" data-action="timetableAdd"><i class="fa-solid fa-plus"></i>Add Period</button>` : '') + `<div class="grid xl:grid-cols-[1.2fr_.8fr] gap-4"><div>${table('tbl_timetable',['Day','Period','Class','Time','Subject','Teacher','Actions'],rows)}</div><div class="card p-4"><h3 class="font-black text-lg mb-3">Teacher Duty Roster</h3><div class="grid sm:grid-cols-[1fr_auto_auto] gap-3 items-end mb-3"><div><label>Select Teacher</label><select id="rosterTeacher" class="form-input"><option value="0">Choose teacher</option>${teachers.map(t=>`<option value="${t.id}" ${String(t.id)===String(tid)?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div><button class="btn btn-primary" data-action="rosterLoad"><i class="fa-solid fa-eye"></i>View</button><button class="btn btn-soft" data-action="rosterPrint"><i class="fa-solid fa-print"></i>Print</button></div>${table('tbl_roster',['Day','Period','Time','Subject','Class'],rrows.length?rrows:['<tr><td colspan="5">Select a teacher to view weekly duty.</td></tr>'])}</div></div>`;
           plugins(main())
         }
         async function openTimetable(rid = 0) {
@@ -2298,7 +2838,7 @@
           let rec = rid ? await one('timetable', rid) : {},
             classes = await all('classes'),
             teachers = await all('teachers');
-          modal((rid ? 'Edit' : 'Add') + ' Timetable Period', `<form id="timeForm" class="grid sm:grid-cols-2 gap-4" novalidate><input type="hidden" name="csrf" value="${esc(session.csrf)}"><div><label>Class</label><select class="form-input" name="classId" required>${classes.map(c => `<option value="${c.id}" ${c.id === rec.classId ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div><div><label>Day</label><select class="form-input" name="day" required>${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(d => `<option ${d === rec.day ? 'selected' : ''}>${d}</option>`).join('')}</select></div><div><label>Period</label><input class="form-input" type="number" name="period" value="${num(rec.period) || 1}" required></div><div><label>Teacher</label><select class="form-input" name="teacherId" required>${teachers.map(t => `<option value="${t.id}" ${t.id === rec.teacherId ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></div><div><label>Start Time</label><input class="form-input" type="time" name="start" value="${esc(rec.start || '08:00')}" required></div><div><label>End Time</label><input class="form-input" type="time" name="end" value="${esc(rec.end || '08:45')}" required></div><div class="sm:col-span-2"><label>Subject</label><input class="form-input" name="subject" value="${esc(rec.subject || '')}" required></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save</button></div></form>`);
+          modal((rid ? 'Edit' : 'Add') + ' Timetable Period', `<form id="timeForm" class="grid sm:grid-cols-2 gap-4" novalidate><input type="hidden" name="csrf" value="${esc(session.csrf)}"><div><label>Class</label><select class="form-input" name="classId" required>${classes.map(c=>`<option value="${c.id}" ${c.id===rec.classId?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div><label>Day</label><select class="form-input" name="day" required>${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d=>`<option ${d===rec.day?'selected':''}>${d}</option>`).join('')}</select></div><div><label>Period</label><input class="form-input" type="number" name="period" value="${num(rec.period)||1}" required></div><div><label>Teacher</label><select class="form-input" name="teacherId" required>${teachers.map(t=>`<option value="${t.id}" ${t.id===rec.teacherId?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div><div><label>Start Time</label><input class="form-input" type="time" name="start" value="${esc(rec.start||'08:00')}" required></div><div><label>End Time</label><input class="form-input" type="time" name="end" value="${esc(rec.end||'08:45')}" required></div><div class="sm:col-span-2"><label>Subject</label><input class="form-input" name="subject" value="${esc(rec.subject||'')}" required></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save</button></div></form>`);
           bind('#timeForm', [
             ['classId', 'select'],
             ['day', 'select'],
@@ -2337,16 +2877,22 @@
             }
           })
         }
+        async function printRoster() {
+          let tid = $('#rosterTeacher')?.value;
+          if (!tid || tid === '0') return toast('error', 'Select teacher');
+          let [tt, cm, tm] = await Promise.all([all('timetable'), clsMap(), tchMap()]), rows = tt.filter(x => +x.teacherId === +tid).sort((a, b) => a.day.localeCompare(b.day) || num(a.period) - num(b.period)).map(x => `<tr><td>${esc(x.day)}</td><td>${num(x.period)}</td><td>${esc(x.start)} - ${esc(x.end)}</td><td>${esc(x.subject)}</td><td>${esc(cm[x.classId]?.name||'')}</td></tr>`).join('');
+          await printHtml('Teacher Duty Roster - ' + esc(tm[tid]?.name || ''), `<table class="w-full border-collapse"><thead><tr><th>Day</th><th>Period</th><th>Time</th><th>Subject</th><th>Class</th></tr></thead><tbody>${rows}</tbody></table>`)
+        }
         async function renderStaffAttendance(force = false) {
           let teachers = await all('teachers'),
             d = $('#staffDate')?.value || today(),
             rec = await idx('staffAttendance', 'date', d).catch(() => null),
-            rows = teachers.map(t => `<tr><td>${esc(t.name)}</td><td>${esc(t.subjects)}</td><td><select class="form-input" data-staff="${t.id}"><option ${rec?.records?.[t.id] === 'Present' ? 'selected' : ''}>Present</option><option ${rec?.records?.[t.id] === 'Absent' ? 'selected' : ''}>Absent</option><option ${rec?.records?.[t.id] === 'Leave' ? 'selected' : ''}>Leave</option></select></td></tr>`).join(''),
+            rows = teachers.map(t => `<tr><td>${esc(t.name)}</td><td>${esc(t.subjects)}</td><td><select class="form-input" data-staff="${t.id}"><option ${rec?.records?.[t.id]==='Present'?'selected':''}>Present</option><option ${rec?.records?.[t.id]==='Absent'?'selected':''}>Absent</option><option ${rec?.records?.[t.id]==='Leave'?'selected':''}>Leave</option></select></td></tr>`).join(''),
             hist = (await all('staffAttendance')).sort((a, b) => b.date.localeCompare(a.date)).map(a => {
               let v = Object.values(a.records || {});
-              return `<tr><td>${date(a.date)}</td><td>${v.filter(x => x === 'Present').length}</td><td>${v.filter(x => x === 'Absent').length}</td><td>${v.filter(x => x === 'Leave').length}</td></tr>`
+              return `<tr><td>${date(a.date)}</td><td>${v.filter(x=>x==='Present').length}</td><td>${v.filter(x=>x==='Absent').length}</td><td>${v.filter(x=>x==='Leave').length}</td></tr>`
             }).join('');
-          main().innerHTML = head('Staff Attendance & Leave', 'Daily staff attendance with history and printable registers.', `<button class="btn btn-soft" onclick="window.print()"><i class="fa-solid fa-print"></i>Print</button>`) + `<div class="card p-4 mb-4"><div class="grid sm:grid-cols-[1fr_auto] gap-3 items-end"><div><label>Date</label><input id="staffDate" type="date" class="form-input" value="${d}"></div><button class="btn btn-primary" data-action="staffLoad"><i class="fa-solid fa-filter"></i>Load</button></div></div><div class="grid xl:grid-cols-2 gap-4"><div>${table('tbl_staff_daily', ['Staff', 'Subjects', 'Status'], rows)}</div><div>${table('tbl_staff_hist', ['Date', 'Present', 'Absent', 'Leave'], hist)}</div></div><div class="mt-4 flex justify-end"><button class="btn btn-primary" data-action="staffSave"><i class="fa-solid fa-floppy-disk"></i>Save Staff Attendance</button></div>`;
+          main().innerHTML = head('Staff Attendance & Leave', 'Daily staff attendance with history and printable registers.', `<button class="btn btn-soft" onclick="window.print()"><i class="fa-solid fa-print"></i>Print</button>`) + `<div class="card p-4 mb-4"><div class="grid sm:grid-cols-[1fr_auto] gap-3 items-end"><div><label>Date</label><input id="staffDate" type="date" class="form-input" value="${d}"></div><button class="btn btn-primary" data-action="staffLoad"><i class="fa-solid fa-filter"></i>Load</button></div></div><div class="grid xl:grid-cols-2 gap-4"><div>${table('tbl_staff_daily',['Staff','Subjects','Status'],rows)}</div><div>${table('tbl_staff_hist',['Date','Present','Absent','Leave'],hist)}</div></div><div class="mt-4 flex justify-end"><button class="btn btn-primary" data-action="staffSave"><i class="fa-solid fa-floppy-disk"></i>Save Staff Attendance</button></div>`;
           plugins(main())
         }
         async function saveStaffAttendance(btn) {
@@ -2378,69 +2924,579 @@
         function inRange(x, from, to) {
           return (!from || x >= from) && (!to || x <= to)
         }
+        async function renderAcademic() {
+          let [years, classes, promos, cm] = await Promise.all([all('academicYears'), all('classes'), all('promotions'), clsMap()]), yearRows = years.map(y => `<tr><td>${esc(y.name)}</td><td>${date(y.start)}</td><td>${date(y.end)}</td><td>${badge(y.status||'Planned')}</td><td><div class="flex gap-2">${canAdmin()?`<button class="btn btn-soft" data-action="yearEdit" data-id="${y.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-soft" data-action="yearCurrent" data-id="${y.id}">Current</button><button class="btn btn-danger" data-action="yearClose" data-id="${y.id}">Close</button>`:''}</div></td></tr>`), promoRows = promos.sort((a, b) => (b.date || '').localeCompare(a.date || '')).map(p => `<tr><td>${date(p.date)}</td><td>${esc(p.yearName||'')}</td><td>${esc(cm[p.fromClassId]?.name||'')}</td><td>${p.action==='Graduated'?'Graduated':esc(cm[p.toClassId]?.name||'')}</td><td>${(p.studentIds||[]).length}</td><td>${esc(p.notes||'')}</td></tr>`);
+          main().innerHTML = head('Academic Year & Promotion System', 'Close academic years, promote or graduate students en masse and archive promotion history.', canAdmin() ? `<button class="btn btn-primary" data-action="yearAdd"><i class="fa-solid fa-plus"></i>Add Academic Year</button>` : '') + `<div class="grid xl:grid-cols-2 gap-4"><div>${table('tbl_years',['Academic Year','Start','End','Status','Actions'],yearRows)}</div><div class="card p-5"><h3 class="font-black text-lg mb-3">Mass Promotion / Graduation</h3><div class="grid sm:grid-cols-2 gap-3"><div><label>Academic Year</label><select id="promYear" class="form-input">${years.map(y=>`<option value="${y.id}" ${y.status==='Current'?'selected':''}>${esc(y.name)}</option>`).join('')}</select></div><div><label>Date</label><input id="promDate" type="date" class="form-input" value="${today()}"></div><div><label>From Class</label><select id="promFrom" class="form-input">${classes.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div><div><label>To Class / Graduate</label><select id="promTo" class="form-input"><option value="graduate">Graduate / Complete</option>${classes.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div><div class="sm:col-span-2"><label>Notes</label><input id="promNotes" class="form-input" placeholder="Promotion board notes"></div><div class="sm:col-span-2 flex justify-end"><button class="btn btn-primary" data-action="promoteStudents"><i class="fa-solid fa-arrow-up"></i>Promote / Graduate Students</button></div></div></div><div class="xl:col-span-2">${table('tbl_promos',['Date','Year','From','To','Students','Notes'],promoRows)}</div></div>`;
+          plugins(main())
+        }
+        async function openYear(rid = 0) {
+          if (!canAdmin()) return toast('error', 'Admin rights required');
+          let rec = rid ? await one('academicYears', rid) : {};
+          modal((rid ? 'Edit' : 'Add') + ' Academic Year', `<form id="yearForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Name</label><input class="form-input" name="name" value="${esc(rec.name||'')}" required></div><div><label>Status</label><select class="form-input" name="status"><option ${rec.status==='Planned'?'selected':''}>Planned</option><option ${rec.status==='Current'?'selected':''}>Current</option><option ${rec.status==='Closed'?'selected':''}>Closed</option></select></div><div><label>Start Date</label><input type="date" class="form-input" name="start" value="${esc(rec.start||today())}" required></div><div><label>End Date</label><input type="date" class="form-input" name="end" value="${esc(rec.end||today())}" required></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save Year</button></div></form>`);
+          bind('#yearForm', [
+            ['name', 'req'],
+            ['status', 'select'],
+            ['start', 'date'],
+            ['end', 'date']
+          ], async f => {
+            let stop = loadBtn(f.querySelector('button'));
+            try {
+              let d = Object.fromEntries(new FormData(f)),
+                obj = rid ? rec : {
+                  createdAt: now()
+                };
+              Object.assign(obj, {
+                name: d.name.trim(),
+                status: d.status,
+                start: d.start,
+                end: d.end,
+                updatedAt: now()
+              });
+              if (obj.status === 'Current') {
+                for (let y of await all('academicYears')) {
+                  if (y.id !== obj.id && y.status === 'Current') {
+                    y.status = 'Closed';
+                    await put('academicYears', y)
+                  }
+                }
+              }
+              await put('academicYears', obj);
+              dirty = false;
+              await closeModal(true);
+              await renderAcademic();
+              toast('success', 'Academic year saved')
+            } catch (e) {
+              toast('error', e.message)
+            } finally {
+              stop()
+            }
+          })
+        }
+        async function setYearStatus(idv, status) {
+          if (!canAdmin()) return toast('error', 'Admin rights required');
+          let y = await one('academicYears', +idv);
+          if (!y) return;
+          if (status === 'Current') {
+            for (let r of await all('academicYears')) {
+              if (r.id !== y.id && r.status === 'Current') {
+                r.status = 'Closed';
+                await put('academicYears', r)
+              }
+            }
+          }
+          y.status = status;
+          y.updatedAt = now();
+          await put('academicYears', y);
+          await audit('Updated academic year', 'academicYears', y.name);
+          await renderAcademic();
+          toast('success', 'Academic year updated')
+        }
+        async function promoteStudents() {
+          if (!canAdmin()) return toast('error', 'Admin rights required');
+          let from = +$('#promFrom').value,
+            to = $('#promTo').value,
+            year = await one('academicYears', +$('#promYear').value),
+            datev = $('#promDate').value,
+            notes = $('#promNotes').value,
+            students = (await all('students')).filter(s => +s.classId === from && s.status !== 'Passed Out');
+          if (!students.length) return toast('error', 'No active students found in selected class');
+          if (!await ask('Promote selected class?', `${students.length} students will be updated and archived in promotion history.`, 'Promote')) return;
+          for (let s of students) {
+            s.previousClassId = s.classId;
+            s.previousStatus = s.status;
+            s.classId = to === 'graduate' ? s.classId : +to;
+            s.status = to === 'graduate' ? 'Passed Out' : 'Active';
+            s.updatedAt = now();
+            await put('students', s)
+          }
+          await put('promotions', {
+            date: datev,
+            yearId: year?.id,
+            yearName: year?.name,
+            fromClassId: from,
+            toClassId: to === 'graduate' ? 0 : +to,
+            action: to === 'graduate' ? 'Graduated' : 'Promoted',
+            studentIds: students.map(s => s.id),
+            archive: students,
+            notes,
+            createdAt: now(),
+            updatedAt: now()
+          });
+          await audit('Promoted students', 'academicYears', String(students.length));
+          await renderAcademic();
+          toast('success', 'Promotion completed')
+        }
+        async function renderLibrary() {
+          let [books, issues, sm] = await Promise.all([all('libraryBooks'), all('libraryIssues'), stuMap()]), bm = Object.fromEntries(books.map(b => [b.id, b])), bookRows = books.map(b => `<tr><td><b>${esc(b.accession)}</b></td><td>${esc(b.title)}</td><td>${esc(b.author)}</td><td>${esc(b.category)}</td><td>${num(b.qty)}</td><td>${num(b.available)}</td><td>${esc(b.location)}</td><td>${badge(b.status||'Active')}</td><td><div class="flex gap-2">${canAdmin()?`<button class="btn btn-soft" data-action="bookEdit" data-id="${b.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="bookDelete" data-id="${b.id}"><i class="fa-solid fa-trash"></i></button>`:''}</div></td></tr>`), issueRows = issues.map(i => `<tr><td>${esc(bm[i.bookId]?.title||'')}</td><td>${esc(sm[i.studentId]?.name||'')}</td><td>${date(i.issueDate)}</td><td>${date(i.dueDate)}</td><td>${date(i.returnDate)}</td><td>${badge(i.status||'Issued')}</td><td>${money(i.fine)}</td><td><div class="flex gap-2"><button class="btn btn-soft" data-action="printRecord" data-type="libraryIssue" data-id="${i.id}"><i class="fa-solid fa-print"></i></button>${i.status!=='Returned'?`<button class="btn btn-primary" data-action="bookReturn" data-id="${i.id}">Return</button>`:''}${canAdmin()?`<button class="btn btn-danger" data-action="issueDelete" data-id="${i.id}"><i class="fa-solid fa-trash"></i></button>`:''}</div></td></tr>`);
+          main().innerHTML = head('Library / Kutub Khana Management', 'Book catalogue, lending, due dates, returns and printable issue slips.', `<button class="btn btn-primary" data-action="bookAdd"><i class="fa-solid fa-plus"></i>Add Book</button><button class="btn btn-soft" data-action="issueAdd"><i class="fa-solid fa-book-reader"></i>Issue Book</button>`) + `<div class="grid xl:grid-cols-2 gap-4"><div>${table('tbl_books',['Accession','Title','Author','Category','Qty','Available','Location','Status','Actions'],bookRows)}</div><div>${table('tbl_issues',['Book','Student','Issue','Due','Returned','Status','Fine','Actions'],issueRows)}</div></div>`;
+          plugins(main())
+        }
+        async function openBook(rid = 0) {
+          if (!canAdmin()) return toast('error', 'Admin rights required');
+          let r = rid ? await one('libraryBooks', rid) : {};
+          modal((rid ? 'Edit' : 'Add') + ' Book', `<form id="bookForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Accession No</label><input class="form-input" name="accession" value="${esc(r.accession||'')}" required></div><div><label>Title</label><input class="form-input" name="title" value="${esc(r.title||'')}" required></div><div><label>Author</label><input class="form-input" name="author" value="${esc(r.author||'')}"></div><div><label>Category</label><input class="form-input" name="category" value="${esc(r.category||'')}"></div><div><label>Quantity</label><input class="form-input" type="number" name="qty" value="${num(r.qty)||1}" required></div><div><label>Available</label><input class="form-input" type="number" name="available" value="${num(r.available)||num(r.qty)||1}" required></div><div><label>Location</label><input class="form-input" name="location" value="${esc(r.location||'')}"></div><div><label>Status</label><select class="form-input" name="status"><option ${r.status==='Active'?'selected':''}>Active</option><option ${r.status==='Inactive'?'selected':''}>Inactive</option></select></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save Book</button></div></form>`);
+          bind('#bookForm', [
+            ['accession', 'req'],
+            ['title', 'req'],
+            ['qty', 'number'],
+            ['available', 'number']
+          ], async f => {
+            let stop = loadBtn(f.querySelector('button'));
+            try {
+              let d = Object.fromEntries(new FormData(f)),
+                o = rid ? r : {
+                  createdAt: now()
+                };
+              Object.assign(o, {
+                accession: d.accession.trim(),
+                title: d.title.trim(),
+                author: d.author.trim(),
+                category: d.category.trim(),
+                qty: num(d.qty),
+                available: num(d.available),
+                location: d.location.trim(),
+                status: d.status,
+                updatedAt: now()
+              });
+              await put('libraryBooks', o);
+              dirty = false;
+              await closeModal(true);
+              await renderLibrary();
+              toast('success', 'Book saved')
+            } catch (e) {
+              toast('error', e.message)
+            } finally {
+              stop()
+            }
+          })
+        }
+        async function openIssue() {
+          if (!(canAdmin() || user.role === 'teacher')) return toast('error', 'Permission required');
+          let [books, students] = await Promise.all([all('libraryBooks'), visibleStudents()]);
+          modal('Issue Library Book', `<form id="issueForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Book</label><select class="form-input" name="bookId" required><option></option>${books.filter(b=>num(b.available)>0).map(b=>`<option value="${b.id}">${esc(b.accession)} - ${esc(b.title)} (${num(b.available)} available)</option>`).join('')}</select></div><div><label>Student</label><select class="form-input" name="studentId" required><option></option>${students.map(s=>`<option value="${s.id}">${esc(s.enroll)} - ${esc(s.name)}</option>`).join('')}</select></div><div><label>Issue Date</label><input type="date" class="form-input" name="issueDate" value="${today()}" required></div><div><label>Due Date</label><input type="date" class="form-input" name="dueDate" value="${today()}" required></div><div class="sm:col-span-2"><label>Notes</label><textarea class="form-input" name="notes"></textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Issue Book</button></div></form>`);
+          bind('#issueForm', [
+            ['bookId', 'select'],
+            ['studentId', 'select'],
+            ['issueDate', 'date'],
+            ['dueDate', 'date']
+          ], async f => {
+            let stop = loadBtn(f.querySelector('button'));
+            try {
+              let d = Object.fromEntries(new FormData(f)),
+                book = await one('libraryBooks', +d.bookId);
+              if (!book || num(book.available) <= 0) throw Error('Book is not available');
+              await put('libraryIssues', {
+                bookId: +d.bookId,
+                studentId: +d.studentId,
+                issueDate: d.issueDate,
+                dueDate: d.dueDate,
+                returnDate: '',
+                status: 'Issued',
+                fine: 0,
+                notes: d.notes,
+                createdAt: now(),
+                updatedAt: now()
+              });
+              book.available = Math.max(0, num(book.available) - 1);
+              await put('libraryBooks', book);
+              dirty = false;
+              await closeModal(true);
+              await renderLibrary();
+              toast('success', 'Book issued')
+            } catch (e) {
+              toast('error', e.message)
+            } finally {
+              stop()
+            }
+          })
+        }
+        async function returnBook(idv) {
+          let i = await one('libraryIssues', +idv);
+          if (!i) return;
+          i.status = 'Returned';
+          i.returnDate = today();
+          i.updatedAt = now();
+          await put('libraryIssues', i);
+          let b = await one('libraryBooks', +i.bookId);
+          if (b) {
+            b.available = num(b.available) + 1;
+            await put('libraryBooks', b)
+          }
+          await renderLibrary();
+          toast('success', 'Book returned')
+        }
+        async function renderHostel() {
+          let [rooms, alloc, sm] = await Promise.all([all('hostelRooms'), all('hostelAllocations'), stuMap()]), rm = Object.fromEntries(rooms.map(r => [r.id, r])), roomRows = rooms.map(r => {
+            let occ = alloc.filter(a => +a.roomId === +r.id && a.status === 'Boarding').length;
+            return `<tr><td>${esc(r.name)}</td><td>${esc(r.building)}</td><td>${occ}/${num(r.capacity)}</td><td>${money(r.messFee)}</td><td>${esc(r.notes||'')}</td><td>${canAdmin()?`<div class="flex gap-2"><button class="btn btn-soft" data-action="roomEdit" data-id="${r.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="roomDelete" data-id="${r.id}"><i class="fa-solid fa-trash"></i></button></div>`:''}</td></tr>`
+          }), allocRows = alloc.map(a => `<tr><td>${esc(sm[a.studentId]?.name||'')}</td><td>${esc(rm[a.roomId]?.name||'')}</td><td>${esc(a.bedNo)}</td><td>${date(a.startDate)}</td><td>${date(a.endDate)}</td><td>${badge(a.status||'Boarding')}</td><td>${money(a.messFee)}</td><td><div class="flex gap-2">${a.status==='Boarding'?`<button class="btn btn-soft" data-action="hostelCheckout" data-id="${a.id}">Checkout</button>`:''}${canAdmin()?`<button class="btn btn-danger" data-action="allocDelete" data-id="${a.id}"><i class="fa-solid fa-trash"></i></button>`:''}</div></td></tr>`);
+          main().innerHTML = head('Hostel / Dar-ul-Iqama Management', 'Room allocations, boarding status and hostel mess fee tracking.', canAdmin() ? `<button class="btn btn-primary" data-action="roomAdd"><i class="fa-solid fa-plus"></i>Add Room</button><button class="btn btn-soft" data-action="allocAdd"><i class="fa-solid fa-bed"></i>Allocate Student</button>` : '') + `<div class="grid xl:grid-cols-2 gap-4"><div>${table('tbl_rooms',['Room','Building','Occupancy','Mess Fee','Notes','Actions'],roomRows)}</div><div>${table('tbl_alloc',['Student','Room','Bed','Start','End','Status','Mess Fee','Actions'],allocRows)}</div></div>`;
+          plugins(main())
+        }
+        async function openRoom(rid = 0) {
+          if (!canAdmin()) return toast('error', 'Admin rights required');
+          let r = rid ? await one('hostelRooms', rid) : {};
+          modal((rid ? 'Edit' : 'Add') + ' Hostel Room', `<form id="roomForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Room Name</label><input class="form-input" name="name" value="${esc(r.name||'')}" required></div><div><label>Building</label><input class="form-input" name="building" value="${esc(r.building||'')}" required></div><div><label>Capacity</label><input type="number" class="form-input" name="capacity" value="${num(r.capacity)||1}" required></div><div><label>Mess Fee</label><input type="number" class="form-input" name="messFee" value="${num(r.messFee)||0}" required></div><div class="sm:col-span-2"><label>Notes</label><textarea class="form-input" name="notes">${esc(r.notes||'')}</textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save Room</button></div></form>`);
+          bind('#roomForm', [
+            ['name', 'req'],
+            ['building', 'req'],
+            ['capacity', 'number'],
+            ['messFee', 'number']
+          ], async f => {
+            let stop = loadBtn(f.querySelector('button'));
+            try {
+              let d = Object.fromEntries(new FormData(f)),
+                o = rid ? r : {
+                  createdAt: now()
+                };
+              Object.assign(o, {
+                name: d.name.trim(),
+                building: d.building.trim(),
+                capacity: num(d.capacity),
+                messFee: num(d.messFee),
+                notes: d.notes.trim(),
+                updatedAt: now()
+              });
+              await put('hostelRooms', o);
+              dirty = false;
+              await closeModal(true);
+              await renderHostel();
+              toast('success', 'Room saved')
+            } catch (e) {
+              toast('error', e.message)
+            } finally {
+              stop()
+            }
+          })
+        }
+        async function openAllocation() {
+          if (!canAdmin()) return toast('error', 'Admin rights required');
+          let [students, rooms] = await Promise.all([all('students'), all('hostelRooms')]);
+          modal('Allocate Hostel Room', `<form id="allocForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Student</label><select class="form-input" name="studentId" required><option></option>${students.map(s=>`<option value="${s.id}">${esc(s.enroll)} - ${esc(s.name)}</option>`).join('')}</select></div><div><label>Room</label><select class="form-input" name="roomId" required><option></option>${rooms.map(r=>`<option data-fee="${num(r.messFee)}" value="${r.id}">${esc(r.name)} - ${esc(r.building)}</option>`).join('')}</select></div><div><label>Bed No</label><input class="form-input" name="bedNo" required></div><div><label>Start Date</label><input type="date" class="form-input" name="startDate" value="${today()}" required></div><div><label>Mess Fee</label><input type="number" class="form-input" name="messFee" required></div><div><label>Status</label><select class="form-input" name="status"><option>Boarding</option><option>Day Scholar</option><option>Checked Out</option></select></div><div class="sm:col-span-2"><label>Notes</label><textarea class="form-input" name="notes"></textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Allocate</button></div></form>`);
+          let f = $('#allocForm');
+          f.roomId.addEventListener('change', () => f.messFee.value = f.roomId.selectedOptions[0]?.dataset.fee || 0);
+          bind('#allocForm', [
+            ['studentId', 'select'],
+            ['roomId', 'select'],
+            ['bedNo', 'req'],
+            ['startDate', 'date'],
+            ['messFee', 'number']
+          ], async f => {
+            let stop = loadBtn(f.querySelector('button'));
+            try {
+              let d = Object.fromEntries(new FormData(f));
+              await put('hostelAllocations', {
+                studentId: +d.studentId,
+                roomId: +d.roomId,
+                bedNo: d.bedNo.trim(),
+                startDate: d.startDate,
+                endDate: '',
+                messFee: num(d.messFee),
+                status: d.status,
+                notes: d.notes,
+                createdAt: now(),
+                updatedAt: now()
+              });
+              dirty = false;
+              await closeModal(true);
+              await renderHostel();
+              toast('success', 'Hostel allocation saved')
+            } catch (e) {
+              toast('error', e.message)
+            } finally {
+              stop()
+            }
+          })
+        }
+        async function hostelCheckout(idv) {
+          let a = await one('hostelAllocations', +idv);
+          if (!a) return;
+          a.status = 'Checked Out';
+          a.endDate = today();
+          a.updatedAt = now();
+          await put('hostelAllocations', a);
+          await renderHostel();
+          toast('success', 'Student checked out')
+        }
+        async function renderFines() {
+          let [fines, sm, students] = await Promise.all([all('fines'), stuMap(), visibleStudents()]), visibleIds = students.map(s => +s.id);
+          fines = fines.filter(f => canAdmin() || visibleIds.includes(+f.studentId));
+          let unpaid = fines.filter(f => f.status === 'Unpaid').reduce((a, b) => a + num(b.amount), 0),
+            rows = fines.map(f => `<tr><td>${date(f.date)}</td><td>${esc(sm[f.studentId]?.name||'')}</td><td>${esc(f.type)}</td><td>${money(f.amount)}</td><td>${badge(f.status)}</td><td>${date(f.paidDate)}</td><td>${esc(f.notes||'')}</td><td><div class="flex gap-2">${f.status==='Unpaid'?`<button class="btn btn-primary" data-action="finePaid" data-id="${f.id}">Paid</button><button class="btn btn-soft" data-action="fineWaive" data-id="${f.id}">Waive</button>`:''}${canAdmin()?`<button class="btn btn-danger" data-action="fineDelete" data-id="${f.id}"><i class="fa-solid fa-trash"></i></button>`:''}</div></td></tr>`);
+          main().innerHTML = head('Fines & Arrears Tracking', 'Disciplinary fines, late fee penalties and unpaid arrears linked to student fee dues.', `<button class="btn btn-primary" data-action="fineAdd"><i class="fa-solid fa-plus"></i>Add Fine</button>`) + `<div class="grid sm:grid-cols-3 gap-4 mb-4"><div class="card p-4"><p class="text-sm text-slate-500">Unpaid Fines</p><b class="text-2xl">${money(unpaid)}</b></div><div class="card p-4"><p class="text-sm text-slate-500">Fine Records</p><b class="text-2xl">${fines.length}</b></div><div class="card p-4"><p class="text-sm text-slate-500">Auto Late Fee</p><b class="text-2xl">${money(settings.lateFee||100)}</b></div></div>` + table('tbl_fines', ['Date', 'Student', 'Type', 'Amount', 'Status', 'Paid Date', 'Notes', 'Actions'], rows);
+          plugins(main())
+        }
+        async function openFine() {
+          let students = await visibleStudents();
+          modal('Add Fine / Arrear', `<form id="fineForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Student</label><select class="form-input" name="studentId" required><option></option>${students.map(s=>`<option value="${s.id}">${esc(s.enroll)} - ${esc(s.name)}</option>`).join('')}</select></div><div><label>Date</label><input type="date" class="form-input" name="date" value="${today()}" required></div><div><label>Fine Type</label><select class="form-input" name="type"><option>Late Fee</option><option>Discipline</option><option>Library</option><option>Uniform</option><option>Damage</option><option>Other</option></select></div><div><label>Amount</label><input type="number" class="form-input" name="amount" required></div><div class="sm:col-span-2"><label>Notes</label><textarea class="form-input" name="notes"></textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save Fine</button></div></form>`);
+          bind('#fineForm', [
+            ['studentId', 'select'],
+            ['date', 'date'],
+            ['amount', 'number']
+          ], async f => {
+            let stop = loadBtn(f.querySelector('button'));
+            try {
+              let d = Object.fromEntries(new FormData(f));
+              await put('fines', {
+                studentId: +d.studentId,
+                date: d.date,
+                type: d.type,
+                amount: num(d.amount),
+                status: 'Unpaid',
+                paidDate: '',
+                notes: d.notes,
+                createdAt: now(),
+                updatedAt: now()
+              });
+              dirty = false;
+              await closeModal(true);
+              await renderFines();
+              toast('success', 'Fine added')
+            } catch (e) {
+              toast('error', e.message)
+            } finally {
+              stop()
+            }
+          })
+        }
+        async function updateFineStatus(idv, status) {
+          let f = await one('fines', +idv);
+          if (!f) return;
+          f.status = status;
+          f.paidDate = status === 'Paid' ? today() : '';
+          f.updatedAt = now();
+          await put('fines', f);
+          await renderFines();
+          toast('success', 'Fine updated')
+        }
+        async function renderDonations() {
+          let d = await all('donations'),
+            rows = d.map(x => `<tr><td><b>${esc(x.receipt||x.id)}</b></td><td>${date(x.date)}</td><td>${esc(x.donor)}</td><td>${esc(x.phone)}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${esc(x.method)}</td><td><div class="flex gap-2"><button class="btn btn-soft" data-action="printRecord" data-type="donation" data-id="${x.id}"><i class="fa-solid fa-print"></i></button>${canAdmin()||user.role==='standard'?`<button class="btn btn-danger" data-action="donationDelete" data-id="${x.id}"><i class="fa-solid fa-trash"></i></button>`:''}</div></td></tr>`),
+            total = d.reduce((a, b) => a + num(b.amount), 0);
+          main().innerHTML = head('Zakat / Donation Management', 'Donors, Zakat, Sadaqah, Waqf and donation receipt printing.', `<button class="btn btn-primary" data-action="donationAdd"><i class="fa-solid fa-plus"></i>Add Donation</button>`) + `<div class="grid sm:grid-cols-4 gap-4 mb-4"><div class="card p-4"><p class="text-sm text-slate-500">Total Donations</p><b class="text-2xl">${money(total)}</b></div>${['Zakat','Sadaqah','Waqf'].map(t=>`<div class="card p-4"><p class="text-sm text-slate-500">${t}</p><b class="text-2xl">${money(d.filter(x=>x.type===t).reduce((a,b)=>a+num(b.amount),0))}</b></div>`).join('')}</div>` + table('tbl_donations', ['Receipt', 'Date', 'Donor', 'Phone', 'Category', 'Amount', 'Method', 'Actions'], rows);
+          plugins(main())
+        }
+        async function openDonation() {
+          modal('Add Donation / Zakat', `<form id="donForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Donor Name</label><input class="form-input" name="donor" required></div><div><label>Phone</label><input class="form-input" name="phone"></div><div><label>Fund Category</label><select class="form-input" name="type"><option>Zakat</option><option>Sadaqah</option><option>General Donation</option><option>Waqf</option><option>Fitrana</option><option>Other</option></select></div><div><label>Date</label><input type="date" class="form-input" name="date" value="${today()}" required></div><div><label>Amount</label><input type="number" class="form-input" name="amount" required></div><div><label>Method</label><select class="form-input" name="method"><option>Cash</option><option>Bank</option><option>Check</option><option>Online</option></select></div><div class="sm:col-span-2"><label>Notes</label><textarea class="form-input" name="notes"></textarea></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save Donation</button></div></form>`);
+          bind('#donForm', [
+            ['donor', 'req'],
+            ['type', 'select'],
+            ['date', 'date'],
+            ['amount', 'number']
+          ], async f => {
+            let stop = loadBtn(f.querySelector('button'));
+            try {
+              let d = Object.fromEntries(new FormData(f)),
+                rid = (await all('donations')).length + 1,
+                rec = {
+                  receipt: (settings.prefix || 'BSS') + '-DON-' + String(rid).padStart(5, '0'),
+                  donor: d.donor.trim(),
+                  phone: d.phone.trim(),
+                  type: d.type,
+                  date: d.date,
+                  amount: num(d.amount),
+                  method: d.method,
+                  notes: d.notes,
+                  createdAt: now(),
+                  updatedAt: now()
+                };
+              let idv = await put('donations', rec);
+              rec.id = idv;
+              rec.receipt = (settings.prefix || 'BSS') + '-DON-' + String(idv).padStart(5, '0');
+              await put('donations', rec);
+              dirty = false;
+              await closeModal(true);
+              await renderDonations();
+              toast('success', 'Donation saved');
+              await printRecord('donation', idv)
+            } catch (e) {
+              toast('error', e.message)
+            } finally {
+              stop()
+            }
+          })
+        }
+        async function renderDocuments() {
+          let [students, teachers, exams, cm] = await Promise.all([visibleStudents(), all('teachers'), all('exams'), clsMap()]);
+          main().innerHTML = head('Students & Teachers ID Cards / Certificate Generation', 'Generate printable student ID cards, teacher ID cards, leaving certificates, completion Sanad and result cards.', `<button class="btn btn-soft" onclick="window.print()"><i class="fa-solid fa-print"></i>Print Current View</button>`) + `<div class="grid xl:grid-cols-2 gap-4"><div class="card p-5"><h3 class="font-black text-lg mb-3">Student ID Card</h3><div class="grid sm:grid-cols-[1fr_auto] gap-3 items-end"><div><label>Student</label><select id="docStudentId" class="form-input"><option></option>${students.map(s=>`<option value="${s.id}">${esc(s.enroll)} - ${esc(s.name)}</option>`).join('')}</select></div><button class="btn btn-primary" data-action="studentIdCard"><i class="fa-solid fa-id-card"></i>Generate</button></div></div><div class="card p-5"><h3 class="font-black text-lg mb-3">Teacher ID Card</h3><div class="grid sm:grid-cols-[1fr_auto] gap-3 items-end"><div><label>Teacher</label><select id="docTeacherId" class="form-input"><option></option>${teachers.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select></div><button class="btn btn-primary" data-action="teacherIdCard"><i class="fa-solid fa-id-card"></i>Generate</button></div></div><div class="card p-5 xl:col-span-2"><h3 class="font-black text-lg mb-3">Leaving Certificate / Completion Sanad</h3><div class="grid sm:grid-cols-3 gap-3"><div><label>Student</label><select id="certStudent" class="form-input"><option></option>${students.map(s=>`<option value="${s.id}">${esc(s.enroll)} - ${esc(s.name)}</option>`).join('')}</select></div><div><label>Certificate Type</label><select id="certType" class="form-input"><option>Leaving Certificate</option><option>Completion Certificate</option><option>Sanad</option><option>Character Certificate</option></select></div><div><label>Issue Date</label><input id="certDate" type="date" class="form-input" value="${today()}"></div><div><label>Reason / Completion</label><input id="certReason" class="form-input" value="Completed course requirements"></div><div><label>Conduct</label><input id="certConduct" class="form-input" value="Good"></div><div><label>Remarks</label><input id="certRemarks" class="form-input" value="We wish success in future studies."></div><div class="sm:col-span-3 flex justify-end"><button class="btn btn-primary" data-action="certGenerate"><i class="fa-solid fa-certificate"></i>Generate Certificate / Sanad</button></div></div></div><div class="card p-5 xl:col-span-2"><h3 class="font-black text-lg mb-3">Result Card Quick Print</h3><div class="grid sm:grid-cols-[1fr_1fr_auto] gap-3 items-end"><div><label>Student</label><select id="docResultStudent" class="form-input"><option></option>${students.map(s=>`<option value="${s.id}">${esc(s.enroll)} - ${esc(s.name)}</option>`).join('')}</select></div><div><label>Exam</label><select id="docResultExam" class="form-input"><option></option>${exams.map(e=>`<option value="${e.id}">${esc(e.exam)} - ${esc(cm[e.classId]?.name||'')} - ${esc(e.subject)}</option>`).join('')}</select></div><button class="btn btn-primary" data-action="docResultPrint"><i class="fa-solid fa-print"></i>Print Result Card</button></div></div></div><div id="docPreview" class="mt-5"></div>`;
+          plugins(main())
+        }
+        async function generateIdCard(type) {
+          let idv = type === 'student' ? $('#docStudentId').value : $('#docTeacherId').value;
+          if (!idv) return toast('error', 'Select a record first');
+          let h = await idCardHtml(type, idv);
+          $('#docPreview').innerHTML = `<div class="card p-5">${h}<div class="mt-4 flex justify-end"><button class="btn btn-primary" data-action="printDocPreview"><i class="fa-solid fa-print"></i>Print</button></div></div>`
+        }
+        async function generateCertificate() {
+          let sid = $('#certStudent').value;
+          if (!sid) return toast('error', 'Select student');
+          let h = await certificateHtml(sid, $('#certType').value, $('#certReason').value, $('#certConduct').value, $('#certRemarks').value, $('#certDate').value),
+            rec = {
+              studentId: +sid,
+              type: $('#certType').value,
+              certNo: (settings.prefix || 'BSS') + '-CERT-' + String(Date.now()).slice(-7),
+              issueDate: $('#certDate').value,
+              reason: $('#certReason').value,
+              conduct: $('#certConduct').value,
+              remarks: $('#certRemarks').value,
+              createdAt: now(),
+              updatedAt: now()
+            };
+          await put('certificates', rec);
+          $('#docPreview').innerHTML = `<div class="card p-5">${h}<div class="mt-4 flex justify-end"><button class="btn btn-primary" data-action="printDocPreview"><i class="fa-solid fa-print"></i>Print</button></div></div>`;
+          toast('success', 'Certificate generated and saved')
+        }
+        async function printDocPreview() {
+          let h = $('#docPreview')?.innerHTML;
+          if (!h) return toast('error', 'Nothing to print');
+          await printHtml('Generated Document', h)
+        }
+        async function printDocResult() {
+          let sid = $('#docResultStudent').value,
+            eid = $('#docResultExam').value;
+          if (!sid || !eid) return toast('error', 'Select student and exam');
+          await printHtml('Result Card', await resultCardHtml(sid, eid))
+        }
+        async function showMedia(store, field, idv) {
+          let r = await one(store, +idv);
+          if (!r || !r[field]) return toast('error', 'No media found');
+          modal('Uploaded Media', `<div class="space-y-4"><img src="${r[field]}" class="max-w-full rounded-2xl border mx-auto"><div class="flex justify-end"><button class="btn btn-soft" data-action="modalClose">Close</button></div></div>`)
+        }
         async function renderReports(run = false) {
-          let classes = await all('classes'),
-            type = $('#repType')?.value || 'fees',
+          let classes = await visibleClasses(),
+            type = $('#repType')?.value || 'financial',
             from = $('#repFrom')?.value || month() + '-01',
             to = $('#repTo')?.value || today(),
             cid = +($('#repClass')?.value || 0),
-            body = '',
-            heads = [];
+            months = selectedValues('#repMonths'),
+            years = selectedValues('#repYears'),
+            yearList = [...new Set([new Date().getFullYear(), new Date().getFullYear() - 1, new Date().getFullYear() + 1].map(String))].sort(),
+            dateOk = d => (!d || inRange(d, from, to)) && (!months.length || months.includes((d || '').slice(5, 7))) && (!years.length || years.includes((d || '').slice(0, 4))),
+            heads = [],
+            rows = [],
+            title = 'Report';
+          let [payments, expenses, salaries, students, donations, fines, att, hostel, issues, books, sm, cm, tm] = await Promise.all([all('feePayments'), all('expenses'), all('salaryPayments'), visibleStudents(), all('donations'), all('fines'), all('attendance'), all('hostelAllocations'), all('libraryIssues'), all('libraryBooks'), stuMap(), clsMap(), tchMap()]);
+          let visibleStudentIds = students.map(s => +s.id);
+          payments = payments.filter(p => visibleStudentIds.includes(+p.studentId));
+          fines = fines.filter(f => visibleStudentIds.includes(+f.studentId));
+          if (cid) {
+            students = students.filter(s => +s.classId === cid);
+            payments = payments.filter(p => +sm[p.studentId]?.classId === cid);
+            att = att.filter(a => +a.classId === cid)
+          }
+          if (type === 'financial') {
+            title = 'Financial Profit / Loss Report';
+            heads = ['Category', 'Income', 'Expense', 'Net'];
+            let fee = payments.filter(x => dateOk(x.date)).reduce((a, b) => a + num(b.amount), 0),
+              don = donations.filter(x => dateOk(x.date)).reduce((a, b) => a + num(b.amount), 0),
+              exp = expenses.filter(x => dateOk(x.date)).reduce((a, b) => a + num(b.amount), 0),
+              sal = salaries.filter(x => dateOk(x.date)).reduce((a, b) => a + num(b.amount), 0);
+            rows = [
+              ['Fee Income', money(fee), '', money(fee)],
+              ['Donation Income', money(don), '', money(don)],
+              ['Expenses', '', money(exp), money(-exp)],
+              ['Teacher Salaries', '', money(sal), money(-sal)],
+              ['Profit / Loss', money(fee + don), money(exp + sal), money(fee + don - exp - sal)]
+            ]
+          }
           if (type === 'fees') {
-            let [p, sm, cm] = await Promise.all([all('feePayments'), stuMap(), clsMap()]);
-            heads = ['Receipt', 'Date', 'Student', 'Class', 'Type', 'Paid', 'Balance'];
-            body = p.filter(x => inRange(x.date, from, to)).filter(x => !cid || sm[x.studentId]?.classId === cid).map(x => `<tr><td>${esc(x.receipt || x.id)}</td><td>${date(x.date)}</td><td>${esc(sm[x.studentId]?.name || '')}</td><td>${esc(cm[sm[x.studentId]?.classId]?.name || '')}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${money(x.balance)}</td></tr>`).join('')
+            title = 'Fee Collection Report';
+            heads = ['Receipt', 'Date', 'Student', 'Class', 'Type', 'Paid', 'Discount', 'Balance'];
+            rows = payments.filter(x => dateOk(x.date)).map(x => [x.receipt || x.id, date(x.date), sm[x.studentId]?.name || '', cm[sm[x.studentId]?.classId]?.name || '', x.type, money(x.amount), money(x.discount), money(x.balance)])
+          }
+          if (type === 'feeBreakdown') {
+            title = 'Financial Fee Breakdown - Received and Due';
+            heads = ['Kind', 'Date/Month', 'Student', 'Class', 'Type', 'Amount', 'Status'];
+            rows = payments.filter(x => dateOk(x.date)).map(x => ['Received', date(x.date), sm[x.studentId]?.name || '', cm[sm[x.studentId]?.classId]?.name || '', x.type, money(x.amount), 'Paid']);
+            for (let s of students) {
+              let d = await dueForStudent(s.id);
+              if (d.totalDue > 0) rows.push(['Due', ml(month()), s.name, cm[s.classId]?.name || '', 'Monthly/Fines/Arrears', money(d.totalDue), 'Unpaid'])
+            }
           }
           if (type === 'due') {
-            let [students, cm, pay] = await Promise.all([all('students'), clsMap(), all('feePayments')]);
-            heads = ['Enrollment', 'Student', 'Class', 'Monthly Fee', 'Paid This Month', 'Due'];
-            body = students.filter(s => !cid || s.classId === cid).map(s => {
-              let cl = cm[s.classId] || {},
-                paid = pay.filter(p => p.studentId === s.id && (p.date || '').slice(0, 7) === month()).reduce((a, b) => a + num(b.amount), 0),
-                due = Math.max(0, num(cl.fee) - paid);
-              return `<tr><td>${esc(s.enroll)}</td><td>${esc(s.name)}</td><td>${esc(cl.name)}</td><td>${money(cl.fee)}</td><td>${money(paid)}</td><td>${money(due)}</td></tr>`
-            }).join('')
+            title = 'Due Fees and Arrears Report';
+            heads = ['Enrollment', 'Student', 'Class', 'Monthly Fee', 'Paid This Month', 'Fines', 'Late Fee', 'Total Due'];
+            for (let s of students) {
+              let d = await dueForStudent(s.id);
+              rows.push([s.enroll, s.name, cm[s.classId]?.name || '', money(d.monthly), money(d.paidMonth), money(d.unpaidFines), money(d.late), money(d.totalDue)])
+            }
           }
           if (type === 'attendance') {
-            let at = (await all('attendance')).filter(x => inRange(x.date, from, to)).filter(x => !cid || x.classId === cid),
-              cm = await clsMap();
+            title = 'Attendance Summary Report';
             heads = ['Date', 'Class', 'Present', 'Absent', 'Leave', 'Total'];
-            body = at.map(a => {
+            rows = att.filter(x => dateOk(x.date)).map(a => {
               let v = Object.values(a.marks || {}),
                 p = v.filter(x => ['ح', '✓', 'Present'].includes(x)).length,
                 ab = v.filter(x => ['غ', '✗', 'Absent'].includes(x)).length,
                 l = v.filter(x => ['ر', '—', 'Leave'].includes(x)).length;
-              return `<tr><td>${date(a.date)}</td><td>${esc(cm[a.classId]?.name || '')}</td><td>${p}</td><td>${ab}</td><td>${l}</td><td>${v.length}</td></tr>`
-            }).join('')
+              return [date(a.date), cm[a.classId]?.name || '', p, ab, l, v.length]
+            })
           }
           if (type === 'expenses') {
-            let ex = (await all('expenses')).filter(x => inRange(x.date, from, to));
+            title = 'Expense Report';
             heads = ['Date', 'Category', 'Amount', 'Paid To', 'Details'];
-            body = ex.map(x => `<tr><td>${date(x.date)}</td><td>${esc(x.category)}</td><td>${money(x.amount)}</td><td>${esc(x.paidTo)}</td><td>${esc(x.details)}</td></tr>`).join('')
+            rows = expenses.filter(x => dateOk(x.date)).map(x => [date(x.date), x.category, money(x.amount), x.paidTo, x.details])
           }
           if (type === 'students') {
-            let cm = await clsMap();
+            title = 'Student List Report';
             heads = ['Enrollment', 'Student', 'Father', 'Class', 'Contact', 'Address', 'Status'];
-            body = (await all('students')).filter(s => !cid || s.classId === cid).map(s => `<tr><td>${esc(s.enroll)}</td><td>${esc(s.name)}</td><td>${esc(s.father)}</td><td>${esc(cm[s.classId]?.name || '')}</td><td>${esc(s.contact)}</td><td>${esc(s.address)}</td><td>${esc(s.status)}</td></tr>`).join('')
+            rows = students.map(s => [s.enroll, s.name, s.father, cm[s.classId]?.name || '', s.contact, s.address, s.status])
           }
           if (type === 'salary') {
-            let [p, tm] = await Promise.all([all('salaryPayments'), tchMap()]);
+            title = 'Salary Payments Report';
             heads = ['Slip', 'Date', 'Teacher', 'Month', 'Fixed', 'Paid', 'Balance'];
-            body = p.filter(x => inRange(x.date, from, to)).map(x => `<tr><td>${esc(x.slip || x.id)}</td><td>${date(x.date)}</td><td>${esc(tm[x.teacherId]?.name || '')}</td><td>${ml(x.month)}</td><td>${money(x.fixed)}</td><td>${money(x.amount)}</td><td>${money(x.balance)}</td></tr>`).join('')
+            rows = salaries.filter(x => dateOk(x.date)).map(x => [x.slip || x.id, date(x.date), tm[x.teacherId]?.name || '', ml(x.month), money(x.fixed), money(x.amount), money(x.balance)])
           }
-          let filters = `<div class="card p-4 mb-4"><div class="grid md:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-3 items-end"><div><label>Report</label><select id="repType" class="form-input"><option value="fees" ${type === 'fees' ? 'selected' : ''}>Fee Collection</option><option value="due" ${type === 'due' ? 'selected' : ''}>Due Fees</option><option value="attendance" ${type === 'attendance' ? 'selected' : ''}>Attendance Summary</option><option value="expenses" ${type === 'expenses' ? 'selected' : ''}>Expenses</option><option value="students" ${type === 'students' ? 'selected' : ''}>Student List</option><option value="salary" ${type === 'salary' ? 'selected' : ''}>Salary Payments</option></select></div><div><label>From</label><input id="repFrom" class="form-input" type="date" value="${from}"></div><div><label>To</label><input id="repTo" class="form-input" type="date" value="${to}"></div><div><label>Class</label><select id="repClass" class="form-input"><option value="0">All Classes</option>${classes.map(c => `<option value="${c.id}" ${cid === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div><button class="btn btn-primary" data-action="reportRun"><i class="fa-solid fa-filter"></i>Generate</button></div></div>`;
-          let totalNote = type === 'fees' ? `<div class="mb-4 grid sm:grid-cols-3 gap-3"><div class="card p-4"><p class="text-sm text-slate-500">Total Collected</p><b class="text-xl">${money((await all('feePayments')).filter(x => inRange(x.date, from, to)).reduce((a, b) => a + num(b.amount), 0))}</b></div><div class="card p-4"><p class="text-sm text-slate-500">Expenses</p><b class="text-xl">${money((await all('expenses')).filter(x => inRange(x.date, from, to)).reduce((a, b) => a + num(b.amount), 0))}</b></div><div class="card p-4"><p class="text-sm text-slate-500">Profit / Loss</p><b class="text-xl">${money((await all('feePayments')).filter(x => inRange(x.date, from, to)).reduce((a, b) => a + num(b.amount), 0) - (await all('expenses')).filter(x => inRange(x.date, from, to)).reduce((a, b) => a + num(b.amount), 0))}</b></div></div>` : '';
-          main().innerHTML = head('Reports Module', 'Dynamic filtered reports with DataTables export buttons and print-ready layouts.', `<button class="btn btn-soft" onclick="window.print()"><i class="fa-solid fa-print"></i>Print</button>`) + filters + totalNote + table('tbl_reports', heads, body.split('</tr>').filter(Boolean).map(x => x + '</tr>'));
-          plugins(main());
-          await audit('Generated report', 'reports', type)
+          if (type === 'donations') {
+            title = 'Donation / Zakat Report';
+            heads = ['Receipt', 'Date', 'Donor', 'Phone', 'Type', 'Amount', 'Method'];
+            rows = donations.filter(x => dateOk(x.date)).map(x => [x.receipt || x.id, date(x.date), x.donor, x.phone, x.type, money(x.amount), x.method])
+          }
+          if (type === 'fines') {
+            title = 'Fines and Arrears Report';
+            heads = ['Date', 'Student', 'Type', 'Amount', 'Status', 'Paid Date', 'Notes'];
+            rows = fines.filter(x => dateOk(x.date)).map(x => [date(x.date), sm[x.studentId]?.name || '', x.type, money(x.amount), x.status, date(x.paidDate), x.notes])
+          }
+          if (type === 'hostel') {
+            title = 'Hostel Boarding Report';
+            heads = ['Student', 'Room', 'Bed', 'Start', 'End', 'Status', 'Mess Fee'];
+            let rm = Object.fromEntries((await all('hostelRooms')).map(r => [r.id, r]));
+            rows = hostel.filter(x => visibleStudentIds.includes(+x.studentId)).map(x => [sm[x.studentId]?.name || '', rm[x.roomId]?.name || '', x.bedNo, date(x.startDate), date(x.endDate), x.status, money(x.messFee)])
+          }
+          if (type === 'library') {
+            title = 'Library Lending Report';
+            heads = ['Book', 'Student', 'Issue Date', 'Due Date', 'Returned', 'Status', 'Fine'];
+            let bm = Object.fromEntries(books.map(b => [b.id, b]));
+            rows = issues.filter(x => visibleStudentIds.includes(+x.studentId)).map(x => [bm[x.bookId]?.title || '', sm[x.studentId]?.name || '', date(x.issueDate), date(x.dueDate), date(x.returnDate), x.status, money(x.fine)])
+          }
+          let bodyRows = rows.map(r => `<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join(''),
+            body = `<p><b>Period:</b> ${date(from)} to ${date(to)} · <b>Rows:</b> ${rows.length}</p><table class="w-full mt-4 border-collapse"><thead><tr>${heads.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+          lastReport = {
+            title,
+            heads,
+            rows,
+            body
+          };
+          main().innerHTML = head('Reports & Communication', 'Advanced multi-month/year filters, financial fee breakdown, CSV/PDF exports and send-message workflow.', `<button class="btn btn-primary" data-action="reportRun"><i class="fa-solid fa-chart-pie"></i>Generate</button><button class="btn btn-soft" data-action="reportPdf"><i class="fa-solid fa-file-pdf"></i>Export PDF</button><button class="btn btn-soft" data-action="reportSend"><i class="fa-solid fa-paper-plane"></i>Send Message</button>`) + `<div class="card p-4 mb-4"><div class="grid sm:grid-cols-6 gap-3 items-end"><div><label>Report Type</label><select id="repType" class="form-input"><option value="financial" ${type==='financial'?'selected':''}>Financial Profit/Loss</option><option value="feeBreakdown" ${type==='feeBreakdown'?'selected':''}>Fee Breakdown Due/Received</option><option value="fees" ${type==='fees'?'selected':''}>Fee Collection</option><option value="due" ${type==='due'?'selected':''}>Due Fees</option><option value="attendance" ${type==='attendance'?'selected':''}>Attendance Summary</option><option value="expenses" ${type==='expenses'?'selected':''}>Expenses</option><option value="students" ${type==='students'?'selected':''}>Student List</option><option value="salary" ${type==='salary'?'selected':''}>Salary Payments</option><option value="donations" ${type==='donations'?'selected':''}>Donations / Zakat</option><option value="fines" ${type==='fines'?'selected':''}>Fines</option><option value="hostel" ${type==='hostel'?'selected':''}>Hostel</option><option value="library" ${type==='library'?'selected':''}>Library</option></select></div><div><label>From</label><input id="repFrom" type="date" class="form-input" value="${esc(from)}"></div><div><label>To</label><input id="repTo" type="date" class="form-input" value="${esc(to)}"></div><div><label>Class</label><select id="repClass" class="form-input"><option value="0">All Classes</option>${classes.map(c=>`<option value="${c.id}" ${cid===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div><label>Months (multi)</label><select id="repMonths" class="form-input" multiple>${['01','02','03','04','05','06','07','08','09','10','11','12'].map(m=>`<option value="${m}" ${months.includes(m)?'selected':''}>${m}</option>`).join('')}</select></div><div><label>Years (multi)</label><select id="repYears" class="form-input" multiple>${yearList.map(y=>`<option value="${y}" ${years.includes(y)?'selected':''}>${y}</option>`).join('')}</select></div></div></div>` + table('tbl_report', heads, rows.map(r => `<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`));
+          plugins(main())
+        }
+        async function reportPdf() {
+          if (!lastReport.rows?.length) return toast('error', 'Generate a report first');
+          await exportRowsPdf(lastReport.title, lastReport.heads, lastReport.rows)
+        }
+        async function reportSend() {
+          if (!lastReport.rows) return toast('error', 'Generate a report first');
+          let text = `${settings.school||'Madrasa'} - ${lastReport.title}\nRows: ${lastReport.rows.length}\nGenerated: ${new Date().toLocaleString()}\nCreated by: ${C.author.name} - ${C.author.company}`;
+          window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+          await audit('Sent report message', 'reports', lastReport.title)
         }
         async function renderSettings() {
           let au = (await all('audit')).sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 100),
             users = await all('users'),
             ht = 'RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^ index.html [L]',
-            userRows = users.map(u => `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${roleName(u.role)}</td><td>${badge(u.active ? 'Active' : 'Inactive')}</td><td>${dt(u.createdAt)}</td><td>${canAdmin() ? `<div class="flex gap-2"><button class="btn btn-soft" data-action="userEdit" data-id="${u.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="userDelete" data-id="${u.id}"><i class="fa-solid fa-trash"></i></button></div>` : ''}</td></tr>`),
+            userRows = users.map(u => `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${roleName(u.role)}</td><td>${badge(u.active?'Active':'Inactive')}</td><td>${dt(u.createdAt)}</td><td>${canAdmin()?`<div class="flex gap-2"><button class="btn btn-soft" data-action="userEdit" data-id="${u.id}"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger" data-action="userDelete" data-id="${u.id}"><i class="fa-solid fa-trash"></i></button></div>`:''}</td></tr>`),
             auditRows = au.map(a => `<tr><td>${dt(a.at)}</td><td>${esc(a.user)}</td><td>${esc(a.action)}</td><td>${esc(a.entity)}</td><td>${esc(a.detail)}</td></tr>`);
-          main().innerHTML = head('System Settings & Data Management', 'Backup, restore, print settings, user theme, password and audit history.', `<button class="btn btn-soft" data-action="changePass"><i class="fa-solid fa-key"></i>Change Password</button>`) + `<div class="grid xl:grid-cols-2 gap-4"><div class="card p-5"><h3 class="font-black text-lg mb-3">User Theme Engine</h3><form id="themeForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Font Family</label><select class="form-input" name="font"><option ${theme.font.includes('Inter') ? 'selected' : ''} value="Inter,ui-sans-serif,system-ui">Inter</option><option ${theme.font.includes('serif') ? 'selected' : ''} value="Georgia,serif">Serif</option><option ${theme.font.includes('monospace') ? 'selected' : ''} value="ui-monospace,monospace">Monospace</option></select></div><div><label>Font Size</label><input class="form-input" name="fs" value="${esc(theme.fs)}" required></div>${[['hbg', 'Header Background'], ['ht', 'Header Text'], ['fbg', 'Footer Background'], ['ft', 'Footer Text'], ['sbg', 'Sidebar Background'], ['st', 'Sidebar Text'], ['mbg', 'Main Background'], ['mt', 'Main Text']].map(x => `<div><label>${x[1]}</label><input class="form-input h-12" type="color" name="${x[0]}" value="${esc(theme[x[0]])}"></div>`).join('')}<div class="sm:col-span-2 flex justify-end"><button class="btn btn-primary"><i class="fa-solid fa-palette"></i>Save Theme</button></div></form></div><div class="card p-5"><h3 class="font-black text-lg mb-3">Data Backup / Restore</h3><div class="grid sm:grid-cols-2 gap-3"><button class="btn btn-primary" data-action="backup"><i class="fa-solid fa-download"></i>Export JSON Backup</button><button class="btn btn-soft" data-action="restore"><i class="fa-solid fa-upload"></i>Import JSON Backup</button><input id="restoreFile" type="file" accept="application/json" class="hidden"><button class="btn btn-danger sm:col-span-2" data-action="wipeData"><i class="fa-solid fa-triangle-exclamation"></i>Factory Reset Seed Data</button></div><div class="mt-4 rounded-2xl bg-slate-50 p-3 text-sm"><b>Deployment rewrite for clean URLs</b><pre class="mt-2 whitespace-pre-wrap text-xs">${esc(ht)}</pre></div><div class="mt-3 text-xs text-slate-500">Idle logout: 40 minutes · Absolute session limit: 8 hours · Timezone: ${C.tz}</div></div>${canAdmin() ? `<div class="card p-5"><h3 class="font-black text-lg mb-3">School / Print Settings</h3><form id="appForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>School Name</label><input class="form-input" name="school" value="${esc(settings.school || '')}" required></div><div><label>Urdu Name</label><input class="form-input" name="schoolUrdu" value="${esc(settings.schoolUrdu || '')}"></div><div class="sm:col-span-2"><label>Address</label><input class="form-input" name="address" value="${esc(settings.address || '')}" required></div><div><label>Contact</label><input class="form-input" name="contact" value="${esc(settings.contact || '')}" required></div><div><label>Receipt Prefix</label><input class="form-input" name="prefix" value="${esc(settings.prefix || 'BSS-MMS')}" required></div><div><label>Tenant Expiry</label><input class="form-input" type="date" name="tenant" value="${esc(settings.tenant || '')}" required></div><div><label>Default Language</label><select class="form-input" name="lang"><option value="en" ${settings.lang === 'en' ? 'selected' : ''}>English</option><option value="ur" ${settings.lang === 'ur' ? 'selected' : ''}>Urdu / RTL</option></select></div><div class="sm:col-span-2 flex justify-end"><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i>Save Settings</button></div></form></div><div class="card p-5"><div class="flex justify-between items-center mb-3"><h3 class="font-black text-lg">Users & Roles</h3><button class="btn btn-primary" data-action="userAdd"><i class="fa-solid fa-user-plus"></i>Add User</button></div>${table('tbl_users', ['Name', 'Email', 'Role', 'Status', 'Created', 'Actions'], userRows)}</div>` : ''}<div class="card p-5 xl:col-span-2"><h3 class="font-black text-lg mb-3">Audit Log</h3>${table('tbl_audit', ['Time', 'User', 'Action', 'Entity', 'Detail'], auditRows)}</div></div>`;
+          main().innerHTML = head('System Settings & Data Management', 'Backup, restore, print settings, user theme, password and audit history.', `<button class="btn btn-soft" data-action="changePass"><i class="fa-solid fa-key"></i>Change Password</button>`) + `<div class="grid xl:grid-cols-2 gap-4"><div class="card p-5"><h3 class="font-black text-lg mb-3">User Theme Engine</h3><form id="themeForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Font Family</label><select class="form-input" name="font"><option ${theme.font.includes('Inter')?'selected':''} value="Inter,ui-sans-serif,system-ui">Inter</option><option ${theme.font.includes('serif')?'selected':''} value="Georgia,serif">Serif</option><option ${theme.font.includes('monospace')?'selected':''} value="ui-monospace,monospace">Monospace</option></select></div><div><label>Font Size</label><input class="form-input" name="fs" value="${esc(theme.fs)}" required></div>${[['hbg','Header Background'],['ht','Header Text'],['fbg','Footer Background'],['ft','Footer Text'],['sbg','Sidebar Background'],['st','Sidebar Text'],['mbg','Main Background'],['mt','Main Text']].map(x=>`<div><label>${x[1]}</label><input class="form-input h-12" type="color" name="${x[0]}" value="${esc(theme[x[0]])}"></div>`).join('')}<div class="sm:col-span-2 flex justify-end"><button class="btn btn-primary"><i class="fa-solid fa-palette"></i>Save Theme</button></div></form></div><div class="card p-5"><h3 class="font-black text-lg mb-3">Data Backup / Restore</h3><p class="mb-3 rounded-2xl bg-amber-50 p-3 text-sm text-amber-800"><b>Note:</b> Importing data can erase current records. Please export a backup before importing.</p><div class="grid sm:grid-cols-2 gap-3"><button class="btn btn-primary" data-action="backup"><i class="fa-solid fa-download"></i>Export JSON Backup</button><button class="btn btn-soft" data-action="restore"><i class="fa-solid fa-upload"></i>Import JSON Backup</button><input id="restoreFile" type="file" accept="application/json" class="hidden"><button class="btn btn-danger sm:col-span-2" data-action="wipeData"><i class="fa-solid fa-triangle-exclamation"></i>Factory Reset Seed Data</button></div><div class="mt-4 rounded-2xl bg-slate-50 p-3 text-sm"><b>Deployment rewrite for clean URLs</b><pre class="mt-2 whitespace-pre-wrap text-xs">${esc(ht)}</pre></div><div class="mt-3 text-xs text-slate-500">Idle logout: 40 minutes · Absolute session limit: 8 hours · Timezone: ${C.tz}</div></div>${canAdmin()?`<div class="card p-5"><h3 class="font-black text-lg mb-3">School / Print Settings</h3><form id="appForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>School Name</label><input class="form-input" name="school" value="${esc(settings.school||'')}" required></div><div><label>Urdu Name</label><input class="form-input" name="schoolUrdu" value="${esc(settings.schoolUrdu||'')}"></div><div class="sm:col-span-2"><label>Address</label><input class="form-input" name="address" value="${esc(settings.address||'')}" required></div><div><label>Contact</label><input class="form-input" name="contact" value="${esc(settings.contact||'')}" required></div><div><label>Receipt Prefix</label><input class="form-input" name="prefix" value="${esc(settings.prefix||'BSS-MMS')}" required></div><div><label>Late Fee / Penalty</label><input class="form-input" type="number" name="lateFee" value="${esc(settings.lateFee||100)}"></div><div class="sm:col-span-2"><label>Receipt Footer Text</label><input class="form-input" name="receiptFooter" value="${esc(settings.receiptFooter||'Thank you for your payment/support.')}"></div><div><label>Tenant Expiry</label><input class="form-input" type="date" name="tenant" value="${esc(settings.tenant||'')}" required></div><div><label>Default Language</label><select class="form-input" name="lang"><option value="en" ${settings.lang==='en'?'selected':''}>English</option><option value="ur" ${settings.lang==='ur'?'selected':''}>Urdu / RTL</option></select></div><div class="sm:col-span-2 flex justify-end"><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i>Save Settings</button></div></form></div><div class="card p-5"><div class="flex justify-between items-center mb-3"><h3 class="font-black text-lg">Users & Roles</h3><button class="btn btn-primary" data-action="userAdd"><i class="fa-solid fa-user-plus"></i>Add User</button></div>${table('tbl_users',['Name','Email','Role','Status','Created','Actions'],userRows)}</div>`:''}<div class="card p-5 xl:col-span-2"><h3 class="font-black text-lg mb-3">Audit Log</h3>${table('tbl_audit',['Time','User','Action','Entity','Detail'],auditRows)}</div></div>`;
           plugins(main());
           $('#restoreFile')?.addEventListener('change', e => importBackup(e.target.files[0]));
           if ($('#themeForm')) bind('#themeForm', [
@@ -2517,10 +3573,11 @@
           try {
             let txt = await file.text(),
               data = JSON.parse(txt);
-            if (!data.stores || !stores.every(s => Array.isArray(data.stores[s]))) throw Error('Invalid backup file');
-            if (!await ask('Restore backup?', 'This will overwrite current local data.', 'Restore')) return;
+            if (!data.stores) throw Error('Invalid backup file');
+            if (!await ask('Restore backup?', 'Note: Importing can delete current data. Backup first before continuing.', 'Restore')) return;
             for (let s of stores) await clr(s);
-            for (let s of stores) await bulk(s, data.stores[s]);
+            for (let s of stores) await bulk(s, Array.isArray(data.stores[s]) ? data.stores[s] : []);
+            await ensureEnhancedData();
             await loadSettings();
             await restore();
             await loadTheme();
@@ -2530,15 +3587,16 @@
           } catch (e) {
             toast('error', e.message)
           } finally {
-            $('#restoreFile').value = ''
+            if ($('#restoreFile')) $('#restoreFile').value = ''
           }
         }
         async function wipeData() {
           if (!canAdmin()) return toast('error', 'Admin rights required');
-          if (await ask('Factory reset?', 'All data will be erased and exactly four realistic seed records per core module will be recreated.', 'Reset')) {
+          if (await ask('Factory reset?', 'All data will be erased and seed records for the enhanced modules will be recreated.', 'Reset')) {
             for (let s of stores) await clr(s);
             localStorage.removeItem('mms_session');
             await seed();
+            await ensureEnhancedData();
             await loadSettings();
             toast('success', 'System reset');
             auth('login')
@@ -2575,7 +3633,7 @@
         async function openUser(rid = 0) {
           if (!canAdmin()) return toast('error', 'Admin rights required');
           let rec = rid ? await one('users', rid) : {};
-          modal((rid ? 'Edit' : 'Add') + ' User', `<form id="userForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Name</label><input class="form-input" name="name" value="${esc(rec.name || '')}" required></div><div><label>Email</label><input class="form-input" type="email" name="email" value="${esc(rec.email || '')}" required></div><div><label>Role</label><select class="form-input" name="role" required><option value="admin" ${rec.role === 'admin' ? 'selected' : ''}>Admin</option><option value="teacher" ${rec.role === 'teacher' ? 'selected' : ''}>Teacher</option><option value="standard" ${rec.role === 'standard' ? 'selected' : ''}>Standard User</option></select></div><div><label>Status</label><select class="form-input" name="active"><option value="1" ${rec.active !== false ? 'selected' : ''}>Active</option><option value="0" ${rec.active === false ? 'selected' : ''}>Inactive</option></select></div><div class="sm:col-span-2"><label>${rid ? 'New Password (leave blank to keep old)' : 'Password'}</label><input class="form-input" type="password" name="password" ${rid ? '' : 'required'}></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save User</button></div></form>`);
+          modal((rid ? 'Edit' : 'Add') + ' User', `<form id="userForm" class="grid sm:grid-cols-2 gap-4" novalidate><div><label>Name</label><input class="form-input" name="name" value="${esc(rec.name||'')}" required></div><div><label>Email</label><input class="form-input" type="email" name="email" value="${esc(rec.email||'')}" required></div><div><label>Role</label><select class="form-input" name="role" required><option value="admin" ${rec.role==='admin'?'selected':''}>Admin</option><option value="teacher" ${rec.role==='teacher'?'selected':''}>Teacher</option><option value="standard" ${rec.role==='standard'?'selected':''}>Standard User</option></select></div><div><label>Status</label><select class="form-input" name="active"><option value="1" ${rec.active!==false?'selected':''}>Active</option><option value="0" ${rec.active===false?'selected':''}>Inactive</option></select></div><div class="sm:col-span-2"><label>${rid?'New Password (leave blank to keep old)':'Password'}</label><input class="form-input" type="password" name="password" ${rid?'':'required'}></div><div class="sm:col-span-2 flex justify-end gap-2"><button type="button" class="btn btn-soft" data-action="modalClose">Cancel</button><button class="btn btn-primary">Save User</button></div></form>`);
           bind('#userForm', [
             ['name', 'req'],
             ['email', 'email'],
@@ -2672,24 +3730,32 @@
           try {
             if (mod === 'dashboard') await renderDashboard();
             else if (['students', 'teachers', 'classes', 'fees', 'expenses', 'inventory'].includes(mod)) await renderCRUD(mod);
+            else if (mod === 'academic') await renderAcademic();
             else if (mod === 'feeCollection') await renderFeeCollection();
+            else if (mod === 'fines') await renderFines();
             else if (mod === 'payroll') await renderPayroll();
             else if (mod === 'attendance') await renderAttendance();
             else if (mod === 'exams') await renderExams();
             else if (mod === 'timetable') await renderTimetable();
+            else if (mod === 'library') await renderLibrary();
+            else if (mod === 'hostel') await renderHostel();
+            else if (mod === 'donations') await renderDonations();
+            else if (mod === 'documents') await renderDocuments();
             else if (mod === 'staffAttendance') await renderStaffAttendance();
             else if (mod === 'reports') await renderReports();
             else if (mod === 'settings') await renderSettings();
             else await renderDashboard();
             await audit('Viewed module', 'navigation', mod)
           } catch (e) {
-            main().innerHTML = head('Module Error', 'The app handled the issue without a white screen.') + `<div class="card p-6 text-red-700"><b>${esc(e.message)}</b></div>`
+            main().innerHTML = head('Module Error', 'The app handled the issue without a white screen.') + `<div class="card p-6 text-red-700"><b>${esc(e.message)}</b></div>`;
+            console.error(e)
           }
         }
         async function init() {
           try {
             db = await openDB();
             await seed();
+            await ensureEnhancedData();
             await loadSettings();
             if (await restore()) {
               await loadTheme();
@@ -2701,7 +3767,8 @@
               auth('login')
             }
           } catch (e) {
-            app().innerHTML = `<main class="min-h-screen flex flex-col"><section class="flex-1 flex items-center justify-center p-4"><div class="card p-6 max-w-xl"><h1 class="text-2xl font-black text-red-700">Startup Error</h1><p class="mt-2 text-slate-600">${esc(e.message)}</p><p class="mt-2 text-sm">Please use a modern browser with IndexedDB enabled.</p></div></section>${footer()}</main>`
+            app().innerHTML = `<main class="min-h-screen flex flex-col"><section class="flex-1 flex items-center justify-center p-4"><div class="card p-6 max-w-xl"><h1 class="text-2xl font-black text-red-700">Startup Error</h1><p class="mt-2 text-slate-600">${esc(e.message)}</p><p class="mt-2 text-sm">Please use a modern browser with IndexedDB enabled.</p></div></section>${footer()}</main>`;
+            console.error(e)
           }
         }
         document.addEventListener('DOMContentLoaded', init);
